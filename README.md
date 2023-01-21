@@ -1,4 +1,4 @@
-# vzcode
+# VZCode
 Multiplayer code editor system
 
  * Open source code editor for JavaScript
