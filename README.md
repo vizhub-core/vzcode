@@ -7,7 +7,7 @@ Multiplayer code editor system
  * Built on open source: CodeMirror, NodeJS, ShareDB 
  * Core component of [VizHub](https://vizhub.com/) next generation editor
 
-Just getting started here! Nothing in this repo yet... but there is a working demo at https://vizhub.community/ci/viz1, whose source code lives at https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3 . Also we'll draw from this standalone CodeMirror6 collaboration demo: https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3/vizhub-codemirror. For this project we'll port components out of that demo so that the code editor is totally independent and isolated from anything specific to VizHub.
+Just getting started here! Nothing in this repo yet... but there is a working demo at https://vizhub.community/ci/viz1 (try it in multiple tabs to see the real-time sync), whose source code lives at https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3 . Also we'll draw from this standalone CodeMirror6 collaboration demo: https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3/vizhub-codemirror. For this project we'll port components out of that demo so that the code editor is totally independent and isolated from anything specific to VizHub.
 
 ![image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
 
