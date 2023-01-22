@@ -1,11 +1,10 @@
 {
   "name": "vzcode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Multiplayer code editor system",
   "main": "index.js",
   "bin": "cli.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vizhub-core/vzcode.git"
