@@ -1,0 +1,30 @@
+{
+  "name": "vzcode",
+  "version": "0.0.1",
+  "description": "Multiplayer code editor system",
+  "main": "index.js",
+  "bin": "cli.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vizhub-core/vzcode.git"
+  },
+  "keywords": [
+    "Code",
+    "Editor",
+    "CodeMirror",
+    "Collaboration",
+    "Development",
+    "IDE",
+    "JavaScript",
+    "Data",
+    "Visualization"
+  ],
+  "author": "Curran Kelleher",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vizhub-core/vzcode/issues"
+  },
+  "homepage": "https://github.com/vizhub-core/vzcode#readme"
+}
