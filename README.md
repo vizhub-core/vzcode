@@ -62,3 +62,4 @@ April 2023
  * Develop a tree-based sidebar UI allowing directory navigation
  * Dogfood the product and try to collaboratively develop something, maybe a data visualization
  * Gather feedback from early users and iterate based on that
+ * Publish a YouTube video presentation of the work to date
