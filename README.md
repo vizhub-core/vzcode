@@ -74,4 +74,4 @@ April 2023
 ## Spaces
 
  * https://github.com/vizhub-core/vzcode
- * Discord channel within RCOS Discord
+ * [Discord channel within RCOS](https://discord.com/channels/738593165438746634/1066068656045441044)
