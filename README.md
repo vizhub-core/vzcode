@@ -63,3 +63,10 @@ April 2023
  * Dogfood the product and try to collaboratively develop something, maybe a data visualization
  * Gather feedback from early users and iterate based on that
  * Publish a YouTube video presentation of the work to date
+
+## Team
+
+ * Curran Kelleher
+ * Students from [RPI RCOS](https://rcos.io/)
+ * Additional external collaborators, TBD
+ * Drop a line to Curran if interested in collaborating on this!
