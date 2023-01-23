@@ -13,4 +13,4 @@ Just getting started here! Nothing in this repo yet... but there is a working de
 
 It will look something like this ☝️ once it's working. This VZCode project will draw inspiration (and possibly implementation) from the existing open source editor component of VizHub, and various prototypes that have been done with CodeMirror6.
 
-Collaborators welcome! I'm holding a meeting on Monday January 23 at 2pm Eastern (Video call link: https://meet.google.com/ajx-nmpx-ygt), feel free to drop in if you have any interest in collaborating on this project or providing input!
+Collaborators welcome!
