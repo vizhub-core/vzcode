@@ -70,3 +70,8 @@ April 2023
  * Students from [RPI RCOS](https://rcos.io/)
  * Additional external collaborators, TBD
  * Drop a line to Curran if interested in collaborating on this!
+
+## Spaces
+
+ * https://github.com/vizhub-core/vzcode
+ * Discord channel within RCOS Discord
