@@ -43,4 +43,22 @@ There is a working demo at https://vizhub.community/ci/viz1 (try it in multiple 
 
 It will look something like this ☝️ once it's working. This VZCode project will draw inspiration (and possibly implementation) from the existing open source editor component of VizHub, and various prototypes that have been done with CodeMirror6.
 
+## Milestones
 
+February 2023
+ * Get the first version working, including:
+ * ShareDB server
+ * Auto-save
+ * Edit the content of multiple files (no support for folders initially)
+
+March 2023
+ * Make it usable, including:
+ * UX for adding new files, renaming files, deleting files
+ * Implement presence (the ability to see the cursors of others in real time)
+ * Test out how it works using tunneling services such as NGrok
+
+April 2023
+ * Add support for nested directories, including:
+ * Develop a tree-based sidebar UI allowing directory navigation
+ * Dogfood the product and try to collaboratively develop something, maybe a data visualization
+ * Gather feedback from early users and iterate based on that
