@@ -3,8 +3,11 @@
   "version": "0.0.2",
   "description": "Multiplayer code editor system",
   "main": "index.js",
+  "type": "module",
   "bin": "cli.js",
-  "scripts": {},
+  "scripts": {
+    "test": "cd test; node ../cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vizhub-core/vzcode.git"
@@ -25,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/vizhub-core/vzcode/issues"
   },
-  "homepage": "https://github.com/vizhub-core/vzcode#readme"
+  "homepage": "https://github.com/vizhub-core/vzcode#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
