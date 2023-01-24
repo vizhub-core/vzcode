@@ -3,7 +3,7 @@ Multiplayer code editor system
 
 ## Project Description
 
- * Open source code editor for JavaScript
+ * Open source code editor for JavaScript, HTML, CSS, and Markdown
  * Support for real-time collaboration
  * Invite collaborators over LAN or HTTP Tunneing
  * Focus on instant feedback during development
