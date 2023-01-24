@@ -45,6 +45,8 @@ It will look something like this ☝️ once it's working. This VZCode project w
 
 ## Milestones
 
+See also [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1).
+
 February 2023
  * Get the first version working, including:
  * ShareDB server
