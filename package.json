@@ -6,7 +6,8 @@
   "type": "module",
   "bin": "cli.js",
   "scripts": {
-    "test": "cd test; node ../cli.js"
+    "test": "cd test; node ../cli.js",
+    "prettier": "prettier {*.*,**/*.*} --single-quote --write"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,8 @@
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.3"
   }
 }
