@@ -5,6 +5,21 @@ import ShareDB from 'sharedb';
 import json1 from 'ot-json1';
 import { WebSocketServer } from 'ws';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
+import fs from 'fs';
+
+const fullPath = process.cwd();
+
+const files = fs.readdirSync(fullPath);
+const initialDocument = {};
+files.forEach((file) => {
+  const id = Math.floor(Math.random()*10000000000);
+  initialDocument[id] = {
+    text: fs.readFileSync(file, 'utf-8'),
+    name: file,
+  };
+});
+
+console.log(initialDocument);
 
 console.log('Welcome to VZCode!');
 
@@ -31,12 +46,7 @@ app.get('/', (req, res) => {
 //  * figure out how to list files on disk with NodeJS
 //  * use that list to populate the files in our document.
 const shareDBDoc = shareDBConnection.get('documents', '1');
-shareDBDoc.create(
-  {
-    2432: { text: 'const foo = "bar";', name: 'index.js' },
-  },
-  json1.type.uri
-);
+shareDBDoc.create(initialDocument, json1.type.uri);
 
 server.listen(port, () => {
   console.log(`Editor is live at http://localhost:${port}`);
