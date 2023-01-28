@@ -2,6 +2,8 @@
 
 Multiplayer code editor system
 
+[Kanban](https://github.com/orgs/vizhub-core/projects/2/views/1)
+
 ## Project Description
 
 - Open source code editor for JavaScript, HTML, CSS, and Markdown
