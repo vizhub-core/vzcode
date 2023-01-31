@@ -49,7 +49,9 @@ wss.on('connection', (ws) => {
 // });
 
 // Serve static files
-const distDir = import.meta.url.replace("cli.js","dist").replace("file://","");
+const distDir = import.meta.url
+  .replace('cli.js', 'dist')
+  .replace('file://', '');
 console.log(distDir);
 app.use(express.static(distDir));
 
