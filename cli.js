@@ -11,9 +11,6 @@ import { fileURLToPath } from 'url';
 
 const fullPath = process.cwd();
 
-console.log(fullPath);
-
-
 // Isolate files, not directories.
 // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
 const files = fs

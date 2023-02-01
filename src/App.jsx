@@ -20,7 +20,7 @@ function App() {
 
 
   function showFiles() {
-    let arrow = document.querySelectorAll(".arrow");
+    const arrow = document.querySelectorAll(".arrow");
     for (var i = 0; i < arrow.length; i++) {
       arrow[i].addEventListener("click", (e) => {
         let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
@@ -63,7 +63,6 @@ function App() {
           if (parsedData[key].name === fileName) {
             var content = parsedData[key].content.replace('\n', '<br />');
             text.value = content;
-            console.log(content);
           }
         }
       });
@@ -77,7 +76,6 @@ function App() {
 
   return (
     <>
-      <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'></link>
       <div className="tabList"></div><div className="bottomBar"></div><div className="sidebar show">
 
         <ul className="nav-links">

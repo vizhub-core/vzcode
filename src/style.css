@@ -1,6 +1,8 @@
 /* Inspired by: https://www.codinglabweb.com/2021/06/dropdown-sidebar-menu-html-css.html */
 /* Google Fonts Import Link */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css');
+
 
 * {
   margin: 0;
