@@ -6,8 +6,13 @@ import json1 from 'ot-json1';
 import { WebSocketServer } from 'ws';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const fullPath = process.cwd();
+
+console.log(fullPath);
+
 
 // Isolate files, not directories.
 // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
@@ -49,11 +54,11 @@ wss.on('connection', (ws) => {
 // });
 
 // Serve static files
-const distDir = import.meta.url
-  .replace('cli.js', 'dist')
-  .replace('file://', '');
-console.log(distDir);
-app.use(express.static(distDir));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dir = path.join(__dirname, '/dist');
+
+app.use(express.static(dir));
 
 // Create initial document
 // TODO
