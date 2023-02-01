@@ -25,20 +25,56 @@ function App() {
       arrow[i].addEventListener("click", (e) => {
         let arrowParent = e.target.parentElement.parentElement;//selecting main parent of arrow
         arrowParent.classList.toggle("showMenu");
+        let folder = document.getElementById("folderIcon");
+        if (folder.className === "bx bx-folder-open") {
+          folder.className = "bx bx-folder";
+        } else {
+          folder.className = "bx bx-folder-open";
+        }
       });
     }
   }
 
+  let parsedData = {};
+
   function fillData() {
     let fileList = document.querySelector(".sub-menu");
+    let i = 0;
     for (var key in data) {
       let file = JSON.stringify(data[key].name);
+      let content = JSON.stringify(data[key].text);
       file = file.replace(/['"]+/g, '');
-      fileList.innerHTML += '<li><a href="#">' + file + '</a></li>'
+      fileList.innerHTML += '<li><a>' + file + '</a></li>'
+      parsedData[i] = {
+        name: file,
+        content: content,
+      }
+      i++;
     }
   }
 
+  function showContent() {
+    let file = document.querySelectorAll(".sub-menu li");
+    for (var i = 0; i < file.length; i++) {
+      file[i].addEventListener("click", (e) => {
+        let fileName = e.target.innerHTML;
+        let text = document.getElementById("edit");
+        for (var key in parsedData) {
+          if (parsedData[key].name === fileName) {
+            var content = parsedData[key].content.replace('\n', '<br />');
+            text.value = content;
+            console.log(content);
+          }
+        }
+      });
+    }
+  }
+
+
   fillData();
+  showContent();
+
+
   return (
     <>
       <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'></link>
@@ -48,7 +84,7 @@ function App() {
           <li>
             <div className="iocn-link">
               <a href="#">
-                <i className='bx bx-folder'></i>
+                <i id="folderIcon" className='bx bx-folder'></i>
                 <span className="link_name">Files</span>
               </a>
               <i className='bx bxs-chevron-down arrow' onClick={showFiles()}></i>
@@ -69,7 +105,9 @@ function App() {
             </div>
           </li>
         </ul>
-      </div></>
+      </div>
+      <textarea className="TextEdit" name="editor" id="edit">Hello</textarea>
+    </>
   );
 }
 
