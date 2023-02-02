@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./App.css";
 import "./style.css";
 import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
@@ -19,6 +19,13 @@ function App() {
       setData(doc.data);
     });
   }, []);
+
+  // const parsedData = useMemo(() => {
+  //   if (!data) return null;
+  //   return Object.keys(data).map((key) => data[key]);
+  // }, [data]);
+
+  // console.log(parsedData);
 
   // let parsedData = {};
   // // // Gets the files from the ShareDB structure and fills them into the sidebar
@@ -88,6 +95,13 @@ function App() {
                   Files
                 </a>
               </li>
+              {data
+                ? Object.keys(data).map((key) => (
+                    <li>
+                      <a>{data[key].name}</a>
+                    </li>
+                  ))
+                : null}
             </ul>
           </li>
           <li>
