@@ -11,6 +11,7 @@ function App() {
   const [data, setData] = useState(null);
 
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+  const [activeFileId, setActiveFileId] = useState(null)
 
   useEffect(() => {
     const doc = connection.get("documents", "1");
@@ -20,50 +21,7 @@ function App() {
     });
   }, []);
 
-  // const parsedData = useMemo(() => {
-  //   if (!data) return null;
-  //   return Object.keys(data).map((key) => data[key]);
-  // }, [data]);
-
-  // console.log(parsedData);
-
-  // let parsedData = {};
-  // // // Gets the files from the ShareDB structure and fills them into the sidebar
-  // function fillData() {
-  //   let fileList = document.querySelector(".sub-menu");
-  //   let i = 0;
-  //   for (var key in data) {
-  //     let file = JSON.stringify(data[key].name);
-  //     let content = JSON.stringify(data[key].text);
-  //     file = file.replace(/['"]+/g, "");
-  //     fileList.innerHTML += "<li><a>" + file + "</a></li>";
-  //     parsedData[i] = {
-  //       name: file,
-  //       content: content,
-  //     };
-  //     i++;
-  //   }
-  // }
-
-  // // Lets you click on a file.
-  // function showContent() {
-  //   let file = document.querySelectorAll(".sub-menu li");
-  //   for (var i = 0; i < file.length; i++) {
-  //     file[i].addEventListener("click", (e) => {
-  //       let fileName = e.target.innerHTML;
-  //       let text = document.getElementById("edit");
-  //       for (var key in parsedData) {
-  //         if (parsedData[key].name === fileName) {
-  //           var content = parsedData[key].content.replace('\n', '<br />');
-  //           text.value = content;
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
-
-  //fillData();
-  // showContent();
+  const activeFileText = (data && activeFileId) ? data[activeFileId].text : "";
 
   return (
     <>
@@ -84,7 +42,7 @@ function App() {
               </a>
               <i
                 className="bx bxs-chevron-down arrow"
-                onClick={(e) => {
+                onClick={() => {
                   setIsFileMenuOpen(!isFileMenuOpen);
                 }}
               ></i>
@@ -97,10 +55,13 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li>
-                      <a>{data[key].name}</a>
-                    </li>
-                  ))
+                  <li onClick={() => {
+                    setActiveFileId(key)
+                  }
+                  }>
+                    <a>{data[key].name}</a>
+                  </li>
+                ))
                 : null}
             </ul>
           </li>
@@ -120,10 +81,8 @@ function App() {
             </div>
           </li>
         </ul>
-      </div>
-      <textarea className="TextEdit" name="editor" id="edit">
-        Hello
-      </textarea>
+      </div >
+      <textarea className="TextEdit" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
     </>
   );
 }
