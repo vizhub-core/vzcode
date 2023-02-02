@@ -3,7 +3,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css');
 
-
 * {
   margin: 0;
   padding: 0;
@@ -86,13 +85,13 @@ body {
   background: rgb(92, 92, 92);
 }
 
-.sidebar .nav-links li .iocn-link {
+.sidebar .nav-links li .icon-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.sidebar.close .nav-links li .iocn-link {
+.sidebar.close .nav-links li .icon-link {
   display: block;
 }
 
@@ -251,7 +250,7 @@ body {
   font-size: 12px;
 }
 
-.sidebar.close~.home-section {
+.sidebar.close ~ .home-section {
   left: 78px;
   width: calc(100% - 78px);
 }
