@@ -34,7 +34,12 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
+    "@codemirror/lang-html": "^6.4.1",
+    "@codemirror/lang-javascript": "^6.1.3",
+    "@codemirror/state": "^6.2.0",
+    "@codemirror/theme-one-dark": "^6.1.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
+    "codemirror": "^6.0.1",
     "express": "^4.18.2",
     "ot-json1": "^1.0.2",
     "react": "^18.2.0",

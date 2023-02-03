@@ -7,27 +7,29 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
 }
 
 body {
   background: rgb(34, 34, 34);
+  font-family: 'Poppins', sans-serif;
 }
 
-.TextEdit {
+.Editor {
   position: fixed;
-  margin-top: 30px;
   margin-left: 200px;
   width: 100%;
   height: 100%;
   top: 30px;
   bottom: 0;
+  background-color: rgb(41, 44, 52);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
 }
 
 .tabList {
   position: fixed;
   top: 0;
-  left: 0;
+  left: 200px;
   height: 30px;
   width: 100%;
   background: rgb(25, 25, 25);
@@ -150,6 +152,7 @@ body {
   white-space: nowrap;
   opacity: 0.6;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
@@ -250,7 +253,7 @@ body {
   font-size: 12px;
 }
 
-.sidebar.close ~ .home-section {
+.sidebar.close~.home-section {
   left: 78px;
   width: calc(100% - 78px);
 }

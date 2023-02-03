@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
+import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
+import { CodeEditor } from './CodeEditor';
 import "./App.css";
 import "./style.css";
-import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
 
 const { Connection } = ShareDBClient;
 const socket = new WebSocket("ws://" + window.location.host);
@@ -82,7 +83,16 @@ function App() {
           </li>
         </ul>
       </div >
-      <textarea className="TextEdit" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
+      {/* editor section */}
+
+
+      {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
+     */}
+      {
+        (data && activeFileId) ? <CodeEditor className="Editor" data={data} activeFileId={activeFileId} /> : null
+      }
+
+
     </>
   );
 }
