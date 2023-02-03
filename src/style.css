@@ -152,6 +152,7 @@ body {
   white-space: nowrap;
   opacity: 0.6;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
