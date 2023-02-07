@@ -11,14 +11,19 @@ const connection = new Connection(socket);
 function App() {
   const [data, setData] = useState(null);
 
+  const [shareDBDoc, setShareDBDoc] = useState(null);
+
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const [activeFileId, setActiveFileId] = useState(null)
 
   useEffect(() => {
-    const doc = connection.get("documents", "1");
+    const shareDBDoc = connection.get("documents", "1");
 
-    doc.subscribe(() => {
-      setData(doc.data);
+    shareDBDoc.subscribe(() => {
+      console.log('Setting ShareDB Doc and data')
+      setShareDBDoc(shareDBDoc);
+      // TODO update every time the data changes
+      setData(shareDBDoc.data);
     });
   }, []);
 
@@ -89,7 +94,7 @@ function App() {
       {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
      */}
       {
-        (data && activeFileId) ? <CodeEditor className="Editor" data={data} activeFileId={activeFileId} /> : null
+        (data && activeFileId) ? <CodeEditor className="Editor" shareDBDoc={shareDBDoc} activeFileId={activeFileId} /> : null
       }
 
 

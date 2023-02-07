@@ -40,6 +40,7 @@
     "@codemirror/theme-one-dark": "^6.1.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "codemirror": "^6.0.1",
+    "codemirror-ot": "^3.5.0",
     "express": "^4.18.2",
     "ot-json1": "^1.0.2",
     "react": "^18.2.0",
