@@ -1,8 +1,10 @@
 import { useRef, useLayoutEffect } from 'react';
 import { EditorView, basicSetup } from "codemirror"
 import { EditorState } from "@codemirror/state"
-import { javascript } from "@codemirror/lang-javascript";
+import { javascript, typescriptLanguage } from "@codemirror/lang-javascript";
+import { markdown } from '@codemirror/lang-markdown';
 import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
 import { oneDark } from '@codemirror/theme-one-dark';
 import { json1Sync } from 'codemirror-ot';
 
@@ -24,10 +26,14 @@ const getOrCreateEditor = (fileId, shareDBDoc) => {
         oneDark
     ];
 
-    if (fileExtension === 'js') {
+    if (fileExtension === 'js' || fileExtension === 'json' || fileExtension == 'jsx' || fileExtension == 'ts') {
         extensions.push(javascript())
     } else if (fileExtension === 'html') {
         extensions.push(html())
+    } else if (fileExtension === 'css') {
+        extensions.push(css())
+    } else if (fileExtension === 'md') {
+        extensions.push(markdown())
     }
 
     let editor = editorCache.get(fileId);

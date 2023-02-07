@@ -10,8 +10,22 @@
 }
 
 body {
-  background: rgb(34, 34, 34);
+  background: rgb(41, 44, 52);
   font-family: 'Poppins', sans-serif;
+}
+
+.tab {
+  width: max-content;
+  height: 30px;
+  background: rgb(48, 48, 48);
+  text-align: center;
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .Editor {

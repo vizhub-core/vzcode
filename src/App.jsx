@@ -15,6 +15,7 @@ function App() {
 
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const [activeFileId, setActiveFileId] = useState(null)
+  const [tabName, setTabName] = useState(null)
 
   useEffect(() => {
     const shareDBDoc = connection.get("documents", "1");
@@ -27,11 +28,11 @@ function App() {
     });
   }, []);
 
-  const activeFileText = (data && activeFileId) ? data[activeFileId].text : "";
-
   return (
     <>
-      <div className="tabList"></div>
+      <div className="tabList">
+        <div className={tabName ? 'tab' : null}>{tabName}</div>
+      </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
@@ -63,6 +64,7 @@ function App() {
                 ? Object.keys(data).map((key) => (
                   <li onClick={() => {
                     setActiveFileId(key)
+                    setTabName(data[key].name)
                   }
                   }>
                     <a>{data[key].name}</a>
