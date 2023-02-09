@@ -6,6 +6,7 @@ import "./style.css";
 
 const { Connection } = ShareDBClient;
 const socket = new WebSocket("ws://" + window.location.host);
+console.log(window.location.host);
 const connection = new Connection(socket);
 
 function App() {
@@ -27,10 +28,16 @@ function App() {
     });
   }, []);
 
+  function close() {
+    console.log('close')
+    setActiveFileId(null)
+  }
   return (
     <>
       <div className="tabList">
-        <div className={data && activeFileId ? 'tab' : null}>{data && activeFileId ? data[activeFileId].name : ''}</div>
+        <div className={data && activeFileId ? 'tab' : null}>{data && activeFileId ? data[activeFileId].name : ''}
+          <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close}></div>
+        </div>
       </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">

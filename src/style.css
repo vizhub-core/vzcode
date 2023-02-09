@@ -21,7 +21,7 @@ body {
 .tab {
   width: max-content;
   height: 30px;
-  background: rgb(48, 48, 48);
+  background: rgb(41, 44, 52);
   text-align: center;
   color: #fff;
   font-family: var(--main-font-family);
@@ -30,6 +30,19 @@ body {
   display: flex;
   padding-left: 10px;
   padding-right: 10px;
+}
+
+.tab-close {
+  display: flex;
+  cursor: pointer;
+  margin-left: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-close:hover {
+  border-radius: 30%;
+  background-color: rgb(37, 37, 38);
 }
 
 .Editor {
@@ -50,7 +63,7 @@ body {
   left: 200px;
   height: 30px;
   width: 100%;
-  background: rgb(25, 25, 25);
+  background: rgb(37, 37, 38);
   z-index: 100;
   transition: all 0.5s ease;
 }
