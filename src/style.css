@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+:root {
+  --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
 body {
   background: rgb(41, 44, 52);
   font-family: 'Poppins', sans-serif;
@@ -20,7 +24,7 @@ body {
   background: rgb(48, 48, 48);
   text-align: center;
   color: #fff;
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-family: var(--main-font-family);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -37,7 +41,7 @@ body {
   bottom: 0;
   background-color: rgb(41, 44, 52);
   color: #fff;
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-family: var(--main-font-family);
 }
 
 .tabList {
