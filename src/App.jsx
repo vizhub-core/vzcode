@@ -49,7 +49,7 @@ function App() {
           tabList.map(fileId => (
             <div
               className={tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null}
-              onClick={() => { console.log('Tab click fired'); setActiveFileId(fileId) }}
+              onClick={() => { setActiveFileId(fileId) }}
             >
               {tabValid ? data[fileId].name : ''}
               <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close(fileId)}></div>
