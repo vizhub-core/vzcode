@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
+import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
+import { CodeEditor } from './CodeEditor';
 import "./App.css";
 import "./style.css";
-import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
 
 const { Connection } = ShareDBClient;
 const socket = new WebSocket("ws://" + window.location.host);
@@ -10,22 +11,32 @@ const connection = new Connection(socket);
 function App() {
   const [data, setData] = useState(null);
 
+  const [shareDBDoc, setShareDBDoc] = useState(null);
+
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
   const [activeFileId, setActiveFileId] = useState(null)
 
   useEffect(() => {
-    const doc = connection.get("documents", "1");
+    const shareDBDoc = connection.get("documents", "1");
 
-    doc.subscribe(() => {
-      setData(doc.data);
+    shareDBDoc.subscribe(() => {
+      console.log('Setting ShareDB Doc and data')
+      setShareDBDoc(shareDBDoc);
+      // TODO update every time the data changes
+      setData(shareDBDoc.data);
     });
   }, []);
 
-  const activeFileText = (data && activeFileId) ? data[activeFileId].text : "";
-
+  function close() {
+    setActiveFileId(null)
+  }
   return (
     <>
-      <div className="tabList"></div>
+      <div className="tabList">
+        <div className={data && activeFileId ? 'tab' : null}>{data && activeFileId ? data[activeFileId].name : ''}
+          <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close}></div>
+        </div>
+      </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
@@ -82,7 +93,16 @@ function App() {
           </li>
         </ul>
       </div >
-      <textarea className="TextEdit" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
+      {/* editor section */}
+
+
+      {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
+     */}
+      {
+        (data && activeFileId) ? <CodeEditor className="Editor" shareDBDoc={shareDBDoc} activeFileId={activeFileId} /> : null
+      }
+
+
     </>
   );
 }
