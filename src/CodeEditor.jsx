@@ -48,7 +48,6 @@ const getOrCreateEditor = (fileId, shareDBDoc) => {
 
         // Populate the cache.
         editorCache.set(fileId, editor);
-        console.log('editorCache', editorCache)
     }
     return editor;
 };
