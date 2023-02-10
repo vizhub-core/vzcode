@@ -6,7 +6,6 @@ import "./style.css";
 
 const { Connection } = ShareDBClient;
 const socket = new WebSocket("ws://" + window.location.host);
-console.log(window.location.host);
 const connection = new Connection(socket);
 
 function App() {
