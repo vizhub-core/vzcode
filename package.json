@@ -10,7 +10,8 @@
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
