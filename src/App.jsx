@@ -15,7 +15,9 @@ function App() {
   const [shareDBDoc, setShareDBDoc] = useState(null);
 
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
-  const [activeFileId, setActiveFileId] = useState(null)
+  const [activeFileId, setActiveFileId] = useState(null);
+
+  const [tabList, setTabList] = useState([]);
 
   useEffect(() => {
     const shareDBDoc = connection.get("documents", "1");
@@ -28,16 +30,33 @@ function App() {
     });
   }, []);
 
-  function close() {
-    console.log('close')
-    setActiveFileId(null)
+  const close = (fileIdToRemove) => (event) => {
+    console.log('Close fired')
+
+    // Stop propagation so that the outer listener doesn't fire.
+    event.stopPropagation();
+    const i = tabList.findIndex(fileId => fileId === fileIdToRemove)
+    const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
+    setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
+    setTabList(newTabList);
   }
+
+  const tabValid = data && activeFileId;
+
   return (
     <>
       <div className="tabList">
-        <div className={data && activeFileId ? 'tab' : null}>{data && activeFileId ? data[activeFileId].name : ''}
-          <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close}></div>
-        </div>
+        {
+          tabList.map(fileId => (
+            <div
+              className={tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null}
+              onClick={() => { console.log('Tab click fired'); setActiveFileId(fileId) }}
+            >
+              {tabValid ? data[fileId].name : ''}
+              <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close(fileId)}></div>
+            </div>
+          ))
+        }
       </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">
@@ -70,6 +89,9 @@ function App() {
                 ? Object.keys(data).map((key) => (
                   <li onClick={() => {
                     setActiveFileId(key)
+                    if (!tabList.includes(key)) {
+                      setTabList([...tabList, key]);
+                    }
                   }
                   }>
                     <a>{data[key].name}</a>

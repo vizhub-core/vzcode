@@ -11,6 +11,7 @@ import { json1Sync } from 'codemirror-ot';
 // Keys are file ids
 // Values are CodeMirror instances
 const editorCache = new Map();
+console.log('editorCache', editorCache)
 
 
 // Gets or creates a CodeMirror editor for the given file id.
@@ -48,7 +49,7 @@ const getOrCreateEditor = (fileId, shareDBDoc) => {
 
         // Populate the cache.
         editorCache.set(fileId, editor);
-
+        console.log('editorCache', editorCache)
     }
     return editor;
 };
