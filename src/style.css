@@ -9,9 +9,40 @@
   box-sizing: border-box;
 }
 
+:root {
+  --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+}
+
 body {
-  background: rgb(34, 34, 34);
+  background: rgb(41, 44, 52);
   font-family: 'Poppins', sans-serif;
+}
+
+.tab {
+  width: max-content;
+  height: 30px;
+  background: rgb(41, 44, 52);
+  text-align: center;
+  color: #fff;
+  font-family: var(--main-font-family);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.tab-close {
+  display: flex;
+  cursor: pointer;
+  margin-left: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-close:hover {
+  border-radius: 30%;
+  background-color: rgb(37, 37, 38);
 }
 
 .Editor {
@@ -23,7 +54,7 @@ body {
   bottom: 0;
   background-color: rgb(41, 44, 52);
   color: #fff;
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  font-family: var(--main-font-family);
 }
 
 .tabList {
@@ -32,7 +63,7 @@ body {
   left: 200px;
   height: 30px;
   width: 100%;
-  background: rgb(25, 25, 25);
+  background: rgb(37, 37, 38);
   z-index: 100;
   transition: all 0.5s ease;
 }

@@ -27,11 +27,16 @@ function App() {
     });
   }, []);
 
-  const activeFileText = (data && activeFileId) ? data[activeFileId].text : "";
-
+  function close() {
+    setActiveFileId(null)
+  }
   return (
     <>
-      <div className="tabList"></div>
+      <div className="tabList">
+        <div className={data && activeFileId ? 'tab' : null}>{data && activeFileId ? data[activeFileId].name : ''}
+          <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close}></div>
+        </div>
+      </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">
         <ul className="nav-links">

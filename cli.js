@@ -19,7 +19,6 @@ const files = fs
   .map((dirent) => dirent.name);
 
 const initialDocument = {};
-console.log(files);
 files.forEach((file) => {
   const id = Math.floor(Math.random() * 10000000000);
   initialDocument[id] = {
@@ -28,14 +27,13 @@ files.forEach((file) => {
   };
 });
 
-console.log(initialDocument);
+//console.log(initialDocument);
 
-console.log('Welcome to VZCode!');
 
 ShareDB.types.register(json1.type);
 
 const app = express();
-const port = 3030;
+const port = 5173;
 
 const shareDBBackend = new ShareDB();
 const shareDBConnection = shareDBBackend.connect();
