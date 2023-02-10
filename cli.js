@@ -33,7 +33,7 @@ files.forEach((file) => {
 ShareDB.types.register(json1.type);
 
 const app = express();
-const port = 3030;
+const port = 5173;
 
 const shareDBBackend = new ShareDB();
 const shareDBConnection = shareDBBackend.connect();
