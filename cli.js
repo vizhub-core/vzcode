@@ -18,8 +18,8 @@ const files = fs
   .filter((dirent) => dirent.isFile())
   .map((dirent) => dirent.name);
 
+// Compute our initial document by reading the file system.
 const initialDocument = {};
-console.log(files);
 files.forEach((file) => {
   const id = Math.floor(Math.random() * 10000000000);
   initialDocument[id] = {
@@ -27,8 +27,6 @@ files.forEach((file) => {
     name: file,
   };
 });
-
-console.log(initialDocument);
 
 console.log('Welcome to VZCode!');
 

@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "bin": "cli.js",
+  "files": ["dist/**"],
   "scripts": {
     "test": "cd test; node ../cli.js",
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
