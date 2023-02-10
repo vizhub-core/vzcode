@@ -1,16 +1,20 @@
 {
   "name": "vzcode",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Multiplayer code editor system",
   "main": "index.js",
   "type": "module",
   "bin": "cli.js",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "test": "cd test; node ../cli.js",
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
     "dev": "vite; node ./cli.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",

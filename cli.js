@@ -18,6 +18,7 @@ const files = fs
   .filter((dirent) => dirent.isFile())
   .map((dirent) => dirent.name);
 
+// Compute our initial document by reading the file system.
 const initialDocument = {};
 files.forEach((file) => {
   const id = Math.floor(Math.random() * 10000000000);
@@ -27,8 +28,7 @@ files.forEach((file) => {
   };
 });
 
-//console.log(initialDocument);
-
+console.log('Welcome to VZCode!');
 
 ShareDB.types.register(json1.type);
 
@@ -44,10 +44,6 @@ wss.on('connection', (ws) => {
   shareDBBackend.listen(new WebSocketJSONStream(ws));
 });
 
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
-
 // Serve static files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,9 +52,6 @@ const dir = path.join(__dirname, '/dist');
 app.use(express.static(dir));
 
 // Create initial document
-// TODO
-//  * figure out how to list files on disk with NodeJS
-//  * use that list to populate the files in our document.
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1.type.uri);
 
