@@ -6,7 +6,6 @@ import "./style.css";
 
 const { Connection } = ShareDBClient;
 const socket = new WebSocket("ws://" + window.location.host);
-console.log(window.location.host);
 const connection = new Connection(socket);
 
 function App() {
@@ -29,6 +28,7 @@ function App() {
       setData(shareDBDoc.data);
     });
   }, []);
+
 
   const close = (fileIdToRemove) => (event) => {
     console.log('Close fired')
