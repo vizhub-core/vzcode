@@ -28,7 +28,6 @@ function App() {
   }, []);
 
   function close() {
-    console.log('close')
     setActiveFileId(null)
   }
   return (
