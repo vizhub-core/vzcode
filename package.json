@@ -11,7 +11,7 @@
   "scripts": {
     "test": "cd test; node ../cli.js",
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
-    "dev": "vite; node ./cli.js",
+    "dev": "vite;",
     "build": "vite build",
     "preview": "vite preview",
     "prepublishOnly": "npm run build"

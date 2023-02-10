@@ -21,7 +21,7 @@ body {
 .tab {
   width: max-content;
   height: 30px;
-  background: rgb(41, 44, 52);
+  background: rgb(45, 45, 45);
   text-align: center;
   color: #fff;
   font-family: var(--main-font-family);
@@ -30,6 +30,16 @@ body {
   display: flex;
   padding-left: 10px;
   padding-right: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-top: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: rgb(41, 44, 52);
 }
 
 .tab-close {
@@ -59,9 +69,11 @@ body {
 
 .tabList {
   position: fixed;
+  display: flex;
+  flex-direction: row;
   top: 0;
   left: 200px;
-  height: 30px;
+  height: 35px;
   width: 100%;
   background: rgb(37, 37, 38);
   z-index: 100;
