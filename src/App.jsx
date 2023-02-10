@@ -31,7 +31,6 @@ function App() {
 
 
   const close = (fileIdToRemove) => (event) => {
-    console.log('Close fired')
 
     // Stop propagation so that the outer listener doesn't fire.
     event.stopPropagation();
