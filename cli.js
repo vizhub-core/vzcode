@@ -18,7 +18,6 @@ const files = fs
   .filter((dirent) => dirent.isFile())
   .map((dirent) => dirent.name);
 
-// Compute our initial document by reading the file system.
 const initialDocument = {};
 files.forEach((file) => {
   const id = Math.floor(Math.random() * 10000000000);
@@ -28,12 +27,11 @@ files.forEach((file) => {
   };
 });
 
-console.log('Welcome to VZCode!');
 
 ShareDB.types.register(json1.type);
 
 const app = express();
-const port = 5173;
+const port = 3030;
 
 const shareDBBackend = new ShareDB();
 const shareDBConnection = shareDBBackend.connect();
@@ -44,6 +42,10 @@ wss.on('connection', (ws) => {
   shareDBBackend.listen(new WebSocketJSONStream(ws));
 });
 
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+// });
+
 // Serve static files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,9 +53,23 @@ const dir = path.join(__dirname, '/dist');
 
 app.use(express.static(dir));
 
-// Create initial document
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1.type.uri);
+
+shareDBDoc.subscribe(() => {
+  let data = [];
+  shareDBDoc.on('op', (op) => {
+    if (op[2].es[1] == ['\n']) {
+      fs.appendFileSync(initialDocument[op[0]].name, data.join(''));
+    }
+
+    if (op[2].es[1] == undefined) {
+      data[0] = op[2].es[0];
+    } else {
+      data[op[2].es[0]] = op[2].es[1];
+    }
+  });
+});
 
 server.listen(port, () => {
   console.log(`Editor is live at http://localhost:${port}`);
