@@ -59,8 +59,10 @@ shareDBDoc.create(initialDocument, json1.type.uri);
 shareDBDoc.subscribe(() => {
   let data = [];
   shareDBDoc.on('op', (op) => {
+    console.log(initialDocument[op[0]].text);
+    console.log(op[2].es[0], op[2].es[1]);
     if (op[2].es[1] == ['\n']) {
-      fs.appendFileSync(initialDocument[op[0]].name, data.join(''));
+      fs.writeFileSync(initialDocument[op[0]].name, data.join(''));
     }
 
     if (op[2].es[1] == undefined) {
