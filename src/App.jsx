@@ -20,7 +20,6 @@ function App() {
 
   useEffect(() => {
     const shareDBDoc = connection.get("documents", "1");
-
     shareDBDoc.subscribe(() => {
       console.log('Setting ShareDB Doc and data')
       setShareDBDoc(shareDBDoc);
@@ -29,6 +28,8 @@ function App() {
     });
   }, []);
 
+  console.log('Data', data);
+  console.log(shareDBDoc);
 
   const close = (fileIdToRemove) => (event) => {
 
@@ -39,6 +40,16 @@ function App() {
     setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
     setTabList(newTabList);
   }
+
+  function renamefile(key) {
+    var newName = prompt("Enter new name");
+    if (newName != null) {
+      data[key].name = newName;
+      console.log(data[key].name);
+      shareDBDoc.submitOp([{ p: [key, 'name'], oi: newName }]);
+    }
+  }
+
 
   const tabValid = data && activeFileId;
 
@@ -92,7 +103,9 @@ function App() {
                       setTabList([...tabList, key]);
                     }
                   }
-                  }>
+                  } onDoubleClick={() => {
+                    renamefile(key)
+                  }}>
                     <a>{data[key].name}</a>
                   </li>
                 ))
