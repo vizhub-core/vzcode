@@ -27,7 +27,6 @@ files.forEach((file) => {
   };
 });
 
-
 ShareDB.types.register(json1.type);
 
 const app = express();

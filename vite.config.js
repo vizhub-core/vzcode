@@ -8,6 +8,6 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 export default defineConfig({
   plugins: [commonjs(), nodePolyfills(), nodeResolve(), react()],
   server: {
-    port: 3030
+    port: 3030,
   },
 });

@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
-import ShareDBClient from "sharedb-client-browser/sharedb-client-json1-browser.js";
+import { useState, useEffect, useMemo } from 'react';
+import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
 import { CodeEditor } from './CodeEditor';
-import "./App.css";
-import "./style.css";
+import './App.css';
+import './style.css';
 
 const { Connection } = ShareDBClient;
-const socket = new WebSocket("ws://" + window.location.host);
+const socket = new WebSocket('ws://' + window.location.host);
 const connection = new Connection(socket);
 
 function App() {
@@ -19,9 +19,9 @@ function App() {
   const [tabList, setTabList] = useState([]);
 
   useEffect(() => {
-    const shareDBDoc = connection.get("documents", "1");
+    const shareDBDoc = connection.get('documents', '1');
     shareDBDoc.subscribe(() => {
-      console.log('Setting ShareDB Doc and data')
+      console.log('Setting ShareDB Doc and data');
       setShareDBDoc(shareDBDoc);
       // TODO update every time the data changes
       setData(shareDBDoc.data);
@@ -32,17 +32,16 @@ function App() {
   console.log(shareDBDoc);
 
   const close = (fileIdToRemove) => (event) => {
-
     // Stop propagation so that the outer listener doesn't fire.
     event.stopPropagation();
-    const i = tabList.findIndex(fileId => fileId === fileIdToRemove)
+    const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
     const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
     setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
     setTabList(newTabList);
-  }
+  };
 
   function renamefile(key) {
-    var newName = prompt("Enter new name");
+    var newName = prompt('Enter new name');
     if (newName != null) {
       data[key].name = newName;
       console.log(data[key].name);
@@ -50,34 +49,38 @@ function App() {
     }
   }
 
-
   const tabValid = data && activeFileId;
 
   return (
     <>
       <div className="tabList">
-        {
-          tabList.map(fileId => (
+        {tabList.map((fileId) => (
+          <div
+            className={
+              tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null
+            }
+            onClick={() => {
+              setActiveFileId(fileId);
+            }}
+          >
+            {tabValid ? data[fileId].name : ''}
             <div
-              className={tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null}
-              onClick={() => { setActiveFileId(fileId) }}
-            >
-              {tabValid ? data[fileId].name : ''}
-              <div className={activeFileId ? "bx bx-x tab-close" : ''} onClick={close(fileId)}></div>
-            </div>
-          ))
-        }
+              className={activeFileId ? 'bx bx-x tab-close' : ''}
+              onClick={close(fileId)}
+            ></div>
+          </div>
+        ))}
       </div>
       <div className="bottomBar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className={isFileMenuOpen ? "showMenu" : ""}>
+          <li className={isFileMenuOpen ? 'showMenu' : ''}>
             <div className="icon-link">
               <a href="#">
                 <i
                   id="folderIcon"
                   className={
-                    isFileMenuOpen ? "bx bx-folder-open" : "bx bx-folder"
+                    isFileMenuOpen ? 'bx bx-folder-open' : 'bx bx-folder'
                   }
                 ></i>
                 <span className="link_name">Files</span>
@@ -97,18 +100,20 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                  <li onClick={() => {
-                    setActiveFileId(key)
-                    if (!tabList.includes(key)) {
-                      setTabList([...tabList, key]);
-                    }
-                  }
-                  } onDoubleClick={() => {
-                    renamefile(key)
-                  }}>
-                    <a>{data[key].name}</a>
-                  </li>
-                ))
+                    <li
+                      onClick={() => {
+                        setActiveFileId(key);
+                        if (!tabList.includes(key)) {
+                          setTabList([...tabList, key]);
+                        }
+                      }}
+                      onDoubleClick={() => {
+                        renamefile(key);
+                      }}
+                    >
+                      <a>{data[key].name}</a>
+                    </li>
+                  ))
                 : null}
             </ul>
           </li>
@@ -128,17 +133,18 @@ function App() {
             </div>
           </li>
         </ul>
-      </div >
+      </div>
       {/* editor section */}
 
-
       {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
-     */}
-      {
-        (data && activeFileId) ? <CodeEditor className="Editor" shareDBDoc={shareDBDoc} activeFileId={activeFileId} /> : null
-      }
-
-
+       */}
+      {data && activeFileId ? (
+        <CodeEditor
+          className="Editor"
+          shareDBDoc={shareDBDoc}
+          activeFileId={activeFileId}
+        />
+      ) : null}
     </>
   );
 }

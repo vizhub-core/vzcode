@@ -10,7 +10,8 @@
 }
 
 :root {
-  --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace;
 }
 
 body {
@@ -296,7 +297,7 @@ body {
   font-size: 12px;
 }
 
-.sidebar.close~.home-section {
+.sidebar.close ~ .home-section {
   left: 78px;
   width: calc(100% - 78px);
 }
