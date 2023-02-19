@@ -32,43 +32,53 @@ ShareDB.types.register(json1.type);
 const app = express();
 const port = 3030;
 
+// Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB();
-const shareDBConnection = shareDBBackend.connect();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
-
 wss.on('connection', (ws) => {
   shareDBBackend.listen(new WebSocketJSONStream(ws));
 });
-
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
 
 // Serve static files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dir = path.join(__dirname, '/dist');
-
 app.use(express.static(dir));
 
+// Create the initial "document",
+// which is a representation of files on disk.
+const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1.type.uri);
 
-shareDBDoc.subscribe(() => {
-  let data = [];
-  shareDBDoc.on('op', (op) => {
-    console.log(initialDocument[op[0]].text);
-    console.log(op[2].es[0], op[2].es[1]);
-    if (op[2].es[1] == ['\n']) {
-      fs.writeFileSync(initialDocument[op[0]].name, data.join(''));
-    }
+// The time in milliseconds by which auto-saving is debounced.
+const autoSaveDebounceTimeMS = 800;
 
-    if (op[2].es[1] == undefined) {
-      data[0] = op[2].es[0];
-    } else {
-      data[op[2].es[0]] = op[2].es[1];
+// The state of the document when files were last auto-saved.
+let previousDocument = initialDocument;
+
+// Saves the files that changed.
+// TODO handle renaming files
+// TODO handle creating files
+// TODO handle deleting files
+const save = () => {
+  const currentDocument = shareDBDoc.data;
+  for (const key of Object.keys(currentDocument)) {
+    if (previousDocument[key].text !== currentDocument[key].text) {
+      const { name, text } = currentDocument[key];
+      fs.writeFileSync(name, text);
     }
+  }
+  previousDocument = currentDocument;
+};
+
+// Listen for when users modify files.
+let timeout;
+shareDBDoc.subscribe(() => {
+  shareDBDoc.on('op', (op) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(save, autoSaveDebounceTimeMS);
   });
 });
 
