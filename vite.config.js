@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [commonjs(), nodePolyfills(), nodeResolve(), react()],
   server: {
     proxy: {
-      '/': {
+      '/ws': {
         target: 'ws://localhost:3030',
         ws: true,
       },

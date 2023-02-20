@@ -59,16 +59,26 @@ const autoSaveDebounceTimeMS = 800;
 let previousDocument = initialDocument;
 
 // Saves the files that changed.
-// TODO handle renaming files
-// TODO handle creating files
-// TODO handle deleting files
 const save = () => {
   const currentDocument = shareDBDoc.data;
+
+  // Take a look at each file that we have currently.
   for (const key of Object.keys(currentDocument)) {
+    // Handle changing of text content.
     if (previousDocument[key].text !== currentDocument[key].text) {
       const { name, text } = currentDocument[key];
       fs.writeFileSync(name, text);
     }
+
+    // Handle renaming files.
+    const oldPath = previousDocument[key].name;
+    const newPath = currentDocument[key].name;
+    if (oldPath !== newPath) {
+      fs.renameSync(oldPath, newPath);
+    }
+
+    // TODO handle creating files
+    // TODO handle deleting files
   }
   previousDocument = currentDocument;
 };

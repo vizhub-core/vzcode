@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
 import { CodeEditor } from './CodeEditor';
+import { diff } from './diff';
 import './App.css';
 import './style.css';
 
 const { Connection } = ShareDBClient;
-const socket = new WebSocket('ws://' + window.location.host);
+const socket = new WebSocket('ws://' + window.location.host + '/ws');
 const connection = new Connection(socket);
 
 function App() {
@@ -18,18 +19,25 @@ function App() {
 
   const [tabList, setTabList] = useState([]);
 
+  // Set up the connection to ShareDB.
   useEffect(() => {
     const shareDBDoc = connection.get('documents', '1');
+
+    // Subscribe to the document to get updates.
     shareDBDoc.subscribe(() => {
-      console.log('Setting ShareDB Doc and data');
+      // Expose ShareDB doc to downstream logic.
       setShareDBDoc(shareDBDoc);
-      // TODO update every time the data changes
+
+      // Set initial data.
       setData(shareDBDoc.data);
+
+      // Listen for all changes and update `data`.
+      // This decouples rendering logic from ShareDB.
+      shareDBDoc.on('op', (op) => {
+        setData(shareDBDoc.data);
+      });
     });
   }, []);
-
-  console.log('Data', data);
-  console.log(shareDBDoc);
 
   const close = (fileIdToRemove) => (event) => {
     // Stop propagation so that the outer listener doesn't fire.
@@ -40,14 +48,23 @@ function App() {
     setTabList(newTabList);
   };
 
-  function renamefile(key) {
-    var newName = prompt('Enter new name');
-    if (newName != null) {
-      data[key].name = newName;
-      console.log(data[key].name);
-      shareDBDoc.submitOp([{ p: [key, 'name'], oi: newName }]);
-    }
-  }
+  const renameFile = useCallback(
+    (key) => {
+      const newName = prompt('Enter new name');
+      if (newName) {
+        const currentDocument = shareDBDoc.data;
+        const nextDocument = {
+          ...currentDocument,
+          [key]: {
+            ...currentDocument[key],
+            name: newName,
+          },
+        };
+        shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+      }
+    },
+    [shareDBDoc]
+  );
 
   const tabValid = data && activeFileId;
 
@@ -56,6 +73,7 @@ function App() {
       <div className="tabList">
         {tabList.map((fileId) => (
           <div
+            key={fileId}
             className={
               tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null
             }
@@ -101,6 +119,7 @@ function App() {
               {data
                 ? Object.keys(data).map((key) => (
                     <li
+                      key={key}
                       onClick={() => {
                         setActiveFileId(key);
                         if (!tabList.includes(key)) {
@@ -108,7 +127,7 @@ function App() {
                         }
                       }}
                       onDoubleClick={() => {
-                        renamefile(key);
+                        renameFile(key);
                       }}
                     >
                       <a>{data[key].name}</a>
@@ -134,10 +153,6 @@ function App() {
           </li>
         </ul>
       </div>
-      {/* editor section */}
-
-      {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
-       */}
       {data && activeFileId ? (
         <CodeEditor
           className="Editor"
