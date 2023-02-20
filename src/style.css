@@ -197,6 +197,9 @@ body {
   opacity: 0.6;
   transition: all 0.3s ease;
   cursor: pointer;
+
+  /* Disable text selection on double-click (rename interaction) */
+  user-select: none;
 }
 
 .sidebar .nav-links li .sub-menu a:hover {
