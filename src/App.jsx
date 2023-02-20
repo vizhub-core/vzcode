@@ -5,7 +5,7 @@ import './App.css';
 import './style.css';
 
 const { Connection } = ShareDBClient;
-const socket = new WebSocket('ws://' + window.location.host);
+const socket = new WebSocket('ws://' + window.location.host + '/ws');
 const connection = new Connection(socket);
 
 function App() {
@@ -28,9 +28,6 @@ function App() {
     });
   }, []);
 
-  console.log('Data', data);
-  console.log(shareDBDoc);
-
   const close = (fileIdToRemove) => (event) => {
     // Stop propagation so that the outer listener doesn't fire.
     event.stopPropagation();
@@ -41,10 +38,13 @@ function App() {
   };
 
   function renamefile(key) {
-    var newName = prompt('Enter new name');
-    if (newName != null) {
+    const newName = prompt('Enter new name');
+    const currentDocument = shareDBDoc.data;
+    //console.log(currentDocument);
+    //console.log(key);
+    //	  const nextDocument = {...currentDocument, currentDocument[}
+    if (newName) {
       data[key].name = newName;
-      console.log(data[key].name);
       shareDBDoc.submitOp([{ p: [key, 'name'], oi: newName }]);
     }
   }
@@ -134,10 +134,6 @@ function App() {
           </li>
         </ul>
       </div>
-      {/* editor section */}
-
-      {/* <textarea className="Editor" name="editor" id="edit" value={activeFileId && activeFileText ? data[activeFileId].text : ""}></textarea>
-       */}
       {data && activeFileId ? (
         <CodeEditor
           className="Editor"

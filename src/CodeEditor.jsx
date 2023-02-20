@@ -65,9 +65,6 @@ export const CodeEditor = ({ activeFileId, shareDBDoc }) => {
     ref.current.appendChild(editor.dom);
 
     return () => {
-      // if (debug) {
-      console.log('Switching to file ' + activeFileId);
-      // }
       ref.current.removeChild(editor.dom);
     };
   }, [shareDBDoc, activeFileId]);
