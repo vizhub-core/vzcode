@@ -73,7 +73,7 @@ body {
   display: flex;
   flex-direction: row;
   top: 0;
-  left: 200px;
+  margin-left: 200px;
   height: 35px;
   width: 100%;
   background: rgb(37, 37, 38);
@@ -300,7 +300,7 @@ body {
   font-size: 12px;
 }
 
-.sidebar.close ~ .home-section {
+.sidebar.close~.home-section {
   left: 78px;
   width: calc(100% - 78px);
 }

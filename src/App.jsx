@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
+import Draggable from 'react-draggable';
 import './App.css';
 import './style.css';
 
@@ -72,21 +73,23 @@ function App() {
     <>
       <div className="tabList">
         {tabList.map((fileId) => (
-          <div
-            key={fileId}
-            className={
-              tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null
-            }
-            onClick={() => {
-              setActiveFileId(fileId);
-            }}
-          >
-            {tabValid ? data[fileId].name : ''}
+          <Draggable axis='x' bounds='parent'>
             <div
-              className={activeFileId ? 'bx bx-x tab-close' : ''}
-              onClick={close(fileId)}
-            ></div>
-          </div>
+              key={fileId}
+              className={
+                tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null
+              }
+              onClick={() => {
+                setActiveFileId(fileId);
+              }}
+            >
+              {tabValid ? data[fileId].name : ''}
+              <div
+                className={activeFileId ? 'bx bx-x tab-close' : ''}
+                onClick={close(fileId)}
+              ></div>
+            </div>
+          </Draggable>
         ))}
       </div>
       <div className="bottomBar"></div>
@@ -118,21 +121,21 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li
-                      key={key}
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
-                      }}
-                      onDoubleClick={() => {
-                        renameFile(key);
-                      }}
-                    >
-                      <a>{data[key].name}</a>
-                    </li>
-                  ))
+                  <li
+                    key={key}
+                    onClick={() => {
+                      setActiveFileId(key);
+                      if (!tabList.includes(key)) {
+                        setTabList([...tabList, key]);
+                      }
+                    }}
+                    onDoubleClick={() => {
+                      renameFile(key);
+                    }}
+                  >
+                    <a>{data[key].name}</a>
+                  </li>
+                ))
                 : null}
             </ul>
           </li>

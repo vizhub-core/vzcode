@@ -54,6 +54,7 @@
     "ot-text-unicode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "sharedb": "^3.2.3",
     "sharedb-client-browser": "^2.2.49",
     "ws": "^8.12.1"
