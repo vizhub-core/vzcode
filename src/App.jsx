@@ -66,6 +66,18 @@ function App() {
     [shareDBDoc]
   );
 
+  const createFile = useCallback(
+    (key) => {
+      const newName = prompt('Enter new name');
+      if (newName) {
+        const currentDocument = shareDBDoc.data;
+        const nextDocument = { ...currentDocument, [key]: { name: newName, text: '' }, };
+        shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+      }
+    },
+    [shareDBDoc]
+  );
+
   const tabValid = data && activeFileId;
 
   return (
@@ -93,6 +105,14 @@ function App() {
       <div className="sidebar show">
         <ul className="nav-links">
           <li className={isFileMenuOpen ? 'showMenu' : ''}>
+            <div className="icon-link">
+              <i
+                className="bx bxs-file-plus" onClick={() => { createFile() }}
+              ></i>
+              <i
+                className="bx bx-folder-plus"
+              ></i>
+            </div>
             <div className="icon-link">
               <a href="#">
                 <i

@@ -30,7 +30,7 @@ files.forEach((file) => {
 ShareDB.types.register(json1.type);
 
 const app = express();
-const port = 3030;
+const port = 5173;
 
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB();
@@ -78,6 +78,10 @@ const save = () => {
     }
 
     // TODO handle creating files
+    if (previousDocument[key] !== currentDocument[key]) {
+      const { name, text } = currentDocument[key];
+      fs.writeFileSync(name, text);
+    }
     // TODO handle deleting files
   }
   previousDocument = currentDocument;
