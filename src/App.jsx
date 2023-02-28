@@ -50,7 +50,7 @@ function App() {
 
   const renameFile = useCallback(
     (key) => {
-      const newName = prompt('Enter new name');
+      const newName = prompt('Enter New Name:');
       if (newName) {
         const currentDocument = shareDBDoc.data;
         const nextDocument = {
@@ -66,17 +66,15 @@ function App() {
     [shareDBDoc]
   );
 
-  const createFile = useCallback(
-    (key) => {
-      const newName = prompt('Enter new name');
-      if (newName) {
-        const currentDocument = shareDBDoc.data;
-        const nextDocument = { ...currentDocument, [key]: { name: newName, text: '' }, };
-        shareDBDoc.submitOp(diff(currentDocument, nextDocument));
-      }
-    },
-    [shareDBDoc]
-  );
+  const createFile = () => {
+    const newName = prompt('Enter File Name:');
+    if (newName) {
+      let currentDocument = shareDBDoc.data;
+      const nextDocument = { ...currentDocument, [Math.floor(Math.random() * 10000000000)]: { text: '', name: newName }, };
+      console.log(nextDocument);
+      shareDBDoc.submitOp(diff(nextDocument, currentDocument));
+    }
+  }
 
   const tabValid = data && activeFileId;
 
@@ -138,21 +136,21 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li
-                      key={key}
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
-                      }}
-                      onDoubleClick={() => {
-                        renameFile(key);
-                      }}
-                    >
-                      <a>{data[key].name}</a>
-                    </li>
-                  ))
+                  <li
+                    key={key}
+                    onClick={() => {
+                      setActiveFileId(key);
+                      if (!tabList.includes(key)) {
+                        setTabList([...tabList, key]);
+                      }
+                    }}
+                    onDoubleClick={() => {
+                      renameFile(key);
+                    }}
+                  >
+                    <a>{data[key].name}</a>
+                  </li>
+                ))
                 : null}
             </ul>
           </li>

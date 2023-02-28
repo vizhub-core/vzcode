@@ -30,7 +30,7 @@ files.forEach((file) => {
 ShareDB.types.register(json1.type);
 
 const app = express();
-const port = 5173;
+const port = 3030;
 
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB();
