@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
-import './App.css';
 import './style.css';
 
 const { Connection } = ShareDBClient;
@@ -70,7 +69,7 @@ function App() {
 
   return (
     <>
-      <div className="tabList">
+      <div className="tab-list">
         {tabList.map((fileId) => (
           <div
             key={fileId}
@@ -89,10 +88,10 @@ function App() {
           </div>
         ))}
       </div>
-      <div className="bottomBar"></div>
+      <div className="bottom-bar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className={isFileMenuOpen ? 'showMenu' : ''}>
+          <li className={isFileMenuOpen ? 'show-menu' : ''}>
             <div className="icon-link">
               <a href="#">
                 <i
@@ -101,7 +100,7 @@ function App() {
                     isFileMenuOpen ? 'bx bx-folder-open' : 'bx bx-folder'
                   }
                 ></i>
-                <span className="link_name">Files</span>
+                <span className="link-name">Files</span>
               </a>
               <i
                 className="bx bxs-chevron-down arrow"
@@ -112,7 +111,7 @@ function App() {
             </div>
             <ul className="sub-menu">
               <li>
-                <a className="link_name" href="#">
+                <a className="link-name" href="#">
                   Files
                 </a>
               </li>
@@ -140,11 +139,11 @@ function App() {
             <div className="profile-details">
               <a href="#">
                 <i className="bx bx-cog"></i>
-                <span className="link_name">Setting</span>
+                <span className="link-name">Setting</span>
               </a>
               <ul className="sub-menu blank">
                 <li>
-                  <a className="link_name" href="#">
+                  <a className="link-name" href="#">
                     Setting
                   </a>
                 </li>
@@ -155,7 +154,7 @@ function App() {
       </div>
       {data && activeFileId ? (
         <CodeEditor
-          className="Editor"
+          className="editor"
           shareDBDoc={shareDBDoc}
           activeFileId={activeFileId}
         />

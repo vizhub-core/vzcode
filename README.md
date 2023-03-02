@@ -8,12 +8,12 @@ Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/pr
 
 This project is nascent but has enough features to actually use, a minimum viable product (MVP):
 
- * rudimentary real-time collaboration
- * sidebar listing files from the file system
- * tabs
- * syntax highlighting for several Web languages
- * ability to rename files
- * auto-save changes back to the file system
+- rudimentary real-time collaboration
+- sidebar listing files from the file system
+- tabs
+- syntax highlighting for several Web languages
+- ability to rename files
+- auto-save changes back to the file system
 
 ## Usage
 
