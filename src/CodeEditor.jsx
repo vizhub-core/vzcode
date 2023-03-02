@@ -69,5 +69,5 @@ export const CodeEditor = ({ activeFileId, shareDBDoc }) => {
     };
   }, [shareDBDoc, activeFileId]);
 
-  return <div className="Editor" ref={ref} />;
+  return <div className="editor" ref={ref} />;
 };
