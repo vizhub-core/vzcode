@@ -1,10 +1,37 @@
 # VZCode
 
-Multiplayer code editor system
+Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/projects/2/views/1)
 
 ![image](https://user-images.githubusercontent.com/68416/219923570-75ef9f86-4a8d-47e9-8504-1e6c0290dc73.png)
 
-[Kanban](https://github.com/orgs/vizhub-core/projects/2/views/1)
+## Features
+
+This project is nascent but has enough features to actually use, a minimum viable product (MVP):
+
+ * rudimentary real-time collaboration
+ * sidebar listing files from the file system
+ * tabs
+ * syntax highlighting for several Web languages
+ * ability to rename files
+ * auto-save changes back to the file system
+
+## Usage
+
+You can adopt this as an editor for your project by introducing a new npm script like this:
+
+```json
+{
+  "name": "example-project",
+  "scripts": {
+    "edit": "vzcode"
+  },
+  "dependencies": {
+    "vzcode": "^0.1.0"
+  }
+}
+```
+
+Then run `npm run edit` to start the editor.
 
 ## Project Description
 
