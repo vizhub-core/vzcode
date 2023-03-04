@@ -1,9 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+// Temporary for JSON1presence import
+import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(),viteCommonjs()],
   server: {
     proxy: {
       '/ws': {

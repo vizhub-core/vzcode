@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
-import * as json1 from './json1presence/dist/index.js';
+import json1 from './json1presence/dist/';
 import './style.css';
 
 console.log(json1)
