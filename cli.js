@@ -2,7 +2,7 @@
 import http from 'http';
 import express from 'express';
 import ShareDB from 'sharedb';
-import json1 from './src/json1Presence';
+import json1 from './src/json1presence/dist/index.js';
 import { WebSocketServer } from 'ws';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
