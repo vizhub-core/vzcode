@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-browser.js';
+import ShareDBClient from 'sharedb-client-browser/sharedb-client-json1-presence-browser.js';
+
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import './style.css';
