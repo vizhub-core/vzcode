@@ -1,4 +1,4 @@
-import json1 from 'ot-json1';
+import json1 from 'ot-json1-presence';
 import textUnicode from 'ot-text-unicode';
 import jsondiff from 'json0-ot-diff';
 import diffMatchPatch from 'diff-match-patch';
