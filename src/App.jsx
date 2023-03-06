@@ -1,11 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
-import OTJSON1Presence from 'sharedb-client-browser/dist/ot-json1-presence-umd.cjs';
-
-console.log(ShareDBClient);
-console.log(OTJSON1Presence);
-
-const { json1Presence } = OTJSON1Presence;
+import { json1Presence } from './ot';
 
 ShareDBClient.types.register(json1Presence.type);
 

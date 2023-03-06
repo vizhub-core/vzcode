@@ -9,7 +9,7 @@
     "dist/**"
   ],
   "scripts": {
-    "test": "cd test; node ../cli.js",
+    "test": "npm run build; cd test; node ../cli.js",
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
     "dev": "vite",
     "build": "vite build",
