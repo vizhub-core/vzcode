@@ -12,4 +12,12 @@ export default defineConfig({
       },
     },
   },
+
+  // Required to have Vite properly handle these CommonJS imports
+  optimizeDeps: {
+    include: [
+      'sharedb-client-browser/dist/sharedb-client-umd.cjs',
+      'sharedb-client-browser/dist/ot-json1-presence-umd.cjs',
+    ],
+  },
 });
