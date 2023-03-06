@@ -25,7 +25,7 @@ export const getOrCreateEditor = (fileId, shareDBDoc) => {
     json1Sync({
       shareDBDoc,
       path: [fileId, 'text'],
-      json1Presence,
+      json1: json1Presence,
       textUnicode,
     }),
     basicSetup,
