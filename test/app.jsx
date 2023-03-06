@@ -1,2 +1,2 @@
 const foo = <div></div>;
-const foosdfd2d = hi;
+const foo2 = hi;
