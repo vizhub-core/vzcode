@@ -28,6 +28,10 @@ export const getOrCreateEditor = (fileId, shareDBDoc) => {
       json1: json1Presence,
       textUnicode,
     }),
+    // TODO develop another plugin that deals with presence
+    // See
+    //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
+    //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
     basicSetup,
     oneDark,
   ];
