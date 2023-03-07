@@ -1,7 +1,6 @@
-import json1 from 'ot-json1';
-import textUnicode from 'ot-text-unicode';
 import jsondiff from 'json0-ot-diff';
 import diffMatchPatch from 'diff-match-patch';
+import { json1Presence, textUnicode } from './ot';
 
 export const diff = (a, b) =>
-  jsondiff(a, b, diffMatchPatch, json1, textUnicode);
+  jsondiff(a, b, diffMatchPatch, json1Presence, textUnicode);

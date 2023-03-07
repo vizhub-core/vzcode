@@ -9,7 +9,7 @@
     "dist/**"
   ],
   "scripts": {
-    "test": "cd test; node ../cli.js",
+    "test": "npm run build; cd test; node ../cli.js",
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
     "dev": "vite",
     "build": "vite build",
@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
-    "@codemirror/lang-css": "^6.0.2",
+    "@codemirror/lang-css": "^6.1.0",
     "@codemirror/lang-html": "^6.4.2",
     "@codemirror/lang-javascript": "^6.1.4",
     "@codemirror/lang-markdown": "^6.1.0",
@@ -46,16 +46,14 @@
     "@codemirror/theme-one-dark": "^6.1.1",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "codemirror": "^6.0.1",
-    "codemirror-ot": "^3.5.0",
+    "codemirror-ot": "^4.0.0",
     "diff-match-patch": "^1.0.5",
     "express": "^4.18.2",
     "json0-ot-diff": "^1.1.2",
-    "ot-json1": "^1.0.2",
-    "ot-text-unicode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sharedb": "^3.2.3",
-    "sharedb-client-browser": "^2.2.49",
+    "sharedb": "^3.3.0",
+    "sharedb-client-browser": "^4.2.0",
     "ws": "^8.12.1"
   },
   "devDependencies": {
@@ -63,6 +61,6 @@
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
     "prettier": "^2.8.4",
-    "vite": "^4.1.3"
+    "vite": "^4.1.4"
   }
 }

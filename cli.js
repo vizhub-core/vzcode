@@ -2,12 +2,12 @@
 import http from 'http';
 import express from 'express';
 import ShareDB from 'sharedb';
-import json1 from 'ot-json1';
 import { WebSocketServer } from 'ws';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { json1Presence } from './src/ot.js';
 
 const fullPath = process.cwd();
 
@@ -27,13 +27,18 @@ files.forEach((file) => {
   };
 });
 
-ShareDB.types.register(json1.type);
+ShareDB.types.register(json1Presence.type);
 
 const app = express();
 const port = 3030;
 
 // Use ShareDB over WebSocket
-const shareDBBackend = new ShareDB();
+const shareDBBackend = new ShareDB({
+  // Enable presence
+  // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
+  presence: true,
+  doNotForwardSendPresenceErrorsToClient: true,
+});
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 wss.on('connection', (ws) => {
@@ -50,7 +55,7 @@ app.use(express.static(dir));
 // which is a representation of files on disk.
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
-shareDBDoc.create(initialDocument, json1.type.uri);
+shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
