@@ -33,7 +33,12 @@ const app = express();
 const port = 3030;
 
 // Use ShareDB over WebSocket
-const shareDBBackend = new ShareDB();
+const shareDBBackend = new ShareDB({
+  // Enable presence
+  // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
+  presence: true,
+  doNotForwardSendPresenceErrorsToClient: true,
+});
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 wss.on('connection', (ws) => {
