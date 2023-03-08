@@ -51,10 +51,12 @@ export const getOrCreateEditor = ({ fileId, shareDBDoc, localPresence }) => {
         // Translate this into the form expected by json1Presence.
         const presence = { start: [...path, from], end: [...path, to] };
 
-        // TODO broadcast this!
-        console.log(presence);
+        // Broadcast presence to remote clients!
+        // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L71
+        localPresence.submit(presence, (error) => {
+          if (error) throw error;
+        });
       }
-      console.log(viewUpdate);
     }),
 
     // TODO develop another plugin that deals with presence
