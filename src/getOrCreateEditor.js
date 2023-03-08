@@ -7,6 +7,7 @@ import { css } from '@codemirror/lang-css';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from './ot';
+import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
@@ -35,33 +36,10 @@ export const getOrCreateEditor = ({ fileId, shareDBDoc, localPresence }) => {
       textUnicode,
     }),
 
-    // Deals with broadcasting changes in cursor location and selection.
-    // See https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/10
-    EditorView.updateListener.of((viewUpdate) => {
-      // If this update modified the cursor / selection,
-      // we broadcast the selection update via ShareDB presence.
-      if (viewUpdate.selectionSet) {
-        // Isolate the single selection to use for presence.
-        // Unfortunately JSON1 with presence does not yet
-        // support multiple selections.
-        // See https://github.com/ottypes/json1/pull/25#issuecomment-1459616521
-        const selection = viewUpdate.state.selection.ranges[0];
-        const { from, to } = selection;
-
-        // Translate this into the form expected by json1Presence.
-        const presence = { start: [...path, from], end: [...path, to] };
-
-        // Broadcast presence to remote clients!
-        // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L71
-        localPresence.submit(presence, (error) => {
-          if (error) throw error;
-        });
-      }
-    }),
+    json1PresenceBroadcast({ json1: json1Presence, path, localPresence }),
 
     // TODO develop another plugin that deals with presence
     // See
-    //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
     //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
     basicSetup,
     oneDark,
