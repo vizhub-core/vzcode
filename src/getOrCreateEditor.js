@@ -16,18 +16,47 @@ import { json1Presence, textUnicode } from './ot';
 const editorCache = new Map();
 
 // Gets or creates a CodeMirror editor for the given file id.
-export const getOrCreateEditor = (fileId, shareDBDoc) => {
+export const getOrCreateEditor = ({ fileId, shareDBDoc, localPresence }) => {
   const data = shareDBDoc.data;
 
   const fileExtension = data[fileId].name.split('.').pop();
 
+  // The path for this file in the ShareDB document.
+  const path = [fileId, 'text'];
+
   const extensions = [
+    // This plugin implements multiplayer editing,
+    // real-time synchronozation of changes across clients.
+    // Does not deal with showing others' cursors.
     json1Sync({
       shareDBDoc,
-      path: [fileId, 'text'],
+      path,
       json1: json1Presence,
       textUnicode,
     }),
+
+    // Deals with broadcasting changes in cursor location and selection.
+    // See https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/10
+    EditorView.updateListener.of((viewUpdate) => {
+      // If this update modified the cursor / selection,
+      // we broadcast the selection update via ShareDB presence.
+      if (viewUpdate.selectionSet) {
+        // Isolate the single selection to use for presence.
+        // Unfortunately JSON1 with presence does not yet
+        // support multiple selections.
+        // See https://github.com/ottypes/json1/pull/25#issuecomment-1459616521
+        const selection = viewUpdate.state.selection.ranges[0];
+        const { from, to } = selection;
+
+        // Translate this into the form expected by json1Presence.
+        const presence = { start: [...path, from], end: [...path, to] };
+
+        // TODO broadcast this!
+        console.log(presence);
+      }
+      console.log(viewUpdate);
+    }),
+
     // TODO develop another plugin that deals with presence
     // See
     //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9

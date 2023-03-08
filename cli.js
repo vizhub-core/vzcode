@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
+import { randomId } from './src/randomId.js';
 
 const fullPath = process.cwd();
 
@@ -25,7 +26,7 @@ const files = fs
 //    * name - the file name
 const initialDocument = {};
 files.forEach((file) => {
-  const id = Math.floor(Math.random() * 10000000000);
+  const id = randomId();
   initialDocument[id] = {
     text: fs.readFileSync(file, 'utf-8'),
     name: file,

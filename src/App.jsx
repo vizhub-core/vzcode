@@ -3,6 +3,7 @@ import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from './ot';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
+import { randomId } from './randomId';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
@@ -67,7 +68,7 @@ function App() {
 
       // Set up presence.
       // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
-      const presence = doc.connection.getDocPresence(collection, id);
+      const presence = shareDBDoc.connection.getDocPresence(collection, id);
 
       // Subscribe to receive remote presence updates.
       presence.subscribe(function (error) {
@@ -75,8 +76,7 @@ function App() {
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      const localPresence = presence.create(presenceId);
-      setLocalPresence(localPresence);
+      setLocalPresence(presence.create(randomId()));
     });
 
     // TODO unsubscribe from presence
@@ -204,6 +204,7 @@ function App() {
         <CodeEditor
           className="editor"
           shareDBDoc={shareDBDoc}
+          localPresence={localPresence}
           activeFileId={activeFileId}
         />
       ) : null}
