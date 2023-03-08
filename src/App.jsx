@@ -1,32 +1,56 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from './ot';
-
-ShareDBClient.types.register(json1Presence.type);
-
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import './style.css';
 
+// Register our custom JSON1 OT type that supports presence.
+// See https://github.com/vizhub-core/json1-presence
+ShareDBClient.types.register(json1Presence.type);
+
+// Establish the singleton ShareDB connection over WebSockets.
+// TODO consider using reconnecting WebSocket
 const { Connection } = ShareDBClient;
 const socket = new WebSocket('ws://' + window.location.host + '/ws');
 const connection = new Connection(socket);
 
 function App() {
-  const [data, setData] = useState(null);
-
+  // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] = useState(null);
 
+  // The ShareDB presence, for broadcasting our cursor position
+  // so other clients can see it.
+  // See https://share.github.io/sharedb/api/local-presence
+  const [localPresence, setLocalPresence] = useState(null);
+
+  // The `doc.data` part of the ShareDB document,
+  // updated on each change to decouple rendering from ShareDB.
+  const [data, setData] = useState(null);
+
+  // True if the file menu is open.
   const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
+
+  // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState(null);
 
+  // The ordered list of tabs.
   const [tabList, setTabList] = useState([]);
 
   // Set up the connection to ShareDB.
   useEffect(() => {
-    const shareDBDoc = connection.get('documents', '1');
+    // Since there is only ever a single document,
+    // these things are pretty arbitrary.
+    //  * `collection` - the ShareDB collection to use
+    //  * `id` - the id of the ShareDB document to use
+    const collection = 'documents';
+    const id = '1';
+
+    // Initialize the ShareDB document.
+    const shareDBDoc = connection.get(collection, id);
 
     // Subscribe to the document to get updates.
+    // This callback gets called once only.
     shareDBDoc.subscribe(() => {
       // Expose ShareDB doc to downstream logic.
       setShareDBDoc(shareDBDoc);
@@ -36,12 +60,30 @@ function App() {
 
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
+      // This callback gets called on each change.
       shareDBDoc.on('op', (op) => {
         setData(shareDBDoc.data);
       });
+
+      // Set up presence.
+      // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
+      const presence = doc.connection.getDocPresence(collection, id);
+
+      // Subscribe to receive remote presence updates.
+      presence.subscribe(function (error) {
+        if (error) throw error;
+      });
+
+      // Set up our local presence for broadcasting this client's presence.
+      const localPresence = presence.create(presenceId);
+      setLocalPresence(localPresence);
     });
+
+    // TODO unsubscribe from presence
+    // TODO unsubscribe from doc
   }, []);
 
+  // Called when a tab is closed.
   const close = (fileIdToRemove) => (event) => {
     // Stop propagation so that the outer listener doesn't fire.
     event.stopPropagation();
@@ -51,6 +93,7 @@ function App() {
     setTabList(newTabList);
   };
 
+  // Called when a file in the sidebar is double-clicked.
   const renameFile = useCallback(
     (key) => {
       const newName = prompt('Enter new name');
@@ -69,6 +112,7 @@ function App() {
     [shareDBDoc]
   );
 
+  // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
 
   return (

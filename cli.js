@@ -18,6 +18,11 @@ const files = fs
   .filter((dirent) => dirent.isFile())
   .map((dirent) => dirent.name);
 
+// Initialize the document using our data structure for representing files.
+//  * Keys are file ids, which are random numbers.
+//  * Values are objects with properties:
+//    * text - the text content of the file
+//    * name - the file name
 const initialDocument = {};
 files.forEach((file) => {
   const id = Math.floor(Math.random() * 10000000000);
