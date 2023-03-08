@@ -2,8 +2,6 @@ import { useRef, useLayoutEffect } from 'react';
 import { getOrCreateEditor } from './getOrCreateEditor';
 
 export const CodeEditor = ({ activeFileId, shareDBDoc, localPresence }) => {
-  console.log('shareDBDoc');
-  console.log(shareDBDoc);
   const ref = useRef();
 
   // useEffect was buggy in that sometimes ref.current was undefined.
