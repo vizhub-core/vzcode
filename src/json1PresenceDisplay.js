@@ -18,32 +18,29 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
   ViewPlugin.fromClass(
     class {
       constructor(view) {
+        // Initialize decorations to empty array so CodeMirror doesn't crash.
         this.decorations = RangeSet.of([]);
 
-        this.presenceState = {};
+        // Mutable state local to this closure representing aggregated presence.
+        //  * Keys are presence ids
+        //  * Values are presence objects as defined by ot-json1-presence
+        const presenceState = {};
 
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
-          if (pathMatches(path, presence)) {
-            if (presence) {
-              this.presenceState[id] = presence;
-            } else {
-              delete this.presenceState[id];
-            }
-            view.dispatch({ annotations: [presenceAnnotation.of(true)] });
+          // If presence === null, the user has disconnected / exited
+          // We also check if the presence is for the current file or not.
+          if (presence && pathMatches(path, presence)) {
+            presenceState[id] = presence;
+          } else {
+            delete presenceState[id];
           }
-        });
-      }
 
-      update(update) {
-        // Figure out if this update is from a change in presence.
-        const isPresenceUpdate = update.transactions.some((tr) =>
-          tr.annotation(presenceAnnotation)
-        );
-        if (isPresenceUpdate) {
+          // Update decorations to reflect new presence state.
+          // TODO consider mutating this rather than recomputing it on each change.
           this.decorations = Decoration.set(
-            Object.keys(this.presenceState).map((id) => {
-              const presence = this.presenceState[id];
+            Object.keys(presenceState).map((id) => {
+              const presence = presenceState[id];
               const { start, end } = presence;
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
@@ -59,9 +56,20 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
                 }),
               };
             }),
+            // Without this argument, we get the following error:
+            // Uncaught Error: Ranges must be added sorted by `from` position and `startSide`
             true
           );
-        }
+
+          // Somehow this triggers re-rendering of the Decorations.
+          // Not sure if this is the correct usage of the API.
+          // Inspired by https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
+          // Set timeout so that the current CodeMirror update finishes
+          // before the next ones that render presence begin.
+          setTimeout(() => {
+            view.dispatch({ annotations: [presenceAnnotation.of(true)] });
+          }, 0);
+        });
       }
     },
     {
