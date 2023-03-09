@@ -24,12 +24,14 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
 
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
-          if (presence) {
-            this.presenceState[id] = presence;
-          } else {
-            delete this.presenceState[id];
+          if (pathMatches(path, presence)) {
+            if (presence) {
+              this.presenceState[id] = presence;
+            } else {
+              delete this.presenceState[id];
+            }
+            view.dispatch({ annotations: [presenceAnnotation.of(true)] });
           }
-          view.dispatch({ annotations: [presenceAnnotation.of(true)] });
         });
       }
 
@@ -54,9 +56,9 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
                   widget: new PresenceWidget(id),
                 }),
               };
-            })
+            }),
+            true
           );
-          console.log(this.decorations);
         }
       }
     },
@@ -68,6 +70,20 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
 ];
 
 const presenceAnnotation = Annotation.define();
+
+// Checks that the path of this file
+// matches the path of the presence.
+//  * If true is returned, the presence is in this file.
+//  * If false is returned, the presence is in another file.
+// Assumption: start and end path are the same except the cursor position.
+const pathMatches = (path, presence) => {
+  for (let i = 0; i < path.length; i++) {
+    if (path[i] !== presence.start[i]) {
+      return false;
+    }
+  }
+  return true;
+};
 
 // Displays a single remote presence cursor.
 class PresenceWidget extends WidgetType {
