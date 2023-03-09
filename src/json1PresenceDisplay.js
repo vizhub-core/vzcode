@@ -21,6 +21,8 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
         this.decorations = RangeSet.of([]);
 
         this.presenceState = {};
+
+        // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
           if (presence) {
             this.presenceState[id] = presence;
@@ -38,16 +40,21 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
         );
         if (isPresenceUpdate) {
           this.decorations = Decoration.set(
-            Object.keys(this.presenceState).map((id) => ({
-              from: 0,
-              to: 0,
-              value: Decoration.widget({
-                side: -1,
-                block: false,
-                widget: new PresenceWidget(id),
-              }),
-            })),
-            true
+            Object.keys(this.presenceState).map((id) => {
+              const presence = this.presenceState[id];
+              const { start, end } = presence;
+              const from = start[start.length - 1];
+              const to = end[end.length - 1];
+              return {
+                from,
+                to,
+                value: Decoration.widget({
+                  side: -1,
+                  block: false,
+                  widget: new PresenceWidget(id),
+                }),
+              };
+            })
           );
           console.log(this.decorations);
         }
