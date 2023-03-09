@@ -1,7 +1,12 @@
 import { useRef, useLayoutEffect } from 'react';
 import { getOrCreateEditor } from './getOrCreateEditor';
 
-export const CodeEditor = ({ activeFileId, shareDBDoc, localPresence }) => {
+export const CodeEditor = ({
+  activeFileId,
+  shareDBDoc,
+  localPresence,
+  docPresence,
+}) => {
   const ref = useRef();
 
   // useEffect was buggy in that sometimes ref.current was undefined.
@@ -11,6 +16,7 @@ export const CodeEditor = ({ activeFileId, shareDBDoc, localPresence }) => {
       fileId: activeFileId,
       shareDBDoc,
       localPresence,
+      docPresence,
     });
     ref.current.appendChild(editor.dom);
 

@@ -8,6 +8,7 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from './ot';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
+import { json1PresenceDisplay } from './json1PresenceDisplay';
 
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
@@ -17,7 +18,12 @@ import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 const editorCache = new Map();
 
 // Gets or creates a CodeMirror editor for the given file id.
-export const getOrCreateEditor = ({ fileId, shareDBDoc, localPresence }) => {
+export const getOrCreateEditor = ({
+  fileId,
+  shareDBDoc,
+  localPresence,
+  docPresence,
+}) => {
   const data = shareDBDoc.data;
 
   const fileExtension = data[fileId].name.split('.').pop();
@@ -36,11 +42,12 @@ export const getOrCreateEditor = ({ fileId, shareDBDoc, localPresence }) => {
       textUnicode,
     }),
 
-    json1PresenceBroadcast({ json1: json1Presence, path, localPresence }),
+    // Deals with broadcasting changes in cursor location and selection.
+    json1PresenceBroadcast({ path, localPresence }),
 
-    // TODO develop another plugin that deals with presence
-    // See
-    //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
+    // Deals with receiving the broadcas from other clients and displaying them.
+    json1PresenceDisplay({ path, docPresence }),
+
     basicSetup,
     oneDark,
   ];

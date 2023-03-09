@@ -20,10 +20,14 @@ function App() {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] = useState(null);
 
-  // The ShareDB presence, for broadcasting our cursor position
+  // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
   // See https://share.github.io/sharedb/api/local-presence
   const [localPresence, setLocalPresence] = useState(null);
+
+  // The document-level presence object, which emits
+  // changes in remote presence.
+  const [docPresence, setDocPresence] = useState(null);
 
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
@@ -68,15 +72,18 @@ function App() {
 
       // Set up presence.
       // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
-      const presence = shareDBDoc.connection.getDocPresence(collection, id);
+      const docPresence = shareDBDoc.connection.getDocPresence(collection, id);
 
       // Subscribe to receive remote presence updates.
-      presence.subscribe(function (error) {
+      docPresence.subscribe(function (error) {
         if (error) throw error;
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      setLocalPresence(presence.create(randomId()));
+      setLocalPresence(docPresence.create(randomId()));
+
+      // Store docPresence so child components can listen for changes.
+      setDocPresence(docPresence);
     });
 
     // TODO unsubscribe from presence
@@ -205,6 +212,7 @@ function App() {
           className="editor"
           shareDBDoc={shareDBDoc}
           localPresence={localPresence}
+          docPresence={docPresence}
           activeFileId={activeFileId}
         />
       ) : null}
