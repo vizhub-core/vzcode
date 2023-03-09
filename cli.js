@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
+import { randomId } from './src/randomId.js';
 
 const fullPath = process.cwd();
 
@@ -18,9 +19,14 @@ const files = fs
   .filter((dirent) => dirent.isFile())
   .map((dirent) => dirent.name);
 
+// Initialize the document using our data structure for representing files.
+//  * Keys are file ids, which are random numbers.
+//  * Values are objects with properties:
+//    * text - the text content of the file
+//    * name - the file name
 const initialDocument = {};
 files.forEach((file) => {
-  const id = Math.floor(Math.random() * 10000000000);
+  const id = randomId();
   initialDocument[id] = {
     text: fs.readFileSync(file, 'utf-8'),
     name: file,

@@ -7,6 +7,8 @@ import { css } from '@codemirror/lang-css';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from './ot';
+import { json1PresenceBroadcast } from './json1PresenceBroadcast';
+import { json1PresenceDisplay } from './json1PresenceDisplay';
 
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
@@ -16,22 +18,36 @@ import { json1Presence, textUnicode } from './ot';
 const editorCache = new Map();
 
 // Gets or creates a CodeMirror editor for the given file id.
-export const getOrCreateEditor = (fileId, shareDBDoc) => {
+export const getOrCreateEditor = ({
+  fileId,
+  shareDBDoc,
+  localPresence,
+  docPresence,
+}) => {
   const data = shareDBDoc.data;
 
   const fileExtension = data[fileId].name.split('.').pop();
 
+  // The path for this file in the ShareDB document.
+  const path = [fileId, 'text'];
+
   const extensions = [
+    // This plugin implements multiplayer editing,
+    // real-time synchronozation of changes across clients.
+    // Does not deal with showing others' cursors.
     json1Sync({
       shareDBDoc,
-      path: [fileId, 'text'],
+      path,
       json1: json1Presence,
       textUnicode,
     }),
-    // TODO develop another plugin that deals with presence
-    // See
-    //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
-    //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
+
+    // Deals with broadcasting changes in cursor location and selection.
+    json1PresenceBroadcast({ path, localPresence }),
+
+    // Deals with receiving the broadcas from other clients and displaying them.
+    json1PresenceDisplay({ path, docPresence }),
+
     basicSetup,
     oneDark,
   ];
