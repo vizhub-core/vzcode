@@ -46,10 +46,12 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
               const presence = this.presenceState[id];
               const { start, end } = presence;
               const from = start[start.length - 1];
-              const to = end[end.length - 1];
+              // TODO support selection ranges (first attempt introduced layout errors)
+              //const to = end[end.length - 1];
               return {
                 from,
-                to,
+                //to,
+                to: from, // Temporary meaure
                 value: Decoration.widget({
                   side: -1,
                   block: false,
@@ -100,6 +102,7 @@ class PresenceWidget extends WidgetType {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
+    span.appendChild(document.createElement('div'));
     return span;
   }
 
@@ -111,11 +114,14 @@ class PresenceWidget extends WidgetType {
 const presenceTheme = EditorView.baseTheme({
   '.cm-json1-presence': {
     position: 'relative',
-    borderLeft: '1px solid black',
-    borderRight: '1px solid black',
-    marginLeft: '-1px',
-    marginRight: '-1px',
-    boxSizing: 'border-box',
-    display: 'inline',
+  },
+  '.cm-json1-presence > div': {
+    position: 'absolute',
+    top: '0',
+    bottom: '0',
+    left: '0',
+    right: '0',
+    borderLeft: '1px solid yellow',
+    //borderRight: '1px solid black',
   },
 });
