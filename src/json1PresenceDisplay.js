@@ -7,7 +7,8 @@ import {
 import { Annotation, RangeSet } from '@codemirror/state';
 import { randomId } from './randomId';
 
-// Deals with receiving the broadcas from other clients and displaying them.
+// Deals with receiving the broadcasted presence cursor locations
+// from other clients and displaying them.
 //
 // Inspired by
 //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
@@ -110,6 +111,13 @@ class PresenceWidget extends WidgetType {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
+
+    // This child is what actually displays the presence.
+    // Nested so that the layout is not impacted.
+    //
+    // The initial attempt using the top level span to render
+    // the cursor caused a wonky layout with adjacent characters shifting
+    // left and right by 1 pixel or so.
     span.appendChild(document.createElement('div'));
     return span;
   }
