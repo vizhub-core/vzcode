@@ -1,4 +1,9 @@
-import { ViewPlugin, EditorView, WidgetType } from '@codemirror/view';
+import {
+  ViewPlugin,
+  EditorView,
+  WidgetType,
+  Decoration,
+} from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import { randomId } from './randomId';
 
@@ -8,33 +13,44 @@ import { randomId } from './randomId';
 //  * https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
 //  * https://codemirror.net/examples/decoration/
 //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js
+//  * https://share.github.io/sharedb/presence
 export const json1PresenceDisplay = ({ path, docPresence }) => [
   ViewPlugin.fromClass(
     class {
       constructor(view) {
-        //this.decorations = [];
+        this.decorations = RangeSet.of([]);
+
+        this.presenceState = {};
         docPresence.on('receive', (id, presence) => {
-          //console.log('received presence');
-          //console.log(JSON.stringify({ id, presence }));
+          if (presence) {
+            this.presenceState[id] = presence;
+          } else {
+            delete this.presenceState[id];
+          }
           view.dispatch({ annotations: [presenceAnnotation.of(true)] });
         });
-
-        this.decorations = RangeSet.of([]);
       }
 
       update(update) {
         // Figure out if this update is from a change in presence.
-        //let isPresenceUpdate = false;
-        //for (const tr of update.transactions) {
-        //  if (tr.annotation(presenceAnnotation)) {
-        //    isPresenceUpdate = true;
-        //    break;
-        //  }
-        //}
         const isPresenceUpdate = update.transactions.some((tr) =>
           tr.annotation(presenceAnnotation)
         );
-        console.log(isPresenceUpdate);
+        if (isPresenceUpdate) {
+          this.decorations = Decoration.set(
+            Object.keys(this.presenceState).map((id) => ({
+              from: 0,
+              to: 0,
+              value: Decoration.widget({
+                side: -1,
+                block: false,
+                widget: new PresenceWidget(id),
+              }),
+            })),
+            true
+          );
+          console.log(this.decorations);
+        }
       }
     },
     {
@@ -48,10 +64,9 @@ const presenceAnnotation = Annotation.define();
 
 // Displays a single remote presence cursor.
 class PresenceWidget extends WidgetType {
-  constructor() {
+  constructor(id) {
     super();
-    // TODO use the actual user presence ids
-    this.id = randomId();
+    this.id = id;
   }
 
   eq(other) {
