@@ -173,11 +173,17 @@ function App() {
         <ul className="nav-links">
           <li className='show-menu'>
             <ul className="sub-menu">
-              <li className='title_New_Files'>
-                <a className="link-name" href="#">
-                  Files
-                </a>
-                <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={() => { createFile() }} ></i>
+              <li className='files'>
+                <div className='full-Box'>
+                  <div>
+                    <a className='link-name' href="#">
+                      Files
+                    </a>
+                  </div>
+                  <div>
+                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={() => { createFile() }} ></i>
+                  </div>
+                </div>
               </li>
               {data
                 ? Object.keys(data).map((key) => (

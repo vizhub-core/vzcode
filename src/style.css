@@ -105,9 +105,9 @@ body {
 
 .link-name {
   margin-top: 30px;
-  margin-left: 17px;
+  margin-left: 10px;
   color: rgb(154, 160, 172);
-  font-size: 10px;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -157,14 +157,9 @@ body {
   margin-bottom: 5px;
 }
 
-.title_New_Files {
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
 
 .newBTN {
-  margin-left: 50px;
+  justify-content: right;
   margin-right: 10px;
+  cursor: pointer;
 }

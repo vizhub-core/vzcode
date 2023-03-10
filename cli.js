@@ -97,14 +97,7 @@ const save = () => {
     const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
     removedKeys.forEach((key) => {
       fs.unlinkSync(fullPath + '/' + previousDocument[key].name, (err) => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-            console.log("Does not exist");
-            return;
-          }
-
-          throw err;
-        }
+        process.on(err, () => { });
       });
     });
 
