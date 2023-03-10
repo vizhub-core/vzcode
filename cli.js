@@ -76,9 +76,11 @@ const save = () => {
   // Take a look at each file that we have currently.
   for (const key of Object.keys(currentDocument)) {
     // Handle changing of text content.
-    if (previousDocument[key].text !== currentDocument[key].text) {
-      const { name, text } = currentDocument[key];
-      fs.writeFileSync(name, text);
+    if (previousDocument[key] && currentDocument[key]) {
+      if (previousDocument[key].text !== currentDocument[key].text) {
+        const { name, text } = currentDocument[key];
+        fs.writeFileSync(name, text);
+      }
     }
 
     // Handle renaming files.
@@ -90,6 +92,38 @@ const save = () => {
 
     // TODO handle creating files
     // TODO handle deleting files
+    const oldKeys = Object.keys(previousDocument);
+    const newKeys = Object.keys(currentDocument);
+    const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
+    removedKeys.forEach((key) => {
+      fs.unlinkSync(fullPath + '/' + previousDocument[key].name, (err) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            console.log("Does not exist");
+            return;
+          }
+
+          throw err;
+        }
+      });
+    });
+
+    const addedKeys = newKeys.filter((key) => !oldKeys.includes(key));
+    console.log(addedKeys);
+    addedKeys.forEach((key) => {
+      let { name, text } = currentDocument[key];
+      if (!text) {
+        text = "";
+      }
+      fs.writeFileSync(name, text, (err) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            console.log("Does not exist");
+            return;
+          }
+        }
+      });
+    });
   }
   previousDocument = currentDocument;
 };

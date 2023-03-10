@@ -119,6 +119,30 @@ function App() {
     [shareDBDoc]
   );
 
+  const deleteFile = useCallback(
+    (key) => {
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = { ...currentDocument };
+      delete nextDocument[key];
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+    },
+    [shareDBDoc]
+  );
+
+  const createFile = useCallback(() => {
+    const newName = prompt('Enter new file name');
+    if (!newName) return;
+    const currentDocument = shareDBDoc.data;
+    const nextDocument = {
+      ...currentDocument,
+      [randomId()]: {
+        name: newName,
+        content: '',
+      },
+    };
+    shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+  }, [shareDBDoc]);
+
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
 
@@ -149,10 +173,11 @@ function App() {
         <ul className="nav-links">
           <li className='show-menu'>
             <ul className="sub-menu">
-              <li>
+              <li className='title_New_Files'>
                 <a className="link-name" href="#">
                   Files
                 </a>
+                <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={() => { createFile() }} ></i>
               </li>
               {data
                 ? Object.keys(data).map((key) => (
@@ -179,7 +204,7 @@ function App() {
                         <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => {
                           renameFile(key);
                         }}></i>
-                        <i className='bx bx-trash' style={{ color: '#eb336c' }}></i>
+                        <i className='bx bx-trash' style={{ color: '#eb336c' }} onClick={() => { deleteFile(key) }}></i>
                       </div>
                     </div>
                   </li>

@@ -156,3 +156,15 @@ body {
   margin-left: 30px;
   margin-bottom: 5px;
 }
+
+.title_New_Files {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.newBTN {
+  margin-left: 50px;
+  margin-right: 10px;
+}
