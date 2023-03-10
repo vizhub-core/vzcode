@@ -122,6 +122,7 @@ function App() {
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
 
+  const [utils, setUtils] = useState([[activeFileId]][false]);
   return (
     <>
       <div className="tab-list">
@@ -146,24 +147,7 @@ function App() {
       <div className="bottom-bar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className={isFileMenuOpen ? 'show-menu' : ''}>
-            <div className="icon-link">
-              <a href="#">
-                <i
-                  id="folderIcon"
-                  className={
-                    isFileMenuOpen ? 'bx bx-folder-open' : 'bx bx-folder'
-                  }
-                ></i>
-                <span className="link-name">Files</span>
-              </a>
-              <i
-                className="bx bxs-chevron-down arrow"
-                onClick={() => {
-                  setIsFileMenuOpen(!isFileMenuOpen);
-                }}
-              ></i>
-            </div>
+          <li className='show-menu'>
             <ul className="sub-menu">
               <li>
                 <a className="link-name" href="#">
@@ -172,37 +156,42 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li
-                      key={key}
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
-                      }}
-                      onDoubleClick={() => {
-                        renameFile(key);
-                      }}
-                    >
-                      <a>{data[key].name}</a>
-                    </li>
-                  ))
+                  <li className="file"
+                    key={key}
+                    onMouseEnter={() => {
+                      setUtils(true);
+                    }}
+                    onMouseLeave={() => {
+                      setUtils(false);
+                    }}
+
+                  >
+                    <div className='full-Box'>
+                      <div>
+                        <a className='name' onClick={() => {
+                          setActiveFileId(key);
+                          if (!tabList.includes(key)) {
+                            setTabList([...tabList, key]);
+                          }
+                        }}>{data[key].name}</a>
+                      </div>
+                      <div className={utils ? 'utils' : 'noUtils'}>
+                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => {
+                          renameFile(key);
+                        }}></i>
+                        <i className='bx bx-trash' style={{ color: '#eb336c' }}></i>
+                      </div>
+                    </div>
+                  </li>
+                ))
                 : null}
             </ul>
           </li>
           <li>
-            <div className="profile-details">
+            <div className="settings">
               <a href="#">
-                <i className="bx bx-cog"></i>
-                <span className="link-name">Setting</span>
+                <span className='settings'>Settings</span>
               </a>
-              <ul className="sub-menu blank">
-                <li>
-                  <a className="link-name" href="#">
-                    Setting
-                  </a>
-                </li>
-              </ul>
             </div>
           </li>
         </ul>
