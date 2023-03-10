@@ -4,6 +4,8 @@ import { json1Presence } from './ot';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { randomId } from './randomId';
+import FileItem from './fileItem';
+import Settings from './settings';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
@@ -129,6 +131,7 @@ function App() {
     [shareDBDoc]
   );
 
+
   const createFile = useCallback(() => {
     const newName = prompt('Enter new file name');
     if (!newName) return;
@@ -145,10 +148,14 @@ function App() {
 
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
+  const [utils, setUtils] = useState(false);
+  const [settings, setSettings] = useState(false);
 
-  const [utils, setUtils] = useState([[activeFileId]][false]);
   return (
     <>
+      <div className='settingsPosition'>
+        {settings ? <Settings setSettings={setSettings} /> : null}
+      </div>
       <div className="tab-list">
         {tabList.map((fileId) => (
           <div
@@ -187,32 +194,28 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                  <li className="file"
-                    key={key}
-                    onMouseEnter={() => {
-                      setUtils(true);
+                  < li className="file" >
+                    <div className='full-Box' onClick={() => {
+                      setActiveFileId(key);
+                      if (!tabList.includes(key)) {
+                        setTabList([...tabList, key]);
+                      }
                     }}
-                    onMouseLeave={() => {
-                      setUtils(false);
-                    }}
-
-                  >
-                    <div className='full-Box'>
+                      onMouseEnter={() => {
+                        setUtils(true);
+                      }}
+                      onMouseLeave={() => {
+                        setUtils(false);
+                      }}>
                       <div>
-                        <a className='name' onClick={() => {
-                          setActiveFileId(key);
-                          if (!tabList.includes(key)) {
-                            setTabList([...tabList, key]);
-                          }
-                        }}>{data[key].name}</a>
+                        <a className='name'>{data[key].name}</a>
                       </div>
                       <div className={utils ? 'utils' : 'noUtils'}>
-                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => {
-                          renameFile(key);
-                        }}></i>
+                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => { renameFile(key) }}></i>
                         <i className='bx bx-trash' style={{ color: '#eb336c' }} onClick={() => { deleteFile(key) }}></i>
                       </div>
                     </div>
+
                   </li>
                 ))
                 : null}
@@ -221,12 +224,12 @@ function App() {
           <li>
             <div className="settings">
               <a href="#">
-                <span className='settings'>Settings</span>
+                <span className='settings' onClick={() => setSettings(!settings)}>Settings</span>
               </a>
             </div>
           </li>
         </ul>
-      </div>
+      </div >
       {data && activeFileId ? (
         <CodeEditor
           className="editor"
@@ -235,7 +238,8 @@ function App() {
           docPresence={docPresence}
           activeFileId={activeFileId}
         />
-      ) : null}
+      ) : null
+      }
     </>
   );
 }

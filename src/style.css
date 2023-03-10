@@ -163,3 +163,20 @@ body {
   margin-right: 10px;
   cursor: pointer;
 }
+
+.settingsPage {
+  width: 30%;
+  height: 30%;
+  background-color: rgb(165, 165, 165);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.settingsPosition {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
