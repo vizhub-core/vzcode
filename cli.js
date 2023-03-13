@@ -97,7 +97,7 @@ const save = () => {
     const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
     removedKeys.forEach((key) => {
       fs.unlinkSync(fullPath + '/' + previousDocument[key].name, (err) => {
-        process.on(err, () => { });
+        if (err) throw err;
       });
     });
 
