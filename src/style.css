@@ -175,7 +175,7 @@ body {
   flex-direction: column;
 }
 
-.settingsPosition {
+.settings-position {
   display: flex;
   align-items: center;
   justify-content: center;
