@@ -102,7 +102,6 @@ const save = () => {
     });
 
     const addedKeys = newKeys.filter((key) => !oldKeys.includes(key));
-    console.log(addedKeys);
     addedKeys.forEach((key) => {
       const { name, text } = currentDocument[key];
       if (!text) {
