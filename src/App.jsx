@@ -93,14 +93,41 @@ function App() {
   }, []);
 
   // Called when a tab is closed.
-  const close = (fileIdToRemove) => (event) => {
-    // Stop propagation so that the outer listener doesn't fire.
-    event.stopPropagation();
-    const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
-    const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
-    setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
-    setTabList(newTabList);
-  };
+  const closeTab = useCallback(
+    (fileIdToRemove) => {
+      const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
+
+      // Support calling `closeTab` on a fileId that is not open,
+      // such as when a file is deleted..
+      if (i !== -1) {
+        // Remove the tab from the tab list.
+        const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
+        setTabList(newTabList);
+
+        // If we are closing the active file,
+        if (activeFileId === fileIdToRemove) {
+          // set the new active file to the next tab over,
+          if (newTabList.length > 0) {
+            setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
+          } else {
+            // or clear out the active file
+            // if we've closed the last tab.
+            setActiveFileId(null);
+          }
+        }
+      }
+    },
+    [tabList, activeFileId]
+  );
+
+  const handleCloseTabClick = useCallback(
+    (fileIdToRemove) => (event) => {
+      // Stop propagation so that the outer listener doesn't fire.
+      event.stopPropagation();
+      closeTab(fileIdToRemove);
+    },
+    [closeTab]
+  );
 
   // Called when a file in the sidebar is double-clicked.
   const renameFile = useCallback(
@@ -123,37 +150,49 @@ function App() {
 
   const deleteFile = useCallback(
     (key) => {
+      // Close the tab in case it's open.
+      // TODO consistently use either "key" or "fileId" naming
+      closeTab(key);
+
       const currentDocument = shareDBDoc.data;
       const nextDocument = { ...currentDocument };
       delete nextDocument[key];
       shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
-    [shareDBDoc]
+    [shareDBDoc, closeTab]
   );
 
+  // TODO prompt the user "Are you sure?"
+  const handleDeleteFileClick = useCallback(
+    (fileId) => (event) => {
+      // Stop propagation so that the outer listener doesn't fire,
+      // which would try to open this file in a tab.
+      event.stopPropagation();
+      deleteFile(fileId);
+    },
+    [deleteFile]
+  );
 
   const createFile = useCallback(() => {
-    const newName = prompt('Enter new file name');
-    if (!newName) return;
+    const name = prompt('Enter new file name');
+    if (!name) return;
     const currentDocument = shareDBDoc.data;
     const nextDocument = {
       ...currentDocument,
-      [randomId()]: {
-        name: newName,
-        content: '',
-      },
+      [randomId()]: { name, text: '' },
     };
     shareDBDoc.submitOp(diff(currentDocument, nextDocument));
   }, [shareDBDoc]);
 
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
+
   const [utils, setUtils] = useState(false);
   const [settings, setSettings] = useState(false);
 
   return (
     <>
-      <div className='settings-position'>
+      <div className="settings-position">
         {settings ? <Settings setSettings={setSettings} /> : null}
       </div>
       <div className="tab-list">
@@ -170,7 +209,7 @@ function App() {
             {tabValid ? data[fileId].name : ''}
             <div
               className={activeFileId ? 'bx bx-x tab-close' : ''}
-              onClick={close(fileId)}
+              onClick={handleCloseTabClick(fileId)}
             ></div>
           </div>
         ))}
@@ -178,58 +217,79 @@ function App() {
       <div className="bottom-bar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className='show-menu'>
+          <li className="show-menu">
             <ul className="sub-menu">
-              <li className='files'>
-                <div className='full-Box'>
+              <li className="files">
+                <div className="full-Box">
                   <div>
-                    <a className='link-name' href="#">
+                    <a className="link-name" href="#">
                       Files
                     </a>
                   </div>
                   <div>
-                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={createFile} ></i>
+                    <i
+                      className="bx bxs-file-plus newBTN"
+                      style={{ color: '#dbdde1' }}
+                      onClick={createFile}
+                    ></i>
                   </div>
                 </div>
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                  < li className="file" >
-                    <div className='full-Box' onClick={() => {
-                      setActiveFileId(key);
-                      if (!tabList.includes(key)) {
-                        setTabList([...tabList, key]);
-                      }
-                    }}
-                      onMouseEnter={() => {
-                        setUtils(true);
-                      }}
-                      onMouseLeave={() => {
-                        setUtils(false);
-                      }}>
-                      <div>
-                        <a className='name'>{data[key].name}</a>
+                    <li className="file" key={key}>
+                      <div
+                        className="full-Box"
+                        onClick={() => {
+                          setActiveFileId(key);
+                          if (!tabList.includes(key)) {
+                            setTabList([...tabList, key]);
+                          }
+                        }}
+                        onMouseEnter={() => {
+                          setUtils(key);
+                        }}
+                        onMouseLeave={() => {
+                          setUtils(null);
+                        }}
+                      >
+                        <div>
+                          <a className="name">{data[key].name}</a>
+                        </div>
+                        <div className={utils === key ? 'utils' : 'noUtils'}>
+                          <i
+                            className="bx bxs-edit utilities"
+                            style={{ color: '#abdafb' }}
+                            onClick={() => {
+                              renameFile(key);
+                            }}
+                          ></i>
+                          <i
+                            className="bx bx-trash"
+                            style={{ color: '#eb336c' }}
+                            onClick={handleDeleteFileClick(key)}
+                          ></i>
+                        </div>
                       </div>
-                      <div className={utils ? 'utils' : 'noUtils'}>
-                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => { renameFile(key) }}></i>
-                        <i className='bx bx-trash' style={{ color: '#eb336c' }} onClick={() => { deleteFile(key) }}></i>
-                      </div>
-                    </div>
-
-                  </li>
-                ))
+                    </li>
+                  ))
                 : null}
             </ul>
           </li>
           <li>
             <div className="settings">
               <a href="#">
-                <span className='settings' onClick={() => setSettings(!settings)}>Settings</span>
+                <span
+                  className="settings"
+                  onClick={() => setSettings(!settings)}
+                >
+                  Settings
+                </span>
               </a>
             </div>
           </li>
         </ul>
-      </div >
+      </div>
       {data && activeFileId ? (
         <CodeEditor
           className="editor"
@@ -238,8 +298,7 @@ function App() {
           docPresence={docPresence}
           activeFileId={activeFileId}
         />
-      ) : null
-      }
+      ) : null}
     </>
   );
 }

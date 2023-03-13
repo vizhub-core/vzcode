@@ -132,7 +132,7 @@ body {
   justify-content: space-between;
 }
 
-.file :hover {
+.file:hover {
   background-color: rgb(74, 84, 105);
   border-radius: 5px;
 }
@@ -156,7 +156,6 @@ body {
   margin-left: 30px;
   margin-bottom: 5px;
 }
-
 
 .newBTN {
   justify-content: right;
