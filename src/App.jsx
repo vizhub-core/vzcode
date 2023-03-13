@@ -153,7 +153,7 @@ function App() {
 
   return (
     <>
-      <div className='settingsPosition'>
+      <div className='settings-position'>
         {settings ? <Settings setSettings={setSettings} /> : null}
       </div>
       <div className="tab-list">
