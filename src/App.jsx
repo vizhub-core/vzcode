@@ -151,11 +151,13 @@ function App() {
   const [utils, setUtils] = useState(false);
   const [settings, setSettings] = useState(false);
 
+  const handleSettingsClose = useCallback(() => {
+    setSettings(false);
+  }, []);
+
   return (
     <>
-      <div className='settings-position'>
-        {settings ? <Settings setSettings={setSettings} /> : null}
-      </div>
+      <Settings show={settings} onClose={handleSettingsClose} />
       <div className="tab-list">
         {tabList.map((fileId) => (
           <div
