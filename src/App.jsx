@@ -93,14 +93,41 @@ function App() {
   }, []);
 
   // Called when a tab is closed.
-  const close = (fileIdToRemove) => (event) => {
-    // Stop propagation so that the outer listener doesn't fire.
-    event.stopPropagation();
-    const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
-    const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
-    setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
-    setTabList(newTabList);
-  };
+  const closeTab = useCallback(
+    (fileIdToRemove) => {
+      const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
+
+      // Support calling `closeTab` on a fileId that is not open,
+      // such as when a file is deleted..
+      if (i !== -1) {
+        // Remove the tab from the tab list.
+        const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
+        setTabList(newTabList);
+
+        // If we are closing the active file,
+        if (activeFileId === fileIdToRemove) {
+          // set the new active file to the next tab over,
+          if (newTabList.length > 0) {
+            setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
+          } else {
+            // or clear out the active file
+            // if we've closed the last tab.
+            setActiveFileId(null);
+          }
+        }
+      }
+    },
+    [tabList, activeFileId]
+  );
+
+  const handleCloseTabClick = useCallback(
+    (fileIdToRemove) => (event) => {
+      // Stop propagation so that the outer listener doesn't fire.
+      event.stopPropagation();
+      closeTab(fileIdToRemove);
+    },
+    [closeTab]
+  );
 
   // Called when a file in the sidebar is double-clicked.
   const renameFile = useCallback(
@@ -121,15 +148,31 @@ function App() {
     [shareDBDoc]
   );
 
-  // TODO make this work
   const deleteFile = useCallback(
     (key) => {
+      console.log('deleting file');
+      console.log(key);
+      // Close the tab in case it's open.
+      // TODO consistently use either "key" or "fileId" naming
+      closeTab(key);
+
       const currentDocument = shareDBDoc.data;
       const nextDocument = { ...currentDocument };
       delete nextDocument[key];
       shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
-    [shareDBDoc]
+    [shareDBDoc, closeTab]
+  );
+
+  // TODO prompt the user "Are you sure?"
+  const handleDeleteFileClick = useCallback(
+    (fileId) => (event) => {
+      // Stop propagation so that the outer listener doesn't fire,
+      // which would try to open this file in a tab.
+      event.stopPropagation();
+      deleteFile(fileId);
+    },
+    [deleteFile]
   );
 
   const createFile = useCallback(() => {
@@ -167,7 +210,7 @@ function App() {
             {tabValid ? data[fileId].name : ''}
             <div
               className={activeFileId ? 'bx bx-x tab-close' : ''}
-              onClick={close(fileId)}
+              onClick={handleCloseTabClick(fileId)}
             ></div>
           </div>
         ))}
@@ -186,7 +229,7 @@ function App() {
                   </div>
                   <div>
                     <i
-                      class="bx bxs-file-plus newBTN"
+                      className="bx bxs-file-plus newBTN"
                       style={{ color: '#dbdde1' }}
                       onClick={createFile}
                     ></i>
@@ -195,7 +238,7 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li className="file">
+                    <li className="file" key={key}>
                       <div
                         className="full-Box"
                         onClick={() => {
@@ -225,9 +268,7 @@ function App() {
                           <i
                             className="bx bx-trash"
                             style={{ color: '#eb336c' }}
-                            onClick={() => {
-                              deleteFile(key);
-                            }}
+                            onClick={handleDeleteFileClick(key)}
                           ></i>
                         </div>
                       </div>
