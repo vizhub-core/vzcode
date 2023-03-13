@@ -96,7 +96,7 @@ const save = () => {
     const newKeys = Object.keys(currentDocument);
     const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
     removedKeys.forEach((key) => {
-      fs.unlinkSync(fullPath + '/' + previousDocument[key].name, (err) => {
+      fs.unlinkSync(previousDocument[key].name, (err) => {
         if (err) throw err;
       });
     });
