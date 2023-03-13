@@ -186,6 +186,7 @@ function App() {
 
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
+
   const [utils, setUtils] = useState(false);
   const [settings, setSettings] = useState(false);
 
@@ -246,16 +247,16 @@ function App() {
                           }
                         }}
                         onMouseEnter={() => {
-                          setUtils(true);
+                          setUtils(key);
                         }}
                         onMouseLeave={() => {
-                          setUtils(false);
+                          setUtils(null);
                         }}
                       >
                         <div>
                           <a className="name">{data[key].name}</a>
                         </div>
-                        <div className={utils ? 'utils' : 'noUtils'}>
+                        <div className={utils === key ? 'utils' : 'noUtils'}>
                           <i
                             className="bx bxs-edit utilities"
                             style={{ color: '#abdafb' }}
