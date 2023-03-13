@@ -105,12 +105,12 @@ const save = () => {
     addedKeys.forEach((key) => {
       const { name, text } = currentDocument[key];
       if (!text) {
-        text = "";
+        text = '';
       }
       fs.writeFileSync(name, text, (err) => {
         if (err) {
           if (err.code === 'ENOENT') {
-            console.log("Does not exist");
+            console.log('Does not exist');
             return;
           }
         }

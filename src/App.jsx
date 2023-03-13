@@ -131,7 +131,6 @@ function App() {
     [shareDBDoc]
   );
 
-
   const createFile = useCallback(() => {
     const newName = prompt('Enter new file name');
     if (!newName) return;
@@ -153,7 +152,7 @@ function App() {
 
   return (
     <>
-      <div className='settings-position'>
+      <div className="settings-position">
         {settings ? <Settings setSettings={setSettings} /> : null}
       </div>
       <div className="tab-list">
@@ -178,58 +177,81 @@ function App() {
       <div className="bottom-bar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className='show-menu'>
+          <li className="show-menu">
             <ul className="sub-menu">
-              <li className='files'>
-                <div className='full-Box'>
+              <li className="files">
+                <div className="full-Box">
                   <div>
-                    <a className='link-name' href="#">
+                    <a className="link-name" href="#">
                       Files
                     </a>
                   </div>
                   <div>
-                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={createFile} ></i>
+                    <i
+                      class="bx bxs-file-plus newBTN"
+                      style={{ color: '#dbdde1' }}
+                      onClick={createFile}
+                    ></i>
                   </div>
                 </div>
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                  < li className="file" >
-                    <div className='full-Box' onClick={() => {
-                      setActiveFileId(key);
-                      if (!tabList.includes(key)) {
-                        setTabList([...tabList, key]);
-                      }
-                    }}
-                      onMouseEnter={() => {
-                        setUtils(true);
-                      }}
-                      onMouseLeave={() => {
-                        setUtils(false);
-                      }}>
-                      <div>
-                        <a className='name'>{data[key].name}</a>
+                    <li className="file">
+                      <div
+                        className="full-Box"
+                        onClick={() => {
+                          setActiveFileId(key);
+                          if (!tabList.includes(key)) {
+                            setTabList([...tabList, key]);
+                          }
+                        }}
+                        onMouseEnter={() => {
+                          setUtils(true);
+                        }}
+                        onMouseLeave={() => {
+                          setUtils(false);
+                        }}
+                      >
+                        <div>
+                          <a className="name">{data[key].name}</a>
+                        </div>
+                        <div className={utils ? 'utils' : 'noUtils'}>
+                          <i
+                            className="bx bxs-edit utilities"
+                            style={{ color: '#abdafb' }}
+                            onClick={() => {
+                              renameFile(key);
+                            }}
+                          ></i>
+                          <i
+                            className="bx bx-trash"
+                            style={{ color: '#eb336c' }}
+                            onClick={() => {
+                              deleteFile(key);
+                            }}
+                          ></i>
+                        </div>
                       </div>
-                      <div className={utils ? 'utils' : 'noUtils'}>
-                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => { renameFile(key) }}></i>
-                        <i className='bx bx-trash' style={{ color: '#eb336c' }} onClick={() => { deleteFile(key) }}></i>
-                      </div>
-                    </div>
-
-                  </li>
-                ))
+                    </li>
+                  ))
                 : null}
             </ul>
           </li>
           <li>
             <div className="settings">
               <a href="#">
-                <span className='settings' onClick={() => setSettings(!settings)}>Settings</span>
+                <span
+                  className="settings"
+                  onClick={() => setSettings(!settings)}
+                >
+                  Settings
+                </span>
               </a>
             </div>
           </li>
         </ul>
-      </div >
+      </div>
       {data && activeFileId ? (
         <CodeEditor
           className="editor"
@@ -238,8 +260,7 @@ function App() {
           docPresence={docPresence}
           activeFileId={activeFileId}
         />
-      ) : null
-      }
+      ) : null}
     </>
   );
 }
