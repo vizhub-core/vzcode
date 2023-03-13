@@ -4,6 +4,8 @@ import { json1Presence } from './ot';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { randomId } from './randomId';
+import FileItem from './fileItem';
+import Settings from './settings';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
@@ -119,11 +121,41 @@ function App() {
     [shareDBDoc]
   );
 
+  const deleteFile = useCallback(
+    (key) => {
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = { ...currentDocument };
+      delete nextDocument[key];
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+    },
+    [shareDBDoc]
+  );
+
+
+  const createFile = useCallback(() => {
+    const newName = prompt('Enter new file name');
+    if (!newName) return;
+    const currentDocument = shareDBDoc.data;
+    const nextDocument = {
+      ...currentDocument,
+      [randomId()]: {
+        name: newName,
+        content: '',
+      },
+    };
+    shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+  }, [shareDBDoc]);
+
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
+  const [utils, setUtils] = useState(false);
+  const [settings, setSettings] = useState(false);
 
   return (
     <>
+      <div className='settings-position'>
+        {settings ? <Settings setSettings={setSettings} /> : null}
+      </div>
       <div className="tab-list">
         {tabList.map((fileId) => (
           <div
@@ -146,67 +178,58 @@ function App() {
       <div className="bottom-bar"></div>
       <div className="sidebar show">
         <ul className="nav-links">
-          <li className={isFileMenuOpen ? 'show-menu' : ''}>
-            <div className="icon-link">
-              <a href="#">
-                <i
-                  id="folderIcon"
-                  className={
-                    isFileMenuOpen ? 'bx bx-folder-open' : 'bx bx-folder'
-                  }
-                ></i>
-                <span className="link-name">Files</span>
-              </a>
-              <i
-                className="bx bxs-chevron-down arrow"
-                onClick={() => {
-                  setIsFileMenuOpen(!isFileMenuOpen);
-                }}
-              ></i>
-            </div>
+          <li className='show-menu'>
             <ul className="sub-menu">
-              <li>
-                <a className="link-name" href="#">
-                  Files
-                </a>
+              <li className='files'>
+                <div className='full-Box'>
+                  <div>
+                    <a className='link-name' href="#">
+                      Files
+                    </a>
+                  </div>
+                  <div>
+                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={createFile} ></i>
+                  </div>
+                </div>
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li
-                      key={key}
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
+                  < li className="file" >
+                    <div className='full-Box' onClick={() => {
+                      setActiveFileId(key);
+                      if (!tabList.includes(key)) {
+                        setTabList([...tabList, key]);
+                      }
+                    }}
+                      onMouseEnter={() => {
+                        setUtils(true);
                       }}
-                      onDoubleClick={() => {
-                        renameFile(key);
-                      }}
-                    >
-                      <a>{data[key].name}</a>
-                    </li>
-                  ))
+                      onMouseLeave={() => {
+                        setUtils(false);
+                      }}>
+                      <div>
+                        <a className='name'>{data[key].name}</a>
+                      </div>
+                      <div className={utils ? 'utils' : 'noUtils'}>
+                        <i className='bx bxs-edit utilities' style={{ color: '#abdafb' }} onClick={() => { renameFile(key) }}></i>
+                        <i className='bx bx-trash' style={{ color: '#eb336c' }} onClick={() => { deleteFile(key) }}></i>
+                      </div>
+                    </div>
+
+                  </li>
+                ))
                 : null}
             </ul>
           </li>
           <li>
-            <div className="profile-details">
+            <div className="settings">
               <a href="#">
-                <i className="bx bx-cog"></i>
-                <span className="link-name">Setting</span>
+                <span className='settings' onClick={() => setSettings(!settings)}>Settings</span>
               </a>
-              <ul className="sub-menu blank">
-                <li>
-                  <a className="link-name" href="#">
-                    Setting
-                  </a>
-                </li>
-              </ul>
             </div>
           </li>
         </ul>
-      </div>
+      </div >
       {data && activeFileId ? (
         <CodeEditor
           className="editor"
@@ -215,7 +238,8 @@ function App() {
           docPresence={docPresence}
           activeFileId={activeFileId}
         />
-      ) : null}
+      ) : null
+      }
     </>
   );
 }
