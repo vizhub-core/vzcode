@@ -52,6 +52,7 @@
     "json0-ot-diff": "^1.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-select": "^5.7.0",
     "sharedb": "^3.3.0",
     "sharedb-client-browser": "^4.2.0",
     "ws": "^8.12.1"

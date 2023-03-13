@@ -179,3 +179,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
+.themes {
+  color: rgb(37, 37, 38);
+}

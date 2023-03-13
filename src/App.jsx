@@ -44,6 +44,9 @@ function App() {
   // The ordered list of tabs.
   const [tabList, setTabList] = useState([]);
 
+  // The current theme.
+  const [theme, setTheme] = useState('OneDark');
+
   // Set up the connection to ShareDB.
   useEffect(() => {
     // Since there is only ever a single document,
@@ -193,7 +196,7 @@ function App() {
   return (
     <>
       <div className="settings-position">
-        {settings ? <Settings setSettings={setSettings} /> : null}
+        {settings ? <Settings setSettings={setSettings} setTheme={setTheme} /> : null}
       </div>
       <div className="tab-list">
         {tabList.map((fileId) => (
@@ -237,42 +240,42 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li className="file" key={key}>
-                      <div
-                        className="full-Box"
-                        onClick={() => {
-                          setActiveFileId(key);
-                          if (!tabList.includes(key)) {
-                            setTabList([...tabList, key]);
-                          }
-                        }}
-                        onMouseEnter={() => {
-                          setUtils(key);
-                        }}
-                        onMouseLeave={() => {
-                          setUtils(null);
-                        }}
-                      >
-                        <div>
-                          <a className="name">{data[key].name}</a>
-                        </div>
-                        <div className={utils === key ? 'utils' : 'noUtils'}>
-                          <i
-                            className="bx bxs-edit utilities"
-                            style={{ color: '#abdafb' }}
-                            onClick={() => {
-                              renameFile(key);
-                            }}
-                          ></i>
-                          <i
-                            className="bx bx-trash"
-                            style={{ color: '#eb336c' }}
-                            onClick={handleDeleteFileClick(key)}
-                          ></i>
-                        </div>
+                  <li className="file" key={key}>
+                    <div
+                      className="full-Box"
+                      onClick={() => {
+                        setActiveFileId(key);
+                        if (!tabList.includes(key)) {
+                          setTabList([...tabList, key]);
+                        }
+                      }}
+                      onMouseEnter={() => {
+                        setUtils(key);
+                      }}
+                      onMouseLeave={() => {
+                        setUtils(null);
+                      }}
+                    >
+                      <div>
+                        <a className="name">{data[key].name}</a>
                       </div>
-                    </li>
-                  ))
+                      <div className={utils === key ? 'utils' : 'noUtils'}>
+                        <i
+                          className="bx bxs-edit utilities"
+                          style={{ color: '#abdafb' }}
+                          onClick={() => {
+                            renameFile(key);
+                          }}
+                        ></i>
+                        <i
+                          className="bx bx-trash"
+                          style={{ color: '#eb336c' }}
+                          onClick={handleDeleteFileClick(key)}
+                        ></i>
+                      </div>
+                    </div>
+                  </li>
+                ))
                 : null}
             </ul>
           </li>
@@ -297,6 +300,7 @@ function App() {
           localPresence={localPresence}
           docPresence={docPresence}
           activeFileId={activeFileId}
+          theme={theme}
         />
       ) : null}
     </>
