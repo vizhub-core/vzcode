@@ -150,8 +150,6 @@ function App() {
 
   const deleteFile = useCallback(
     (key) => {
-      console.log('deleting file');
-      console.log(key);
       // Close the tab in case it's open.
       // TODO consistently use either "key" or "fileId" naming
       closeTab(key);
