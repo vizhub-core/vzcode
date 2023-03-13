@@ -10,6 +10,13 @@ import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
 import { randomId } from './src/randomId.js';
 
+// The time in milliseconds by which auto-saving is debounced.
+const autoSaveDebounceTimeMS = 800;
+
+// Server port.
+const port = 3030;
+
+// Use the current working directory to look for files.
 const fullPath = process.cwd();
 
 // Isolate files, not directories.
@@ -33,10 +40,11 @@ files.forEach((file) => {
   };
 });
 
+// Register our custom OT type,
+// because it does not ship with ShareDB.
 ShareDB.types.register(json1Presence.type);
 
 const app = express();
-const port = 3030;
 
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
@@ -63,9 +71,6 @@ const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
-// The time in milliseconds by which auto-saving is debounced.
-const autoSaveDebounceTimeMS = 800;
-
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
 
@@ -73,54 +78,41 @@ let previousDocument = initialDocument;
 const save = () => {
   const currentDocument = shareDBDoc.data;
 
-  // Take a look at each file that we have currently.
-  for (const key of Object.keys(currentDocument)) {
-    // Handle changing of text content.
-    if (previousDocument[key] && currentDocument[key]) {
-      if (previousDocument[key].text !== currentDocument[key].text) {
-        const { name, text } = currentDocument[key];
-        fs.writeFileSync(name, text);
+  // Take a look at each file (key) previously and currently.
+  const allKeys = Object.keys({ ...currentDocument, ...previousDocument });
+  for (const key of allKeys) {
+    const previous = previousDocument[key];
+    const current = currentDocument[key];
+
+    // If this file was neither created nor deleted...
+    if (previous && current) {
+      // Handle changing of text content.
+      if (previous.text !== current.text) {
+        fs.writeFileSync(current.name, current.text);
+      }
+
+      // Handle renaming files.
+      if (previous.name !== current.name) {
+        fs.renamesync(previous.name, current.name);
       }
     }
 
-    // Handle renaming files.
-    const oldPath = previousDocument[key].name;
-    const newPath = currentDocument[key].name;
-    if (oldPath !== newPath) {
-      fs.renameSync(oldPath, newPath);
+    // handle deleting files.
+    if (previous && !current) {
+      fs.unlinkSync(previous.name);
     }
 
-    // TODO handle creating files
-    // TODO handle deleting files
-    const oldKeys = Object.keys(previousDocument);
-    const newKeys = Object.keys(currentDocument);
-    const removedKeys = oldKeys.filter((key) => !newKeys.includes(key));
-    removedKeys.forEach((key) => {
-      fs.unlinkSync(previousDocument[key].name, (err) => {
-        if (err) throw err;
-      });
-    });
-
-    const addedKeys = newKeys.filter((key) => !oldKeys.includes(key));
-    addedKeys.forEach((key) => {
-      const { name, text } = currentDocument[key];
-      if (!text) {
-        text = '';
-      }
-      fs.writeFileSync(name, text, (err) => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-            console.log('Does not exist');
-            return;
-          }
-        }
-      });
-    });
+    // Handle creating files.
+    if (!previous && current) {
+      fs.writeFileSync(current.name, current.text);
+    }
   }
   previousDocument = currentDocument;
 };
 
 // Listen for when users modify files.
+// Files get written to disk after `autoSaveDebounceTimeMS`
+// milliseconds of inactivity.
 let timeout;
 shareDBDoc.subscribe(() => {
   shareDBDoc.on('op', (op) => {

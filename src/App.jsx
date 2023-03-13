@@ -121,6 +121,7 @@ function App() {
     [shareDBDoc]
   );
 
+  // TODO make this work
   const deleteFile = useCallback(
     (key) => {
       const currentDocument = shareDBDoc.data;
@@ -132,15 +133,12 @@ function App() {
   );
 
   const createFile = useCallback(() => {
-    const newName = prompt('Enter new file name');
-    if (!newName) return;
+    const name = prompt('Enter new file name');
+    if (!name) return;
     const currentDocument = shareDBDoc.data;
     const nextDocument = {
       ...currentDocument,
-      [randomId()]: {
-        name: newName,
-        content: '',
-      },
+      [randomId()]: { name, text: '' },
     };
     shareDBDoc.submitOp(diff(currentDocument, nextDocument));
   }, [shareDBDoc]);
