@@ -188,7 +188,7 @@ function App() {
                     </a>
                   </div>
                   <div>
-                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={() => { createFile() }} ></i>
+                    <i class='bx bxs-file-plus newBTN' style={{ color: '#dbdde1' }} onClick={createFile} ></i>
                   </div>
                 </div>
               </li>
