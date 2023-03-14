@@ -71,7 +71,7 @@ function Settings(props) {
   ];
 
   const handleChange = (selectedOption) => {
-    props.setTheme(selectedOption.label);
+    props.setTheme(selectedOption.value);
     console.log(`Option selected:`, selectedOption.label);
   };
 
