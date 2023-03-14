@@ -133,7 +133,7 @@ body {
   justify-content: space-between;
 }
 
-.file :hover {
+.file:hover {
   background-color: rgb(74, 84, 105);
   border-radius: 5px;
 }
@@ -158,26 +158,13 @@ body {
   margin-bottom: 5px;
 }
 
-
+/* TODO consistent naming new-btn */
 .newBTN {
   justify-content: right;
   margin-right: 10px;
   cursor: pointer;
 }
 
-.settingsPage {
-  width: 30%;
-  height: 30%;
-  background-color: rgb(165, 165, 165);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.settings-position {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.themes {
+  color: rgb(37, 37, 38);
 }

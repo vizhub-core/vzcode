@@ -1,6 +1,6 @@
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
-import { javascript, typescriptLanguage } from '@codemirror/lang-javascript';
+import { javascript } from '@codemirror/lang-javascript';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
@@ -23,6 +23,7 @@ export const getOrCreateEditor = ({
   shareDBDoc,
   localPresence,
   docPresence,
+  theme,
 }) => {
   const data = shareDBDoc.data;
 
