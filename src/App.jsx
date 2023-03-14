@@ -44,6 +44,9 @@ function App() {
   // The ordered list of tabs.
   const [tabList, setTabList] = useState([]);
 
+  // The current theme.
+  const [theme, setTheme] = useState('OneDark');
+
   // Set up the connection to ShareDB.
   useEffect(() => {
     // Since there is only ever a single document,
@@ -193,7 +196,9 @@ function App() {
   return (
     <>
       <div className="settings-position">
-        {settings ? <Settings setSettings={setSettings} /> : null}
+        {settings ? (
+          <Settings setSettings={setSettings} setTheme={setTheme} />
+        ) : null}
       </div>
       <div className="tab-list">
         {tabList.map((fileId) => (
@@ -297,6 +302,7 @@ function App() {
           localPresence={localPresence}
           docPresence={docPresence}
           activeFileId={activeFileId}
+          theme={theme}
         />
       ) : null}
     </>

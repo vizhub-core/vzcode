@@ -6,6 +6,7 @@ export const CodeEditor = ({
   shareDBDoc,
   localPresence,
   docPresence,
+  theme,
 }) => {
   const ref = useRef();
 
@@ -17,6 +18,7 @@ export const CodeEditor = ({
       shareDBDoc,
       localPresence,
       docPresence,
+      theme,
     });
     ref.current.appendChild(editor.dom);
 
