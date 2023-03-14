@@ -196,7 +196,9 @@ function App() {
   return (
     <>
       <div className="settings-position">
-        {settings ? <Settings setSettings={setSettings} setTheme={setTheme} /> : null}
+        {settings ? (
+          <Settings setSettings={setSettings} setTheme={setTheme} />
+        ) : null}
       </div>
       <div className="tab-list">
         {tabList.map((fileId) => (
@@ -240,42 +242,42 @@ function App() {
               </li>
               {data
                 ? Object.keys(data).map((key) => (
-                  <li className="file" key={key}>
-                    <div
-                      className="full-Box"
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
-                      }}
-                      onMouseEnter={() => {
-                        setUtils(key);
-                      }}
-                      onMouseLeave={() => {
-                        setUtils(null);
-                      }}
-                    >
-                      <div>
-                        <a className="name">{data[key].name}</a>
+                    <li className="file" key={key}>
+                      <div
+                        className="full-Box"
+                        onClick={() => {
+                          setActiveFileId(key);
+                          if (!tabList.includes(key)) {
+                            setTabList([...tabList, key]);
+                          }
+                        }}
+                        onMouseEnter={() => {
+                          setUtils(key);
+                        }}
+                        onMouseLeave={() => {
+                          setUtils(null);
+                        }}
+                      >
+                        <div>
+                          <a className="name">{data[key].name}</a>
+                        </div>
+                        <div className={utils === key ? 'utils' : 'noUtils'}>
+                          <i
+                            className="bx bxs-edit utilities"
+                            style={{ color: '#abdafb' }}
+                            onClick={() => {
+                              renameFile(key);
+                            }}
+                          ></i>
+                          <i
+                            className="bx bx-trash"
+                            style={{ color: '#eb336c' }}
+                            onClick={handleDeleteFileClick(key)}
+                          ></i>
+                        </div>
                       </div>
-                      <div className={utils === key ? 'utils' : 'noUtils'}>
-                        <i
-                          className="bx bxs-edit utilities"
-                          style={{ color: '#abdafb' }}
-                          onClick={() => {
-                            renameFile(key);
-                          }}
-                        ></i>
-                        <i
-                          className="bx bx-trash"
-                          style={{ color: '#eb336c' }}
-                          onClick={handleDeleteFileClick(key)}
-                        ></i>
-                      </div>
-                    </div>
-                  </li>
-                ))
+                    </li>
+                  ))
                 : null}
             </ul>
           </li>

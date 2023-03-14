@@ -1,7 +1,6 @@
-import Select from "react-select";
+import Select from 'react-select';
 
 function Settings(props) {
-
   const themes = [
     { value: 'default', label: 'default' },
     { value: 'default', label: 'default' },
@@ -86,7 +85,8 @@ function Settings(props) {
       >
         Close
       </button>
-      <p>Select a theme:
+      <p>
+        Select a theme:
         <Select classvalue="themes" options={themes} onChange={handleChange} />
       </p>
     </div>

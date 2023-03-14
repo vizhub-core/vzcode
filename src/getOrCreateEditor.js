@@ -79,7 +79,6 @@ export const getOrCreateEditor = ({
       }),
     });
 
-
     // Populate the cache.
     editorCache.set(fileId, editor);
   }
