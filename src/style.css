@@ -2,6 +2,7 @@
 /* Google Fonts Import Link */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css');
+@import url('https://unpkg.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css');
 
 * {
   margin: 0;
@@ -120,6 +121,7 @@ body {
   cursor: pointer;
   margin-left: 10px;
   color: rgb(219, 221, 225);
+  border-radius: 5px;
 }
 
 .full-Box {
@@ -132,16 +134,12 @@ body {
   justify-content: space-between;
 }
 
-.file:hover {
-  background-color: rgb(74, 84, 105);
-  border-radius: 5px;
-}
-
 .utilities {
   justify-content: right;
   margin-right: 3px;
 }
 
+/* TODO consistent naming "no-utils" */
 .noUtils {
   display: none;
 }
@@ -150,34 +148,29 @@ body {
   position: absolute;
   bottom: 0;
   height: 30px;
-  width: 100%;
+  /* TODO overhaul CSS to use Flexbox for entire sidebar */
+  width: 180px;
   z-index: 100;
   color: rgb(219, 221, 225);
-  margin-left: 30px;
-  margin-bottom: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+  margin: 10px;
+  border-radius: 5px;
 }
 
+.file:hover,
+.settings:hover {
+  background-color: rgb(74, 84, 105);
+}
+
+/* TODO consistent naming new-btn */
 .newBTN {
   justify-content: right;
   margin-right: 10px;
   cursor: pointer;
-}
-
-.settingsPage {
-  width: 30%;
-  height: 30%;
-  background-color: rgb(165, 165, 165);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.settings-position {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .themes {
