@@ -9,7 +9,6 @@ import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from './ot';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
-import { useEffect } from 'react';
 
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
