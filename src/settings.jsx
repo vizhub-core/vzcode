@@ -93,7 +93,9 @@ export const Settings = ({ show, onClose, setTheme }) => {
             options={themes}
             onChange={handleChange}
           />
-          <Form.Text className="text-muted">Select a color theme for the editor</Form.Text>
+          <Form.Text className="text-muted">
+            Select a color theme for the editor
+          </Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>

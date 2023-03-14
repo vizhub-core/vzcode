@@ -46,6 +46,13 @@ function App() {
   // The current theme.
   const [theme, setTheme] = useState('OneDark');
 
+  // The currently hovered over file, for showing
+  // "utils", meaning buttons for rename and delete.
+  const [utils, setUtils] = useState(false);
+
+  // True to show the settings modal.
+  const [settings, setSettings] = useState(false);
+
   // Set up the connection to ShareDB.
   useEffect(() => {
     // Since there is only ever a single document,
@@ -189,9 +196,6 @@ function App() {
   // True if we are ready to actually render the active tab.
   const tabValid = data && activeFileId;
 
-  const [utils, setUtils] = useState(false);
-  const [settings, setSettings] = useState(false);
-
   const handleSettingsClose = useCallback(() => {
     setSettings(false);
   }, []);
@@ -224,10 +228,10 @@ function App() {
       </div>
       <div className="bottom-bar"></div>
       <div className="sidebar show">
-        <ul className="nav-links">
-          <li className="show-menu">
-            <ul className="sub-menu">
-              <li className="files">
+        <div className="nav-links">
+          <div className="show-menu">
+            <div className="sub-menu">
+              <div className="files">
                 <div className="full-Box">
                   <div>
                     <a className="link-name" href="#">
@@ -242,10 +246,10 @@ function App() {
                     ></i>
                   </div>
                 </div>
-              </li>
+              </div>
               {data
                 ? Object.keys(data).map((key) => (
-                    <li className="file" key={key}>
+                    <div className="file" key={key}>
                       <div
                         className="full-Box"
                         onClick={() => {
@@ -261,9 +265,7 @@ function App() {
                           setUtils(null);
                         }}
                       >
-                        <div>
-                          <a className="name">{data[key].name}</a>
-                        </div>
+                        <div className="name">{data[key].name}</div>
                         <div className={utils === key ? 'utils' : 'noUtils'}>
                           <i
                             className="bx bxs-edit utilities"
@@ -279,24 +281,15 @@ function App() {
                           ></i>
                         </div>
                       </div>
-                    </li>
+                    </div>
                   ))
                 : null}
-            </ul>
-          </li>
-          <li>
-            <div className="settings">
-              <a href="#">
-                <span
-                  className="settings"
-                  onClick={() => setSettings(!settings)}
-                >
-                  Settings
-                </span>
-              </a>
             </div>
-          </li>
-        </ul>
+          </div>
+          <div className="settings" onClick={() => setSettings(!settings)}>
+            Settings
+          </div>
+        </div>
       </div>
       {data && activeFileId ? (
         <CodeEditor

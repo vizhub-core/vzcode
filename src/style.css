@@ -121,6 +121,7 @@ body {
   cursor: pointer;
   margin-left: 10px;
   color: rgb(219, 221, 225);
+  border-radius: 5px;
 }
 
 .full-Box {
@@ -133,16 +134,12 @@ body {
   justify-content: space-between;
 }
 
-.file:hover {
-  background-color: rgb(74, 84, 105);
-  border-radius: 5px;
-}
-
 .utilities {
   justify-content: right;
   margin-right: 3px;
 }
 
+/* TODO consistent naming "no-utils" */
 .noUtils {
   display: none;
 }
@@ -151,11 +148,22 @@ body {
   position: absolute;
   bottom: 0;
   height: 30px;
-  width: 100%;
+  /* TODO overhaul CSS to use Flexbox for entire sidebar */
+  width: 180px;
   z-index: 100;
   color: rgb(219, 221, 225);
-  margin-left: 30px;
-  margin-bottom: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.file:hover,
+.settings:hover {
+  background-color: rgb(74, 84, 105);
 }
 
 /* TODO consistent naming new-btn */
