@@ -8,7 +8,6 @@ import Select from 'react-select';
 // TODO research which themes are available for CodeMirror 6
 const themes = [
   { value: 'default', label: 'default' },
-  { value: 'default', label: 'default' },
   { value: '3024-day', label: '3024-day' },
   { value: '3024-night', label: '3024-night' },
   { value: 'abbott', label: 'abbott' },
