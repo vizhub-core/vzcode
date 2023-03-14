@@ -2,7 +2,7 @@
 
 Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/projects/2/views/1)
 
-![image](https://user-images.githubusercontent.com/68416/219923570-75ef9f86-4a8d-47e9-8504-1e6c0290dc73.png)
+![image](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
 
 ## Features
 
