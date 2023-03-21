@@ -8,16 +8,25 @@ Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/pr
 
 This project is nascent but has enough features to actually use, a minimum viable product (MVP):
 
-- rudimentary real-time collaboration
-- sidebar listing files from the file system
-- tabs
-- syntax highlighting for several Web languages
-- ability to rename files
-- auto-save changes back to the file system
+- Browser-based code editing environment
+- Sidebar listing files from the file system
+  - Note: directories are not yet supported
+- Real-time collaboration (multiplayer mode)
+  - Invite collaborators over LAN, or
+  - Use a service like [NGrok](https://ngrok.com/) for remote collaboration
+- Tabs on the top for managing open files
+- Operatons on files (create file, rename file, delete file)
+- Syntax highlighting for several Web languages
+- Auto-saves changes back to the file system
 
 ## Usage
 
-You can adopt this as an editor for your project by introducing a new npm script like this:
+One way to use this is as an editor on your system:
+
+- Install with `npm install -g vzcode`
+- Launch with `cd myProject; vzcode`
+
+Another way to use this is to set up this editor within your project by introducing a new npm script like this:
 
 ```json
 {
@@ -33,13 +42,6 @@ You can adopt this as an editor for your project by introducing a new npm script
 
 Then run `npm run edit` to start the editor.
 
-## Project Description
-
-- Open source code editor for JavaScript, HTML, CSS, and Markdown
-- Support for real-time collaboration
-- Invite collaborators over LAN or HTTP Tunneing
-- Focus on instant feedback during development
-- Core component of [VizHub](https://vizhub.com/) next generation editor
 
 ## Stack
 
@@ -64,6 +66,7 @@ Then run `npm run edit` to start the editor.
 - Dogfood the product to identify ways it can be improved
 - Iterate based on feedback
 - Share the project with the world
+- Core component of [VizHub](https://vizhub.com/) next generation editor
 
 ## Prior Work
 
