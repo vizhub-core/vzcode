@@ -13,8 +13,9 @@
     "prettier": "prettier {*.*,**/*.*} --single-quote --write",
     "dev": "vite",
     "build": "vite build",
+    "build-release": "vite build --mode release",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build-release"
   },
   "repository": {
     "type": "git",

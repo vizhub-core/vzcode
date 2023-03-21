@@ -3,4 +3,5 @@
 *.swp
 *.svg
 *.txt
+*.env*
 dist

@@ -17,6 +17,9 @@ const { Connection } = ShareDBClient;
 const socket = new WebSocket('ws://' + window.location.host + '/ws');
 const connection = new Connection(socket);
 
+// A feature flag to disable settings for release, until it's completed.
+const disableSettings = import.meta.env.VITE_DISABLE_SETTINGS === 'true';
+
 function App() {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] = useState(null);
@@ -286,9 +289,11 @@ function App() {
                 : null}
             </div>
           </div>
-          <div className="settings" onClick={() => setSettings(!settings)}>
-            Settings
-          </div>
+          {disableSettings ? null : (
+            <div className="settings" onClick={() => setSettings(!settings)}>
+              Settings
+            </div>
+          )}
         </div>
       </div>
       {data && activeFileId ? (
