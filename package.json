@@ -6,7 +6,8 @@
   "type": "module",
   "bin": "cli.js",
   "files": [
-    "dist/**"
+    "dist/**",
+    "src/**"
   ],
   "scripts": {
     "test": "npm run build; cd test; node ../cli.js",
