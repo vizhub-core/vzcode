@@ -4,4 +4,5 @@
 *.svg
 *.txt
 *.env*
+*.ico
 dist
