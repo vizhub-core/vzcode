@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
-    "@codemirror/lang-css": "^6.1.0",
+    "@codemirror/lang-css": "^6.1.1",
     "@codemirror/lang-html": "^6.4.2",
     "@codemirror/lang-javascript": "^6.1.4",
     "@codemirror/lang-markdown": "^6.1.0",
@@ -54,16 +54,16 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",
-    "react-select": "^5.7.0",
+    "react-select": "^5.7.1",
     "sharedb": "^3.3.0",
     "sharedb-client-browser": "^4.2.0",
-    "ws": "^8.12.1"
+    "ws": "^8.13.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
-    "prettier": "^2.8.4",
-    "vite": "^4.1.4"
+    "prettier": "^2.8.6",
+    "vite": "^4.2.1"
   }
 }

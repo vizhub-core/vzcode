@@ -42,7 +42,6 @@ Another way to use this is to set up this editor within your project by introduc
 
 Then run `npm run edit` to start the editor.
 
-
 ## Stack
 
 - [NodeJS](https://nodejs.org/en/)
