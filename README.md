@@ -19,14 +19,20 @@ This project is nascent but has enough features to actually use, a minimum viabl
 - Syntax highlighting for several Web languages
 - Auto-saves changes back to the file system
 
-## Usage
+## Use Cases
 
-One way to use this is as an editor on your system:
+### Local Editor
+
+One way to use this is as an editor on your system, taking the place of an existing editor like VSCode or Vim:
 
 - Install with `npm install -g vzcode`
 - Launch with `cd myProject; vzcode`
 
-Another way to use this is to set up this editor within your project by introducing a new npm script like this:
+### Project-specific Editor
+
+Another way to use this is to set up this editor within your project. This gives developers of your project a quick way to start editing code, in case they do not already have a preferred IDE, or they want to take advantage of VZCode features.
+
+This can be done introducing a new npm script and dependency like this:
 
 ```json
 {
@@ -41,6 +47,12 @@ Another way to use this is to set up this editor within your project by introduc
 ```
 
 Then run `npm run edit` to start the editor.
+
+### Staging Site Editor
+
+[Experimental idea]
+
+VZCode could be hosted on a long-running server. The idea here is that an individual or team that is developing a product can make code changes, leveraging multiplayer mode remotely, and have those changes appear instantly on a "staging site" (a server hosting the latest version of the work) running something like the Vite dev server. This would allow collaborators to, for example, make minor tweaks live on client calls and have the client see the updates in real time.
 
 ## Stack
 
@@ -83,32 +95,33 @@ See also [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/vi
 
 February 2023
 
-- Get the first version working, including:
-- ShareDB server
-- Auto-save
-- Edit the content of multiple files (no support for folders initially)
+- [X] Get the first version working, including:
+  - [X] ShareDB server
+  - [X] Auto-save
+  - [X] Edit the content of multiple files (no support for folders initially)
 
 March 2023
 
-- Make it usable, including:
-- UX for adding new files, renaming files, deleting files
-- Implement presence (the ability to see the cursors of others in real time)
-- Test out how it works using tunneling services such as NGrok
+- [X] Make it usable, including:
+  - [X] UX for adding new files, renaming files, deleting files
+  - [X] Implement presence (the ability to see the cursors of others in real time)
+  - [X] Publish an early release to NPM
+- [ ] Test out how it works using tunneling services such as NGrok
 
 April 2023
 
-- Add support for nested directories, including:
-- Develop a tree-based sidebar UI allowing directory navigation
-- Dogfood the product and try to collaboratively develop something, maybe a data visualization
-- Gather feedback from early users and iterate based on that
-- Publish a YouTube video presentation of the work to date
+- [ ] Add support for nested directories, including:
+- [ ] Develop a tree-based sidebar UI allowing directory navigation
+- [ ] Dogfood the product and try to collaboratively develop something, maybe a data visualization
+- [ ] Gather feedback from early users and iterate based on that
+- [ ] Publish a YouTube video presentation of the work to date
 
 ## Team
 
 - Curran Kelleher
 - Students from [RPI RCOS](https://rcos.io/)
 - Additional external collaborators, TBD
-- Drop a line to Curran if interested in collaborating on this!
+- Contributions welcome!
 
 ## Spaces
 
