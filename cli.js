@@ -46,6 +46,11 @@ ShareDB.types.register(json1Presence.type);
 
 const app = express();
 
+app.post('/saveTime', (req, res) => {
+  //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
+  console.log('autoSaveDebounceTimeMS', req.body);
+});
+
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
   // Enable presence

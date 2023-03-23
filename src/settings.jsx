@@ -87,6 +87,17 @@ export const Settings = ({ show, onClose, setTheme }) => {
     setTheme(selectedOption.value);
   }, []);
 
+  const handleSaveTimeChange = useCallback((selectedOption) => {
+    const time = [{ value: selectedOption.value }]
+    fetch('/saveTime', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(time),
+    })
+  }, []);
+
   return show ? (
     <Modal show={show} onHide={onClose} animation={false}>
       <Modal.Header closeButton>
@@ -109,6 +120,7 @@ export const Settings = ({ show, onClose, setTheme }) => {
           <Select
             classvalue="themes"
             options={saveTimes}
+            onChange={handleSaveTimeChange}
           />
           <Form.Text className="text-muted">
             Select an auto save time
