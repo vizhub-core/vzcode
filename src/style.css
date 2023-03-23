@@ -198,3 +198,11 @@ body {
 .themes {
   color: rgb(37, 37, 38);
 }
+
+.name {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 130px;
+
+}
