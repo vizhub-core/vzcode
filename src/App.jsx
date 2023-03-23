@@ -297,6 +297,7 @@ function App() {
         </div>
       </div>
       {data && activeFileId ? (
+
         <CodeEditor
           className="editor"
           shareDBDoc={shareDBDoc}

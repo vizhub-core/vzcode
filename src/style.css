@@ -10,6 +10,27 @@
   box-sizing: border-box;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(41, 44, 52);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(37, 37, 38);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 :root {
   --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
     Liberation Mono, monospace;
@@ -18,6 +39,7 @@
 body {
   background: rgb(41, 44, 52);
   font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
 }
 
 .tab {
