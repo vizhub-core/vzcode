@@ -268,7 +268,7 @@ function App() {
                         setUtils(null);
                       }}
                     >
-                      <div className="name">{data[key].name}</div>
+                      <div className={utils === key ? 'name' : ''}>{data[key].name}</div>
                       <div className={utils === key ? 'utils' : 'noUtils'}>
                         <i
                           className="bx bxs-edit utilities"
@@ -297,6 +297,7 @@ function App() {
         </div>
       </div>
       {data && activeFileId ? (
+
         <CodeEditor
           className="editor"
           shareDBDoc={shareDBDoc}

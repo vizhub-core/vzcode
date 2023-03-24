@@ -105,6 +105,13 @@ export const Settings = ({ show, onClose, setTheme }) => {
       </Modal.Header>
       <Modal.Body>
         <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" placeholder="Enter username" />
+          <Form.Text className="text-muted">
+            Enter a username to be displayed on your cursor
+          </Form.Text>
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
           <Select
             classvalue="themes"
