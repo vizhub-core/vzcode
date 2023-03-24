@@ -199,10 +199,17 @@ body {
   color: rgb(37, 37, 38);
 }
 
+.hover-name,
 .name {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  max-width: 130px;
+}
 
+.name {
+  max-width: 200px;
+}
+
+.hover-name {
+  max-width: 130px;
 }

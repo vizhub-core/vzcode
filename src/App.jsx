@@ -268,7 +268,7 @@ function App() {
                         setUtils(null);
                       }}
                     >
-                      <div className={utils === key ? 'name' : ''}>{data[key].name}</div>
+                      <div className={utils === key ? 'hover-name' : 'name'}>{data[key].name}</div>
                       <div className={utils === key ? 'utils' : 'noUtils'}>
                         <i
                           className="bx bxs-edit utilities"
