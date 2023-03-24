@@ -252,40 +252,42 @@ function App() {
               </div>
               {data
                 ? Object.keys(data).map((key) => (
-                  <div className="file" key={key}>
-                    <div
-                      className="full-Box"
-                      onClick={() => {
-                        setActiveFileId(key);
-                        if (!tabList.includes(key)) {
-                          setTabList([...tabList, key]);
-                        }
-                      }}
-                      onMouseEnter={() => {
-                        setUtils(key);
-                      }}
-                      onMouseLeave={() => {
-                        setUtils(null);
-                      }}
-                    >
-                      <div className={utils === key ? 'hover-name' : 'name'}>{data[key].name}</div>
-                      <div className={utils === key ? 'utils' : 'noUtils'}>
-                        <i
-                          className="bx bxs-edit utilities"
-                          style={{ color: '#abdafb' }}
-                          onClick={() => {
-                            renameFile(key);
-                          }}
-                        ></i>
-                        <i
-                          className="bx bx-trash"
-                          style={{ color: '#eb336c' }}
-                          onClick={handleDeleteFileClick(key)}
-                        ></i>
+                    <div className="file" key={key}>
+                      <div
+                        className="full-Box"
+                        onClick={() => {
+                          setActiveFileId(key);
+                          if (!tabList.includes(key)) {
+                            setTabList([...tabList, key]);
+                          }
+                        }}
+                        onMouseEnter={() => {
+                          setUtils(key);
+                        }}
+                        onMouseLeave={() => {
+                          setUtils(null);
+                        }}
+                      >
+                        <div className={utils === key ? 'hover-name' : 'name'}>
+                          {data[key].name}
+                        </div>
+                        <div className={utils === key ? 'utils' : 'noUtils'}>
+                          <i
+                            className="bx bxs-edit utilities"
+                            style={{ color: '#abdafb' }}
+                            onClick={() => {
+                              renameFile(key);
+                            }}
+                          ></i>
+                          <i
+                            className="bx bx-trash"
+                            style={{ color: '#eb336c' }}
+                            onClick={handleDeleteFileClick(key)}
+                          ></i>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))
                 : null}
             </div>
           </div>
@@ -297,7 +299,6 @@ function App() {
         </div>
       </div>
       {data && activeFileId ? (
-
         <CodeEditor
           className="editor"
           shareDBDoc={shareDBDoc}
