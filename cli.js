@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
 import { randomId } from './src/randomId.js';
+import open from 'open';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -128,4 +129,5 @@ shareDBDoc.subscribe(() => {
 
 server.listen(port, () => {
   console.log(`Editor is live at http://localhost:${port}`);
+  open(`http://localhost:${port}`);
 });
