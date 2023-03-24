@@ -95,17 +95,17 @@ See also [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/vi
 
 February 2023
 
-- [X] Get the first version working, including:
-  - [X] ShareDB server
-  - [X] Auto-save
-  - [X] Edit the content of multiple files (no support for folders initially)
+- [x] Get the first version working, including:
+  - [x] ShareDB server
+  - [x] Auto-save
+  - [x] Edit the content of multiple files (no support for folders initially)
 
 March 2023
 
-- [X] Make it usable, including:
-  - [X] UX for adding new files, renaming files, deleting files
-  - [X] Implement presence (the ability to see the cursors of others in real time)
-  - [X] Publish an early release to NPM
+- [x] Make it usable, including:
+  - [x] UX for adding new files, renaming files, deleting files
+  - [x] Implement presence (the ability to see the cursors of others in real time)
+  - [x] Publish an early release to NPM
 - [ ] Test out how it works using tunneling services such as NGrok
 
 April 2023

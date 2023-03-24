@@ -78,24 +78,23 @@ const saveTimes = [
   { value: 1, label: '1 second' },
   { value: 5, label: '5 seconds' },
   { value: 10, label: '10 seconds' },
-  { value: 30, label: '30 seconds' }
-]
+  { value: 30, label: '30 seconds' },
+];
 
 export const Settings = ({ show, onClose, setTheme }) => {
-
   const handleChange = useCallback((selectedOption) => {
     setTheme(selectedOption.value);
   }, []);
 
   const handleSaveTimeChange = useCallback((selectedOption) => {
-    const time = [{ value: selectedOption.value }]
+    const time = [{ value: selectedOption.value }];
     fetch('/saveTime', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(time),
-    })
+    });
   }, []);
 
   return show ? (
@@ -129,9 +128,7 @@ export const Settings = ({ show, onClose, setTheme }) => {
             options={saveTimes}
             onChange={handleSaveTimeChange}
           />
-          <Form.Text className="text-muted">
-            Select an auto save time
-          </Form.Text>
+          <Form.Text className="text-muted">Select an auto save time</Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
