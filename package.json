@@ -1,6 +1,6 @@
 {
   "name": "vzcode",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Multiplayer code editor system",
   "main": "index.js",
   "type": "module",
@@ -52,6 +52,7 @@
     "diff-match-patch": "^1.0.5",
     "express": "^4.18.2",
     "json0-ot-diff": "^1.1.2",
+    "open": "^9.0.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.2",
     "react-dom": "^18.2.0",

@@ -199,8 +199,9 @@ body {
   color: rgb(37, 37, 38);
 }
 
-.hover-name,
-.name {
+
+.name,
+.hover-name {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
