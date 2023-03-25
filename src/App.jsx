@@ -14,7 +14,8 @@ ShareDBClient.types.register(json1Presence.type);
 // Establish the singleton ShareDB connection over WebSockets.
 // TODO consider using reconnecting WebSocket
 const { Connection } = ShareDBClient;
-const socket = new WebSocket('ws://' + window.location.host + '/ws');
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
 
 // A feature flag to disable settings for release, until it's completed.
