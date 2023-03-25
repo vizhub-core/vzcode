@@ -14,7 +14,8 @@ ShareDBClient.types.register(json1Presence.type);
 // Establish the singleton ShareDB connection over WebSockets.
 // TODO consider using reconnecting WebSocket
 const { Connection } = ShareDBClient;
-const socket = new WebSocket('ws://' + window.location.host + '/ws');
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
 
 // A feature flag to disable settings for release, until it's completed.
@@ -252,42 +253,42 @@ function App() {
               </div>
               {data
                 ? Object.keys(data).map((key) => (
-                    <div className="file" key={key}>
-                      <div
-                        className="full-Box"
-                        onClick={() => {
-                          setActiveFileId(key);
-                          if (!tabList.includes(key)) {
-                            setTabList([...tabList, key]);
-                          }
-                        }}
-                        onMouseEnter={() => {
-                          setUtils(key);
-                        }}
-                        onMouseLeave={() => {
-                          setUtils(null);
-                        }}
-                      >
-                        <div className={utils === key ? 'hover-name' : 'name'}>
-                          {data[key].name}
-                        </div>
-                        <div className={utils === key ? 'utils' : 'noUtils'}>
-                          <i
-                            className="bx bxs-edit utilities"
-                            style={{ color: '#abdafb' }}
-                            onClick={() => {
-                              renameFile(key);
-                            }}
-                          ></i>
-                          <i
-                            className="bx bx-trash"
-                            style={{ color: '#eb336c' }}
-                            onClick={handleDeleteFileClick(key)}
-                          ></i>
-                        </div>
+                  <div className="file" key={key}>
+                    <div
+                      className="full-Box"
+                      onClick={() => {
+                        setActiveFileId(key);
+                        if (!tabList.includes(key)) {
+                          setTabList([...tabList, key]);
+                        }
+                      }}
+                      onMouseEnter={() => {
+                        setUtils(key);
+                      }}
+                      onMouseLeave={() => {
+                        setUtils(null);
+                      }}
+                    >
+                      <div className={utils === key ? 'hover-name' : 'name'}>
+                        {data[key].name}
+                      </div>
+                      <div className={utils === key ? 'utils' : 'noUtils'}>
+                        <i
+                          className="bx bxs-edit utilities"
+                          style={{ color: '#abdafb' }}
+                          onClick={() => {
+                            renameFile(key);
+                          }}
+                        ></i>
+                        <i
+                          className="bx bx-trash"
+                          style={{ color: '#eb336c' }}
+                          onClick={handleDeleteFileClick(key)}
+                        ></i>
                       </div>
                     </div>
-                  ))
+                  </div>
+                ))
                 : null}
             </div>
           </div>

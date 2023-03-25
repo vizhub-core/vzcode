@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
 import { randomId } from './src/randomId.js';
 import open from 'open';
+import ngrok from 'ngrok';
+
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -59,6 +61,7 @@ const shareDBBackend = new ShareDB({
   presence: true,
   doNotForwardSendPresenceErrorsToClient: true,
 });
+
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 wss.on('connection', (ws) => {
@@ -129,5 +132,9 @@ shareDBDoc.subscribe(() => {
 
 server.listen(port, () => {
   console.log(`Editor is live at http://localhost:${port}`);
-  open(`http://localhost:${port}`);
+  (async function () {
+    await ngrok.authtoken('2NSu2nKIuMoHIc5z9XDPIgm2gpz_7oDwUferEeadw1Mvc66Qi');
+    const url = await ngrok.connect(port);
+    open(url);
+  })();
 });
