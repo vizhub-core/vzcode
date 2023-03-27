@@ -33,7 +33,10 @@
     "Data",
     "Visualization"
   ],
-  "author": "Curran Kelleher",
+  "contributors": [
+    "Curran Kelleher",
+    "Anooj Pai"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vizhub-core/vzcode/issues"
