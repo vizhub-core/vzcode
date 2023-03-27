@@ -33,10 +33,7 @@
     "Data",
     "Visualization"
   ],
-  "authors": [
-    "Curran Kelleher",
-    "Anooj Pai"
-  ],
+  "authors": "Curran Kelleher",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vizhub-core/vzcode/issues"
@@ -54,7 +51,6 @@
     "codemirror-ot": "^4.0.0",
     "diff-match-patch": "^1.0.5",
     "express": "^4.18.2",
-    "https": "^1.0.0",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^9.0.0",
