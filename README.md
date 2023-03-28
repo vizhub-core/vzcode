@@ -48,6 +48,33 @@ This can be done introducing a new npm script and dependency like this:
 
 Then run `npm run edit` to start the editor.
 
+
+# Host Server With Ngrok
+
+How to host your VZCode session with Ngrok. Hosting with Ngrok will allow users that are not on your network to join your session.
+
+## Host With Ngrok Globally Installed
+
+- Warning - This will only work if you have an Ngrok account and your machine is authenticated
+
+To host Ngrok, first set up a VZcode instance by moving into your directory, then in the terminal run
+
+```bash
+  vzcode
+```
+
+Next while the local host session is running, in the terminal run
+
+```bash
+  ngrok http 3030
+```
+
+This will give you a link that can be shared to collaborators who then can join from anywhere.
+
+## Host With Ngrok Through VZCode
+
+Coming Soon
+
 ### Staging Site Editor
 
 [Experimental idea]
