@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url';
 import { json1Presence } from './src/ot.js';
 import { randomId } from './src/randomId.js';
 import open from 'open';
+import ngrok from 'ngrok';
+import dotenv from 'dotenv';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -19,6 +21,7 @@ const port = 3030;
 
 // Use the current working directory to look for files.
 const fullPath = process.cwd();
+dotenv.config({ path: '../.env' });
 
 // Isolate files, not directories.
 // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
@@ -127,7 +130,16 @@ shareDBDoc.subscribe(() => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`Editor is live at http://localhost:${port}`);
-  open(`http://localhost:${port}`);
+server.listen(port, async () => {
+  if (process.env.NGROK_TOKEN) {
+    (async function () {
+      await ngrok.authtoken(process.env.NGROK_TOKEN);
+      const url = await ngrok.connect(port);
+      console.log(`Editor is live at ${url}`);
+      open(url);
+    })();
+  } else {
+    console.log(`Editor is live at http://localhost:${port}`);
+    open(`http://localhost:${port}`);
+  }
 });
