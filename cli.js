@@ -131,3 +131,9 @@ server.listen(port, () => {
   console.log(`Editor is live at http://localhost:${port}`);
   open(`http://localhost:${port}`);
 });
+
+process.stdout.on('error', function (err) {
+  if (err.code == "EPIPE") {
+    process.exit(0);
+  }
+});
