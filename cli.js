@@ -130,6 +130,27 @@ shareDBDoc.subscribe(() => {
   });
 });
 
+let oldName = '';
+fs.watch(fullPath, function (event, filename) {
+  if (event == 'rename') {
+    if (oldName == '') {
+      oldName = filename;
+    } else {
+      const currentDocument = shareDBDoc.data;
+      const allKeys = Object.keys(currentDocument);
+      for (const key of allKeys) {
+        const current = currentDocument[key];
+        if (current.name == oldName) {
+          current.name = filename;
+          shareDBDoc.submitOp([{ p: [key], oi: filename }]);
+          oldName = '';
+          break;
+        }
+      }
+    }
+  }
+});
+
 server.listen(port, async () => {
   if (process.env.NGROK_TOKEN) {
     (async function () {
