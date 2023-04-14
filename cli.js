@@ -12,6 +12,9 @@ import { randomId } from './src/randomId.js';
 import open from 'open';
 import ngrok from 'ngrok';
 import dotenv from 'dotenv';
+import { diff } from './src/diff.js';
+import chokidar from 'chokidar';
+import { useCallback } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -49,11 +52,6 @@ files.forEach((file) => {
 ShareDB.types.register(json1Presence.type);
 
 const app = express();
-
-app.post('/saveTime', (req, res) => {
-  //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
-  console.log('autoSaveDebounceTimeMS', req.body);
-});
 
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
@@ -131,25 +129,32 @@ shareDBDoc.subscribe(() => {
 });
 
 let oldName = '';
-fs.watch(fullPath, function (event, filename) {
-  if (event == 'rename') {
-    if (oldName == '') {
-      oldName = filename;
-    } else {
-      const currentDocument = shareDBDoc.data;
-      const allKeys = Object.keys(currentDocument);
-      for (const key of allKeys) {
-        const current = currentDocument[key];
-        if (current.name == oldName) {
-          current.name = filename;
-          shareDBDoc.submitOp([{ p: [key], oi: filename }]);
-          oldName = '';
-          break;
+chokidar.watch(fullPath).on('all', (event, path) => {
+  if (event === 'unlink') {
+    let name = path.split('/').pop();
+    console.log('unlink', name);
+    oldName = name;
+  } else if (event === 'add') {
+    if (oldName != '') {
+      let newName = path.split('/').pop();
+      console.log('add', newName);
+      for (let key in shareDBDoc.data) {
+        if (shareDBDoc.data[key].name == oldName) {
+          const currentDocument = shareDBDoc.data;
+          const nextDocument = {
+            ...currentDocument,
+            [key]: {
+              ...currentDocument[key],
+              name: newName,
+            },
+          };
+          shareDBDoc.submitOp(diff(currentDocument, nextDocument));
         }
       }
     }
   }
 });
+
 
 server.listen(port, async () => {
   if (process.env.NGROK_TOKEN) {
@@ -161,6 +166,6 @@ server.listen(port, async () => {
     })();
   } else {
     console.log(`Editor is live at http://localhost:${port}`);
-    open(`http://localhost:${port}`);
+    //open(`http://localhost:${port}`);
   }
 });
