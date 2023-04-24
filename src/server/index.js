@@ -8,10 +8,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { json1Presence } from '../ot.js';
-import { randomId } from '../randomId.js';
 import open from 'open';
 import ngrok from 'ngrok';
-import dotenv from 'dotenv';
+import { computeInitialDocument } from './computeInitialDocument.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -19,30 +18,7 @@ const autoSaveDebounceTimeMS = 800;
 // Server port.
 const port = 3030;
 
-// Use the current working directory to look for files.
-const fullPath = process.cwd();
-dotenv.config({ path: '../../.env' });
-
-// Isolate files, not directories.
-// Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
-const files = fs
-  .readdirSync(fullPath, { withFileTypes: true })
-  .filter((dirent) => dirent.isFile())
-  .map((dirent) => dirent.name);
-
-// Initialize the document using our data structure for representing files.
-//  * Keys are file ids, which are random numbers.
-//  * Values are objects with properties:
-//    * text - the text content of the file
-//    * name - the file name
-const initialDocument = {};
-files.forEach((file) => {
-  const id = randomId();
-  initialDocument[id] = {
-    text: fs.readFileSync(file, 'utf-8'),
-    name: file,
-  };
-});
+const initialDocument = computeInitialDocument();
 
 // Register our custom OT type,
 // because it does not ship with ShareDB.
@@ -72,7 +48,6 @@ wss.on('connection', (ws) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dir = path.join(__dirname, '..', '..', 'dist');
-console.log(dir);
 app.use(express.static(dir));
 
 // Create the initial "document",
