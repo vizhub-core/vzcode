@@ -1,17 +1,11 @@
-import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
 import { randomId } from '../randomId.js';
 
 // Lists files from the file system,
 // converts them into the VZCode internal
 // ShareDB-compatible data structure.
-export const computeInitialDocument = () => {
-  // Use the current working directory to look for files.
-  const fullPath = process.cwd();
-  dotenv.config({ path: '../../.env' });
-
-  console.log(fullPath);
-
+export const computeInitialDocument = ({ fullPath }) => {
   // Isolate files, not directories.
   // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
   const files = fs
@@ -28,7 +22,7 @@ export const computeInitialDocument = () => {
   files.forEach((file) => {
     const id = randomId();
     initialDocument[id] = {
-      text: fs.readFileSync(file, 'utf-8'),
+      text: fs.readFileSync(path.join(fullPath, file), 'utf-8'),
       name: file,
     };
   });

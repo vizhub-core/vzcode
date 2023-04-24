@@ -7,10 +7,13 @@ import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { json1Presence } from '../ot.js';
 import open from 'open';
 import ngrok from 'ngrok';
+import dotenv from 'dotenv';
 import { computeInitialDocument } from './computeInitialDocument.js';
+import { json1Presence } from '../ot.js';
+
+dotenv.config({ path: '../../.env' });
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -18,7 +21,10 @@ const autoSaveDebounceTimeMS = 800;
 // Server port.
 const port = 3030;
 
-const initialDocument = computeInitialDocument();
+const initialDocument = computeInitialDocument({
+  // Use the current working directory to look for files.
+  fullPath: process.cwd(),
+});
 
 // Register our custom OT type,
 // because it does not ship with ShareDB.
@@ -45,9 +51,9 @@ wss.on('connection', (ws) => {
 });
 
 // Serve static files
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const dir = path.join(__dirname, '..', '..', 'dist');
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+const dir = path.join(dirname, '..', '..', 'dist');
 app.use(express.static(dir));
 
 // Create the initial "document",
