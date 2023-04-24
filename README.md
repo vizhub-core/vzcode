@@ -48,7 +48,6 @@ This can be done introducing a new npm script and dependency like this:
 
 Then run `npm run edit` to start the editor.
 
-
 # Host Server With Ngrok
 
 How to host your VZCode session with Ngrok. Hosting with Ngrok will allow users that are not on your network to join your session.
