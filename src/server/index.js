@@ -7,8 +7,8 @@ import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { json1Presence } from './src/ot.js';
-import { randomId } from './src/randomId.js';
+import { json1Presence } from '../ot.js';
+import { randomId } from '../randomId.js';
 import open from 'open';
 import ngrok from 'ngrok';
 import dotenv from 'dotenv';
@@ -21,7 +21,7 @@ const port = 3030;
 
 // Use the current working directory to look for files.
 const fullPath = process.cwd();
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: '../../.env' });
 
 // Isolate files, not directories.
 // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
@@ -71,7 +71,8 @@ wss.on('connection', (ws) => {
 // Serve static files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dir = path.join(__dirname, '/dist');
+const dir = path.join(__dirname, '..', '..', 'dist');
+console.log(dir);
 app.use(express.static(dir));
 
 // Create the initial "document",

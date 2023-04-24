@@ -5,7 +5,6 @@ import {
   Decoration,
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
-import { randomId } from './randomId';
 
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
