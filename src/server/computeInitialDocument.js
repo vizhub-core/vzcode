@@ -2,6 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { randomId } from '../randomId.js';
 
+// Feature flag for directories.
+const directories = true;
+
+const isDirectory = (file) => file.endsWith('/');
+
 // Lists files from the file system,
 // converts them into the VZCode internal
 // ShareDB-compatible data structure.
@@ -10,8 +15,12 @@ export const computeInitialDocument = ({ fullPath }) => {
   // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
   const files = fs
     .readdirSync(fullPath, { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .map((dirent) => dirent.name);
+    .filter((dirent) => (directories ? true : dirent.isFile()))
+
+    // Add a trailing slash for directories
+    .map((dirent) => dirent.name + (dirent.isFile() ? '' : '/'));
+
+  // console.log(files);
 
   // Initialize the document using our data structure for representing files.
   //  * Keys are file ids, which are random numbers.
@@ -22,7 +31,9 @@ export const computeInitialDocument = ({ fullPath }) => {
   files.forEach((file) => {
     const id = randomId();
     initialDocument[id] = {
-      text: fs.readFileSync(path.join(fullPath, file), 'utf-8'),
+      text: isDirectory(file)
+        ? null
+        : fs.readFileSync(path.join(fullPath, file), 'utf-8'),
       name: file,
     };
   });
