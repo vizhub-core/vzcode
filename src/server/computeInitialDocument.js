@@ -3,7 +3,7 @@ import path from 'path';
 import { randomId } from '../randomId.js';
 
 // Feature flag for directories.
-const directories = true;
+const directories = false;
 
 const isDirectory = (file) => file.endsWith('/');
 
