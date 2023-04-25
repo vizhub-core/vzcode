@@ -1,12 +1,14 @@
-import { assert, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ascending } from 'd3-array';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { computeInitialDocument } from '../src/server/computeInitialDocument';
 
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
 const getSampleFiles = (sampleDirectory) => {
-  const filename = fileURLToPath(import.meta.url);
-  const dirname = path.dirname(filename);
   const fullPath = path.join(dirname, 'sampleDirectories', sampleDirectory);
   const initialDocument = computeInitialDocument({ fullPath });
 
@@ -38,6 +40,20 @@ describe('Listing files', () => {
   });
 
   it('should list files, empty directory', () => {
+    // Git does not track empty directories,
+    // so we need to create the empty directory
+    // if it doesn't exist (e.g. in a fresh clone).
+    // Inspired by https://stackoverflow.com/questions/21194934/how-to-create-a-directory-if-it-doesnt-exist-using-node-js
+    const emptyDir = path.join(
+      dirname,
+      'sampleDirectories',
+      'listFilesEmptyDirectory',
+      'emptyDirectory'
+    );
+    if (!fs.existsSync(emptyDir)) {
+      fs.mkdirSync(emptyDir);
+    }
+
     expect(getSampleFiles('listFilesEmptyDirectory')).toEqual([
       {
         name: 'emptyDirectory/',
