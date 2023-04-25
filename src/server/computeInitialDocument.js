@@ -13,12 +13,25 @@ const isDirectory = (file) => file.endsWith('/');
 export const computeInitialDocument = ({ fullPath }) => {
   // Isolate files, not directories.
   // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
+
+  // TODO recursively list out directories
+  // while (unlistedDirectories.length !== 0){
+  //   ...
+  // }
+  const unlistedDirectories = [];
+
   const files = fs
     .readdirSync(fullPath, { withFileTypes: true })
     .filter((dirent) => (directories ? true : dirent.isFile()))
 
     // Add a trailing slash for directories
-    .map((dirent) => dirent.name + (dirent.isFile() ? '' : '/'));
+    .map((dirent) => {
+      if (dirent.isFile()) {
+        return dirent.name;
+      }
+      unlistedDirectories.push(dirent.name);
+      return dirent.name + '/';
+    });
 
   // console.log(files);
 
