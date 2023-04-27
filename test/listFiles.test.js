@@ -18,7 +18,7 @@ const getSampleFiles = (sampleDirectory) => {
     ascending(a.name, b.name)
   );
 
-  //console.log(JSON.stringify(files));
+  // console.log(JSON.stringify(files));
 
   return files;
 };
@@ -67,19 +67,20 @@ describe('Listing files', () => {
     ]);
   });
 
-  it.skip('should list files, full directory', () => {
-    expect(getSampleFiles('listFilesEmptyDirectory')).toEqual([
+  it('should list files, full directory', () => {
+    expect(getSampleFiles('listFilesFullDirectory')).toEqual([
+      { text: null, name: 'fullDirectory/' },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
-        name: 'emptyDirectory/index.html',
+        name: 'fullDirectory/index.html',
       },
       {
         text: "console.log('This is a test file to edit');\n",
-        name: 'emptyDirectory/index.js',
+        name: 'fullDirectory/index.js',
       },
       {
-        text: 'body {\n    background-color: red;\n}',
-        name: 'emptyDirectory/styles.css',
+        text: 'body {\n  background-color: red;\n}\n',
+        name: 'fullDirectory/styles.css',
       },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
@@ -89,10 +90,7 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      {
-        text: 'body {\n    background-color: red;\n}',
-        name: 'styles.css',
-      },
+      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
     ]);
   });
 

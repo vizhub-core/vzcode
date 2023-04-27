@@ -12,7 +12,7 @@ export const computeInitialDocument = ({ fullPath }) => {
   // Isolate files, not directories.
   // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
 
-  const unsearchedDirectories = ['/'];
+  const unsearchedDirectories = [''];
 
   // Initialize the document using our data structure for representing files.
   //  * Keys are file ids, which are random numbers.
@@ -25,19 +25,24 @@ export const computeInitialDocument = ({ fullPath }) => {
   let files = [];
 
   while (unsearchedDirectories.length !== 0) {
-    const currentDirectory = path.join(fullPath, unsearchedDirectories.pop());
+    const currentDirectory = unsearchedDirectories.pop();
+    const currentDirectoryPath = path.join(fullPath, currentDirectory);
     const newFiles = fs
-      .readdirSync(currentDirectory, { withFileTypes: true })
+      .readdirSync(currentDirectoryPath, { withFileTypes: true })
       .filter((dirent) => (enableDirectories ? true : dirent.isFile()))
 
       // Add a trailing slash for directories
       .map((dirent) => {
         if (dirent.isFile()) {
-          return dirent.name;
+          if (currentDirectory === '') {
+            return dirent.name;
+          }
+          return currentDirectory + '/' + dirent.name;
         }
         unsearchedDirectories.push(dirent.name);
         return dirent.name + '/';
       });
+    // console.log(currentDirectory);
 
     files = [...files, ...newFiles];
   }
