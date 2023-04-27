@@ -5,6 +5,7 @@ import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
+import { disableSettings } from '../featureFlags';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
@@ -17,10 +18,6 @@ const { Connection } = ShareDBClient;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
-
-// A feature flag to disable settings for release, until it's completed.
-// See https://vitejs.dev/guide/env-and-mode.html
-const disableSettings = import.meta.env.VITE_DISABLE_SETTINGS === 'true';
 
 function App() {
   // The ShareDB document.

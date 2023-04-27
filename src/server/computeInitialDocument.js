@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomId } from '../randomId.js';
-
-// Feature flag for directories.
-const directories = false;
+import { enableDirectories } from '../featureFlags.js';
 
 const isDirectory = (file) => file.endsWith('/');
 
@@ -14,26 +12,7 @@ export const computeInitialDocument = ({ fullPath }) => {
   // Isolate files, not directories.
   // Inspired by https://stackoverflow.com/questions/41472161/fs-readdir-ignore-directories
 
-  // TODO recursively list out directories
-  // while (unlistedDirectories.length !== 0){
-  //   ...
-  // }
-  const unlistedDirectories = [];
-
-  const files = fs
-    .readdirSync(fullPath, { withFileTypes: true })
-    .filter((dirent) => (directories ? true : dirent.isFile()))
-
-    // Add a trailing slash for directories
-    .map((dirent) => {
-      if (dirent.isFile()) {
-        return dirent.name;
-      }
-      unlistedDirectories.push(dirent.name);
-      return dirent.name + '/';
-    });
-
-  // console.log(files);
+  const unsearchedDirectories = ['/'];
 
   // Initialize the document using our data structure for representing files.
   //  * Keys are file ids, which are random numbers.
@@ -41,6 +20,30 @@ export const computeInitialDocument = ({ fullPath }) => {
   //    * text - the text content of the file
   //    * name - the file name
   const initialDocument = {};
+
+  // Stack for recursively traversing directories.
+  let files = [];
+
+  while (unsearchedDirectories.length !== 0) {
+    const currentDirectory = path.join(fullPath, unsearchedDirectories.pop());
+    const newFiles = fs
+      .readdirSync(currentDirectory, { withFileTypes: true })
+      .filter((dirent) => (enableDirectories ? true : dirent.isFile()))
+
+      // Add a trailing slash for directories
+      .map((dirent) => {
+        if (dirent.isFile()) {
+          return dirent.name;
+        }
+        unsearchedDirectories.push(dirent.name);
+        return dirent.name + '/';
+      });
+
+    files = [...files, ...newFiles];
+  }
+
+  // console.log(files);
+
   files.forEach((file) => {
     const id = randomId();
     initialDocument[id] = {

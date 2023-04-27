@@ -18,7 +18,7 @@ const getSampleFiles = (sampleDirectory) => {
     ascending(a.name, b.name)
   );
 
-  //console.log(JSON.stringify(files, null, 2));
+  //console.log(JSON.stringify(files));
 
   return files;
 };
@@ -34,10 +34,7 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      {
-        text: 'body {\n    background-color: red;\n}',
-        name: 'styles.css',
-      },
+      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
     ]);
   });
 
@@ -57,10 +54,7 @@ describe('Listing files', () => {
     }
 
     expect(getSampleFiles('listFilesEmptyDirectory')).toEqual([
-      {
-        text: null,
-        name: 'emptyDirectory/',
-      },
+      { text: null, name: 'emptyDirectory/' },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'index.html',
@@ -69,10 +63,7 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      {
-        text: 'body {\n    background-color: red;\n}',
-        name: 'styles.css',
-      },
+      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
     ]);
   });
 
