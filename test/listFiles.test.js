@@ -94,16 +94,18 @@ describe('Listing files', () => {
     ]);
   });
 
-  it.skip('should list files, recursive directories', () => {
+  it('should list files, recursive directories', () => {
     expect(getSampleFiles('listFilesRecursive')).toEqual([
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'index.html',
       },
+      { text: null, name: 'outerDirectory/' },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'outerDirectory/index.html',
       },
+      { text: null, name: 'outerDirectory/innerDirectory/' },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'outerDirectory/innerDirectory/index.html',

@@ -33,21 +33,23 @@ export const computeInitialDocument = ({ fullPath }) => {
 
       // Add a trailing slash for directories
       .map((dirent) => {
+        const relativePath =
+          currentDirectory === ''
+            ? dirent.name
+            : currentDirectory + '/' + dirent.name;
+
         if (dirent.isFile()) {
-          if (currentDirectory === '') {
-            return dirent.name;
-          }
-          return currentDirectory + '/' + dirent.name;
+          return relativePath;
         }
-        unsearchedDirectories.push(dirent.name);
-        return dirent.name + '/';
+        unsearchedDirectories.push(relativePath);
+        return relativePath + '/';
       });
     // console.log(currentDirectory);
 
     files = [...files, ...newFiles];
   }
 
-  // console.log(files);
+  //console.log(files);
 
   files.forEach((file) => {
     const id = randomId();
