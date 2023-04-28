@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomId } from '../randomId.js';
-import { enableDirectories } from './featureFlags.js';
+import { enableDirectories, debugDirectories } from './featureFlags.js';
 
 const isDirectory = (file) => file.endsWith('/');
 
@@ -49,8 +49,6 @@ export const computeInitialDocument = ({ fullPath }) => {
     files = [...files, ...newFiles];
   }
 
-  //console.log(files);
-
   files.forEach((file) => {
     const id = randomId();
     initialDocument[id] = {
@@ -60,5 +58,12 @@ export const computeInitialDocument = ({ fullPath }) => {
       name: file,
     };
   });
+
+  if (debugDirectories) {
+    console.log('files:');
+    console.log(files);
+    console.log('initialDocument:');
+    console.log(JSON.stringify(initialDocument, null, 2));
+  }
   return initialDocument;
 };
