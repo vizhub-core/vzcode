@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { randomId } from '../randomId.js';
-import { enableDirectories } from '../featureFlags.js';
+import { enableDirectories } from './featureFlags.js';
 
 const isDirectory = (file) => file.endsWith('/');
 

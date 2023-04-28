@@ -5,7 +5,7 @@ import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
-import { disableSettings } from '../featureFlags';
+import { disableSettings } from './featureFlags';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
