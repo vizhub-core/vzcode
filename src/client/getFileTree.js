@@ -2,7 +2,8 @@
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/FileTree/getFileTree.js
 export const getFileTree = (files) => {
   const tree = { name: 'files' };
-  for (const file of files) {
+  for (const fileId of Object.keys(files)) {
+    const file = files[fileId];
     const path = file.name.split('/');
     const n = path.length;
     let node = tree;
@@ -40,6 +41,7 @@ export const getFileTree = (files) => {
       (node.children || (node.children = [])).push({
         name: path[n - 1],
         file,
+        fileId,
       });
     }
   }

@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { getFileTree } from '../getFileTree';
 import { disableSettings } from '../featureFlags';
 import { File } from './File';
 import './styles.css';
@@ -11,6 +13,10 @@ export const Sidebar = ({
   setSettings,
   settings,
 }) => {
+  console.log(data);
+  const fileTree = useMemo(() => (data ? getFileTree(data) : null), [data]);
+  console.log(fileTree);
+
   return (
     <div className="vz-sidebar">
       <div className="files">
@@ -29,12 +35,12 @@ export const Sidebar = ({
           </div>
         </div>
       </div>
-      {data
-        ? Object.keys(data).map((key) => (
+      {fileTree
+        ? fileTree.children.map(({ fileId, file }) => (
             <File
-              key={key}
-              fileId={key}
-              name={data[key].name}
+              key={fileId}
+              fileId={fileId}
+              name={file.name}
               renameFile={renameFile}
               handleDeleteFileClick={handleDeleteFileClick}
               handleFileClick={handleFileClick}

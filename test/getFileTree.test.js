@@ -7,6 +7,9 @@ import { getFileTree } from '../src/client/getFileTree';
 describe('getFileTree', () => {
   it('Parses a single file', () => {
     const file = { name: 'name', text: 'text' };
+
+    // Note: the API expects an object where keys are file ids.
+    // These tests pass arrays, which are a convenient shorthand.
     const tree = getFileTree([file]);
     expect(tree.children.length).toBe(1);
     expect(tree.children[0].name).toBe('name');
