@@ -22,7 +22,7 @@ export const Sidebar = ({
           </div>
           <div>
             <i
-              className="bx bxs-file-plus newBTN"
+              className="bx bxs-file-plus new-btn"
               style={{ color: '#dbdde1' }}
               onClick={createFile}
             ></i>

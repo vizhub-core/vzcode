@@ -22,9 +22,8 @@
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  width: 180px;
   cursor: pointer;
-  margin-left: 10px;
+  margin: 0 10px;
   color: rgb(219, 221, 225);
   border-radius: 5px;
 }
@@ -37,8 +36,7 @@
   text-decoration: none;
 }
 
-/* TODO consistent naming new-btn */
-.vz-sidebar .newBTN {
+.vz-sidebar .new-btn {
   justify-content: right;
   margin-right: 10px;
   cursor: pointer;
@@ -47,11 +45,6 @@
 .vz-sidebar .utilities {
   justify-content: right;
   margin-right: 3px;
-}
-
-/* TODO consistent naming "no-utils" */
-.vz-sidebar .noUtils {
-  display: none;
 }
 
 .vz-sidebar .settings {

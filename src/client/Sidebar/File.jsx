@@ -37,18 +37,20 @@ export const File = ({
       onMouseLeave={handleMouseLeave}
     >
       <div className={isHovered ? 'hover-name' : 'name'}>{name}</div>
-      <div className={isHovered ? 'utils' : 'noUtils'}>
-        <i
-          className="bx bxs-edit utilities"
-          style={{ color: '#abdafb' }}
-          onClick={handleRenameClick}
-        ></i>
-        <i
-          className="bx bx-trash"
-          style={{ color: '#eb336c' }}
-          onClick={handleDeleteClick}
-        ></i>
-      </div>
+      {isHovered ? (
+        <div className="utils">
+          <i
+            className="bx bxs-edit utilities"
+            style={{ color: '#abdafb' }}
+            onClick={handleRenameClick}
+          ></i>
+          <i
+            className="bx bx-trash"
+            style={{ color: '#eb336c' }}
+            onClick={handleDeleteClick}
+          ></i>
+        </div>
+      ) : null}
     </div>
   );
 };
