@@ -1,32 +1,30 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
 
-export const File = ({
-  name,
-  fileId,
-  renameFile,
-  handleDeleteFileClick,
-  handleFileClick,
-}) => {
+// TODO proper icons
+const directoryClosedIcon = '>';
+
+export const Directory = ({ name }) => {
   const handleClick = useCallback(() => {
-    handleFileClick(fileId);
-  }, [fileId, handleFileClick]);
+    console.log('TODO handleDirectoryClick');
+  }, []);
 
   const handleDeleteClick = useCallback(() => {
-    handleDeleteFileClick(fileId);
-  }, [fileId]);
+    console.log('TODO handleDeleteDirectoryClick');
+  }, []);
 
   const handleRenameClick = useCallback(() => {
-    renameFile(fileId);
-  }, [fileId]);
+    console.log('TODO handleRenameDirectoryClick');
+  }, []);
 
   return (
     <Item
+      name={name}
       handleClick={handleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
     >
-      {name}
+      {directoryClosedIcon} {name}
     </Item>
   );
 };
