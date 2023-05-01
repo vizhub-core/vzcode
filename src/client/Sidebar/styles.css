@@ -1,0 +1,96 @@
+/* TODO overhaul CSS to use Flexbox for entire sidebar */
+
+.vz-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  background: rgb(54, 65, 89);
+  z-index: 100;
+  transition: all 0.5s ease;
+}
+
+.vz-sidebar .full-Box {
+  width: inherit;
+  height: inherit;
+  padding: 7px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vz-sidebar .link-name {
+  margin-top: 30px;
+  margin-left: 10px;
+  color: rgb(154, 160, 172);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.vz-sidebar .file {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+  width: 180px;
+  cursor: pointer;
+  margin-left: 10px;
+  color: rgb(219, 221, 225);
+  border-radius: 5px;
+}
+
+
+/* TODO consistent naming new-btn */
+.vz-sidebar .newBTN {
+  justify-content: right;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.vz-sidebar .utilities {
+  justify-content: right;
+  margin-right: 3px;
+}
+
+/* TODO consistent naming "no-utils" */
+.vz-sidebar .noUtils {
+  display: none;
+}
+
+.vz-sidebar .settings {
+  position: absolute;
+  bottom: 0;
+  height: 30px;
+  width: 180px;
+  z-index: 100;
+  color: rgb(219, 221, 225);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.vz-sidebar .file:hover,
+.vz-sidebar .settings:hover {
+  background-color: rgb(74, 84, 105);
+}
+
+.vz-sidebar .name,
+.vz-sidebar .hover-name {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.vz-sidebar .name {
+  max-width: 200px;
+}
+
+.vz-sidebar .hover-name {
+  max-width: 130px;
+}
