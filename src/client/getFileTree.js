@@ -34,10 +34,14 @@ export const getFileTree = (files) => {
       node = child;
     }
 
-    (node.children || (node.children = [])).push({
-      name: path[n - 1],
-      file,
-    });
+    // file.text being `null` signifies
+    // that this is a directory.
+    if (file.text !== null) {
+      (node.children || (node.children = [])).push({
+        name: path[n - 1],
+        file,
+      });
+    }
   }
   return tree;
 };

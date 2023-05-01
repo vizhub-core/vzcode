@@ -87,4 +87,40 @@ describe('getFileTree', () => {
     expect(tree.children[2].children[0].name).toBe('name2dor');
     expect(tree.children[2].children[0].file).toBe(file6);
   });
+
+  it('Handles an empty directory, top level', () => {
+    const file1 = { name: 'dir1/', text: null };
+    const tree = getFileTree([file1]);
+
+    expect(tree).toEqual({
+      name: 'files',
+      children: [
+        {
+          name: 'dir1',
+          path: 'dir1',
+        },
+      ],
+    });
+  });
+
+  it('Handles an empty directory, level 2', () => {
+    const file1 = { name: 'dir1/deep/', text: null };
+    const tree = getFileTree([file1]);
+
+    expect(tree).toEqual({
+      name: 'files',
+      children: [
+        {
+          name: 'dir1',
+          path: 'dir1',
+          children: [
+            {
+              name: 'deep',
+              path: 'dir1/deep',
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
