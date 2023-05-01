@@ -169,6 +169,16 @@ function App() {
     [shareDBDoc, closeTab]
   );
 
+  const handleFileClick = useCallback(
+    (fileId) => {
+      setActiveFileId(fileId);
+      if (!tabList.includes(fileId)) {
+        setTabList([...tabList, fileId]);
+      }
+    },
+    [tabList]
+  );
+
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
     (fileId) => (event) => {
@@ -227,11 +237,9 @@ function App() {
       <Sidebar
         createFile={createFile}
         data={data}
-        setActiveFileId={setActiveFileId}
-        tabList={tabList}
-        setTabList={setTabList}
         renameFile={renameFile}
         handleDeleteFileClick={handleDeleteFileClick}
+        handleFileClick={handleFileClick}
         setSettings={setSettings}
         settings={settings}
       />

@@ -1,13 +1,11 @@
 import { useState, useCallback } from 'react';
 
 export const File = ({
-  key,
   name,
-  setActiveFileId,
-  tabList,
-  setTabList,
+  fileId,
   renameFile,
   handleDeleteFileClick,
+  handleFileClick,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -19,16 +17,22 @@ export const File = ({
     setIsHovered(false);
   }, []);
 
+  const handleClick = useCallback(() => {
+    handleFileClick(fileId);
+  }, [fileId, handleFileClick]);
+
+  const handleDeleteClick = useCallback(() => {
+    handleDeleteFileClick(fileId);
+  }, [fileId]);
+
+  const handleRenameClick = useCallback(() => {
+    renameFile(fileId);
+  }, [fileId]);
+
   return (
     <div
       className="full-box file"
-      onClick={() => {
-        // TODO move this logic out of here
-        setActiveFileId(key);
-        if (!tabList.includes(key)) {
-          setTabList([...tabList, key]);
-        }
-      }}
+      onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -37,14 +41,12 @@ export const File = ({
         <i
           className="bx bxs-edit utilities"
           style={{ color: '#abdafb' }}
-          onClick={() => {
-            renameFile(key);
-          }}
+          onClick={handleRenameClick}
         ></i>
         <i
           className="bx bx-trash"
           style={{ color: '#eb336c' }}
-          onClick={handleDeleteFileClick(key)}
+          onClick={handleDeleteClick}
         ></i>
       </div>
     </div>

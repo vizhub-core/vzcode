@@ -5,11 +5,9 @@ import './styles.css';
 export const Sidebar = ({
   createFile,
   data,
-  setActiveFileId,
-  tabList,
-  setTabList,
   renameFile,
   handleDeleteFileClick,
+  handleFileClick,
   setSettings,
   settings,
 }) => {
@@ -35,12 +33,11 @@ export const Sidebar = ({
         ? Object.keys(data).map((key) => (
             <File
               key={key}
+              fileId={key}
               name={data[key].name}
-              setActiveFileId={setActiveFileId}
-              tabList={tabList}
-              setTabList={setTabList}
               renameFile={renameFile}
               handleDeleteFileClick={handleDeleteFileClick}
+              handleFileClick={handleFileClick}
             />
           ))
         : null}
