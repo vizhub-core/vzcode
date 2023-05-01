@@ -9,7 +9,7 @@ import './styles.css';
 export const Sidebar = ({
   createFile,
   data,
-  renameFile,
+  handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
   setSettings,
@@ -38,18 +38,25 @@ export const Sidebar = ({
         </div>
       </div>
       {fileTree
-        ? fileTree.children.map(({ name, fileId, file }) =>
+        ? fileTree.children.map(({ name, fileId, file, children }) =>
             file ? (
               <File
                 key={fileId}
                 fileId={fileId}
                 name={name}
-                renameFile={renameFile}
+                handleRenameFileClick={handleRenameFileClick}
                 handleDeleteFileClick={handleDeleteFileClick}
                 handleFileClick={handleFileClick}
               />
             ) : (
-              <Directory key={name} name={name} />
+              <Directory
+                key={name}
+                name={name}
+                children={children}
+                handleRenameFileClick={handleRenameFileClick}
+                handleDeleteFileClick={handleDeleteFileClick}
+                handleFileClick={handleFileClick}
+              />
             )
           )
         : null}

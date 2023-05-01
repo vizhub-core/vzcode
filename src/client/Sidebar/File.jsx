@@ -4,7 +4,7 @@ import { Item } from './Item';
 export const File = ({
   name,
   fileId,
-  renameFile,
+  handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
 }) => {
@@ -17,7 +17,7 @@ export const File = ({
   }, [fileId]);
 
   const handleRenameClick = useCallback(() => {
-    renameFile(fileId);
+    handleRenameFileClick(fileId);
   }, [fileId]);
 
   return (

@@ -82,3 +82,8 @@
 .vz-sidebar .hover-name {
   max-width: 130px;
 }
+
+/* Responsible for indenting directories */
+.vz-sidebar .indentation {
+  margin-left: 10px;
+}

@@ -137,7 +137,7 @@ function App() {
   );
 
   // Called when a file in the sidebar is double-clicked.
-  const renameFile = useCallback(
+  const handleRenameFileClick = useCallback(
     (key) => {
       const newName = prompt('Enter new name');
       if (newName) {
@@ -237,7 +237,7 @@ function App() {
       <Sidebar
         createFile={createFile}
         data={data}
-        renameFile={renameFile}
+        handleRenameFileClick={handleRenameFileClick}
         handleDeleteFileClick={handleDeleteFileClick}
         handleFileClick={handleFileClick}
         setSettings={setSettings}
