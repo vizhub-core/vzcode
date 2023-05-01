@@ -1,4 +1,5 @@
 import { disableSettings } from '../featureFlags';
+import { File } from './File';
 import './styles.css';
 
 export const Sidebar = ({
@@ -7,8 +8,6 @@ export const Sidebar = ({
   setActiveFileId,
   tabList,
   setTabList,
-  utils,
-  setUtils,
   renameFile,
   handleDeleteFileClick,
   setSettings,
@@ -17,7 +16,7 @@ export const Sidebar = ({
   return (
     <div className="vz-sidebar">
       <div className="files">
-        <div className="full-Box">
+        <div className="full-box">
           <div>
             <a className="link-name" href="#">
               Files
@@ -34,41 +33,15 @@ export const Sidebar = ({
       </div>
       {data
         ? Object.keys(data).map((key) => (
-            <div className="file" key={key}>
-              <div
-                className="full-Box"
-                onClick={() => {
-                  setActiveFileId(key);
-                  if (!tabList.includes(key)) {
-                    setTabList([...tabList, key]);
-                  }
-                }}
-                onMouseEnter={() => {
-                  setUtils(key);
-                }}
-                onMouseLeave={() => {
-                  setUtils(null);
-                }}
-              >
-                <div className={utils === key ? 'hover-name' : 'name'}>
-                  {data[key].name}
-                </div>
-                <div className={utils === key ? 'utils' : 'noUtils'}>
-                  <i
-                    className="bx bxs-edit utilities"
-                    style={{ color: '#abdafb' }}
-                    onClick={() => {
-                      renameFile(key);
-                    }}
-                  ></i>
-                  <i
-                    className="bx bx-trash"
-                    style={{ color: '#eb336c' }}
-                    onClick={handleDeleteFileClick(key)}
-                  ></i>
-                </div>
-              </div>
-            </div>
+            <File
+              key={key}
+              name={data[key].name}
+              setActiveFileId={setActiveFileId}
+              tabList={tabList}
+              setTabList={setTabList}
+              renameFile={renameFile}
+              handleDeleteFileClick={handleDeleteFileClick}
+            />
           ))
         : null}
       {disableSettings ? null : (

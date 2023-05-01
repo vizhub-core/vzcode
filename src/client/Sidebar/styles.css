@@ -1,32 +1,20 @@
-/* TODO overhaul CSS to use Flexbox for entire sidebar */
-
 .vz-sidebar {
+  /* TODO remove position: fixed, overhaul CSS to use Flexbox for entire app */
+
   position: fixed;
   top: 0;
   left: 0;
   height: 100%;
   width: 200px;
   background: rgb(54, 65, 89);
-  z-index: 100;
-  transition: all 0.5s ease;
 }
 
-.vz-sidebar .full-Box {
-  width: inherit;
-  height: inherit;
+.vz-sidebar .full-box {
   padding: 7px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-}
-
-.vz-sidebar .link-name {
-  margin-top: 30px;
-  margin-left: 10px;
-  color: rgb(154, 160, 172);
-  font-size: 12px;
-  text-decoration: none;
 }
 
 .vz-sidebar .file {
@@ -41,6 +29,13 @@
   border-radius: 5px;
 }
 
+.vz-sidebar .link-name {
+  margin-top: 30px;
+  margin-left: 10px;
+  color: rgb(154, 160, 172);
+  font-size: 12px;
+  text-decoration: none;
+}
 
 /* TODO consistent naming new-btn */
 .vz-sidebar .newBTN {

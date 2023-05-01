@@ -48,10 +48,6 @@ function App() {
   // The current theme.
   const [theme, setTheme] = useState('OneDark');
 
-  // The currently hovered over file, for showing
-  // "utils", meaning buttons for rename and delete.
-  const [utils, setUtils] = useState(false);
-
   // True to show the settings modal.
   const [settings, setSettings] = useState(false);
 
@@ -234,8 +230,6 @@ function App() {
         setActiveFileId={setActiveFileId}
         tabList={tabList}
         setTabList={setTabList}
-        utils={utils}
-        setUtils={setUtils}
         renameFile={renameFile}
         handleDeleteFileClick={handleDeleteFileClick}
         setSettings={setSettings}
