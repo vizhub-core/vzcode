@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
+import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { File } from './File';
 import { Directory } from './Directory';
@@ -15,9 +16,12 @@ export const Sidebar = ({
   setSettings,
   settings,
 }) => {
-  // console.log(data);
-  const fileTree = useMemo(() => (data ? getFileTree(data) : null), [data]);
-  console.log(fileTree);
+  const fileTree = useMemo(
+    () => (data ? sortFileTree(getFileTree(data)) : null),
+    [data]
+  );
+
+  // console.log(JSON.stringify(fileTree, null, 2));
 
   return (
     <div className="vz-sidebar">
@@ -38,8 +42,9 @@ export const Sidebar = ({
         </div>
       </div>
       {fileTree
-        ? fileTree.children.map(({ name, fileId, file, children }) =>
-            file ? (
+        ? fileTree.children.map(({ name, path, fileId, file, children }) => {
+            // console.log(file ? fileId : path);
+            return file ? (
               <File
                 key={fileId}
                 fileId={fileId}
@@ -50,15 +55,15 @@ export const Sidebar = ({
               />
             ) : (
               <Directory
-                key={name}
+                key={path}
                 name={name}
                 children={children}
                 handleRenameFileClick={handleRenameFileClick}
                 handleDeleteFileClick={handleDeleteFileClick}
                 handleFileClick={handleFileClick}
               />
-            )
-          )
+            );
+          })
         : null}
       {disableSettings ? null : (
         <div className="settings" onClick={() => setSettings(!settings)}>

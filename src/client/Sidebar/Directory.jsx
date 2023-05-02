@@ -36,8 +36,10 @@ export const Directory = ({
       </Item>
       {children ? (
         <div className="indentation">
-          {children.map(({ name, fileId, file, children }) =>
-            file ? (
+          {children.map(({ name, path, fileId, file, children }) => {
+            // console.log(file ? fileId : path);
+            // TODO remove this duplication
+            return file ? (
               <File
                 key={fileId}
                 fileId={fileId}
@@ -48,15 +50,15 @@ export const Directory = ({
               />
             ) : (
               <Directory
-                key={name}
+                key={path}
                 name={name}
                 children={children}
                 handleRenameFileClick={handleRenameFileClick}
                 handleDeleteFileClick={handleDeleteFileClick}
                 handleFileClick={handleFileClick}
               />
-            )
-          )}
+            );
+          })}
         </div>
       ) : null}
     </>
