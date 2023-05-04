@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
-import { File } from './File';
+import { FileOrDirectory } from './FileOrDirectory';
 
 // TODO proper icons
 const directoryClosedIcon = '>';
@@ -36,29 +36,15 @@ export const Directory = ({
       </Item>
       {children ? (
         <div className="indentation">
-          {children.map(({ name, path, fileId, file, children }) => {
-            // console.log(file ? fileId : path);
-            // TODO remove this duplication
-            return file ? (
-              <File
-                key={fileId}
-                fileId={fileId}
-                name={name}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-              />
-            ) : (
-              <Directory
-                key={path}
-                name={name}
-                children={children}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-              />
-            );
-          })}
+          {children.map((entity) => (
+            <FileOrDirectory
+              entity={entity}
+              key={entity.fileId || entity.path}
+              handleRenameFileClick={handleRenameFileClick}
+              handleDeleteFileClick={handleDeleteFileClick}
+              handleFileClick={handleFileClick}
+            />
+          ))}
         </div>
       ) : null}
     </>

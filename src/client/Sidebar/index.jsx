@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
-import { File } from './File';
-import { Directory } from './Directory';
+import { FileOrDirectory } from './FileOrDirectory';
 
 import './styles.css';
 
@@ -20,8 +19,6 @@ export const Sidebar = ({
     () => (data ? sortFileTree(getFileTree(data)) : null),
     [data]
   );
-
-  // console.log(JSON.stringify(fileTree, null, 2));
 
   return (
     <div className="vz-sidebar">
@@ -42,28 +39,15 @@ export const Sidebar = ({
         </div>
       </div>
       {fileTree
-        ? fileTree.children.map(({ name, path, fileId, file, children }) => {
-            // console.log(file ? fileId : path);
-            return file ? (
-              <File
-                key={fileId}
-                fileId={fileId}
-                name={name}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-              />
-            ) : (
-              <Directory
-                key={path}
-                name={name}
-                children={children}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-              />
-            );
-          })
+        ? fileTree.children.map((entity) => (
+            <FileOrDirectory
+              entity={entity}
+              key={entity.fileId || entity.path}
+              handleRenameFileClick={handleRenameFileClick}
+              handleDeleteFileClick={handleDeleteFileClick}
+              handleFileClick={handleFileClick}
+            />
+          ))
         : null}
       {disableSettings ? null : (
         <div className="settings" onClick={() => setSettings(!settings)}>

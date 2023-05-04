@@ -211,7 +211,7 @@ function App() {
   const fileNameSplit = (fileName) => {
     const split = fileName.split('/');
     return split[split.length - 1];
-  }
+  };
 
   return (
     <>
