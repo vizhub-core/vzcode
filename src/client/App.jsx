@@ -208,6 +208,11 @@ function App() {
     setSettings(false);
   }, []);
 
+  const fileNameSplit = (fileName) => {
+    const split = fileName.split('/');
+    return split[split.length - 1];
+  }
+
   return (
     <>
       <Settings
@@ -226,7 +231,7 @@ function App() {
               setActiveFileId(fileId);
             }}
           >
-            {tabValid ? data[fileId].name : ''}
+            {tabValid ? fileNameSplit(data[fileId].name) : ''}
             <div
               className={activeFileId ? 'bx bx-x tab-close' : ''}
               onClick={handleCloseTabClick(fileId)}
