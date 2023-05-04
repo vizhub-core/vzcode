@@ -21,7 +21,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: left;
+  justify-content: space-between;
   cursor: pointer;
   margin: 0 10px;
   color: rgb(219, 221, 225);
@@ -42,8 +42,11 @@
   cursor: pointer;
 }
 
+.vz-sidebar .utils {
+  display: flex;
+}
+
 .vz-sidebar .utilities {
-  justify-content: right;
   margin-right: 3px;
 }
 
@@ -74,14 +77,14 @@
   white-space: nowrap;
   overflow: hidden;
 }
-
+/* 
 .vz-sidebar .name {
   max-width: 200px;
 }
 
 .vz-sidebar .hover-name {
   max-width: 130px;
-}
+} */
 
 /* Responsible for indenting directories */
 .vz-sidebar .indentation {
