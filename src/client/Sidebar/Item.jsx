@@ -18,12 +18,12 @@ export const Item = ({
 
   return (
     <div
-      className="full-box file"
+      className="full-box file-or-directory"
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className={isHovered ? 'hover-name' : 'name'}>{children}</div>
+      <div className="name">{children}</div>
       {isHovered ? (
         <div className="utils">
           <i

@@ -17,7 +17,7 @@
   justify-content: space-between;
 }
 
-.vz-sidebar .file {
+.vz-sidebar .file-or-directory {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -66,27 +66,23 @@
   border-radius: 5px;
 }
 
-.vz-sidebar .file:hover,
+.vz-sidebar .file-or-directory:hover,
 .vz-sidebar .settings:hover {
   background-color: rgb(74, 84, 105);
 }
 
-.vz-sidebar .name,
-.vz-sidebar .hover-name {
+.vz-sidebar .name {
+  display: flex;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
-/* 
-.vz-sidebar .name {
-  max-width: 200px;
-}
-
-.vz-sidebar .hover-name {
-  max-width: 130px;
-} */
 
 /* Responsible for indenting directories */
 .vz-sidebar .indentation {
   margin-left: 20px;
+}
+
+.vz-sidebar .arrow-wrapper {
+  margin-right: 4px;
 }

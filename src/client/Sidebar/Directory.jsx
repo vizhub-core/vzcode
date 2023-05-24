@@ -35,7 +35,7 @@ export const Directory = ({
       >
         <div
           className="arrow-wrapper"
-          style={{ rotate: `rotate(${isOpen ? 90 : 0}deg)` }}
+          style={{ transform: `rotate(${isOpen ? 90 : 0}deg)` }}
         >
           <DirectoryArrowSVG />
         </div>
