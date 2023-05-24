@@ -3,6 +3,7 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { FileOrDirectory } from './FileOrDirectory';
+import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.css';
 
@@ -19,6 +20,8 @@ export const Sidebar = ({
     () => (data ? sortFileTree(getFileTree(data)) : null),
     [data]
   );
+
+  const { openDirectories, toggleDirectory } = useOpenDirectories();
 
   return (
     <div className="vz-sidebar">
@@ -46,6 +49,8 @@ export const Sidebar = ({
               handleRenameFileClick={handleRenameFileClick}
               handleDeleteFileClick={handleDeleteFileClick}
               handleFileClick={handleFileClick}
+              openDirectories={openDirectories}
+              toggleDirectory={toggleDirectory}
             />
           ))
         : null}

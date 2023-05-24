@@ -3,19 +3,19 @@ import { Item } from './Item';
 import { FileOrDirectory } from './FileOrDirectory';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
 
-// TODO dynamically open and close
-const isOpen = true;
-
 export const Directory = ({
   name,
+  path,
   children,
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
+  openDirectories,
+  toggleDirectory,
 }) => {
   const handleClick = useCallback(() => {
-    console.log('TODO handleDirectoryClick');
-  }, []);
+    toggleDirectory(path);
+  }, [toggleDirectory]);
 
   const handleDeleteClick = useCallback(() => {
     console.log('TODO handleDeleteDirectoryClick');
@@ -25,6 +25,7 @@ export const Directory = ({
     console.log('TODO handleRenameDirectoryClick');
   }, []);
 
+  const isOpen = openDirectories[path];
   return (
     <>
       <Item
@@ -41,7 +42,7 @@ export const Directory = ({
         </div>
         {name}
       </Item>
-      {children ? (
+      {children && isOpen ? (
         <div className="indentation">
           {children.map((entity) => (
             <FileOrDirectory
@@ -50,6 +51,8 @@ export const Directory = ({
               handleRenameFileClick={handleRenameFileClick}
               handleDeleteFileClick={handleDeleteFileClick}
               handleFileClick={handleFileClick}
+              openDirectories={openDirectories}
+              toggleDirectory={toggleDirectory}
             />
           ))}
         </div>
