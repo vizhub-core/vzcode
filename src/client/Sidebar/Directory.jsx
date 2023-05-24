@@ -1,9 +1,10 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
 import { FileOrDirectory } from './FileOrDirectory';
+import { DirectoryArrowSVG } from './DirectoryArrowSVG';
 
-// TODO proper icons
-const directoryClosedIcon = '>';
+// TODO dynamically open and close
+const isOpen = true;
 
 export const Directory = ({
   name,
@@ -32,7 +33,13 @@ export const Directory = ({
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
       >
-        {directoryClosedIcon} {name}
+        <div
+          className="arrow-wrapper"
+          style={{ rotate: `rotate(${isOpen ? 90 : 0}deg)` }}
+        >
+          <DirectoryArrowSVG />
+        </div>
+        {name}
       </Item>
       {children ? (
         <div className="indentation">
