@@ -5,6 +5,7 @@ import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
+import { Sidebar } from './Sidebar';
 import './style.css';
 
 // Register our custom JSON1 OT type that supports presence.
@@ -17,10 +18,6 @@ const { Connection } = ShareDBClient;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
-
-// A feature flag to disable settings for release, until it's completed.
-// See https://vitejs.dev/guide/env-and-mode.html
-const disableSettings = import.meta.env.VITE_DISABLE_SETTINGS === 'true';
 
 function App() {
   // The ShareDB document.
@@ -50,10 +47,6 @@ function App() {
 
   // The current theme.
   const [theme, setTheme] = useState('OneDark');
-
-  // The currently hovered over file, for showing
-  // "utils", meaning buttons for rename and delete.
-  const [utils, setUtils] = useState(false);
 
   // True to show the settings modal.
   const [settings, setSettings] = useState(false);
@@ -144,7 +137,7 @@ function App() {
   );
 
   // Called when a file in the sidebar is double-clicked.
-  const renameFile = useCallback(
+  const handleRenameFileClick = useCallback(
     (key) => {
       const newName = prompt('Enter new name');
       if (newName) {
@@ -176,6 +169,16 @@ function App() {
     [shareDBDoc, closeTab]
   );
 
+  const handleFileClick = useCallback(
+    (fileId) => {
+      setActiveFileId(fileId);
+      if (!tabList.includes(fileId)) {
+        setTabList([...tabList, fileId]);
+      }
+    },
+    [tabList]
+  );
+
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
     (fileId) => (event) => {
@@ -205,6 +208,11 @@ function App() {
     setSettings(false);
   }, []);
 
+  const fileNameSplit = (fileName) => {
+    const split = fileName.split('/');
+    return split[split.length - 1];
+  };
+
   return (
     <>
       <Settings
@@ -223,7 +231,7 @@ function App() {
               setActiveFileId(fileId);
             }}
           >
-            {tabValid ? data[fileId].name : ''}
+            {tabValid ? fileNameSplit(data[fileId].name) : ''}
             <div
               className={activeFileId ? 'bx bx-x tab-close' : ''}
               onClick={handleCloseTabClick(fileId)}
@@ -231,74 +239,15 @@ function App() {
           </div>
         ))}
       </div>
-      <div className="sidebar show">
-        <div className="nav-links">
-          <div className="show-menu">
-            <div className="sub-menu">
-              <div className="files">
-                <div className="full-Box">
-                  <div>
-                    <a className="link-name" href="#">
-                      Files
-                    </a>
-                  </div>
-                  <div>
-                    <i
-                      className="bx bxs-file-plus newBTN"
-                      style={{ color: '#dbdde1' }}
-                      onClick={createFile}
-                    ></i>
-                  </div>
-                </div>
-              </div>
-              {data
-                ? Object.keys(data).map((key) => (
-                    <div className="file" key={key}>
-                      <div
-                        className="full-Box"
-                        onClick={() => {
-                          setActiveFileId(key);
-                          if (!tabList.includes(key)) {
-                            setTabList([...tabList, key]);
-                          }
-                        }}
-                        onMouseEnter={() => {
-                          setUtils(key);
-                        }}
-                        onMouseLeave={() => {
-                          setUtils(null);
-                        }}
-                      >
-                        <div className={utils === key ? 'hover-name' : 'name'}>
-                          {data[key].name}
-                        </div>
-                        <div className={utils === key ? 'utils' : 'noUtils'}>
-                          <i
-                            className="bx bxs-edit utilities"
-                            style={{ color: '#abdafb' }}
-                            onClick={() => {
-                              renameFile(key);
-                            }}
-                          ></i>
-                          <i
-                            className="bx bx-trash"
-                            style={{ color: '#eb336c' }}
-                            onClick={handleDeleteFileClick(key)}
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                : null}
-            </div>
-          </div>
-          {disableSettings ? null : (
-            <div className="settings" onClick={() => setSettings(!settings)}>
-              Settings
-            </div>
-          )}
-        </div>
-      </div>
+      <Sidebar
+        createFile={createFile}
+        data={data}
+        handleRenameFileClick={handleRenameFileClick}
+        handleDeleteFileClick={handleDeleteFileClick}
+        handleFileClick={handleFileClick}
+        setSettings={setSettings}
+        settings={settings}
+      />
       {data && activeFileId ? (
         <CodeEditor
           className="editor"

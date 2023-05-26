@@ -53,6 +53,7 @@
     "@teamwork/websocket-json-stream": "^2.0.0",
     "codemirror": "^6.0.1",
     "codemirror-ot": "^4.0.0",
+    "d3-array": "^3.2.3",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
