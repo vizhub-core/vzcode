@@ -210,7 +210,6 @@ function App() {
 
   const fileNameSplit = (fileName) => {
     const split = fileName.split('/');
-    console.log(split[split.length - 2]);
     if (split.length === 1) return split[split.length - 1];
     return split[split.length - 2] + '/' + split[split.length - 1];
   };
