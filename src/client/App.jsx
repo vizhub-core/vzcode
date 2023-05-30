@@ -210,6 +210,7 @@ function App() {
 
   const fileNameSplit = (fileName) => {
     const split = fileName.split('/');
+    //adding the folder that the is in to the tab name
     if (split.length === 1) return split[split.length - 1];
     return split[split.length - 2] + '/' + split[split.length - 1];
   };
