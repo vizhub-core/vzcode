@@ -132,12 +132,12 @@ March 2023
   - [x] UX for adding new files, renaming files, deleting files
   - [x] Implement presence (the ability to see the cursors of others in real time)
   - [x] Publish an early release to NPM
-- [ ] Test out how it works using tunneling services such as NGrok
+- [x] Test out how it works using tunneling services such as NGrok
 
 April 2023
 
-- [ ] Add support for nested directories, including:
-- [ ] Develop a tree-based sidebar UI allowing directory navigation
+- [x] Add support for nested directories, including:
+- [x] Develop a tree-based sidebar UI allowing directory navigation
 - [ ] Dogfood the product and try to collaboratively develop something, maybe a data visualization
 - [ ] Gather feedback from early users and iterate based on that
 - [ ] Publish a YouTube video presentation of the work to date
@@ -145,8 +145,7 @@ April 2023
 ## Team
 
 - Curran Kelleher
-- Students from [RPI RCOS](https://rcos.io/)
-- Additional external collaborators, TBD
+- Anooj Pai from [RPI RCOS](https://rcos.io/)
 - Contributions welcome!
 
 ## Spaces
