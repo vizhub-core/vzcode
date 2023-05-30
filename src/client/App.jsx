@@ -181,7 +181,7 @@ function App() {
 
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
-    (fileId) => (event) => {
+    (fileId, event) => {
       // Stop propagation so that the outer listener doesn't fire,
       // which would try to open this file in a tab.
       event.stopPropagation();

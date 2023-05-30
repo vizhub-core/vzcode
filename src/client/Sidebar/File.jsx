@@ -12,9 +12,12 @@ export const File = ({
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
 
-  const handleDeleteClick = useCallback(() => {
-    handleDeleteFileClick(fileId);
-  }, [fileId]);
+  const handleDeleteClick = useCallback(
+    (event) => {
+      handleDeleteFileClick(fileId, event);
+    },
+    [fileId]
+  );
 
   const handleRenameClick = useCallback(() => {
     handleRenameFileClick(fileId);
