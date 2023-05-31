@@ -7,6 +7,7 @@ import { diff } from './diff';
 import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
 import './style.css';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -46,7 +47,7 @@ function App() {
   const [tabList, setTabList] = useState([]);
 
   // The current theme.
-  const [theme, setTheme] = useState('OneDark');
+  const [theme, setTheme] = useState(oneDark);
 
   // True to show the settings modal.
   const [settings, setSettings] = useState(false);

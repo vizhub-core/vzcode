@@ -4,7 +4,6 @@ import { javascript } from '@codemirror/lang-javascript';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from '../ot';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
@@ -23,6 +22,7 @@ export const getOrCreateEditor = ({
   shareDBDoc,
   localPresence,
   docPresence,
+  theme
 }) => {
   const data = shareDBDoc.data;
 
@@ -31,7 +31,7 @@ export const getOrCreateEditor = ({
   // The path for this file in the ShareDB document.
   const path = [fileId, 'text'];
 
-  const extensions = [
+  let extensions = [
     // This plugin implements multiplayer editing,
     // real-time synchronozation of changes across clients.
     // Does not deal with showing others' cursors.
@@ -49,7 +49,7 @@ export const getOrCreateEditor = ({
     json1PresenceDisplay({ path, docPresence }),
 
     basicSetup,
-    oneDark,
+    theme,
   ];
 
   if (
@@ -68,8 +68,7 @@ export const getOrCreateEditor = ({
   }
 
   let editor = editorCache.get(fileId);
-  if (!editor) {
-    // Cache miss --> mint a new editor.
+  if (!editor || editor) {
     editor = new EditorView({
       state: EditorState.create({
         doc: data[fileId].text,
