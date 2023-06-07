@@ -34,10 +34,12 @@ const saveTimes = [
   { value: 30, label: '30 seconds' },
 ];
 
-export const Settings = ({ show, onClose, setTheme }) => {
+export const Settings = ({ show, onClose, setTheme, editor }) => {
   const handleChange = useCallback((selectedOption) => {
     setTheme(selectedOption.value);
-
+    editor.dispatch({
+      effects: themeSet.reconfigure(selectedOption.value),
+    });
   }, []);
 
   const handleSaveTimeChange = useCallback((selectedOption) => {

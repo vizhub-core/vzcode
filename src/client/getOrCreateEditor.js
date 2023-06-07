@@ -1,5 +1,5 @@
 import { EditorView, basicSetup } from 'codemirror';
-import { EditorState } from '@codemirror/state';
+import { Compartment, EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
@@ -31,7 +31,9 @@ export const getOrCreateEditor = ({
   // The path for this file in the ShareDB document.
   const path = [fileId, 'text'];
 
-  let extensions = [
+  let themeSet = new Compartment();
+
+  const extensions = [
     // This plugin implements multiplayer editing,
     // real-time synchronozation of changes across clients.
     // Does not deal with showing others' cursors.
@@ -49,7 +51,7 @@ export const getOrCreateEditor = ({
     json1PresenceDisplay({ path, docPresence }),
 
     basicSetup,
-    theme,
+    themeSet.of(theme),
   ];
 
   if (
@@ -68,7 +70,7 @@ export const getOrCreateEditor = ({
   }
 
   let editor = editorCache.get(fileId);
-  if (!editor || editor) {
+  if (!editor) {
     editor = new EditorView({
       state: EditorState.create({
         doc: data[fileId].text,
