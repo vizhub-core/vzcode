@@ -4,6 +4,23 @@ Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/pr
 
 ![image](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
 
+## Development
+
+To get set up locally, run:
+
+```
+cd vzcode
+npm install
+npm run test-interactive #This starts the server
+```
+
+Once the server is running, you can get hot reloading (of the client only) with:
+
+```
+npm run dev
+```
+
+
 ## Features
 
 This project is nascent but has enough features to actually use, a minimum viable product (MVP):
