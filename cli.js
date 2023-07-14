@@ -134,6 +134,7 @@ server.listen(port, () => {
 
 process.stdout.on('error', function (err) {
   if (err.code == "EPIPE") {
+    console.log("EPIPE error!")
     process.exit(0);
   }
 });
