@@ -7,6 +7,8 @@ import { diff } from './diff';
 import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
 import './style.css';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { render } from 'react-dom';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -46,7 +48,7 @@ function App() {
   const [tabList, setTabList] = useState([]);
 
   // The current theme.
-  const [theme, setTheme] = useState('OneDark');
+  const [theme, setTheme] = useState(oneDark);
 
   // True to show the settings modal.
   const [settings, setSettings] = useState(false);
@@ -215,12 +217,22 @@ function App() {
     return split[split.length - 2] + '/' + split[split.length - 1];
   };
 
+  const editor = <CodeEditor
+    className="editor"
+    shareDBDoc={shareDBDoc}
+    localPresence={localPresence}
+    docPresence={docPresence}
+    activeFileId={activeFileId}
+    theme={theme}
+  />;
+
   return (
     <>
       <Settings
         show={settings}
         onClose={handleSettingsClose}
         setTheme={setTheme}
+        editor={editor}
       />
       <div className="tab-list">
         {tabList.map((fileId) => (
@@ -251,14 +263,7 @@ function App() {
         settings={settings}
       />
       {data && activeFileId ? (
-        <CodeEditor
-          className="editor"
-          shareDBDoc={shareDBDoc}
-          localPresence={localPresence}
-          docPresence={docPresence}
-          activeFileId={activeFileId}
-          theme={theme}
-        />
+        editor
       ) : null}
     </>
   );
