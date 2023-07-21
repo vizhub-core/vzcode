@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -6,9 +6,8 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
-import './style.css';
+import './style.scss';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { render } from 'react-dom';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -217,55 +216,58 @@ function App() {
     return split[split.length - 2] + '/' + split[split.length - 1];
   };
 
-  const editor = <CodeEditor
-    className="editor"
-    shareDBDoc={shareDBDoc}
-    localPresence={localPresence}
-    docPresence={docPresence}
-    activeFileId={activeFileId}
-    theme={theme}
-  />;
-
   return (
-    <>
-      <Settings
-        show={settings}
-        onClose={handleSettingsClose}
-        setTheme={setTheme}
-        editor={editor}
-      />
-      <div className="tab-list">
-        {tabList.map((fileId) => (
-          <div
-            key={fileId}
-            className={
-              tabValid ? `tab${fileId === activeFileId ? ' active' : ''}` : null
-            }
-            onClick={() => {
-              setActiveFileId(fileId);
-            }}
-          >
-            {tabValid ? fileNameSplit(data[fileId].name) : ''}
-            <div
-              className={activeFileId ? 'bx bx-x tab-close' : ''}
-              onClick={handleCloseTabClick(fileId)}
-            ></div>
-          </div>
-        ))}
+    <div className="app">
+      <div className="left">
+        <Sidebar
+          createFile={createFile}
+          data={data}
+          handleRenameFileClick={handleRenameFileClick}
+          handleDeleteFileClick={handleDeleteFileClick}
+          handleFileClick={handleFileClick}
+          setSettings={setSettings}
+          settings={settings}
+        />
+        <Settings
+          show={settings}
+          onClose={handleSettingsClose}
+          setTheme={setTheme}
+        />
       </div>
-      <Sidebar
-        createFile={createFile}
-        data={data}
-        handleRenameFileClick={handleRenameFileClick}
-        handleDeleteFileClick={handleDeleteFileClick}
-        handleFileClick={handleFileClick}
-        setSettings={setSettings}
-        settings={settings}
-      />
-      {data && activeFileId ? (
-        editor
-      ) : null}
-    </>
+      <div className="right">
+        <div className="tab-list">
+          {tabList.map((fileId) => (
+            <div
+              key={fileId}
+              className={
+                tabValid
+                  ? `tab${fileId === activeFileId ? ' active' : ''}`
+                  : null
+              }
+              onClick={() => {
+                setActiveFileId(fileId);
+              }}
+            >
+              {tabValid ? fileNameSplit(data[fileId].name) : ''}
+              <div
+                className={activeFileId ? 'bx bx-x tab-close' : ''}
+                onClick={handleCloseTabClick(fileId)}
+              ></div>
+            </div>
+          ))}
+        </div>
+        {data && activeFileId ? (
+          <CodeEditor
+            className="editor"
+            shareDBDoc={shareDBDoc}
+            localPresence={localPresence}
+            docPresence={docPresence}
+            activeFileId={activeFileId}
+            theme={theme}
+          />
+        ) : null}
+      </div>
+    </div>
   );
 }
 

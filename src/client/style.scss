@@ -1,0 +1,91 @@
+:root {
+  --vzcode-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(41, 44, 52);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(37, 37, 38);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+html,
+body,
+#root,
+.app {
+  height: 100%;
+}
+.app {
+  /* TODO use a variable for this */
+  background-color: rgb(41, 44, 52);
+
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+
+  .left {
+    display: flex;
+  }
+  .right {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    .tab-list {
+      display: flex;
+      background-color: rgb(37, 37, 38);
+
+      .tab {
+        background: rgb(45, 45, 45);
+        color: #fff;
+        font-family: var(--vzcode-font-family);
+        align-items: center;
+        display: flex;
+        padding-top: 2px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        margin-top: 5px;
+        margin-left: 2px;
+        margin-right: 2px;
+        cursor: pointer;
+
+        .tab-close {
+          margin-left: 5px;
+        }
+        .tab-close:hover {
+          border-radius: 30%;
+          background-color: rgb(37, 37, 38);
+        }
+      }
+      .tab.active {
+        background-color: rgb(41, 44, 52);
+      }
+    }
+
+    .editor {
+      flex: 1;
+      background-color: rgb(41, 44, 52);
+      font-family: var(--vzcode-font-family);
+    }
+  }
+}
+
+.themes {
+  color: rgb(37, 37, 38);
+}
