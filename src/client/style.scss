@@ -9,30 +9,50 @@
     Liberation Mono, monospace;
 }
 
-body {
-  background: rgb(41, 44, 52);
-  font-family: 'Poppins', sans-serif;
-  overflow-x: hidden;
+html,
+body,
+#root,
+.app {
+  height: 100%;
 }
+.app {
+  // background-color: rgb(41, 44, 52);
 
-.tab {
-  width: max-content;
-  height: 30px;
-  background: rgb(45, 45, 45);
-  text-align: center;
-  color: #fff;
-  font-family: var(--vzcode-font-family);
-  justify-content: center;
-  align-items: center;
+  font-family: 'Poppins', sans-serif;
   display: flex;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  margin-top: 5px;
-  margin-left: 2px;
-  margin-right: 2px;
-  cursor: pointer;
+
+  .left {
+    display: flex;
+  }
+  .right {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    .tab-list {
+      display: flex;
+      background-color: rgb(37, 37, 38);
+
+      .tab {
+        background: rgb(45, 45, 45);
+        text-align: center;
+        color: #fff;
+        font-family: var(--vzcode-font-family);
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        padding-top: 2px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        margin-top: 5px;
+        margin-left: 2px;
+        margin-right: 2px;
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .tab.active {
@@ -61,16 +81,6 @@ body {
   background-color: rgb(41, 44, 52);
   color: #fff;
   font-family: var(--vzcode-font-family);
-}
-
-.tab-list {
-  display: flex;
-  flex-direction: row;
-  left: 200px;
-  height: 35px;
-  background: rgb(37, 37, 38);
-  z-index: 100;
-  transition: all 0.5s ease;
 }
 
 .bottom-bar {
