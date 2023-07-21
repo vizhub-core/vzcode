@@ -31,7 +31,8 @@ body,
   height: 100%;
 }
 .app {
-  // background-color: rgb(41, 44, 52);
+  /* TODO use a variable for this */
+  background-color: rgb(41, 44, 52);
 
   font-family: 'Poppins', sans-serif;
   display: flex;

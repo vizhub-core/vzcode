@@ -5,7 +5,7 @@ import { disableSettings } from '../featureFlags';
 import { FileOrDirectory } from './FileOrDirectory';
 import { useOpenDirectories } from './useOpenDirectories';
 
-import './styles.css';
+import './styles.scss';
 
 export const Sidebar = ({
   createFile,
