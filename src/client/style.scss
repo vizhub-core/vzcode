@@ -3,6 +3,27 @@
     Liberation Mono, monospace;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(41, 44, 52);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(37, 37, 38);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 html,
 body,
 #root,
@@ -55,23 +76,13 @@ body,
         background-color: rgb(41, 44, 52);
       }
     }
+
+    .editor {
+      flex: 1;
+      background-color: rgb(41, 44, 52);
+      font-family: var(--vzcode-font-family);
+    }
   }
-}
-
-.editor {
-  flex: 1;
-  background-color: rgb(41, 44, 52);
-  font-family: var(--vzcode-font-family);
-  overflow: auto;
-}
-
-.bottom-bar {
-  bottom: 0;
-  left: 0;
-  height: 20px;
-  background: rgb(45, 45, 45);
-  z-index: 100;
-  transition: all 0.5s ease;
 }
 
 .themes {
