@@ -2,37 +2,10 @@
 /* Google Fonts Import Link */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import url('https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css');
-@import url('https://unpkg.com/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 20px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: rgb(41, 44, 52);
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: rgb(37, 37, 38);
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
+@import url('https://unpkg.com/bootstrap@5.3.0/dist/css/bootstrap.min.css');
 
 :root {
-  --main-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+  --vzcode-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
     Liberation Mono, monospace;
 }
 
@@ -48,7 +21,7 @@ body {
   background: rgb(45, 45, 45);
   text-align: center;
   color: #fff;
-  font-family: var(--main-font-family);
+  font-family: var(--vzcode-font-family);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -80,7 +53,6 @@ body {
 }
 
 .editor {
-  position: relative;
   margin-left: 200px;
   width: 100%;
   height: 100%;
@@ -88,28 +60,23 @@ body {
   bottom: 0;
   background-color: rgb(41, 44, 52);
   color: #fff;
-  font-family: var(--main-font-family);
+  font-family: var(--vzcode-font-family);
 }
 
 .tab-list {
-  position: fixed;
   display: flex;
   flex-direction: row;
-  top: 0;
   left: 200px;
   height: 35px;
-  width: 100%;
   background: rgb(37, 37, 38);
   z-index: 100;
   transition: all 0.5s ease;
 }
 
 .bottom-bar {
-  position: absolute;
   bottom: 0;
   left: 0;
   height: 20px;
-  width: 100%;
   background: rgb(45, 45, 45);
   z-index: 100;
   transition: all 0.5s ease;
