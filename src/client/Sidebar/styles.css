@@ -1,9 +1,4 @@
 .vz-sidebar {
-  /* TODO remove position: fixed, overhaul CSS to use Flexbox for entire app */
-
-  position: fixed;
-  top: 0;
-  left: 0;
   height: 100%;
   width: 200px;
   background: rgb(54, 65, 89);

@@ -217,22 +217,21 @@ function App() {
     return split[split.length - 2] + '/' + split[split.length - 1];
   };
 
-  const editor = <CodeEditor
-    className="editor"
-    shareDBDoc={shareDBDoc}
-    localPresence={localPresence}
-    docPresence={docPresence}
-    activeFileId={activeFileId}
-    theme={theme}
-  />;
-
   return (
     <>
       <Settings
         show={settings}
         onClose={handleSettingsClose}
         setTheme={setTheme}
-        editor={editor}
+      />
+      <Sidebar
+        createFile={createFile}
+        data={data}
+        handleRenameFileClick={handleRenameFileClick}
+        handleDeleteFileClick={handleDeleteFileClick}
+        handleFileClick={handleFileClick}
+        setSettings={setSettings}
+        settings={settings}
       />
       <div className="tab-list">
         {tabList.map((fileId) => (
@@ -253,17 +252,15 @@ function App() {
           </div>
         ))}
       </div>
-      <Sidebar
-        createFile={createFile}
-        data={data}
-        handleRenameFileClick={handleRenameFileClick}
-        handleDeleteFileClick={handleDeleteFileClick}
-        handleFileClick={handleFileClick}
-        setSettings={setSettings}
-        settings={settings}
-      />
       {data && activeFileId ? (
-        editor
+        <CodeEditor
+          className="editor"
+          shareDBDoc={shareDBDoc}
+          localPresence={localPresence}
+          docPresence={docPresence}
+          activeFileId={activeFileId}
+          theme={theme}
+        />
       ) : null}
     </>
   );
