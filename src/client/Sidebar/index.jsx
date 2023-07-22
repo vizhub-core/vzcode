@@ -40,20 +40,20 @@ export const Sidebar = ({
             ></i>
           </div>
         </div>
+        {fileTree
+          ? fileTree.children.map((entity) => (
+              <FileOrDirectory
+                entity={entity}
+                key={entity.fileId || entity.path}
+                handleRenameFileClick={handleRenameFileClick}
+                handleDeleteFileClick={handleDeleteFileClick}
+                handleFileClick={handleFileClick}
+                openDirectories={openDirectories}
+                toggleDirectory={toggleDirectory}
+              />
+            ))
+          : null}
       </div>
-      {fileTree
-        ? fileTree.children.map((entity) => (
-            <FileOrDirectory
-              entity={entity}
-              key={entity.fileId || entity.path}
-              handleRenameFileClick={handleRenameFileClick}
-              handleDeleteFileClick={handleDeleteFileClick}
-              handleFileClick={handleFileClick}
-              openDirectories={openDirectories}
-              toggleDirectory={toggleDirectory}
-            />
-          ))
-        : null}
       {disableSettings ? null : (
         <div className="settings" onClick={() => setSettings(!settings)}>
           Settings
