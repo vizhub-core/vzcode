@@ -2,7 +2,9 @@
   height: 100%;
   width: 200px;
   background: rgb(54, 65, 89);
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   .full-box {
     padding: 7px;
@@ -10,6 +12,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .files {
+    overflow: auto;
   }
 
   .file-or-directory {
@@ -44,18 +50,6 @@
     margin-right: 3px;
   }
 
-  .settings {
-    height: 30px;
-    color: rgb(219, 221, 225);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 0;
-    margin: 10px;
-    border-radius: 5px;
-  }
-
   .file-or-directory:hover,
   .settings:hover {
     background-color: rgb(74, 84, 105);
@@ -74,5 +68,17 @@
 
   .arrow-wrapper {
     margin-right: 4px;
+  }
+
+  .settings {
+    height: 30px;
+    color: rgb(219, 221, 225);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+    margin: 10px;
+    border-radius: 5px;
   }
 }

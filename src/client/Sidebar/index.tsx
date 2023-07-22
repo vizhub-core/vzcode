@@ -6,19 +6,28 @@ import { FileOrDirectory } from './FileOrDirectory';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
+import { Files } from '../../fileTypes';
 
 export const Sidebar = ({
   createFile,
-  data,
+  files,
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
-  setSettings,
-  settings,
+  setIsSettingsOpen,
+  isSettingsOpen,
+}: {
+  createFile: () => void;
+  files: Files;
+  handleRenameFileClick: (fileId: string) => void;
+  handleDeleteFileClick: (fileId: string) => void;
+  handleFileClick: (fileId: string) => void;
+  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
+  isSettingsOpen: boolean;
 }) => {
   const fileTree = useMemo(
-    () => (data ? sortFileTree(getFileTree(data)) : null),
-    [data]
+    () => (files ? sortFileTree(getFileTree(files)) : null),
+    [files]
   );
 
   const { openDirectories, toggleDirectory } = useOpenDirectories();
@@ -40,22 +49,25 @@ export const Sidebar = ({
             ></i>
           </div>
         </div>
+        {fileTree
+          ? fileTree.children.map((entity) => (
+              <FileOrDirectory
+                entity={entity}
+                key={entity.fileId || entity.path}
+                handleRenameFileClick={handleRenameFileClick}
+                handleDeleteFileClick={handleDeleteFileClick}
+                handleFileClick={handleFileClick}
+                openDirectories={openDirectories}
+                toggleDirectory={toggleDirectory}
+              />
+            ))
+          : null}
       </div>
-      {fileTree
-        ? fileTree.children.map((entity) => (
-            <FileOrDirectory
-              entity={entity}
-              key={entity.fileId || entity.path}
-              handleRenameFileClick={handleRenameFileClick}
-              handleDeleteFileClick={handleDeleteFileClick}
-              handleFileClick={handleFileClick}
-              openDirectories={openDirectories}
-              toggleDirectory={toggleDirectory}
-            />
-          ))
-        : null}
       {disableSettings ? null : (
-        <div className="settings" onClick={() => setSettings(!settings)}>
+        <div
+          className="settings"
+          onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+        >
           Settings
         </div>
       )}

@@ -37,9 +37,6 @@ function App() {
   // updated on each change to decouple rendering from ShareDB.
   const [data, setData] = useState(null);
 
-  // True if the file menu is open.
-  const [isFileMenuOpen, setIsFileMenuOpen] = useState(false);
-
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState(null);
 
@@ -50,7 +47,7 @@ function App() {
   const [theme, setTheme] = useState(oneDark);
 
   // True to show the settings modal.
-  const [settings, setSettings] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Set up the connection to ShareDB.
   useEffect(() => {
@@ -192,6 +189,7 @@ function App() {
   );
 
   const createFile = useCallback(() => {
+    // TODO better UI, maybe Bootstrap modal? Maybe edit inline?
     const name = prompt('Enter new file name');
     if (!name) return;
     const currentDocument = shareDBDoc.data;
@@ -206,7 +204,7 @@ function App() {
   const tabValid = data && activeFileId;
 
   const handleSettingsClose = useCallback(() => {
-    setSettings(false);
+    setIsSettingsOpen(false);
   }, []);
 
   const fileNameSplit = (fileName) => {
@@ -221,15 +219,15 @@ function App() {
       <div className="left">
         <Sidebar
           createFile={createFile}
-          data={data}
+          files={data}
           handleRenameFileClick={handleRenameFileClick}
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={handleFileClick}
-          setSettings={setSettings}
-          settings={settings}
+          setIsSettingsOpen={setIsSettingsOpen}
+          isSettingsOpen={isSettingsOpen}
         />
         <Settings
-          show={settings}
+          show={isSettingsOpen}
           onClose={handleSettingsClose}
           setTheme={setTheme}
         />
