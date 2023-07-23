@@ -1,5 +1,6 @@
 import { File } from './File';
 import { Directory } from './Directory';
+import { FileId, FileTree, FileTreeFile } from '../../types';
 
 export const FileOrDirectory = ({
   entity,
@@ -9,14 +10,15 @@ export const FileOrDirectory = ({
   openDirectories,
   toggleDirectory,
 }: {
-  entity;
-  handleRenameFileClick;
-  handleDeleteFileClick;
-  handleFileClick;
-  openDirectories;
-  toggleDirectory;
+  entity: FileTree | FileTreeFile;
+  handleRenameFileClick: (fileId: FileId) => void;
+  handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
+  handleFileClick: (fileId: FileId) => void;
+  openDirectories: string[];
+  toggleDirectory: (path: string) => void;
 }) => {
-  const { name, path, fileId, file, children } = entity;
+  const { name, file, fileId } = entity as FileTreeFile;
+  const { path, children } = entity as FileTree;
   return file ? (
     <File
       fileId={fileId}

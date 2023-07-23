@@ -8,6 +8,7 @@ import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
 import './style.scss';
 import { oneDark } from '@codemirror/theme-one-dark';
+import { FileId } from '../types';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -136,14 +137,14 @@ function App() {
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
-    (key) => {
+    (fileId: FileId) => {
       const newName = prompt('Enter new name');
       if (newName) {
         const currentDocument = shareDBDoc.data;
         const nextDocument = {
           ...currentDocument,
-          [key]: {
-            ...currentDocument[key],
+          [fileId]: {
+            ...currentDocument[fileId],
             name: newName,
           },
         };
@@ -154,21 +155,21 @@ function App() {
   );
 
   const deleteFile = useCallback(
-    (key) => {
+    (fileId: FileId) => {
       // Close the tab in case it's open.
       // TODO consistently use either "key" or "fileId" naming
-      closeTab(key);
+      closeTab(fileId);
 
       const currentDocument = shareDBDoc.data;
       const nextDocument = { ...currentDocument };
-      delete nextDocument[key];
+      delete nextDocument[fileId];
       shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
     [shareDBDoc, closeTab]
   );
 
   const handleFileClick = useCallback(
-    (fileId) => {
+    (fileId: FileId) => {
       setActiveFileId(fileId);
       if (!tabList.includes(fileId)) {
         setTabList([...tabList, fileId]);
@@ -179,7 +180,7 @@ function App() {
 
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
-    (fileId, event) => {
+    (fileId: FileId, event: React.MouseEvent) => {
       // Stop propagation so that the outer listener doesn't fire,
       // which would try to open this file in a tab.
       event.stopPropagation();

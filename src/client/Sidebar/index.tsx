@@ -6,7 +6,7 @@ import { FileOrDirectory } from './FileOrDirectory';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
-import { Files } from '../../types';
+import { FileId, Files } from '../../types';
 
 export const Sidebar = ({
   createFile,
@@ -19,9 +19,9 @@ export const Sidebar = ({
 }: {
   files: Files;
   createFile?: () => void;
-  handleRenameFileClick?: (fileId: string) => void;
-  handleDeleteFileClick?: (fileId: string) => void;
-  handleFileClick?: (fileId: string) => void;
+  handleRenameFileClick?: (fileId: FileId) => void;
+  handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
+  handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
   isSettingsOpen?: boolean;
 }) => {
@@ -52,8 +52,8 @@ export const Sidebar = ({
         {fileTree
           ? fileTree.children.map((entity) => (
               <FileOrDirectory
-                entity={entity}
                 key={entity.fileId || entity.path}
+                entity={entity}
                 handleRenameFileClick={handleRenameFileClick}
                 handleDeleteFileClick={handleDeleteFileClick}
                 handleFileClick={handleFileClick}
