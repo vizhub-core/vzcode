@@ -14,7 +14,7 @@ export const FileOrDirectory = ({
   handleRenameFileClick: (fileId: FileId) => void;
   handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick: (fileId: FileId) => void;
-  openDirectories: string[];
+  openDirectories: { [path: string]: boolean };
   toggleDirectory: (path: string) => void;
 }) => {
   const { name, file, fileId } = entity as FileTreeFile;
