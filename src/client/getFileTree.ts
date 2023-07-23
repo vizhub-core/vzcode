@@ -1,7 +1,10 @@
 // Inspired by
+
+import { Files, FileTree } from '../types';
+
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/FileTree/getFileTree.js
-export const getFileTree = (files) => {
-  const tree = { name: 'files' };
+export const getFileTree = (files: Files): FileTree => {
+  const tree: FileTree = { name: 'files' };
   for (const fileId of Object.keys(files)) {
     const file = files[fileId];
     const path = file.name.split('/');
@@ -11,7 +14,7 @@ export const getFileTree = (files) => {
     // Walk the path.
     for (let i = 0; i < n - 1; i++) {
       // Search for an existing child.
-      let child;
+      let child: FileTree | undefined;
       const name = path[i];
       if (node.children) {
         for (let j = 0; j < node.children.length; j++) {

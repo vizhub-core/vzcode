@@ -6,7 +6,7 @@ import { FileOrDirectory } from './FileOrDirectory';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
-import { Files } from '../../fileTypes';
+import { Files } from '../../types';
 
 export const Sidebar = ({
   createFile,
@@ -17,13 +17,13 @@ export const Sidebar = ({
   setIsSettingsOpen,
   isSettingsOpen,
 }: {
-  createFile: () => void;
   files: Files;
-  handleRenameFileClick: (fileId: string) => void;
-  handleDeleteFileClick: (fileId: string) => void;
-  handleFileClick: (fileId: string) => void;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  isSettingsOpen: boolean;
+  createFile?: () => void;
+  handleRenameFileClick?: (fileId: string) => void;
+  handleDeleteFileClick?: (fileId: string) => void;
+  handleFileClick?: (fileId: string) => void;
+  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
+  isSettingsOpen?: boolean;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),

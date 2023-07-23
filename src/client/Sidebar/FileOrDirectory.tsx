@@ -8,6 +8,13 @@ export const FileOrDirectory = ({
   handleFileClick,
   openDirectories,
   toggleDirectory,
+}: {
+  entity;
+  handleRenameFileClick;
+  handleDeleteFileClick;
+  handleFileClick;
+  openDirectories;
+  toggleDirectory;
 }) => {
   const { name, path, fileId, file, children } = entity;
   return file ? (

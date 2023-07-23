@@ -4,6 +4,7 @@
   "description": "Multiplayer code editor system",
   "main": "index.js",
   "type": "module",
+  "types":"src/types.ts",
   "bin": "src/server/index.js",
   "files": [
     "dist/**",
