@@ -1,10 +1,11 @@
 {
-  "declaration": true,
+  "include": ["src/**/*"],
   "compilerOptions": {
     "jsx": "react-jsx",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
-  "include": ["src/**/*"],
   "//": "TODO - remove this when we have this change: https://github.com/vitest-dev/vitest/issues/3622",
   "exclude": ["test/*.test.ts"]
 }

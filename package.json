@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "bin": "src/server/index.js",
+  "types": "src/types.ts",
   "files": [
     "dist/**",
     "src/**"
@@ -13,7 +14,7 @@
     "test": "vitest",
     "test-interactive": "npm run build; cd test/sampleDirectories/kitchenSink; node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc",
     "dev": "vite",
     "build": "vite build",
     "build-release": "vite build --mode release",

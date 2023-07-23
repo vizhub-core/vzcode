@@ -22,7 +22,7 @@ export const getOrCreateEditor = ({
   shareDBDoc,
   localPresence,
   docPresence,
-  theme
+  theme,
 }) => {
   const data = shareDBDoc.data;
 

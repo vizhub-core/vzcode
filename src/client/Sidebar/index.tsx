@@ -6,7 +6,7 @@ import { FileOrDirectory } from './FileOrDirectory';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
-import { Files } from '../../fileTypes';
+import { Files } from '../../types';
 
 export const Sidebar = ({
   createFile,
