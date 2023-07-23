@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
-import { FileOrDirectory } from './FileOrDirectory';
+import { Listing } from './Listing';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
 import { FileTree, FileTreeFile } from '../../types';
 
-export const Directory = ({
+export const DirectoryListing = ({
   name,
   path,
   children,
@@ -58,7 +58,7 @@ export const Directory = ({
             const { fileId } = entity as FileTreeFile;
             const { path } = entity as FileTree;
             return (
-              <FileOrDirectory
+              <Listing
                 entity={entity}
                 key={fileId || path}
                 handleRenameFileClick={handleRenameFileClick}

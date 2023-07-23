@@ -1,8 +1,10 @@
-import { File } from './File';
-import { Directory } from './Directory';
+import { DirectoryListing } from './DirectoryListing';
 import { FileId, FileTree, FileTreeFile } from '../../types';
+import { FileListing } from './FileListing';
 
-export const FileOrDirectory = ({
+// A "Listing" is a "FileListing" or a "DirectoryListing"
+// that appears in the Sidebar.
+export const Listing = ({
   entity,
   handleRenameFileClick,
   handleDeleteFileClick,
@@ -20,7 +22,7 @@ export const FileOrDirectory = ({
   const { name, file, fileId } = entity as FileTreeFile;
   const { path, children } = entity as FileTree;
   return file ? (
-    <File
+    <FileListing
       fileId={fileId}
       name={name}
       handleRenameFileClick={handleRenameFileClick}
@@ -28,7 +30,7 @@ export const FileOrDirectory = ({
       handleFileClick={handleFileClick}
     />
   ) : (
-    <Directory
+    <DirectoryListing
       name={name}
       path={path}
       children={children}

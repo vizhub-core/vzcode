@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
-import { FileOrDirectory } from './FileOrDirectory';
+import { Listing } from './Listing';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
@@ -51,7 +51,7 @@ export const Sidebar = ({
         </div>
         {fileTree
           ? fileTree.children.map((entity) => (
-              <FileOrDirectory
+              <Listing
                 key={entity.fileId || entity.path}
                 entity={entity}
                 handleRenameFileClick={handleRenameFileClick}
