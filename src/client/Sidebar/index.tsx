@@ -6,7 +6,7 @@ import { Listing } from './Listing';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
-import { FileId, Files } from '../../types';
+import { FileId, FileTree, FileTreeFile, Files } from '../../types';
 
 export const Sidebar = ({
   createFile,
@@ -50,17 +50,21 @@ export const Sidebar = ({
           </div>
         </div>
         {fileTree
-          ? fileTree.children.map((entity) => (
-              <Listing
-                key={entity.fileId || entity.path}
-                entity={entity}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-                openDirectories={openDirectories}
-                toggleDirectory={toggleDirectory}
-              />
-            ))
+          ? fileTree.children.map((entity) => {
+              const { fileId } = entity as FileTreeFile;
+              const { path } = entity as FileTree;
+              return (
+                <Listing
+                  entity={entity}
+                  key={fileId || path}
+                  handleRenameFileClick={handleRenameFileClick}
+                  handleDeleteFileClick={handleDeleteFileClick}
+                  handleFileClick={handleFileClick}
+                  openDirectories={openDirectories}
+                  toggleDirectory={toggleDirectory}
+                />
+              );
+            })
           : null}
       </div>
       {disableSettings ? null : (
