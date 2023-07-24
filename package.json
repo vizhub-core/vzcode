@@ -1,10 +1,10 @@
 {
   "name": "vzcode",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Multiplayer code editor system",
   "main": "index.js",
   "type": "module",
-  "types":"src/types.ts",
+  "types": "src/types.ts",
   "bin": "src/server/index.js",
   "files": [
     "dist/**",
