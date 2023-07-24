@@ -17,16 +17,14 @@ import { useState, useCallback } from 'react';
 
 // Inspired by
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/useOpenDirectories.js
-export const useOpenDirectories = (activeFile) => {
-  //const [openDirectories, setOpenDirectories] = useState(
-  //  initialOpenDirectories(activeFile)
-  //);
-  const [openDirectories, setOpenDirectories] = useState({});
+export const useOpenDirectories = () => {
+  const [openDirectories, setOpenDirectories] = useState<{
+    [path: string]: boolean;
+  }>({});
 
   // TODO consider useReducer to avoid event listener churn
   const toggleDirectory = useCallback(
     (path) => {
-      console.log(openDirectories[path], 'here');
       setOpenDirectories(
         Object.assign({}, openDirectories, {
           [path]: !openDirectories[path],

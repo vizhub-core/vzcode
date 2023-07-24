@@ -1,12 +1,19 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
+import { FileId } from '../../types';
 
-export const File = ({
+export const FileListing = ({
   name,
   fileId,
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
+}: {
+  name: string;
+  fileId: FileId;
+  handleRenameFileClick: (fileId: FileId) => void;
+  handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
+  handleFileClick: (fileId: FileId) => void;
 }) => {
   const handleClick = useCallback(() => {
     handleFileClick(fileId);

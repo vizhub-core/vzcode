@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
-import { FileOrDirectory } from './FileOrDirectory';
+import { Listing } from './Listing';
 import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
-import { Files } from '../../fileTypes';
+import { FileId, FileTree, FileTreeFile, Files } from '../../types';
 
 export const Sidebar = ({
   createFile,
@@ -17,13 +17,13 @@ export const Sidebar = ({
   setIsSettingsOpen,
   isSettingsOpen,
 }: {
-  createFile: () => void;
   files: Files;
-  handleRenameFileClick: (fileId: string) => void;
-  handleDeleteFileClick: (fileId: string) => void;
-  handleFileClick: (fileId: string) => void;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  isSettingsOpen: boolean;
+  createFile?: () => void;
+  handleRenameFileClick?: (fileId: FileId) => void;
+  handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
+  handleFileClick?: (fileId: FileId) => void;
+  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
+  isSettingsOpen?: boolean;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
@@ -50,17 +50,21 @@ export const Sidebar = ({
           </div>
         </div>
         {fileTree
-          ? fileTree.children.map((entity) => (
-              <FileOrDirectory
-                entity={entity}
-                key={entity.fileId || entity.path}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
-                handleFileClick={handleFileClick}
-                openDirectories={openDirectories}
-                toggleDirectory={toggleDirectory}
-              />
-            ))
+          ? fileTree.children.map((entity) => {
+              const { fileId } = entity as FileTreeFile;
+              const { path } = entity as FileTree;
+              return (
+                <Listing
+                  entity={entity}
+                  key={fileId || path}
+                  handleRenameFileClick={handleRenameFileClick}
+                  handleDeleteFileClick={handleDeleteFileClick}
+                  handleFileClick={handleFileClick}
+                  openDirectories={openDirectories}
+                  toggleDirectory={toggleDirectory}
+                />
+              );
+            })
           : null}
       </div>
       {disableSettings ? null : (
