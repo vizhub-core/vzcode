@@ -10,6 +10,7 @@ import './style.scss';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { FileId, Files } from '../types';
 import { TabList } from './TabList';
+import { useOpenDirectories } from './useOpenDirectories';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -50,6 +51,9 @@ function App() {
 
   // True to show the settings modal.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // The set of open directories.
+  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
 
   // Set up the connection to ShareDB.
   useEffect(() => {
@@ -211,6 +215,8 @@ function App() {
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={handleFileClick}
           setIsSettingsOpen={setIsSettingsOpen}
+          isDirectoryOpen={isDirectoryOpen}
+          toggleDirectory={toggleDirectory}
         />
         <Settings
           show={isSettingsOpen}

@@ -3,7 +3,6 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { Listing } from './Listing';
-import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
 import { FileId, FileTree, FileTreeFile, Files } from '../../types';
@@ -15,6 +14,8 @@ export const Sidebar = ({
   handleDeleteFileClick,
   handleFileClick,
   setIsSettingsOpen,
+  isDirectoryOpen,
+  toggleDirectory,
 }: {
   files: Files;
   createFile?: () => void;
@@ -22,13 +23,13 @@ export const Sidebar = ({
   handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
+  isDirectoryOpen: (path: string) => boolean;
+  toggleDirectory: (path: string) => void;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files]
   );
-
-  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
 
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
