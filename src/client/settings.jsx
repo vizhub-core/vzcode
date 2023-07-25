@@ -3,29 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Select from 'react-select';
-import { oneDark } from '@codemirror/theme-one-dark';
-import { okaidia } from '@uiw/codemirror-theme-okaidia';
-import { abcdef } from '@uiw/codemirror-theme-abcdef';
-import { dracula } from '@uiw/codemirror-theme-dracula';
-import { eclipse } from '@uiw/codemirror-theme-eclipse';
-import { githubDark } from '@uiw/codemirror-theme-github';
-import { material } from '@uiw/codemirror-theme-material';
-import { nord } from '@uiw/codemirror-theme-nord';
-import { xcodeLight } from '@uiw/codemirror-theme-xcode';
-
-// TODO document where this list came from
-// TODO research which themes are available for CodeMirror 6
-const themes = [
-  { value: abcdef, label: 'abcdef' },
-  { value: dracula, label: 'darcula' },
-  { value: eclipse, label: 'eclipse' },
-  { value: material, label: 'material' },
-  { value: nord, label: 'nord' },
-  { value: oneDark, label: 'One Dark' },
-  { value: okaidia, label: 'okaidia' },
-  { value: githubDark, label: 'github' },
-  { value: xcodeLight, label: 'xcode' },
-];
+import { themes } from './themes';
 
 const saveTimes = [
   { value: 1, label: '1 second' },
@@ -36,7 +14,7 @@ const saveTimes = [
 
 export const Settings = ({ show, onClose, setTheme, editor }) => {
   const handleChange = useCallback((selectedOption) => {
-    setTheme(selectedOption.value);
+    setTheme(selectedOption.label);
     editor.dispatch({
       effects: themeSet.reconfigure(selectedOption.value),
     });

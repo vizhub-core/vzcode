@@ -1,5 +1,7 @@
 import { useRef, useLayoutEffect } from 'react';
 import { getOrCreateEditor } from './getOrCreateEditor';
+import { FileId } from '../types';
+import { themesByLabel } from './themes';
 
 export const CodeEditor = ({
   activeFileId,
@@ -7,18 +9,24 @@ export const CodeEditor = ({
   localPresence,
   docPresence,
   theme,
+}: {
+  activeFileId: FileId;
+  shareDBDoc: any;
+  localPresence: any;
+  docPresence: any;
+  theme: string;
 }) => {
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>(null);
 
-  // useEffect was buggy in that sometimes ref.current was undefined.
-  // useLayoutEffect seems to solve that issue.
   useLayoutEffect(() => {
+    if (!ref.current) return;
     const editor = getOrCreateEditor({
       fileId: activeFileId,
       shareDBDoc,
       localPresence,
       docPresence,
-      theme,
+      // TODO refactor this, make dynamic themes work
+      theme: themesByLabel[theme],
     });
     ref.current.appendChild(editor.dom);
 

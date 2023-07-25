@@ -6,12 +6,12 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
-import './style.scss';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { FileId, Files } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
+import './style.scss';
+import { defaultTheme } from './themes';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -50,7 +50,7 @@ function App() {
   );
 
   // The current theme.
-  const [theme, setTheme] = useState(oneDark);
+  const [theme, setTheme] = useState<string>(defaultTheme);
 
   // True to show the settings modal.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

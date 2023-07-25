@@ -68,6 +68,7 @@ export const TabList = ({
       {data &&
         tabList.map((fileId: FileId) => (
           <Tab
+            key={fileId}
             fileId={fileId}
             isActive={fileId === activeFileId}
             setActiveFileId={setActiveFileId}
