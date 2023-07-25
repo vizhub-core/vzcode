@@ -8,7 +8,8 @@ import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
 import './style.scss';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { FileId } from '../types';
+import { FileId, Files } from '../types';
+import { TabList } from './TabList';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -36,13 +37,13 @@ function App() {
 
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<Files>(null);
 
   // The id of the currently open file tab.
-  const [activeFileId, setActiveFileId] = useState(null);
+  const [activeFileId, setActiveFileId] = useState<FileId>(null);
 
   // The ordered list of tabs.
-  const [tabList, setTabList] = useState([]);
+  const [tabList, setTabList] = useState<Array<FileId>>([]);
 
   // The current theme.
   const [theme, setTheme] = useState(oneDark);
@@ -74,7 +75,7 @@ function App() {
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
-      shareDBDoc.on('op', (op) => {
+      shareDBDoc.on('op', () => {
         setData(shareDBDoc.data);
       });
 
@@ -96,6 +97,10 @@ function App() {
 
     // TODO unsubscribe from presence
     // TODO unsubscribe from doc
+    return () => {
+      shareDBDoc.destroy();
+      docPresence.destroy();
+    };
   }, []);
 
   // Called when a tab is closed.
@@ -124,15 +129,6 @@ function App() {
       }
     },
     [tabList, activeFileId]
-  );
-
-  const handleCloseTabClick = useCallback(
-    (fileIdToRemove) => (event) => {
-      // Stop propagation so that the outer listener doesn't fire.
-      event.stopPropagation();
-      closeTab(fileIdToRemove);
-    },
-    [closeTab]
   );
 
   // Called when a file in the sidebar is double-clicked.
@@ -201,19 +197,9 @@ function App() {
     shareDBDoc.submitOp(diff(currentDocument, nextDocument));
   }, [shareDBDoc]);
 
-  // True if we are ready to actually render the active tab.
-  const tabValid = data && activeFileId;
-
   const handleSettingsClose = useCallback(() => {
     setIsSettingsOpen(false);
   }, []);
-
-  const fileNameSplit = (fileName) => {
-    const split = fileName.split('/');
-    //adding the folder that the is in to the tab name
-    if (split.length === 1) return split[split.length - 1];
-    return split[split.length - 2] + '/' + split[split.length - 1];
-  };
 
   return (
     <div className="app">
@@ -234,27 +220,13 @@ function App() {
         />
       </div>
       <div className="right">
-        <div className="tab-list">
-          {tabList.map((fileId) => (
-            <div
-              key={fileId}
-              className={
-                tabValid
-                  ? `tab${fileId === activeFileId ? ' active' : ''}`
-                  : null
-              }
-              onClick={() => {
-                setActiveFileId(fileId);
-              }}
-            >
-              {tabValid ? fileNameSplit(data[fileId].name) : ''}
-              <div
-                className={activeFileId ? 'bx bx-x tab-close' : ''}
-                onClick={handleCloseTabClick(fileId)}
-              ></div>
-            </div>
-          ))}
-        </div>
+        <TabList
+          data={data}
+          tabList={tabList}
+          activeFileId={activeFileId}
+          setActiveFileId={setActiveFileId}
+          closeTab={closeTab}
+        />
         {data && activeFileId ? (
           <CodeEditor
             className="editor"
