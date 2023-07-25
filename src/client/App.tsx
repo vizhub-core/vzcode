@@ -6,9 +6,12 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './settings';
 import { Sidebar } from './Sidebar';
+import { FileId, Files } from '../types';
+import { TabList } from './TabList';
+import { useOpenDirectories } from './useOpenDirectories';
+import { useTabsState } from './useTabsState';
 import './style.scss';
-import { oneDark } from '@codemirror/theme-one-dark';
-import { FileId } from '../types';
+import { defaultTheme } from './themes';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -36,19 +39,24 @@ function App() {
 
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<Files>(null);
 
   // The id of the currently open file tab.
-  const [activeFileId, setActiveFileId] = useState(null);
+  const [activeFileId, setActiveFileId] = useState<FileId>(null);
 
-  // The ordered list of tabs.
-  const [tabList, setTabList] = useState([]);
+  const { tabList, closeTab, openTab } = useTabsState(
+    activeFileId,
+    setActiveFileId
+  );
 
   // The current theme.
-  const [theme, setTheme] = useState(oneDark);
+  const [theme, setTheme] = useState<string>(defaultTheme);
 
   // True to show the settings modal.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // The set of open directories.
+  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
 
   // Set up the connection to ShareDB.
   useEffect(() => {
@@ -74,7 +82,7 @@ function App() {
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
-      shareDBDoc.on('op', (op) => {
+      shareDBDoc.on('op', () => {
         setData(shareDBDoc.data);
       });
 
@@ -96,44 +104,11 @@ function App() {
 
     // TODO unsubscribe from presence
     // TODO unsubscribe from doc
+    return () => {
+      // shareDBDoc.destroy();
+      // docPresence.destroy();
+    };
   }, []);
-
-  // Called when a tab is closed.
-  const closeTab = useCallback(
-    (fileIdToRemove) => {
-      const i = tabList.findIndex((fileId) => fileId === fileIdToRemove);
-
-      // Support calling `closeTab` on a fileId that is not open,
-      // such as when a file is deleted..
-      if (i !== -1) {
-        // Remove the tab from the tab list.
-        const newTabList = [...tabList.slice(0, i), ...tabList.slice(i + 1)];
-        setTabList(newTabList);
-
-        // If we are closing the active file,
-        if (activeFileId === fileIdToRemove) {
-          // set the new active file to the next tab over,
-          if (newTabList.length > 0) {
-            setActiveFileId(i === 0 ? newTabList[i] : newTabList[i - 1]);
-          } else {
-            // or clear out the active file
-            // if we've closed the last tab.
-            setActiveFileId(null);
-          }
-        }
-      }
-    },
-    [tabList, activeFileId]
-  );
-
-  const handleCloseTabClick = useCallback(
-    (fileIdToRemove) => (event) => {
-      // Stop propagation so that the outer listener doesn't fire.
-      event.stopPropagation();
-      closeTab(fileIdToRemove);
-    },
-    [closeTab]
-  );
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
@@ -168,16 +143,6 @@ function App() {
     [shareDBDoc, closeTab]
   );
 
-  const handleFileClick = useCallback(
-    (fileId: FileId) => {
-      setActiveFileId(fileId);
-      if (!tabList.includes(fileId)) {
-        setTabList([...tabList, fileId]);
-      }
-    },
-    [tabList]
-  );
-
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
     (fileId: FileId, event: React.MouseEvent) => {
@@ -201,19 +166,9 @@ function App() {
     shareDBDoc.submitOp(diff(currentDocument, nextDocument));
   }, [shareDBDoc]);
 
-  // True if we are ready to actually render the active tab.
-  const tabValid = data && activeFileId;
-
   const handleSettingsClose = useCallback(() => {
     setIsSettingsOpen(false);
   }, []);
-
-  const fileNameSplit = (fileName) => {
-    const split = fileName.split('/');
-    //adding the folder that the is in to the tab name
-    if (split.length === 1) return split[split.length - 1];
-    return split[split.length - 2] + '/' + split[split.length - 1];
-  };
 
   return (
     <div className="app">
@@ -223,9 +178,10 @@ function App() {
           files={data}
           handleRenameFileClick={handleRenameFileClick}
           handleDeleteFileClick={handleDeleteFileClick}
-          handleFileClick={handleFileClick}
+          handleFileClick={openTab}
           setIsSettingsOpen={setIsSettingsOpen}
-          isSettingsOpen={isSettingsOpen}
+          isDirectoryOpen={isDirectoryOpen}
+          toggleDirectory={toggleDirectory}
         />
         <Settings
           show={isSettingsOpen}
@@ -234,27 +190,13 @@ function App() {
         />
       </div>
       <div className="right">
-        <div className="tab-list">
-          {tabList.map((fileId) => (
-            <div
-              key={fileId}
-              className={
-                tabValid
-                  ? `tab${fileId === activeFileId ? ' active' : ''}`
-                  : null
-              }
-              onClick={() => {
-                setActiveFileId(fileId);
-              }}
-            >
-              {tabValid ? fileNameSplit(data[fileId].name) : ''}
-              <div
-                className={activeFileId ? 'bx bx-x tab-close' : ''}
-                onClick={handleCloseTabClick(fileId)}
-              ></div>
-            </div>
-          ))}
-        </div>
+        <TabList
+          data={data}
+          tabList={tabList}
+          activeFileId={activeFileId}
+          setActiveFileId={setActiveFileId}
+          closeTab={closeTab}
+        />
         {data && activeFileId ? (
           <CodeEditor
             className="editor"

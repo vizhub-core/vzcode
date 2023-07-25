@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { Listing } from './Listing';
-import { useOpenDirectories } from './useOpenDirectories';
 
 import './styles.scss';
 import { FileId, FileTree, FileTreeFile, Files } from '../../types';
@@ -15,7 +14,8 @@ export const Sidebar = ({
   handleDeleteFileClick,
   handleFileClick,
   setIsSettingsOpen,
-  isSettingsOpen,
+  isDirectoryOpen,
+  toggleDirectory,
 }: {
   files: Files;
   createFile?: () => void;
@@ -23,14 +23,17 @@ export const Sidebar = ({
   handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isSettingsOpen?: boolean;
+  isDirectoryOpen: (path: string) => boolean;
+  toggleDirectory: (path: string) => void;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files]
   );
 
-  const { openDirectories, toggleDirectory } = useOpenDirectories();
+  const handleSettingsClick = useCallback(() => {
+    setIsSettingsOpen(true);
+  }, []);
 
   return (
     <div className="vz-sidebar">
@@ -60,7 +63,7 @@ export const Sidebar = ({
                   handleRenameFileClick={handleRenameFileClick}
                   handleDeleteFileClick={handleDeleteFileClick}
                   handleFileClick={handleFileClick}
-                  openDirectories={openDirectories}
+                  isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
                 />
               );
@@ -68,10 +71,7 @@ export const Sidebar = ({
           : null}
       </div>
       {disableSettings ? null : (
-        <div
-          className="settings"
-          onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-        >
+        <div className="settings" onClick={handleSettingsClick}>
           Settings
         </div>
       )}
