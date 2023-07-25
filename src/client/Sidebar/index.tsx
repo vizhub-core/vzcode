@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
@@ -15,7 +15,6 @@ export const Sidebar = ({
   handleDeleteFileClick,
   handleFileClick,
   setIsSettingsOpen,
-  isSettingsOpen,
 }: {
   files: Files;
   createFile?: () => void;
@@ -23,14 +22,17 @@ export const Sidebar = ({
   handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isSettingsOpen?: boolean;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files]
   );
 
-  const { openDirectories, toggleDirectory } = useOpenDirectories();
+  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
+
+  const handleSettingsClick = useCallback(() => {
+    setIsSettingsOpen(true);
+  }, []);
 
   return (
     <div className="vz-sidebar">
@@ -60,7 +62,7 @@ export const Sidebar = ({
                   handleRenameFileClick={handleRenameFileClick}
                   handleDeleteFileClick={handleDeleteFileClick}
                   handleFileClick={handleFileClick}
-                  openDirectories={openDirectories}
+                  isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
                 />
               );
@@ -68,10 +70,7 @@ export const Sidebar = ({
           : null}
       </div>
       {disableSettings ? null : (
-        <div
-          className="settings"
-          onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-        >
+        <div className="settings" onClick={handleSettingsClick}>
           Settings
         </div>
       )}

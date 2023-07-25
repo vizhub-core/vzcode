@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Item } from './Item';
 import { Listing } from './Listing';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
@@ -11,7 +11,7 @@ export const DirectoryListing = ({
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
-  openDirectories,
+  isDirectoryOpen,
   toggleDirectory,
 }: {
   name: string;
@@ -20,7 +20,7 @@ export const DirectoryListing = ({
   handleRenameFileClick: (fileId: string) => void;
   handleDeleteFileClick: (fileId: string, event: React.MouseEvent) => void;
   handleFileClick: (fileId: string) => void;
-  openDirectories: { [path: string]: boolean };
+  isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
 }) => {
   const handleClick = useCallback(() => {
@@ -35,7 +35,8 @@ export const DirectoryListing = ({
     console.log('TODO handleRenameDirectoryClick');
   }, []);
 
-  const isOpen = openDirectories[path];
+  const isOpen = useMemo(() => isDirectoryOpen(path), [isDirectoryOpen, path]);
+
   return (
     <>
       <Item
@@ -64,7 +65,7 @@ export const DirectoryListing = ({
                 handleRenameFileClick={handleRenameFileClick}
                 handleDeleteFileClick={handleDeleteFileClick}
                 handleFileClick={handleFileClick}
-                openDirectories={openDirectories}
+                isDirectoryOpen={isDirectoryOpen}
                 toggleDirectory={toggleDirectory}
               />
             );

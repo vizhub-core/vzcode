@@ -9,14 +9,14 @@ export const Listing = ({
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
-  openDirectories,
+  isDirectoryOpen,
   toggleDirectory,
 }: {
   entity: FileTree | FileTreeFile;
   handleRenameFileClick: (fileId: FileId) => void;
   handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick: (fileId: FileId) => void;
-  openDirectories: { [path: string]: boolean };
+  isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
 }) => {
   const { name, file, fileId } = entity as FileTreeFile;
@@ -37,7 +37,7 @@ export const Listing = ({
       handleRenameFileClick={handleRenameFileClick}
       handleDeleteFileClick={handleDeleteFileClick}
       handleFileClick={handleFileClick}
-      openDirectories={openDirectories}
+      isDirectoryOpen={isDirectoryOpen}
       toggleDirectory={toggleDirectory}
     />
   );

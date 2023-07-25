@@ -98,8 +98,8 @@ function App() {
     // TODO unsubscribe from presence
     // TODO unsubscribe from doc
     return () => {
-      shareDBDoc.destroy();
-      docPresence.destroy();
+      // shareDBDoc.destroy();
+      // docPresence.destroy();
     };
   }, []);
 
@@ -211,7 +211,6 @@ function App() {
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={handleFileClick}
           setIsSettingsOpen={setIsSettingsOpen}
-          isSettingsOpen={isSettingsOpen}
         />
         <Settings
           show={isSettingsOpen}

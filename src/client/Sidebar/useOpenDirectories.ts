@@ -22,7 +22,6 @@ export const useOpenDirectories = () => {
     [path: string]: boolean;
   }>({});
 
-  // TODO consider useReducer to avoid event listener churn
   const toggleDirectory = useCallback(
     (path) => {
       setOpenDirectories(
@@ -33,5 +32,12 @@ export const useOpenDirectories = () => {
     },
     [openDirectories]
   );
-  return { openDirectories, toggleDirectory };
+
+  const isDirectoryOpen: (path: string) => boolean = useCallback(
+    (path) => {
+      return openDirectories[path];
+    },
+    [openDirectories]
+  );
+  return { isDirectoryOpen, toggleDirectory };
 };
