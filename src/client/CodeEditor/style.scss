@@ -1,0 +1,11 @@
+.vz-code-editor {
+  flex: 1;
+  display: flex;
+  font-family: var(--vzcode-font-family);
+  overflow-x: auto;
+
+  /* TODO QA this */
+  .cm-editor {
+    flex: 1;
+  }
+}

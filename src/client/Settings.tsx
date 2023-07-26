@@ -12,12 +12,16 @@ const saveTimes = [
   { value: 30, label: '30 seconds' },
 ];
 
-export const Settings = ({ show, onClose, setTheme, editor }) => {
+export const Settings = ({ show, onClose, setTheme }) => {
   const handleChange = useCallback((selectedOption) => {
     setTheme(selectedOption.label);
-    editor.dispatch({
-      effects: themeSet.reconfigure(selectedOption.value),
-    });
+    // TODO make this work.
+    // Sketch of algorithm:
+    // for each editor in the editor cache,
+    //   update the theme
+    // editor.dispatch({
+    //   effects: themeSet.reconfigure(selectedOption.value),
+    // });
   }, []);
 
   const handleSaveTimeChange = useCallback((selectedOption) => {
@@ -32,7 +36,12 @@ export const Settings = ({ show, onClose, setTheme, editor }) => {
   }, []);
 
   return show ? (
-    <Modal show={show} onHide={onClose} animation={false}>
+    <Modal
+      className="vz-settings"
+      show={show}
+      onHide={onClose}
+      animation={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
@@ -46,22 +55,14 @@ export const Settings = ({ show, onClose, setTheme, editor }) => {
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
-          <Select
-            classvalue="themes"
-            options={themes}
-            onChange={handleChange}
-          />
+          <Select options={themes} onChange={handleChange} />
           <Form.Text className="text-muted">
             Select a color theme for the editor
           </Form.Text>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Auto-Save Time</Form.Label>
-          <Select
-            classvalue="themes"
-            options={saveTimes}
-            onChange={handleSaveTimeChange}
-          />
+          <Select options={saveTimes} onChange={handleSaveTimeChange} />
           <Form.Text className="text-muted">Select an auto save time</Form.Text>
         </Form.Group>
       </Modal.Body>

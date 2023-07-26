@@ -23,8 +23,8 @@ export const Sidebar = ({
   handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
+  isDirectoryOpen?: (path: string) => boolean;
+  toggleDirectory?: (path: string) => void;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
@@ -56,10 +56,11 @@ export const Sidebar = ({
           ? fileTree.children.map((entity) => {
               const { fileId } = entity as FileTreeFile;
               const { path } = entity as FileTree;
+              const key = fileId ? fileId : path;
               return (
                 <Listing
                   entity={entity}
-                  key={fileId || path}
+                  key={key}
                   handleRenameFileClick={handleRenameFileClick}
                   handleDeleteFileClick={handleDeleteFileClick}
                   handleFileClick={handleFileClick}

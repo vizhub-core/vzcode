@@ -55,3 +55,15 @@ export interface FileTreeFile {
   file: File;
   fileId: FileId;
 }
+
+// `ShareDBDoc`
+// A ShareDB Document.
+// TODO better types? Integrate with upstream how?
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/sharedb/lib/sharedb.d.ts#L110
+export type ShareDBDoc<T> = {
+  data: T;
+  ingestSnapshot: (snapshot: any, callback) => void;
+  subscribe: (callback) => void;
+  on: (event: string, callback: () => void) => void;
+  off: (event: string, callback: () => void) => void;
+};

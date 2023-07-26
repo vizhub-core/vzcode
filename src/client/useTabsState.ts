@@ -1,14 +1,13 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { FileId } from '../types';
 
 // Encapsulates the state and logic for managing the list of open tabs.
 export const useTabsState = (
   activeFileId: FileId,
-  setActiveFileId: (fileId: FileId | null) => void
+  setActiveFileId: (fileId: FileId | null) => void,
+  tabList: Array<FileId>,
+  setTabList: (tabList: Array<FileId>) => void
 ) => {
-  // The ordered list of tabs.
-  const [tabList, setTabList] = useState<Array<FileId>>([]);
-
   // Called when a tab is closed.
   const closeTab = useCallback(
     (fileIdToRemove: FileId) => {
