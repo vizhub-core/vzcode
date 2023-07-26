@@ -1,2 +1,2 @@
-const foo = <div></div>;
-const foo2 = hi;
+const foo = <div></ddfdsfiv>;
+const foo2 = extends;

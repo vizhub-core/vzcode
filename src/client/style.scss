@@ -45,49 +45,5 @@ body,
     flex: 1;
     flex-direction: column;
     min-width: 0;
-
-    .tab-list {
-      display: flex;
-      background-color: rgb(37, 37, 38);
-
-      .tab {
-        background: rgb(45, 45, 45);
-        color: #fff;
-        font-family: var(--vzcode-font-family);
-        align-items: center;
-        display: flex;
-        padding-top: 2px;
-        padding-left: 10px;
-        padding-right: 10px;
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        margin-top: 5px;
-        margin-left: 2px;
-        margin-right: 2px;
-        cursor: pointer;
-
-        .tab-close {
-          margin-left: 5px;
-        }
-        .tab-close:hover {
-          border-radius: 30%;
-          background-color: rgb(37, 37, 38);
-        }
-      }
-      .tab.active {
-        background-color: rgb(41, 44, 52);
-      }
-    }
-
-    .editor {
-      flex: 1;
-      display: flex;
-      font-family: var(--vzcode-font-family);
-      overflow-x: auto;
-    }
   }
-}
-
-.themes {
-  color: rgb(37, 37, 38);
 }

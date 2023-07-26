@@ -4,14 +4,14 @@ import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
-import { Settings } from './settings';
+import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
 import { FileId, Files } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
-import './style.scss';
 import { defaultTheme } from './themes';
+import './style.scss';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -44,9 +44,15 @@ function App() {
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
 
-  const { tabList, closeTab, openTab } = useTabsState(
+  // The ordered list of tabs.
+  const [tabList, setTabList] = useState<Array<FileId>>([]);
+
+  // Logic for opening and closing tabs.
+  const { closeTab, openTab } = useTabsState(
     activeFileId,
-    setActiveFileId
+    setActiveFileId,
+    tabList,
+    setTabList
   );
 
   // The current theme.
@@ -191,7 +197,7 @@ function App() {
       </div>
       <div className="right">
         <TabList
-          data={data}
+          files={data}
           tabList={tabList}
           activeFileId={activeFileId}
           setActiveFileId={setActiveFileId}
@@ -199,7 +205,6 @@ function App() {
         />
         {data && activeFileId ? (
           <CodeEditor
-            className="editor"
             shareDBDoc={shareDBDoc}
             localPresence={localPresence}
             docPresence={docPresence}

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { FileId, Files } from '../types';
+import { FileId, Files } from '../../types';
+import './style.scss';
 
 // Supports adding the file's containing folder to the tab name
 const fileNameSplit = (fileName) => {
@@ -51,21 +52,21 @@ const Tab = ({
 
 // Displays the list of tabs above the code editor.
 export const TabList = ({
-  data,
+  files,
   tabList,
   activeFileId,
   setActiveFileId,
   closeTab,
 }: {
-  data: Files;
+  files: Files;
   tabList: FileId[];
   activeFileId: FileId;
   setActiveFileId: (fileId: FileId) => void;
   closeTab: (fileId: FileId) => void;
 }) => {
   return (
-    <div className="tab-list">
-      {data &&
+    <div className="vz-tab-list">
+      {files &&
         tabList.map((fileId: FileId) => (
           <Tab
             key={fileId}
@@ -73,7 +74,7 @@ export const TabList = ({
             isActive={fileId === activeFileId}
             setActiveFileId={setActiveFileId}
             closeTab={closeTab}
-            fileName={data[fileId].name}
+            fileName={files[fileId].name}
           />
         ))}
     </div>
