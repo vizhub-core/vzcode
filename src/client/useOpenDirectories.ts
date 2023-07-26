@@ -20,13 +20,13 @@ import { useState, useCallback } from 'react';
 export const useOpenDirectories = () => {
   // The set of open directories by path/
   const [openDirectories, setOpenDirectories] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: string) => boolean = useCallback(
     (path) => openDirectories.has(path),
-    [openDirectories]
+    [openDirectories],
   );
 
   // Toggle whether a directory is open.
@@ -36,7 +36,7 @@ export const useOpenDirectories = () => {
       newOpenDirectories[isDirectoryOpen(path) ? 'delete' : 'add'](path);
       setOpenDirectories(newOpenDirectories);
     },
-    [openDirectories, isDirectoryOpen]
+    [openDirectories, isDirectoryOpen],
   );
 
   return { isDirectoryOpen, toggleDirectory };

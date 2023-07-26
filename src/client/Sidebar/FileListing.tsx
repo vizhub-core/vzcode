@@ -23,7 +23,7 @@ export const FileListing = ({
     (event) => {
       handleDeleteFileClick(fileId, event);
     },
-    [fileId]
+    [fileId],
   );
 
   const handleRenameClick = useCallback(() => {

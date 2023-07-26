@@ -29,7 +29,7 @@ const Tab = ({
 
       closeTab(fileId);
     },
-    [closeTab, fileId]
+    [closeTab, fileId],
   );
 
   const tabName = useMemo(() => fileNameSplit(fileName), [fileName]);

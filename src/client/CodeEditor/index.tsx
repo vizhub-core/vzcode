@@ -14,9 +14,9 @@ export const CodeEditor = ({
 }: {
   activeFileId: FileId;
   shareDBDoc: any;
-  localPresence: any;
-  docPresence: any;
-  theme: string;
+  localPresence?: any;
+  docPresence?: any;
+  theme?: string;
 
   // The path of the files object in the ShareDB document.
   // Defaults to the root of the document.

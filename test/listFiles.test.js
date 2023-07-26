@@ -15,7 +15,7 @@ const getSampleFiles = (sampleDirectory) => {
   // Sort files for stability of tests, as ordering of fs listing
   // is not guaranteed.
   const files = Object.values(initialDocument).sort((a, b) =>
-    ascending(a.name, b.name)
+    ascending(a.name, b.name),
   );
 
   // console.log(JSON.stringify(files));
@@ -47,7 +47,7 @@ describe('Listing files', () => {
       dirname,
       'sampleDirectories',
       'listFilesEmptyDirectory',
-      'emptyDirectory'
+      'emptyDirectory',
     );
     if (!fs.existsSync(emptyDir)) {
       fs.mkdirSync(emptyDir);

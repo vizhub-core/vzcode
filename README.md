@@ -20,7 +20,6 @@ Once the server is running, you can get hot reloading (of the client only) with:
 npm run dev
 ```
 
-
 ## Features
 
 This project is nascent but has enough features to actually use, a minimum viable product (MVP):

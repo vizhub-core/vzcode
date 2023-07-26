@@ -6,3 +6,4 @@
 *.env*
 *.ico
 dist
+test/sampleDirectories

@@ -58,7 +58,7 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
             }),
             // Without this argument, we get the following error:
             // Uncaught Error: Ranges must be added sorted by `from` position and `startSide`
-            true
+            true,
           );
 
           // Somehow this triggers re-rendering of the Decorations.
@@ -74,7 +74,7 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
     },
     {
       decorations: (v) => v.decorations,
-    }
+    },
   ),
   presenceTheme,
 ];

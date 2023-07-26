@@ -52,7 +52,7 @@ function App() {
     activeFileId,
     setActiveFileId,
     tabList,
-    setTabList
+    setTabList,
   );
 
   // The current theme.
@@ -132,7 +132,7 @@ function App() {
         shareDBDoc.submitOp(diff(currentDocument, nextDocument));
       }
     },
-    [shareDBDoc]
+    [shareDBDoc],
   );
 
   const deleteFile = useCallback(
@@ -146,7 +146,7 @@ function App() {
       delete nextDocument[fileId];
       shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
-    [shareDBDoc, closeTab]
+    [shareDBDoc, closeTab],
   );
 
   // TODO prompt the user "Are you sure?"
@@ -157,7 +157,7 @@ function App() {
       event.stopPropagation();
       deleteFile(fileId);
     },
-    [deleteFile]
+    [deleteFile],
   );
 
   const createFile = useCallback(() => {

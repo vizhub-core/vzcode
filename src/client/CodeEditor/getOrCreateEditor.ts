@@ -67,7 +67,7 @@ export const getOrCreateEditor = ({
       path: textPath,
       json1: json1Presence,
       textUnicode,
-    })
+    }),
   );
 
   // Deals with broadcasting changes in cursor location and selection.

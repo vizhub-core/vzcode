@@ -6,7 +6,7 @@ export const useTabsState = (
   activeFileId: FileId,
   setActiveFileId: (fileId: FileId | null) => void,
   tabList: Array<FileId>,
-  setTabList: (tabList: Array<FileId>) => void
+  setTabList: (tabList: Array<FileId>) => void,
 ) => {
   // Called when a tab is closed.
   const closeTab = useCallback(
@@ -33,7 +33,7 @@ export const useTabsState = (
         }
       }
     },
-    [tabList, activeFileId]
+    [tabList, activeFileId],
   );
 
   // Called when a tab is opened.
@@ -44,7 +44,7 @@ export const useTabsState = (
         setTabList([...tabList, fileId]);
       }
     },
-    [tabList]
+    [tabList],
   );
 
   return { tabList, closeTab, openTab };

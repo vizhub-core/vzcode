@@ -28,7 +28,7 @@ export const Sidebar = ({
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
-    [files]
+    [files],
   );
 
   const handleSettingsClick = useCallback(() => {
