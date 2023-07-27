@@ -52,6 +52,7 @@
     "@codemirror/lang-markdown": "^6.2.0",
     "@codemirror/state": "^6.2.1",
     "@codemirror/theme-one-dark": "^6.1.2",
+    "@replit/codemirror-interact": "^6.1.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@uiw/codemirror-themes-all": "^4.21.8",
     "codemirror": "^6.0.1",
@@ -77,8 +78,8 @@
     "@vitejs/plugin-react": "^4.0.3",
     "prettier": "^3.0.0",
     "sass": "^1.64.1",
+    "typescript": "^5.1.6",
     "vite": "^4.4.7",
-    "vitest": "^0.33.0",
-    "typescript": "^5.1.6"
+    "vitest": "^0.33.0"
   }
 }
