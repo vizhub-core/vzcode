@@ -94,7 +94,7 @@ function App() {
 
       // Set up presence.
       // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
-      const docPresence = shareDBDoc.connection.getDocPresence(collection, id);
+      const docPresence = connection.getDocPresence(collection, id);
 
       // Subscribe to receive remote presence updates.
       docPresence.subscribe(function (error) {
