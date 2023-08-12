@@ -15,11 +15,21 @@ export const computeInitialDocument = ({ fullPath }) => {
   const unsearchedDirectories = [''];
 
   // Initialize the document using our data structure for representing files.
-  //  * Keys are file ids, which are random numbers.
-  //  * Values are objects with properties:
-  //    * text - the text content of the file
-  //    * name - the file name
-  const initialDocument = {};
+  const initialDocument = {
+    // `files`
+    //  * Keys are file ids, which are random numbers.
+    //  * Values are objects with properties:
+    //    * text - the text content of the file
+    //    * name - the file name
+    files: {},
+
+    // `isInteracting`
+    //  * Whether the user is currently interacting with the document
+    //    using an interactive code widget such as number dragger.
+    //  * When true, the auto-save to the file system is changed to be
+    //    more frequent (throttled not debounced).
+    isInteracting: false,
+  };
 
   // Stack for recursively traversing directories.
   let files = [];
@@ -51,7 +61,7 @@ export const computeInitialDocument = ({ fullPath }) => {
 
   files.forEach((file) => {
     const id = randomId();
-    initialDocument[id] = {
+    initialDocument.files[id] = {
       text: isDirectory(file)
         ? null
         : fs.readFileSync(path.join(fullPath, file), 'utf-8'),

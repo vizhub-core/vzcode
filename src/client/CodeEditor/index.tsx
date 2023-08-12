@@ -10,7 +10,7 @@ export const CodeEditor = ({
   localPresence,
   docPresence,
   theme = defaultTheme,
-  filesPath = [],
+  filesPath = ['files'],
   onInteract,
 }: {
   activeFileId: FileId;

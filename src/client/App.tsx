@@ -39,7 +39,11 @@ function App() {
 
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
-  const [data, setData] = useState<Files>(null);
+  // Starts out as `null` until the document is loaded.
+  const [data, setData] = useState<{
+    files: Files;
+    isInteracting: boolean;
+  } | null>(null);
 
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
@@ -124,9 +128,12 @@ function App() {
         const currentDocument = shareDBDoc.data;
         const nextDocument = {
           ...currentDocument,
-          [fileId]: {
-            ...currentDocument[fileId],
-            name: newName,
+          files: {
+            ...currentDocument.files,
+            [fileId]: {
+              ...currentDocument[fileId],
+              name: newName,
+            },
           },
         };
         shareDBDoc.submitOp(diff(currentDocument, nextDocument));
@@ -142,8 +149,11 @@ function App() {
       closeTab(fileId);
 
       const currentDocument = shareDBDoc.data;
-      const nextDocument = { ...currentDocument };
-      delete nextDocument[fileId];
+      const nextDocument = {
+        ...currentDocument,
+        files: { ...currentDocument.files },
+      };
+      delete nextDocument.files[fileId];
       shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
     [shareDBDoc, closeTab],
@@ -167,7 +177,7 @@ function App() {
     const currentDocument = shareDBDoc.data;
     const nextDocument = {
       ...currentDocument,
-      [randomId()]: { name, text: '' },
+      files: { ...currentDocument.files, [randomId()]: { name, text: '' } },
     };
     shareDBDoc.submitOp(diff(currentDocument, nextDocument));
   }, [shareDBDoc]);
@@ -181,7 +191,7 @@ function App() {
       <div className="left">
         <Sidebar
           createFile={createFile}
-          files={data}
+          files={data?.files}
           handleRenameFileClick={handleRenameFileClick}
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={openTab}
@@ -197,7 +207,7 @@ function App() {
       </div>
       <div className="right">
         <TabList
-          files={data}
+          files={data?.files}
           tabList={tabList}
           activeFileId={activeFileId}
           setActiveFileId={setActiveFileId}
