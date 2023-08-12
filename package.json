@@ -46,14 +46,15 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
-    "@codemirror/lang-css": "^6.2.0",
+    "@codemirror/lang-css": "^6.2.1",
     "@codemirror/lang-html": "^6.4.5",
     "@codemirror/lang-javascript": "^6.1.9",
     "@codemirror/lang-markdown": "^6.2.0",
     "@codemirror/state": "^6.2.1",
     "@codemirror/theme-one-dark": "^6.1.2",
+    "@replit/codemirror-interact": "^6.1.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
-    "@uiw/codemirror-themes-all": "^4.21.8",
+    "@uiw/codemirror-themes-all": "^4.21.9",
     "codemirror": "^6.0.1",
     "codemirror-ot": "^4.0.0",
     "d3-array": "^3.2.4",
@@ -72,13 +73,13 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.17",
+    "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
-    "prettier": "^3.0.0",
-    "sass": "^1.64.1",
-    "vite": "^4.4.7",
-    "vitest": "^0.33.0",
-    "typescript": "^5.1.6"
+    "@vitejs/plugin-react": "^4.0.4",
+    "prettier": "^3.0.1",
+    "sass": "^1.65.1",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.1"
   }
 }
