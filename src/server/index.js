@@ -32,6 +32,8 @@ ShareDB.types.register(json1Presence.type);
 
 const app = express();
 
+// TODO make this configurable
+// See https://github.com/vizhub-core/vzcode/issues/95
 app.post('/saveTime', (req, res) => {
   //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
   console.log('autoSaveDebounceTimeMS', req.body);

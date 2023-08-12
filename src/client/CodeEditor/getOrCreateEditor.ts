@@ -10,6 +10,7 @@ import { FileId, ShareDBDoc } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import { widgets } from './widgets';
+
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
 // TODO consider invalidating this cache at some point.
@@ -36,6 +37,7 @@ export const getOrCreateEditor = ({
   localPresence,
   docPresence,
   theme,
+  onInteract,
 }: {
   fileId: FileId;
   shareDBDoc: ShareDBDoc<any>;
@@ -43,6 +45,7 @@ export const getOrCreateEditor = ({
   localPresence: any;
   docPresence: any;
   theme: any;
+  onInteract?: () => void;
 }) => {
   const data = shareDBDoc.data;
   const textPath = [...filesPath, fileId, 'text'];
@@ -97,7 +100,7 @@ export const getOrCreateEditor = ({
     extensions.push(markdown());
   }
 
-  extensions.push(widgets());
+  extensions.push(widgets({ onInteract }));
 
   let editor = editorCache.get(fileId);
   if (!editor) {
