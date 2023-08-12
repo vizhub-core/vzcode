@@ -9,7 +9,7 @@ import { json1Presence, textUnicode } from '../../ot';
 import { FileId, ShareDBDoc } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
-
+import { widgets } from './widgets';
 // Singleton cache of CodeMirror instances
 // These are created, but never destroyed.
 // TODO consider invalidating this cache at some point.
@@ -96,6 +96,8 @@ export const getOrCreateEditor = ({
   } else if (fileExtension === 'md') {
     extensions.push(markdown());
   }
+
+  extensions.push(widgets());
 
   let editor = editorCache.get(fileId);
   if (!editor) {
