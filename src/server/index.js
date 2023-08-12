@@ -78,8 +78,8 @@ const save = () => {
     ...previousDocument.files,
   });
   for (const key of allKeys) {
-    const previous = previousDocument[key];
-    const current = currentDocument[key];
+    const previous = previousDocument.files[key];
+    const current = currentDocument.files[key];
 
     // If this file was neither created nor deleted...
     if (previous && current) {
