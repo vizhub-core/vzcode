@@ -69,7 +69,7 @@ let previousDocument = initialDocument;
 
 // Saves the files that changed.
 const save = () => {
-  // console.log('saving');
+  console.log('saving');
   const currentDocument = shareDBDoc.data;
 
   // Take a look at each file (key) previously and currently.
@@ -125,6 +125,7 @@ let lastExecutedTime = Date.now();
 
 // Function to throttle the saving
 function throttleSave() {
+  console.log('throttling');
   const now = Date.now();
   if (now - lastExecutedTime > throttleTimeMS) {
     save();
@@ -135,6 +136,7 @@ function throttleSave() {
 // Function to debounce the saving
 let debounceTimeout;
 function debounceSave() {
+  console.log('debouncing');
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(save, autoSaveDebounceTimeMS);
 }
