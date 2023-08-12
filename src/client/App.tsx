@@ -24,6 +24,12 @@ const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
 
+// The ShareDB document type.
+type Document = {
+  files: Files;
+  isInteracting: boolean;
+};
+
 function App() {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] = useState(null);
@@ -40,10 +46,7 @@ function App() {
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [data, setData] = useState<{
-    files: Files;
-    isInteracting: boolean;
-  } | null>(null);
+  const [data, setData] = useState<Document | null>(null);
 
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
@@ -120,44 +123,59 @@ function App() {
     };
   }, []);
 
-  // Called when a file in the sidebar is double-clicked.
-  const handleRenameFileClick = useCallback(
-    (fileId: FileId) => {
-      const newName = prompt('Enter new name');
-      if (newName) {
-        const currentDocument = shareDBDoc.data;
-        const nextDocument = {
-          ...currentDocument,
-          files: {
-            ...currentDocument.files,
-            [fileId]: {
-              ...currentDocument[fileId],
-              name: newName,
-            },
-          },
-        };
-        shareDBDoc.submitOp(diff(currentDocument, nextDocument));
-      }
+  // A helper function to submit operations to the ShareDB document
+  const submitOperation = useCallback(
+    (updateFunction: (document: Document) => Document) => {
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = updateFunction(currentDocument);
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
     },
     [shareDBDoc],
   );
 
+  // Called when a file in the sidebar is double-clicked.
+  const handleRenameFileClick = useCallback(
+    (fileId: FileId) => {
+      // TODO better UX, maybe Bootstrap modal? Maybe edit inline?
+      const newName = prompt('Enter new name');
+
+      if (newName) {
+        submitOperation((document) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: {
+              ...document.files[fileId],
+              name: newName,
+            },
+          },
+        }));
+      }
+    },
+    [submitOperation],
+  );
+
   const deleteFile = useCallback(
     (fileId: FileId) => {
-      // Close the tab in case it's open.
-      // TODO consistently use either "key" or "fileId" naming
       closeTab(fileId);
-
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = {
-        ...currentDocument,
-        files: { ...currentDocument.files },
-      };
-      delete nextDocument.files[fileId];
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+      submitOperation((document) => {
+        const updatedFiles = { ...document.files };
+        delete updatedFiles[fileId];
+        return { ...document, files: updatedFiles };
+      });
     },
-    [shareDBDoc, closeTab],
+    [submitOperation, closeTab],
   );
+
+  const createFile = useCallback(() => {
+    const name = prompt('Enter new file name');
+    if (name) {
+      submitOperation((document) => ({
+        ...document,
+        files: { ...document.files, [randomId()]: { name, text: '' } },
+      }));
+    }
+  }, [submitOperation]);
 
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
@@ -170,18 +188,6 @@ function App() {
     [deleteFile],
   );
 
-  const createFile = useCallback(() => {
-    // TODO better UI, maybe Bootstrap modal? Maybe edit inline?
-    const name = prompt('Enter new file name');
-    if (!name) return;
-    const currentDocument = shareDBDoc.data;
-    const nextDocument = {
-      ...currentDocument,
-      files: { ...currentDocument.files, [randomId()]: { name, text: '' } },
-    };
-    shareDBDoc.submitOp(diff(currentDocument, nextDocument));
-  }, [shareDBDoc]);
-
   const handleSettingsClose = useCallback(() => {
     setIsSettingsOpen(false);
   }, []);
@@ -190,30 +196,17 @@ function App() {
   // via interactive code widgets, and `false` when they are not.
   const interactTimeoutRef = useRef(null);
   const handleInteract = useCallback(() => {
-    // Handle first interaction.
     if (!interactTimeoutRef.current) {
-      // console.log('isInteracting = true');
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = {
-        ...currentDocument,
-        isInteracting: true,
-      };
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+      submitOperation((document) => ({ ...document, isInteracting: true }));
     } else {
       clearTimeout(interactTimeoutRef.current);
     }
 
     interactTimeoutRef.current = setTimeout(() => {
-      // console.log('isInteracting = false');
       interactTimeoutRef.current = null;
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = {
-        ...currentDocument,
-        isInteracting: false,
-      };
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+      submitOperation((document) => ({ ...document, isInteracting: false }));
     }, 800);
-  }, [shareDBDoc]);
+  }, [submitOperation]);
 
   return (
     <div className="app">
