@@ -18,6 +18,10 @@ dotenv.config({ path: '../../.env' });
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
 
+// The time in milliseconds by which auto-saving is throttled
+// when the user is interacting with the widgets in the editor.
+const throttleTimeMS = 100;
+
 // Server port.
 const port = 3030;
 
@@ -69,7 +73,6 @@ let previousDocument = initialDocument;
 
 // Saves the files that changed.
 const save = () => {
-  console.log('saving');
   const currentDocument = shareDBDoc.data;
 
   // Take a look at each file (key) previously and currently.
@@ -119,31 +122,37 @@ const save = () => {
 //   });
 // });
 
-const throttleTimeMS = 200;
-
 let lastExecutedTime = Date.now();
+let lastChangeTimeout; // This timeout ensures the last change is saved
 
 // Function to throttle the saving
 function throttleSave() {
-  console.log('throttling');
   const now = Date.now();
-  if (now - lastExecutedTime > throttleTimeMS) {
+  const timeSinceLastExecution = now - lastExecutedTime;
+
+  if (timeSinceLastExecution > throttleTimeMS) {
     save();
     lastExecutedTime = now;
+  } else {
+    // Clear the previous timeout and set a new one to save the last change
+    clearTimeout(lastChangeTimeout);
+    lastChangeTimeout = setTimeout(() => {
+      save();
+      lastExecutedTime = now;
+    }, throttleTimeMS - timeSinceLastExecution);
   }
 }
 
 // Function to debounce the saving
 let debounceTimeout;
 function debounceSave() {
-  console.log('debouncing');
   clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(save, autoSaveDebounceTimeMS);
 }
 
 // Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
-  shareDBDoc.on('op', () => {
+  shareDBDoc.on('op', (op) => {
     if (shareDBDoc.data.isInteracting) {
       throttleSave();
     } else {
