@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -186,6 +186,35 @@ function App() {
     setIsSettingsOpen(false);
   }, []);
 
+  // Set `doc.data.isInteracting` to `true` when the user is interacting
+  // via interactive code widgets, and `false` when they are not.
+  const interactTimeoutRef = useRef(null);
+  const handleInteract = useCallback(() => {
+    // Handle first interaction.
+    if (!interactTimeoutRef.current) {
+      // console.log('isInteracting = true');
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = {
+        ...currentDocument,
+        isInteracting: true,
+      };
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+    } else {
+      clearTimeout(interactTimeoutRef.current);
+    }
+
+    interactTimeoutRef.current = setTimeout(() => {
+      // console.log('isInteracting = false');
+      interactTimeoutRef.current = null;
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = {
+        ...currentDocument,
+        isInteracting: false,
+      };
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+    }, 800);
+  }, [shareDBDoc]);
+
   return (
     <div className="app">
       <div className="left">
@@ -220,6 +249,7 @@ function App() {
             docPresence={docPresence}
             activeFileId={activeFileId}
             theme={theme}
+            onInteract={handleInteract}
           />
         ) : null}
       </div>

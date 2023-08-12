@@ -72,7 +72,10 @@ const save = () => {
   const currentDocument = shareDBDoc.data;
 
   // Take a look at each file (key) previously and currently.
-  const allKeys = Object.keys({ ...currentDocument, ...previousDocument });
+  const allKeys = Object.keys({
+    ...currentDocument.files,
+    ...previousDocument.files,
+  });
   for (const key of allKeys) {
     const previous = previousDocument[key];
     const current = currentDocument[key];
@@ -108,7 +111,8 @@ const save = () => {
 // milliseconds of inactivity.
 let timeout;
 shareDBDoc.subscribe(() => {
-  shareDBDoc.on('op', (op) => {
+  shareDBDoc.on('op', () => {
+    // console.log(shareDBDoc.data.isInteracting);
     clearTimeout(timeout);
     timeout = setTimeout(save, autoSaveDebounceTimeMS);
   });
