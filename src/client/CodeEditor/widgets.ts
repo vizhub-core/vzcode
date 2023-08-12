@@ -7,7 +7,8 @@ import interact from '@replit/codemirror-interact';
 //  * TODO color picker
 // Inspired by:
 // https://github.com/replit/codemirror-interact/blob/master/dev/index.ts
-export const widgets = () =>
+// `onInteract` is called when the user interacts with a widget.
+export const widgets = ({ onInteract }: { onInteract?: () => void }) =>
   interact({
     rules: [
       // a rule for a number dragger
@@ -18,6 +19,7 @@ export const widgets = () =>
         cursor: 'ew-resize',
         // change number value based on mouse X movement on drag
         onDrag: (text, setText, e) => {
+          if (onInteract) onInteract();
           const newVal = Number(text) + e.movementX;
           if (isNaN(newVal)) return;
           setText(newVal.toString());
@@ -28,6 +30,7 @@ export const widgets = () =>
         regexp: /true|false/g,
         cursor: 'pointer',
         onClick: (text, setText) => {
+          if (onInteract) onInteract();
           switch (text) {
             case 'true':
               return setText('false');

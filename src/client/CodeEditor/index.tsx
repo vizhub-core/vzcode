@@ -10,7 +10,8 @@ export const CodeEditor = ({
   localPresence,
   docPresence,
   theme = defaultTheme,
-  filesPath = [],
+  filesPath = ['files'],
+  onInteract,
 }: {
   activeFileId: FileId;
   shareDBDoc: any;
@@ -21,6 +22,7 @@ export const CodeEditor = ({
   // The path of the files object in the ShareDB document.
   // Defaults to the root of the document.
   filesPath?: string[];
+  onInteract?: () => void;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -38,6 +40,7 @@ export const CodeEditor = ({
       docPresence,
       // TODO refactor this, make dynamic themes work
       theme: themesByLabel[theme],
+      onInteract,
     });
     ref.current.appendChild(editor.dom);
 

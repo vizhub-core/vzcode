@@ -32,6 +32,8 @@ ShareDB.types.register(json1Presence.type);
 
 const app = express();
 
+// TODO make this configurable
+// See https://github.com/vizhub-core/vzcode/issues/95
 app.post('/saveTime', (req, res) => {
   //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
   console.log('autoSaveDebounceTimeMS', req.body);
@@ -67,10 +69,14 @@ let previousDocument = initialDocument;
 
 // Saves the files that changed.
 const save = () => {
+  // console.log('saving');
   const currentDocument = shareDBDoc.data;
 
   // Take a look at each file (key) previously and currently.
-  const allKeys = Object.keys({ ...currentDocument, ...previousDocument });
+  const allKeys = Object.keys({
+    ...currentDocument.files,
+    ...previousDocument.files,
+  });
   for (const key of allKeys) {
     const previous = previousDocument[key];
     const current = currentDocument[key];
@@ -101,14 +107,46 @@ const save = () => {
   previousDocument = currentDocument;
 };
 
-// Listen for when users modify files.
-// Files get written to disk after `autoSaveDebounceTimeMS`
-// milliseconds of inactivity.
-let timeout;
+// // Listen for when users modify files.
+// // Files get written to disk after `autoSaveDebounceTimeMS`
+// // milliseconds of inactivity.
+// let timeout;
+// shareDBDoc.subscribe(() => {
+//   shareDBDoc.on('op', () => {
+//     // console.log(shareDBDoc.data.isInteracting);
+//     clearTimeout(timeout);
+//     timeout = setTimeout(save, autoSaveDebounceTimeMS);
+//   });
+// });
+
+const throttleTimeMS = 200;
+
+let lastExecutedTime = Date.now();
+
+// Function to throttle the saving
+function throttleSave() {
+  const now = Date.now();
+  if (now - lastExecutedTime > throttleTimeMS) {
+    save();
+    lastExecutedTime = now;
+  }
+}
+
+// Function to debounce the saving
+let debounceTimeout;
+function debounceSave() {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(save, autoSaveDebounceTimeMS);
+}
+
+// Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
-  shareDBDoc.on('op', (op) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(save, autoSaveDebounceTimeMS);
+  shareDBDoc.on('op', () => {
+    if (shareDBDoc.data.isInteracting) {
+      throttleSave();
+    } else {
+      debounceSave();
+    }
   });
 });
 
