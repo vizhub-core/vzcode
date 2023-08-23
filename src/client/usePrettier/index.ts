@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { FileId, VZCodeContent } from '../../types';
+// @ts-ignore
 import PrettierWorker from './worker?worker';
 
 const worker = new PrettierWorker();
