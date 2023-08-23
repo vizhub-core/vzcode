@@ -41,7 +41,7 @@ function App() {
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [data, setData] = useState<VZCodeContent | null>(null);
+  const [content, setContent] = useState<VZCodeContent | null>(null);
 
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
@@ -85,13 +85,13 @@ function App() {
       setShareDBDoc(shareDBDoc);
 
       // Set initial data.
-      setData(shareDBDoc.data);
+      setContent(shareDBDoc.data);
 
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
       shareDBDoc.on('op', () => {
-        setData(shareDBDoc.data);
+        setContent(shareDBDoc.data);
       });
 
       // Set up presence.
@@ -129,7 +129,7 @@ function App() {
     [shareDBDoc],
   );
 
-  usePrettier({ submitOperation });
+  usePrettier({ submitOperation, activeFileId, content });
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
@@ -194,24 +194,28 @@ function App() {
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
   const handleInteract = useCallback(() => {
+    // Set `isInteracting: true` if not already set.
     if (!interactTimeoutRef.current) {
       submitOperation((document) => ({ ...document, isInteracting: true }));
     } else {
       clearTimeout(interactTimeoutRef.current);
     }
 
+    // Set `isInteracting: false` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
       submitOperation((document) => ({ ...document, isInteracting: false }));
     }, 800);
   }, [submitOperation]);
 
+  const files = content?.files;
+
   return (
     <div className="app">
       <div className="left">
         <Sidebar
           createFile={createFile}
-          files={data?.files}
+          files={files}
           handleRenameFileClick={handleRenameFileClick}
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={openTab}
@@ -227,13 +231,13 @@ function App() {
       </div>
       <div className="right">
         <TabList
-          files={data?.files}
+          files={files}
           tabList={tabList}
           activeFileId={activeFileId}
           setActiveFileId={setActiveFileId}
           closeTab={closeTab}
         />
-        {data && activeFileId ? (
+        {content && activeFileId ? (
           <CodeEditor
             shareDBDoc={shareDBDoc}
             localPresence={localPresence}

@@ -20,7 +20,7 @@ const autoSaveDebounceTimeMS = 800;
 
 // The time in milliseconds by which auto-saving is throttled
 // when the user is interacting with the widgets in the editor.
-const throttleTimeMS = 100;
+const throttleTimeMS = 200;
 
 // Server port.
 const port = 3030;
