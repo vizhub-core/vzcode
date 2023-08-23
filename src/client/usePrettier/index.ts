@@ -44,25 +44,36 @@ export const usePrettier = ({
   useEffect(() => {
     // Add the event listener
     const listener = (event) => {
-      console.log('Got message from Prettier worker');
-      console.log(event.data);
-      //   const { text } = event.data;
-      //   submitOperation((document) => {
-      //     const files = document.files;
-      //     const activeFile = files[activeFileId];
-      //     const newActiveFile = {
-      //       ...activeFile,
-      //       text,
-      //     };
-      //     const newFiles = {
-      //       ...files,
-      //       [activeFileId]: newActiveFile,
-      //     };
-      //     return {
-      //       ...document,
-      //       files: newFiles,
-      //     };
-      //   });
+      const text = event.data;
+
+      // TODO make sure this doesn't
+      // trigger another Prettier run.
+      submitOperation((document) => ({
+        ...document,
+        files: {
+          ...document.files,
+          [activeFileId]: {
+            ...document.files[activeFileId],
+            text,
+          },
+        },
+      }));
+      // submitOperation((document) => {
+      //   const files = document.files;
+      //   const activeFile = files[activeFileId];
+      //   const newActiveFile = {
+      //     ...activeFile,
+      //     text,
+      //   };
+      //   const newFiles = {
+      //     ...files,
+      //     [activeFileId]: newActiveFile,
+      //   };
+      //   return {
+      //     ...document,
+      //     files: newFiles,
+      //   };
+      // });
     };
     worker.addEventListener('message', listener);
 
@@ -70,7 +81,7 @@ export const usePrettier = ({
     return () => {
       worker.removeEventListener('message', listener);
     };
-  }, [submitOperation]);
+  }, [submitOperation, activeFileId]);
 
   //     // Function to debounce the saving
   // let debounceTimeout;

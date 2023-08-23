@@ -11,7 +11,7 @@
 import { format } from 'prettier/standalone';
 import * as prettierPluginBabel from 'prettier/plugins/babel';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
-
+import * as prettierPluginHtml from 'prettier/plugins/html';
 // import prettierPlugins from 'prettier/parser-babel';
 // import prettier from 'prettier/standalone';
 // import parserBabel from 'prettier/plugins/babel';
@@ -23,9 +23,10 @@ import * as prettierPluginEstree from 'prettier/plugins/estree';
 
 onmessage = async ({ data }: { data: string }) => {
   const result = await format(data, {
+    // TODO set parser based on file extension
+    // parser: 'html',
     parser: 'babel',
-    plugins: [prettierPluginBabel, prettierPluginEstree],
+    plugins: [prettierPluginBabel, prettierPluginEstree, prettierPluginHtml],
   });
-  console.log(result);
-  postMessage('test');
+  postMessage(result);
 };

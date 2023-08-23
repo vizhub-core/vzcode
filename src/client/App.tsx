@@ -124,7 +124,10 @@ function App() {
   ) => void = useCallback(
     (next) => {
       const content: VZCodeContent = shareDBDoc.data;
-      shareDBDoc.submitOp(diff(content, next(content)));
+      const op = diff(content, next(content));
+      if (op) {
+        shareDBDoc.submitOp(op);
+      }
     },
     [shareDBDoc],
   );
