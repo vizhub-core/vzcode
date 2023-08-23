@@ -22,6 +22,18 @@ export const usePrettier = ({
   activeFileId: FileId;
 }) => {
   const timeoutRef = useRef(null);
+  const ignoreNextChangeRef = useRef(false);
+  const isFirstRender = useRef(true);
+  const activeFileIdRef = useRef(activeFileId);
+
+  // Keep active file ref in sync.
+  // A ref is used for this because Prettier
+  // should not be triggered when the active file changes.
+  // It should only be triggered when the active file's
+  // text changes.
+  useEffect(() => {
+    activeFileIdRef.current = activeFileId;
+  }, [activeFileId]);
 
   //   // Subscribe to listen for modifications
   //   useEffect(() => {
@@ -35,11 +47,30 @@ export const usePrettier = ({
   //   }, [shareDBDoc]);
 
   useEffect(() => {
+    // Don't run Prettier on the first render.
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Don't run Prettier if the change originated from Prettier.
+    if (ignoreNextChangeRef.current) {
+      //   console.log('ignoring change so Prettier runs only once');
+      ignoreNextChangeRef.current = false;
+      return;
+    }
+
+    // Do nothing if content is not yet loaded.
     if (!content) return;
     const files = content.files;
 
+    const activeFileId = activeFileIdRef.current;
+
+    // Do nothing if there is no active file.
     if (!activeFileId) return;
     const activeFile = files[activeFileId];
+
+    // Do nothing if active file id is bogus.
     if (!activeFile) return;
 
     const { text } = activeFile;
@@ -47,11 +78,11 @@ export const usePrettier = ({
     // Send the code to the worker, debounced.
     clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
-      console.log('Sending text to Prettier worker');
-      console.log(text);
+      //   console.log('Sending text to Prettier worker');
+      //   console.log(text);
       worker.postMessage(text);
     }, autoPrettierDebounceTimeMS);
-  }, [content, activeFileId]);
+  }, [content]);
 
   // Listen for messages from the worker.
   useEffect(() => {
@@ -59,8 +90,9 @@ export const usePrettier = ({
     const listener = (event) => {
       const text = event.data;
 
-      // TODO make sure this doesn't
-      // trigger another Prettier run.
+      // Make sure this doesn't trigger another Prettier run.
+      ignoreNextChangeRef.current = true;
+
       submitOperation((document) => ({
         ...document,
         files: {
@@ -71,45 +103,11 @@ export const usePrettier = ({
           },
         },
       }));
-      // submitOperation((document) => {
-      //   const files = document.files;
-      //   const activeFile = files[activeFileId];
-      //   const newActiveFile = {
-      //     ...activeFile,
-      //     text,
-      //   };
-      //   const newFiles = {
-      //     ...files,
-      //     [activeFileId]: newActiveFile,
-      //   };
-      //   return {
-      //     ...document,
-      //     files: newFiles,
-      //   };
-      // });
     };
     worker.addEventListener('message', listener);
 
-    // Clean up
     return () => {
       worker.removeEventListener('message', listener);
     };
   }, [submitOperation, activeFileId]);
-
-  //     // Function to debounce the saving
-  // let debounceTimeout;
-  // function debounceSave() {
-  //   clearTimeout(debounceTimeout);
-  //   debounceTimeout = setTimeout(save, autoSaveDebounceTimeMS);
-  // }
-  // // Subscribe to listen for modifications
-  // shareDBDoc.subscribe(() => {
-  //   shareDBDoc.on('op', (op) => {
-  //     if (shareDBDoc.data.isInteracting) {
-  //       throttleSave();
-  //     } else {
-  //       debounceSave();
-  //     }
-  //   });
-  // });
 };
