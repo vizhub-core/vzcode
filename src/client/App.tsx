@@ -6,12 +6,13 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
-import { FileId, Files } from '../types';
+import { FileId, Files, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
 import { defaultTheme } from './themes';
 import './style.scss';
+import { usePrettier } from './usePrettier';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -23,12 +24,6 @@ const { Connection } = ShareDBClient;
 const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
-
-// The ShareDB document type.
-type Document = {
-  files: Files;
-  isInteracting: boolean;
-};
 
 function App() {
   // The ShareDB document.
@@ -46,7 +41,7 @@ function App() {
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [data, setData] = useState<Document | null>(null);
+  const [data, setData] = useState<VZCodeContent | null>(null);
 
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
@@ -124,14 +119,17 @@ function App() {
   }, []);
 
   // A helper function to submit operations to the ShareDB document
-  const submitOperation = useCallback(
-    (updateFunction: (document: Document) => Document) => {
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = updateFunction(currentDocument);
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useCallback(
+    (next) => {
+      const content: VZCodeContent = shareDBDoc.data;
+      shareDBDoc.submitOp(diff(content, next(content)));
     },
     [shareDBDoc],
   );
+
+  usePrettier({ submitOperation });
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
@@ -193,7 +191,7 @@ function App() {
   }, []);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets, and `false` when they are not.
+  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
   const handleInteract = useCallback(() => {
     if (!interactTimeoutRef.current) {

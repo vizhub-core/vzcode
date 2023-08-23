@@ -67,3 +67,18 @@ export type ShareDBDoc<T> = {
   on: (event: string, callback: () => void) => void;
   off: (event: string, callback: () => void) => void;
 };
+
+// The ShareDB document type for VZCode.
+export type VZCodeContent = {
+  // `files`
+  //   * The files in the VZCode instance.
+  files: Files;
+
+  // `isInteracting`
+  //   * `true` when the user is interacting
+  //     via interactive code widgets (e.g. Alt+drag)
+  //     * Hot reloading is throttled when this is `true`.
+  //   * `false` when they are not (e.g. normal typing)
+  //     * Hot reloading is debounced when this is `false`.
+  isInteracting: boolean;
+};
