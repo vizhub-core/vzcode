@@ -1,1 +1,5 @@
-const foo = <div></div>;
+const foo = (
+  <div>
+    <svg></svg>
+  </div>
+);

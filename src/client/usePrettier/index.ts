@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { FileId, VZCodeContent } from '../../types';
+import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
 // @ts-ignore
 import PrettierWorker from './worker?worker';
 
@@ -10,9 +10,11 @@ const autoPrettierDebounceTimeMS = 1000;
 
 export const usePrettier = ({
   content,
+  //   shareDBDoc,
   submitOperation,
   activeFileId,
 }: {
+  //   shareDBDoc: ShareDBDoc<VZCodeContent>;
   content: VZCodeContent;
   submitOperation: (
     updateFunction: (document: VZCodeContent) => VZCodeContent,
@@ -20,6 +22,17 @@ export const usePrettier = ({
   activeFileId: FileId;
 }) => {
   const timeoutRef = useRef(null);
+
+  //   // Subscribe to listen for modifications
+  //   useEffect(() => {
+  //     if (!shareDBDoc) return;
+  //     shareDBDoc.subscribe(() => {
+  //       shareDBDoc.on('op', () => {
+  //         if (!shareDBDoc.data.isInteracting) {
+  //         }
+  //       });
+  //     });
+  //   }, [shareDBDoc]);
 
   useEffect(() => {
     if (!content) return;
@@ -38,7 +51,7 @@ export const usePrettier = ({
       console.log(text);
       worker.postMessage(text);
     }, autoPrettierDebounceTimeMS);
-  }, [content]);
+  }, [content, activeFileId]);
 
   // Listen for messages from the worker.
   useEffect(() => {

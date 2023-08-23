@@ -6,7 +6,7 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
-import { FileId, Files, VZCodeContent } from '../types';
+import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
@@ -27,7 +27,8 @@ const connection = new Connection(socket);
 
 function App() {
   // The ShareDB document.
-  const [shareDBDoc, setShareDBDoc] = useState(null);
+  const [shareDBDoc, setShareDBDoc] =
+    useState<ShareDBDoc<VZCodeContent> | null>(null);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -125,7 +126,7 @@ function App() {
     (next) => {
       const content: VZCodeContent = shareDBDoc.data;
       const op = diff(content, next(content));
-      if (op) {
+      if (op && shareDBDoc) {
         shareDBDoc.submitOp(op);
       }
     },

@@ -66,6 +66,7 @@ export type ShareDBDoc<T> = {
   subscribe: (callback) => void;
   on: (event: string, callback: () => void) => void;
   off: (event: string, callback: () => void) => void;
+  submitOp: (op: any, options?: any, callback?: () => void) => void;
 };
 
 // The ShareDB document type for VZCode.
