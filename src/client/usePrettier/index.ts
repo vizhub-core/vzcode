@@ -80,7 +80,12 @@ export const usePrettier = ({
     timeoutRef.current = setTimeout(() => {
       //   console.log('Sending text to Prettier worker');
       //   console.log(text);
+      // TODO pass file name to worker
       worker.postMessage(text);
+      //   worker.postMessage({
+      //     activeFileId,
+      //     activeFile,
+      //   });
     }, autoPrettierDebounceTimeMS);
   }, [content]);
 
@@ -93,6 +98,8 @@ export const usePrettier = ({
       // Make sure this doesn't trigger another Prettier run.
       ignoreNextChangeRef.current = true;
 
+      // TODO make absolutely sure activeFileId is correct
+      // by passing it into the worker and back out.
       submitOperation((document) => ({
         ...document,
         files: {
