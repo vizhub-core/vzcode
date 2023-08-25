@@ -1,6 +1,8 @@
 import { JSONOp } from 'ot-json1';
-import { ShareDBDoc, VZCodeContent } from '../../types';
+import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
 import { useEffect } from 'react';
+// @ts-ignore
+import PrettierWorker from './worker?worker';
 
 export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
   useEffect(() => {
@@ -8,13 +10,162 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
       return;
     }
     // Listen for changes
-    shareDBDoc.on('op', (op: JSONOp, isLocal: boolean) => {
+    shareDBDoc.on('op batch', (op: JSONOp, isLocal: boolean) => {
       // Only act on changes coming from the client
       if (isLocal) {
-        console.log('op', op, isLocal);
+        console.log('op', JSON.stringify(op, null, 2));
+
+        // Example op that we want to act on:
+        // op [
+        //   "files",
+        //   "2514857669",
+        //   "text",
+        //   {
+        //     "es": [
+        //       18,
+        //       "d"
+        //     ]
+        //   }
+        // ]
+
+        // Check if the path of this op is the text content of a file
+        if (
+          op &&
+          op.length === 4 &&
+          op[0] === 'files' &&
+          typeof op[1] === 'string' &&
+          op[2] === 'text'
+        ) {
+          // Get the file id
+          const fileId: FileId = op[1];
+
+          console.log('Op is for file', fileId);
+        }
       } else {
-        console.log('ignoring op', op, isLocal);
+        // console.log('ignoring op', op, isLocal);
       }
     });
   }, [shareDBDoc]);
 };
+// import { useEffect, useRef } from 'react';
+// import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
+
+// const worker = new PrettierWorker();
+
+// // The time in milliseconds by which auto-saving is debounced.
+// const autoPrettierDebounceTimeMS = 1000;
+
+// // Ideas for next steps:
+// // - Isolate this as a thing
+// //   that only depends on shareDBDoc.
+
+// export const usePrettier = ({
+//   content,
+//   //   shareDBDoc,
+//   submitOperation,
+//   activeFileId,
+// }: {
+//   //   shareDBDoc: ShareDBDoc<VZCodeContent>;
+//   content: VZCodeContent;
+//   submitOperation: (
+//     updateFunction: (document: VZCodeContent) => VZCodeContent,
+//   ) => void;
+//   activeFileId: FileId;
+// }) => {
+//   const timeoutRef = useRef(null);
+//   const ignoreNextChangeRef = useRef(false);
+//   const isFirstRender = useRef(true);
+//   const activeFileIdRef = useRef(activeFileId);
+
+//   // Keep active file ref in sync.
+//   // A ref is used for this because Prettier
+//   // should not be triggered when the active file changes.
+//   // It should only be triggered when the active file's
+//   // text changes.
+//   useEffect(() => {
+//     activeFileIdRef.current = activeFileId;
+//   }, [activeFileId]);
+
+//   //   // Subscribe to listen for modifications
+//   //   useEffect(() => {
+//   //     if (!shareDBDoc) return;
+//   //     shareDBDoc.subscribe(() => {
+//   //       shareDBDoc.on('op', () => {
+//   //         if (!shareDBDoc.data.isInteracting) {
+//   //         }
+//   //       });
+//   //     });
+//   //   }, [shareDBDoc]);
+
+//   useEffect(() => {
+//     // Don't run Prettier on the first render.
+//     if (isFirstRender.current) {
+//       isFirstRender.current = false;
+//       return;
+//     }
+
+//     // Don't run Prettier if the change originated from Prettier.
+//     if (ignoreNextChangeRef.current) {
+//       //   console.log('ignoring change so Prettier runs only once');
+//       ignoreNextChangeRef.current = false;
+//       return;
+//     }
+
+//     // Do nothing if content is not yet loaded.
+//     if (!content) return;
+//     const files = content.files;
+
+//     const activeFileId = activeFileIdRef.current;
+
+//     // Do nothing if there is no active file.
+//     if (!activeFileId) return;
+//     const activeFile = files[activeFileId];
+
+//     // Do nothing if active file id is bogus.
+//     if (!activeFile) return;
+
+//     const { text } = activeFile;
+
+//     // Send the code to the worker, debounced.
+//     clearTimeout(timeoutRef.current);
+//     timeoutRef.current = setTimeout(() => {
+//       //   console.log('Sending text to Prettier worker');
+//       //   console.log(text);
+//       // TODO pass file name to worker
+//       worker.postMessage(text);
+//       //   worker.postMessage({
+//       //     activeFileId,
+//       //     activeFile,
+//       //   });
+//     }, autoPrettierDebounceTimeMS);
+//   }, [content]);
+
+//   // Listen for messages from the worker.
+//   useEffect(() => {
+//     // Add the event listener
+//     const listener = (event) => {
+//       const text = event.data;
+
+//       // Make sure this doesn't trigger another Prettier run.
+//       ignoreNextChangeRef.current = true;
+
+//       // TODO make absolutely sure activeFileId is correct
+//       // by passing it into the worker and back out.
+//       submitOperation((document) => ({
+//         ...document,
+//         files: {
+//           ...document.files,
+//           [activeFileId]: {
+//             ...document.files[activeFileId],
+//             text,
+//           },
+//         },
+//       }));
+//     };
+//     worker.addEventListener('message', listener);
+
+//     return () => {
+//       worker.removeEventListener('message', listener);
+//     };
+//   }, [submitOperation, activeFileId]);
+// };
