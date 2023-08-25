@@ -53,7 +53,23 @@ const shareDBBackend = new ShareDB({
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 wss.on('connection', (ws) => {
-  shareDBBackend.listen(new WebSocketJSONStream(ws));
+  const clientStream = new WebSocketJSONStream(ws);
+  shareDBBackend.listen(clientStream);
+
+  // Prevent server crashes on errors.
+  clientStream.on('error', (error) => {
+    console.log('clientStream error: ' + error.message);
+  });
+
+  // Handle errors
+  ws.on('error', (error) => {
+    console.log('ws error: ' + error.message);
+  });
+
+  // Handle disconnections
+  ws.on('close', (code) => {
+    clientStream.end();
+  });
 });
 
 // Serve static files

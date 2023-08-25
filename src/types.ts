@@ -1,5 +1,8 @@
 // FileId
 //   * A unique ID for a file.
+
+import { JSONOp } from 'ot-json1';
+
 //   * This is a random string.
 export type FileId = string;
 
@@ -64,6 +67,22 @@ export type ShareDBDoc<T> = {
   data: T;
   ingestSnapshot: (snapshot: any, callback) => void;
   subscribe: (callback) => void;
-  on: (event: string, callback: () => void) => void;
+  on: (event: string, callback: (op: JSONOp, source: boolean) => void) => void;
   off: (event: string, callback: () => void) => void;
+  submitOp: (op: JSONOp, options?: any, callback?: () => void) => void;
+};
+
+// The ShareDB document type for VZCode.
+export type VZCodeContent = {
+  // `files`
+  //   * The files in the VZCode instance.
+  files: Files;
+
+  // `isInteracting`
+  //   * `true` when the user is interacting
+  //     via interactive code widgets (e.g. Alt+drag)
+  //     * Hot reloading is throttled when this is `true`.
+  //   * `false` when they are not (e.g. normal typing)
+  //     * Hot reloading is debounced when this is `false`.
+  isInteracting: boolean;
 };
