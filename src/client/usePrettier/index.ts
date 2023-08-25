@@ -8,6 +8,10 @@ const worker = new PrettierWorker();
 // The time in milliseconds by which auto-saving is debounced.
 const autoPrettierDebounceTimeMS = 1000;
 
+// Ideas for next steps:
+// - Isolate this as a thing
+//   that only depends on shareDBDoc.
+
 export const usePrettier = ({
   content,
   //   shareDBDoc,
