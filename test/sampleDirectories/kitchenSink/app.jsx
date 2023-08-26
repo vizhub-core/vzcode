@@ -1,2 +1,2 @@
 const foo = () => <div></div>;
-const fdoo2 = "bars";
+const fdoo2 = <>"bars"</>;
