@@ -36,8 +36,18 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
+  // A helper function to submit operations to the ShareDB document
+  const submitOperation = useCallback(
+    (updateFunction: (document: Document) => Document) => {
+      const currentDocument = shareDBDoc.data;
+      const nextDocument = updateFunction(currentDocument);
+      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+    },
+    [shareDBDoc],
+  );
+
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc);
+  usePrettier(shareDBDoc, submitOperation);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -127,16 +137,6 @@ function App() {
       // docPresence.destroy();
     };
   }, []);
-
-  // A helper function to submit operations to the ShareDB document
-  const submitOperation = useCallback(
-    (updateFunction: (document: Document) => Document) => {
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = updateFunction(currentDocument);
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
-    },
-    [shareDBDoc],
-  );
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(

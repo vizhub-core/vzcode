@@ -1,3 +1,2 @@
-const foo = <div></div>;
-const foo2 =   d   c   'bars;
-                        
+const foo = () => <div></div>;
+const fdoo2 = "bars";

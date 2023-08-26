@@ -18,7 +18,10 @@ const extension = (fileName: string) => {
   }
 };
 
-export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
+export const usePrettier = (
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null,
+  submitOperation,
+) => {
   // The set of files that have been modified
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
@@ -39,9 +42,20 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
         return;
       }
 
-      console.log('Prettier worker returned text for file', fileId);
+      // console.log('Prettier worker returned text for file', fileId);
 
-      console.log(fileId, error, fileTextPrettified);
+      // console.log(fileId, error, fileTextPrettified);
+
+      submitOperation((document) => ({
+        ...document,
+        files: {
+          ...document.files,
+          [fileId]: {
+            ...document.files[fileId],
+            text: fileTextPrettified,
+          },
+        },
+      }));
     };
 
     // Listen for messages from the worker.
