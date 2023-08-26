@@ -70,13 +70,13 @@
     "react-select": "^5.7.4",
     "sharedb": "^4.0.0",
     "sharedb-client-browser": "^4.3.0",
+    "ot-json1": "^1.0.2",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.4",
-    "ot-json1": "^1.0.2",
     "prettier": "^3.0.2",
     "sass": "^1.66.1",
     "typescript": "^5.2.2",
