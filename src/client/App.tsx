@@ -25,23 +25,21 @@ const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
 
-// The ShareDB document type.
-type Document = {
-  files: Files;
-  isInteracting: boolean;
-};
-
 function App() {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
   // A helper function to submit operations to the ShareDB document
-  const submitOperation = useCallback(
-    (updateFunction: (document: Document) => Document) => {
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = updateFunction(currentDocument);
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useCallback(
+    (next) => {
+      const content: VZCodeContent = shareDBDoc.data;
+      const op = diff(content, next(content));
+      if (op && shareDBDoc) {
+        shareDBDoc.submitOp(op);
+      }
     },
     [shareDBDoc],
   );
@@ -198,15 +196,17 @@ function App() {
   }, []);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets, and `false` when they are not.
+  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
   const handleInteract = useCallback(() => {
+    // Set `isInteracting: true` if not already set.
     if (!interactTimeoutRef.current) {
       submitOperation((document) => ({ ...document, isInteracting: true }));
     } else {
       clearTimeout(interactTimeoutRef.current);
     }
 
+    // Set `isInteracting: false` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
       submitOperation((document) => ({ ...document, isInteracting: false }));

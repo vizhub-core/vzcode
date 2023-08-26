@@ -1,6 +1,6 @@
 import { JSONOp } from 'ot-json1';
 import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 // @ts-ignore
 import PrettierWorker from './worker?worker';
 
@@ -26,6 +26,11 @@ export const usePrettier = (
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
 
+  // A ref to keep track of whether an op is being applied.
+  // This is used to prevent Prettier from running
+  // when the op is coming from Prettier itself.
+  const isApplyingOpRef = useRef(false);
+
   useEffect(() => {
     if (!shareDBDoc) {
       return;
@@ -45,7 +50,7 @@ export const usePrettier = (
       // console.log('Prettier worker returned text for file', fileId);
 
       // console.log(fileId, error, fileTextPrettified);
-
+      isApplyingOpRef.current = true;
       submitOperation((document) => ({
         ...document,
         files: {
@@ -56,6 +61,7 @@ export const usePrettier = (
           },
         },
       }));
+      isApplyingOpRef.current = false;
     };
 
     // Listen for messages from the worker.
@@ -86,7 +92,7 @@ export const usePrettier = (
           fileId,
         };
 
-        // console.log('Sending text to Prettier worker');
+        console.log('Sending text to Prettier worker');
         // console.log(data);
 
         // Run Prettier for this file
@@ -106,6 +112,13 @@ export const usePrettier = (
       // Only act on changes coming from the client
       if (isLocal) {
         console.log('op', JSON.stringify(op, null, 2));
+
+        // If the op is coming from Prettier itself,
+        // then do nothing.
+        if (isApplyingOpRef.current) {
+          console.log('ignoring op from Prettier');
+          return;
+        }
 
         // Example op that we want to act on:
         // op [
