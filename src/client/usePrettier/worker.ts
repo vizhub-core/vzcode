@@ -11,22 +11,22 @@ import * as prettierPluginTypescript from 'prettier/plugins/typescript';
 import { FileId } from '../../types';
 
 const parsers = {
-  '.js': 'babel',
-  '.jsx': 'babel',
-  '.mjs': 'babel',
-  '.cjs': 'babel',
-  '.ts': 'typescript',
-  '.tsx': 'typescript',
-  '.css': 'css',
+  js: 'babel',
+  jsx: 'babel',
+  mjs: 'babel',
+  cjs: 'babel',
+  ts: 'typescript',
+  tsx: 'typescript',
+  css: 'css',
   //   '.less': 'less',
   //   '.scss': 'scss',
-  '.html': 'html',
-  '.json': 'json',
-  '.json5': 'json5',
+  html: 'html',
+  json: 'json',
+  json5: 'json5',
   //   '.graphql': 'graphql',
   //   '.gql': 'graphql',
-  '.md': 'markdown',
-  '.markdown': 'markdown',
+  md: 'markdown',
+  markdown: 'markdown',
   //   '.yaml': 'yaml',
   //   '.yml': 'yaml',
   //   '.vue': 'vue',
@@ -74,12 +74,22 @@ onmessage = async ({
   if (!parser) {
     postMessage({
       fileId,
-      error: `Unsupported file extension: ${fileExtension}`,
+      error: `Unsupported file extension for Prettier: ${fileExtension}`,
     });
     return;
   }
 
-  const result = await format(fileText, { parser, plugins });
+  try {
+    const fileTextPrettified = await format(fileText, { parser, plugins });
 
-  postMessage(result);
+    postMessage({
+      fileId,
+      fileTextPrettified,
+    });
+  } catch (error) {
+    postMessage({
+      fileId,
+      error,
+    });
+  }
 };

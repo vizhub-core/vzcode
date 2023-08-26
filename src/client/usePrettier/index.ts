@@ -30,15 +30,18 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
 
     const prettierWorker = new PrettierWorker();
 
+    // Get the message that comes back from the worker.
+    // This is the prettified text for a specific file.
     const handleMessage = (event) => {
-      const { fileId, error, fileText } = event.data;
+      const { fileId, error, fileTextPrettified } = event.data;
       if (error) {
         console.log(error);
         return;
       }
 
       console.log('Prettier worker returned text for file', fileId);
-      console.log(fileText);
+
+      console.log(fileId, error, fileTextPrettified);
     };
 
     // Listen for messages from the worker.
@@ -62,17 +65,18 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
         // Get the file
         const file = files[fileId];
 
+        // Craft the data to send to the worker
         const data = {
           fileText: file.text,
           fileExtension: extension(file.name),
           fileId,
         };
 
-        console.log('Sending text to Prettier worker');
-        console.log(data);
+        // console.log('Sending text to Prettier worker');
+        // console.log(data);
 
         // Run Prettier for this file
-        // prettierWorker.postMessage(data);
+        prettierWorker.postMessage(data);
       }
     };
 
