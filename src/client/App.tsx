@@ -6,12 +6,13 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
-import { FileId, Files } from '../types';
+import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
 import { defaultTheme } from './themes';
 import './style.scss';
+import { usePrettier } from './usePrettier';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -24,15 +25,27 @@ const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
 const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
 const connection = new Connection(socket);
 
-// The ShareDB document type.
-type Document = {
-  files: Files;
-  isInteracting: boolean;
-};
-
 function App() {
   // The ShareDB document.
-  const [shareDBDoc, setShareDBDoc] = useState(null);
+  const [shareDBDoc, setShareDBDoc] =
+    useState<ShareDBDoc<VZCodeContent> | null>(null);
+
+  // A helper function to submit operations to the ShareDB document
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useCallback(
+    (next) => {
+      const content: VZCodeContent = shareDBDoc.data;
+      const op = diff(content, next(content));
+      if (op && shareDBDoc) {
+        shareDBDoc.submitOp(op);
+      }
+    },
+    [shareDBDoc],
+  );
+
+  // Auto-run Pretter after local changes.
+  usePrettier(shareDBDoc, submitOperation);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -46,7 +59,7 @@ function App() {
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [data, setData] = useState<Document | null>(null);
+  const [content, setContent] = useState<VZCodeContent | null>(null);
 
   // The id of the currently open file tab.
   const [activeFileId, setActiveFileId] = useState<FileId>(null);
@@ -90,13 +103,13 @@ function App() {
       setShareDBDoc(shareDBDoc);
 
       // Set initial data.
-      setData(shareDBDoc.data);
+      setContent(shareDBDoc.data);
 
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
       shareDBDoc.on('op', () => {
-        setData(shareDBDoc.data);
+        setContent(shareDBDoc.data);
       });
 
       // Set up presence.
@@ -122,16 +135,6 @@ function App() {
       // docPresence.destroy();
     };
   }, []);
-
-  // A helper function to submit operations to the ShareDB document
-  const submitOperation = useCallback(
-    (updateFunction: (document: Document) => Document) => {
-      const currentDocument = shareDBDoc.data;
-      const nextDocument = updateFunction(currentDocument);
-      shareDBDoc.submitOp(diff(currentDocument, nextDocument));
-    },
-    [shareDBDoc],
-  );
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
@@ -193,27 +196,31 @@ function App() {
   }, []);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets, and `false` when they are not.
+  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
   const handleInteract = useCallback(() => {
+    // Set `isInteracting: true` if not already set.
     if (!interactTimeoutRef.current) {
       submitOperation((document) => ({ ...document, isInteracting: true }));
     } else {
       clearTimeout(interactTimeoutRef.current);
     }
 
+    // Set `isInteracting: false` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
       submitOperation((document) => ({ ...document, isInteracting: false }));
     }, 800);
   }, [submitOperation]);
 
+  const files: Files | null = content ? content.files : null;
+
   return (
     <div className="app">
       <div className="left">
         <Sidebar
           createFile={createFile}
-          files={data?.files}
+          files={files}
           handleRenameFileClick={handleRenameFileClick}
           handleDeleteFileClick={handleDeleteFileClick}
           handleFileClick={openTab}
@@ -229,13 +236,13 @@ function App() {
       </div>
       <div className="right">
         <TabList
-          files={data?.files}
+          files={files}
           tabList={tabList}
           activeFileId={activeFileId}
           setActiveFileId={setActiveFileId}
           closeTab={closeTab}
         />
-        {data && activeFileId ? (
+        {content && activeFileId ? (
           <CodeEditor
             shareDBDoc={shareDBDoc}
             localPresence={localPresence}
