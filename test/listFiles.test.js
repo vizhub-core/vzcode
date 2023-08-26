@@ -14,11 +14,11 @@ const getSampleFiles = (sampleDirectory) => {
 
   // Sort files for stability of tests, as ordering of fs listing
   // is not guaranteed.
-  const files = Object.values(initialDocument).sort((a, b) =>
+  const files = Object.values(initialDocument.files).sort((a, b) =>
     ascending(a.name, b.name),
   );
 
-  // console.log(JSON.stringify(files));
+  // console.log(JSON.stringify(files, null, 2));
 
   return files;
 };
@@ -38,7 +38,7 @@ describe('Listing files', () => {
     ]);
   });
 
-  it('should list files, empty directory', () => {
+  it.only('should list files, empty directory', () => {
     // Git does not track empty directories,
     // so we need to create the empty directory
     // if it doesn't exist (e.g. in a fresh clone).
@@ -54,7 +54,10 @@ describe('Listing files', () => {
     }
 
     expect(getSampleFiles('listFilesEmptyDirectory')).toEqual([
-      { text: null, name: 'emptyDirectory/' },
+      {
+        text: null,
+        name: 'emptyDirectory/',
+      },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'index.html',
@@ -63,7 +66,10 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
+      {
+        text: 'body {\n  background-color: red;\n}\n',
+        name: 'styles.css',
+      },
     ]);
   });
 
