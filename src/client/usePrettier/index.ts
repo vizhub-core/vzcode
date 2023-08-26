@@ -4,11 +4,85 @@ import { useEffect } from 'react';
 // @ts-ignore
 import PrettierWorker from './worker?worker';
 
+// The time in milliseconds by which auto-saving is debounced.
+const autoPrettierDebounceTimeMS = 1000;
+
+// Computes a file extension from a file name.
+// Example: 'foo.js' => '.js'
+const extension = (fileName: string) => {
+  const match = fileName.match(/\.([^.]+)$/);
+  if (match) {
+    return match[1];
+  } else {
+    return '';
+  }
+};
+
 export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
+  // The set of files that have been modified
+  // since the last Prettier run.
+  const dirtyFiles: Set<FileId> = new Set<FileId>();
+
   useEffect(() => {
     if (!shareDBDoc) {
       return;
     }
+
+    const prettierWorker = new PrettierWorker();
+
+    const handleMessage = (event) => {
+      const { fileId, error, fileText } = event.data;
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      console.log('Prettier worker returned text for file', fileId);
+      console.log(fileText);
+    };
+
+    // Listen for messages from the worker.
+    prettierWorker.addEventListener('message', handleMessage);
+
+    const runPrettier = async () => {
+      // Get the content of the document
+      const content = shareDBDoc.data;
+
+      // Get the files
+      const files = content.files;
+
+      // Get the dirty files
+      const dirtyFileIds = Array.from(dirtyFiles);
+
+      // Clear the set of dirty files
+      dirtyFiles.clear();
+
+      // Run Prettier on each dirty file
+      for (const fileId of dirtyFileIds) {
+        // Get the file
+        const file = files[fileId];
+
+        const data = {
+          fileText: file.text,
+          fileExtension: extension(file.name),
+          fileId,
+        };
+
+        console.log('Sending text to Prettier worker');
+        console.log(data);
+
+        // Run Prettier for this file
+        // prettierWorker.postMessage(data);
+      }
+    };
+
+    // Function to debounce running Prettier
+    let debounceTimeout;
+    function debouncePrettier() {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(runPrettier, autoPrettierDebounceTimeMS);
+    }
+
     // Listen for changes
     shareDBDoc.on('op batch', (op: JSONOp, isLocal: boolean) => {
       // Only act on changes coming from the client
@@ -39,11 +113,26 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
           // Get the file id
           const fileId: FileId = op[1];
 
+          // Add the file id to the set of dirty files
+          dirtyFiles.add(fileId);
+
+          // Debounce running Prettier
+          debouncePrettier();
+
           console.log('Op is for file', fileId);
         }
       } else {
-        // console.log('ignoring op', op, isLocal);
+        // console.log('ignoring op from remote', op, isLocal);
       }
+
+      // In the event that the component unmounts,
+      return () => {
+        // Remove the event listener
+        prettierWorker.removeEventListener('message', handleMessage);
+
+        // Clear the timeout
+        clearTimeout(debounceTimeout);
+      };
     });
   }, [shareDBDoc]);
 };
@@ -51,9 +140,6 @@ export const usePrettier = (shareDBDoc: ShareDBDoc<VZCodeContent> | null) => {
 // import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
 
 // const worker = new PrettierWorker();
-
-// // The time in milliseconds by which auto-saving is debounced.
-// const autoPrettierDebounceTimeMS = 1000;
 
 // // Ideas for next steps:
 // // - Isolate this as a thing
