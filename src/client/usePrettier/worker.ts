@@ -3,6 +3,7 @@ import * as prettierPluginBabel from 'prettier/plugins/babel';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown';
+import * as prettierPluginCSS from 'prettier/plugins/postcss';
 // import * as prettierPluginYaml from 'prettier/plugins/yaml';
 // import * as prettierPluginGraphql from 'prettier/plugins/graphql';
 // import * as prettierPluginAngular from 'prettier/plugins/angular';
@@ -39,10 +40,7 @@ const plugins = [
   prettierPluginHtml,
   prettierPluginMarkdown,
   prettierPluginTypescript,
-  //   prettierPluginYaml,
-  //   prettierPluginGraphql,
-  //   prettierPluginAngular,
-  //   prettierPluginVue,
+  prettierPluginCSS,
 ];
 
 onmessage = async ({
