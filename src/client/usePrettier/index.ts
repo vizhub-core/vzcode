@@ -43,6 +43,8 @@ export const usePrettier = (
     const handleMessage = (event) => {
       const { fileId, error, fileTextPrettified } = event.data;
       if (error) {
+        // TODO display this error here.
+        // See https://github.com/vizhub-core/vzcode/issues/145
         console.log(error);
         return;
       }
