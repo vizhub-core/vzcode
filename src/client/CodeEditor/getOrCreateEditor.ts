@@ -11,6 +11,7 @@ import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import { widgets } from './widgets';
 import { EditorCache, EditorCacheValue } from '../useEditorCache';
+import { ThemeLabel, themeOptionsByLabel } from '../themes';
 
 // Language extensions for CodeMirror.
 // Keys are file extensions.
@@ -63,7 +64,7 @@ export const getOrCreateEditor = ({
   filesPath: string[];
   localPresence: any;
   docPresence: any;
-  theme: any;
+  theme: ThemeLabel;
   onInteract?: () => void;
   editorCache: EditorCache;
 }): EditorCacheValue => {
@@ -117,7 +118,7 @@ export const getOrCreateEditor = ({
   extensions.push(basicSetup);
 
   // This supports dynamic changing of the theme.
-  extensions.push(themeCompartment.of(theme));
+  extensions.push(themeCompartment.of(themeOptionsByLabel[theme].value));
 
   // TODO handle dynamic changing of the file extension.
   // TODO handle dynamic file extensions by making

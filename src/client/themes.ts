@@ -7,7 +7,6 @@ import { githubDark } from '@uiw/codemirror-theme-github';
 import { material } from '@uiw/codemirror-theme-material';
 import { nord } from '@uiw/codemirror-theme-nord';
 import { xcodeLight } from '@uiw/codemirror-theme-xcode';
-import { Theme } from 'react-select';
 // import { vizhub } from './vizhub-theme';
 
 // CodeMirror themes
@@ -23,10 +22,12 @@ export type ThemeLabel =
   | 'xcode';
 // | 'vizhub'
 
-export const themes: Array<{
+export type ThemeOption = {
   value: any;
   label: ThemeLabel;
-}> = [
+};
+
+export const themes: Array<ThemeOption> = [
   { value: abcdef, label: 'abcdef' },
   { value: dracula, label: 'dracula' },
   { value: eclipse, label: 'eclipse' },
@@ -40,13 +41,14 @@ export const themes: Array<{
 ];
 
 // Map theme labels to theme values
-export const themesByLabel: Record<ThemeLabel, any> = themes.reduce(
-  (acc, theme) => {
-    acc[theme.label] = theme.value;
-    return acc;
-  },
-  {} as Record<ThemeLabel, any>,
-);
+export const themeOptionsByLabel: Record<ThemeLabel, ThemeOption> =
+  themes.reduce(
+    (acc, themeOption: ThemeOption) => {
+      acc[themeOption.label] = themeOption;
+      return acc;
+    },
+    {} as Record<ThemeLabel, any>,
+  );
 
 // The default theme
 export const defaultTheme: ThemeLabel = 'oneDark';

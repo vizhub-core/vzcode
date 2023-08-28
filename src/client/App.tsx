@@ -10,10 +10,10 @@ import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
-import { ThemeLabel, defaultTheme } from './themes';
+import { ThemeLabel, defaultTheme, themeOptionsByLabel } from './themes';
 import './style.scss';
 import { usePrettier } from './usePrettier';
-import { useEditorCache } from './useEditorCache';
+import { EditorCacheValue, useEditorCache } from './useEditorCache';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -218,6 +218,38 @@ function App() {
 
   const editorCache = useEditorCache();
 
+  // Handle dynamic theme changes
+  // but not on the first run.
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+    } else {
+      console.log('theme changed');
+      // Update the theme of all editors.
+      // editorCache.values().forEach((editorCacheValue: EditorCacheValue) => {
+      for (const editorCacheValue of Array.from(editorCache.values())) {
+        // editorCacheValue.editor.setTheme(themesByLabel[theme]);
+
+        // editor.dispatch({
+        //   effects: themeConfig.reconfigure([themes[i]])
+        // })
+
+        const { editor, themeCompartment } = editorCacheValue;
+        console.log('Here change need to thacdakj theme');
+
+        console.log('themeOptionsByLabel', themeOptionsByLabel);
+        console.log('theme', theme);
+
+        editor.dispatch({
+          effects: themeCompartment.reconfigure([
+            themeOptionsByLabel[theme].value,
+          ]),
+        });
+      }
+    }
+  }, [theme, editorCache]);
+
   return (
     <div className="app">
       <div className="left">
@@ -234,6 +266,7 @@ function App() {
         <Settings
           show={isSettingsOpen}
           onClose={handleSettingsClose}
+          theme={theme}
           setTheme={setTheme}
         />
       </div>

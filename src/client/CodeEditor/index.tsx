@@ -1,6 +1,11 @@
 import { useRef, useLayoutEffect } from 'react';
 import { FileId } from '../../types';
-import { defaultTheme, themesByLabel } from '../themes';
+import {
+  ThemeLabel,
+  defaultTheme,
+  themeOptionsByLabel,
+  themesByLabel,
+} from '../themes';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
 import { EditorCache, EditorCacheValue } from '../useEditorCache';
@@ -19,7 +24,7 @@ export const CodeEditor = ({
   shareDBDoc: any;
   localPresence?: any;
   docPresence?: any;
-  theme?: string;
+  theme?: ThemeLabel;
 
   // The path of the files object in the ShareDB document.
   // Defaults to the root of the document.
@@ -46,7 +51,7 @@ export const CodeEditor = ({
       filesPath,
       localPresence,
       docPresence,
-      theme: themesByLabel[theme],
+      theme,
       onInteract,
       editorCache,
     });
