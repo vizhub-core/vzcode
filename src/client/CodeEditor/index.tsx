@@ -3,7 +3,7 @@ import { FileId } from '../../types';
 import { defaultTheme, themesByLabel } from '../themes';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
-import { EditorCache } from '../useEditorCache';
+import { EditorCache, EditorCacheValue } from '../useEditorCache';
 
 export const CodeEditor = ({
   activeFileId,
@@ -29,27 +29,35 @@ export const CodeEditor = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Every time the active file switches from one file to another,
+  // the editor corresponding to the old file is removed from the DOM,
+  // and the editor corresponding to the new file is added to the DOM.
+
   useLayoutEffect(() => {
+    // Guard against cases where page is still loading.
     if (!ref.current) return;
     if (!shareDBDoc) return;
 
-    // `getOrCreateEditor` gets called
-    // every time the active file changes.
-    const editor = getOrCreateEditor({
+    // Get the editor corresponding to the active file.
+    // Looks in `editorCache` first, and if not found, creates a new editor.
+    const editorCacheValue: EditorCacheValue = getOrCreateEditor({
       fileId: activeFileId,
       shareDBDoc,
       filesPath,
       localPresence,
       docPresence,
-      // TODO refactor this, make dynamic themes work
       theme: themesByLabel[theme],
       onInteract,
       editorCache,
     });
-    ref.current.appendChild(editor.dom);
+
+    // Add the editor to the DOM.
+    ref.current.appendChild(editorCacheValue.editor.dom);
 
     return () => {
-      ref.current.removeChild(editor.dom);
+      // Remove the old editor from the DOM.
+      // This happens every time `activeFileId` changes.
+      ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, activeFileId]);
 
