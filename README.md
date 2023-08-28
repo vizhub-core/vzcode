@@ -1,10 +1,12 @@
 # VZCode
 
-Multiplayer code editor system | [Kanban](https://github.com/orgs/vizhub-core/projects/2/views/1)
+Multiplayer code editor system
 
 ![image](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
 
 ## Development
+
+We use this [Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1) to track our backlog. Check there for [good first issues](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3A%22good+first+issue%22) and [known bugs](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3Abug)!
 
 To get set up locally, run:
 
