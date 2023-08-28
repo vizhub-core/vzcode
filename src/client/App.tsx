@@ -10,9 +10,10 @@ import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
-import { defaultTheme } from './themes';
+import { ThemeLabel, defaultTheme } from './themes';
 import './style.scss';
 import { usePrettier } from './usePrettier';
+import { useEditorCache } from './useEditorCache';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -76,7 +77,7 @@ function App() {
   );
 
   // The current theme.
-  const [theme, setTheme] = useState<string>(defaultTheme);
+  const [theme, setTheme] = useState<ThemeLabel>(defaultTheme);
 
   // True to show the settings modal.
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -215,6 +216,8 @@ function App() {
 
   const files: Files | null = content ? content.files : null;
 
+  const editorCache = useEditorCache();
+
   return (
     <div className="app">
       <div className="left">
@@ -250,6 +253,7 @@ function App() {
             activeFileId={activeFileId}
             theme={theme}
             onInteract={handleInteract}
+            editorCache={editorCache}
           />
         ) : null}
       </div>

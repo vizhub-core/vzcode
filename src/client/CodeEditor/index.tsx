@@ -3,6 +3,7 @@ import { FileId } from '../../types';
 import { defaultTheme, themesByLabel } from '../themes';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
+import { EditorCache } from '../useEditorCache';
 
 export const CodeEditor = ({
   activeFileId,
@@ -12,6 +13,7 @@ export const CodeEditor = ({
   theme = defaultTheme,
   filesPath = ['files'],
   onInteract,
+  editorCache,
 }: {
   activeFileId: FileId;
   shareDBDoc: any;
@@ -23,6 +25,7 @@ export const CodeEditor = ({
   // Defaults to the root of the document.
   filesPath?: string[];
   onInteract?: () => void;
+  editorCache: EditorCache;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -41,6 +44,7 @@ export const CodeEditor = ({
       // TODO refactor this, make dynamic themes work
       theme: themesByLabel[theme],
       onInteract,
+      editorCache,
     });
     ref.current.appendChild(editor.dom);
 
