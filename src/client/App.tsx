@@ -10,9 +10,11 @@ import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
-import { defaultTheme } from './themes';
+import { ThemeLabel, defaultTheme } from './themes';
 import './style.scss';
 import { usePrettier } from './usePrettier';
+import { useEditorCache } from './useEditorCache';
+import { useDynamicTheme } from './useDynamicTheme';
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -61,30 +63,8 @@ function App() {
   // Starts out as `null` until the document is loaded.
   const [content, setContent] = useState<VZCodeContent | null>(null);
 
-  // The id of the currently open file tab.
-  const [activeFileId, setActiveFileId] = useState<FileId>(null);
-
-  // The ordered list of tabs.
-  const [tabList, setTabList] = useState<Array<FileId>>([]);
-
-  // Logic for opening and closing tabs.
-  const { closeTab, openTab } = useTabsState(
-    activeFileId,
-    setActiveFileId,
-    tabList,
-    setTabList,
-  );
-
-  // The current theme.
-  const [theme, setTheme] = useState<string>(defaultTheme);
-
-  // True to show the settings modal.
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  // The set of open directories.
-  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
-
   // Set up the connection to ShareDB.
+  // TODO move this logic to a hook called `useShareDB`
   useEffect(() => {
     // Since there is only ever a single document,
     // these things are pretty arbitrary.
@@ -136,6 +116,54 @@ function App() {
     };
   }, []);
 
+  // The id of the currently open file tab.
+  // TODO make this a URL param
+  const [activeFileId, setActiveFileId] = useState<FileId>(null);
+
+  // The ordered list of tabs.
+  // TODO make this a URL param
+  const [tabList, setTabList] = useState<Array<FileId>>([]);
+
+  // Logic for opening and closing tabs.
+  const { closeTab, openTab } = useTabsState(
+    activeFileId,
+    setActiveFileId,
+    tabList,
+    setTabList,
+  );
+
+  // The current theme.
+  // TODO persist this in local storage
+  const [theme, setTheme] = useState<ThemeLabel>(defaultTheme);
+
+  // Cache of CodeMirror editors by file id.
+  const editorCache = useEditorCache();
+
+  // Handle dynamic theme changes.
+  useDynamicTheme(editorCache, theme);
+
+  // True to show the settings modal.
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // The set of open directories.
+  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
+
+  // TODO move this logic to a hook called `useFileCRUD`
+  // Include
+  //  - `createFile`
+  //  - `handleRenameFileClick`
+  //  - `deleteFile`
+  //  - `handleDeleteFileClick`
+  const createFile = useCallback(() => {
+    const name = prompt('Enter new file name');
+    if (name) {
+      submitOperation((document) => ({
+        ...document,
+        files: { ...document.files, [randomId()]: { name, text: '' } },
+      }));
+    }
+  }, [submitOperation]);
+
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
     (fileId: FileId) => {
@@ -170,16 +198,6 @@ function App() {
     [submitOperation, closeTab],
   );
 
-  const createFile = useCallback(() => {
-    const name = prompt('Enter new file name');
-    if (name) {
-      submitOperation((document) => ({
-        ...document,
-        files: { ...document.files, [randomId()]: { name, text: '' } },
-      }));
-    }
-  }, [submitOperation]);
-
   // TODO prompt the user "Are you sure?"
   const handleDeleteFileClick = useCallback(
     (fileId: FileId, event: React.MouseEvent) => {
@@ -213,6 +231,7 @@ function App() {
     }, 800);
   }, [submitOperation]);
 
+  // Isolate the files object from the document.
   const files: Files | null = content ? content.files : null;
 
   return (
@@ -231,6 +250,7 @@ function App() {
         <Settings
           show={isSettingsOpen}
           onClose={handleSettingsClose}
+          theme={theme}
           setTheme={setTheme}
         />
       </div>
@@ -250,6 +270,7 @@ function App() {
             activeFileId={activeFileId}
             theme={theme}
             onInteract={handleInteract}
+            editorCache={editorCache}
           />
         ) : null}
       </div>

@@ -1,6 +1,7 @@
 import { useRef, useLayoutEffect } from 'react';
 import { FileId } from '../../types';
-import { defaultTheme, themesByLabel } from '../themes';
+import { ThemeLabel, defaultTheme } from '../themes';
+import { EditorCache, EditorCacheValue } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
 
@@ -12,40 +13,51 @@ export const CodeEditor = ({
   theme = defaultTheme,
   filesPath = ['files'],
   onInteract,
+  editorCache,
 }: {
   activeFileId: FileId;
   shareDBDoc: any;
   localPresence?: any;
   docPresence?: any;
-  theme?: string;
+  theme?: ThemeLabel;
 
   // The path of the files object in the ShareDB document.
-  // Defaults to the root of the document.
+  // Defaults to `files` if not provided.
   filesPath?: string[];
   onInteract?: () => void;
+  editorCache: EditorCache;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Every time the active file switches from one file to another,
+  // the editor corresponding to the old file is removed from the DOM,
+  // and the editor corresponding to the new file is added to the DOM.
+
   useLayoutEffect(() => {
+    // Guard against cases where page is still loading.
     if (!ref.current) return;
     if (!shareDBDoc) return;
 
-    // `getOrCreateEditor` gets called
-    // every time the active file changes.
-    const editor = getOrCreateEditor({
+    // Get the editor corresponding to the active file.
+    // Looks in `editorCache` first, and if not found, creates a new editor.
+    const editorCacheValue: EditorCacheValue = getOrCreateEditor({
       fileId: activeFileId,
       shareDBDoc,
       filesPath,
       localPresence,
       docPresence,
-      // TODO refactor this, make dynamic themes work
-      theme: themesByLabel[theme],
+      theme,
       onInteract,
+      editorCache,
     });
-    ref.current.appendChild(editor.dom);
+
+    // Add the editor to the DOM.
+    ref.current.appendChild(editorCacheValue.editor.dom);
 
     return () => {
-      ref.current.removeChild(editor.dom);
+      // Remove the old editor from the DOM.
+      // This happens every time `activeFileId` changes.
+      ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, activeFileId]);
 

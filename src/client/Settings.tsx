@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Select from 'react-select';
-import { themes } from './themes';
+import { ThemeLabel, themeOptionsByLabel, themes } from './themes';
 
 const saveTimes = [
   { value: 1, label: '1 second' },
@@ -12,7 +12,17 @@ const saveTimes = [
   { value: 30, label: '30 seconds' },
 ];
 
-export const Settings = ({ show, onClose, setTheme }) => {
+export const Settings = ({
+  show,
+  onClose,
+  setTheme,
+  theme,
+}: {
+  show: boolean;
+  onClose: () => void;
+  setTheme: (theme: ThemeLabel) => void;
+  theme: ThemeLabel;
+}) => {
   const handleChange = useCallback((selectedOption) => {
     setTheme(selectedOption.label);
     // TODO make this work.
@@ -55,7 +65,11 @@ export const Settings = ({ show, onClose, setTheme }) => {
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
-          <Select options={themes} onChange={handleChange} />
+          <Select
+            options={themes}
+            onChange={handleChange}
+            value={themeOptionsByLabel[theme]}
+          />
           <Form.Text className="text-muted">
             Select a color theme for the editor
           </Form.Text>
