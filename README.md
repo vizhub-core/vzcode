@@ -1,172 +1,125 @@
-# VZCode
+# VZCode: Multiplayer Code Editor System
 
-Multiplayer code editor system
+VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. 
 
-![image](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
+![VZCode Interface](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
+
+## Table of Contents
+- [Development](#development)
+- [Features](#features)
+- [Use Cases](#use-cases)
+- [Stack](#stack)
+- [Goals](#goals)
+- [Prior Work](#prior-work)
+- [Milestones](#milestones)
+- [Team](#team)
+- [Spaces](#spaces)
 
 ## Development
 
-We use this [Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1) to track our backlog. Check there for [good first issues](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3A%22good+first+issue%22) and [known bugs](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3Abug)!
+- **Backlog & Issues**: Use our [Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1) to track the backlog. It's also the place to find [good first issues](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3A%22good+first+issue%22) and [known bugs](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3Abug).
 
-To get set up locally, run:
-
-```
-cd vzcode
-npm install
-npm run test-interactive #This starts the server
-```
-
-Once the server is running, you can get hot reloading (of the client only) with:
-
-```
-npm run dev
-```
+- **Local Setup**:
+    ```bash
+    cd vzcode
+    npm install
+    npm run test-interactive
+    ```
+    For hot reloading (client-side only), run:
+    ```bash
+    npm run dev
+    ```
 
 ## Features
 
-This project is nascent but has enough features to actually use, a minimum viable product (MVP):
-
-- Browser-based code editing environment
-- Sidebar listing files from the file system
-  - Note: directories are not yet supported
-- Real-time collaboration (multiplayer mode)
-  - Invite collaborators over LAN, or
-  - Use a service like [NGrok](https://ngrok.com/) for remote collaboration
-- Tabs on the top for managing open files
-- Operatons on files (create file, rename file, delete file)
-- Syntax highlighting for several Web languages
-- Auto-saves changes back to the file system
+- Browser-based editing environment
+- Sidebar with file listings (directories support pending)
+- Real-time collaboration via LAN or using services like [NGrok](https://ngrok.com/)
+- File management through tabs
+- Basic file operations: create, rename, delete
+- Syntax highlighting for web languages
+- Auto-save feature
 
 ## Use Cases
 
-### Local Editor
+- **Local Editor**:
+    Use VZCode like VSCode or Vim:
+    ```bash
+    npm install -g vzcode
+    cd myProject
+    vzcode
+    ```
 
-One way to use this is as an editor on your system, taking the place of an existing editor like VSCode or Vim:
+- **Project-specific Editor**: 
+    Embed VZCode within your project for developers who might not have a preferred IDE. 
+    ```json
+    {
+      "name": "example-project",
+      "scripts": {
+        "edit": "vzcode"
+      },
+      "dependencies": {
+        "vzcode": "^0.1.0"
+      }
+    }
+    ```
+    Run using `npm run edit`.
 
-- Install with `npm install -g vzcode`
-- Launch with `cd myProject; vzcode`
+- **Hosting with Ngrok**: Allow external collaborators to join your VZCode session.
+  
+  - **With Ngrok Globally Installed**: (Requires authenticated Ngrok account)
+      ```bash
+      vzcode
+      ngrok http 3030
+      ```
 
-### Project-specific Editor
+  - **Through VZCode**: Coming soon!
 
-Another way to use this is to set up this editor within your project. This gives developers of your project a quick way to start editing code, in case they do not already have a preferred IDE, or they want to take advantage of VZCode features.
-
-This can be done introducing a new npm script and dependency like this:
-
-```json
-{
-  "name": "example-project",
-  "scripts": {
-    "edit": "vzcode"
-  },
-  "dependencies": {
-    "vzcode": "^0.1.0"
-  }
-}
-```
-
-Then run `npm run edit` to start the editor.
-
-# Host Server With Ngrok
-
-How to host your VZCode session with Ngrok. Hosting with Ngrok will allow users that are not on your network to join your session.
-
-## Host With Ngrok Globally Installed
-
-- Warning - This will only work if you have an Ngrok account and your machine is authenticated
-
-To host Ngrok, first set up a VZcode instance by moving into your directory, then in the terminal run
-
-```bash
-  vzcode
-```
-
-Next while the local host session is running, in the terminal run
-
-```bash
-  ngrok http 3030
-```
-
-This will give you a link that can be shared to collaborators who then can join from anywhere.
-
-## Host With Ngrok Through VZCode
-
-Coming Soon
-
-### Staging Site Editor
-
-[Experimental idea]
-
-VZCode could be hosted on a long-running server. The idea here is that an individual or team that is developing a product can make code changes, leveraging multiplayer mode remotely, and have those changes appear instantly on a "staging site" (a server hosting the latest version of the work) running something like the Vite dev server. This would allow collaborators to, for example, make minor tweaks live on client calls and have the client see the updates in real time.
+- **Staging Site Editor (Experimental)**:
+  Use VZCode on a persistent server, making code changes with multiplayer mode remotely, reflecting instantly on a staging site.
 
 ## Stack
 
-- [NodeJS](https://nodejs.org/en/)
-- [Express](https://expressjs.com/)
-- [ShareDB](https://github.com/share/sharedb)
-- [JSON1 Operational Transform](https://github.com/ottypes/json1)
-- [CodeMirror 6](https://codemirror.net/)
-- [React](https://reactjs.org/)
-- [Vite](https://vitejs.dev/)
+- Built using technologies such as:
+  - [NodeJS](https://nodejs.org/en/)
+  - [Express](https://expressjs.com/)
+  - [ShareDB](https://github.com/share/sharedb)
+  - [JSON1 Operational Transform](https://github.com/ottypes/json1)
+  - [CodeMirror 6](https://codemirror.net/)
+  - [React](https://reactjs.org/)
+  - [Vite](https://vitejs.dev/)
 
 ## Goals
 
-- Create a usable alternative to VSCode + Live Share for use in front end development
-- Enable developers to "enable" the VSCode editor on their projects via NPM
-- Have the `npm run edit` command start a local server
-- Develop a sidebar panel that lists files in the file system
-- Develop a code editor panel using CodeMirror that lets users navigate between files
-- Have the server auto-save files to disk when changes are made
-- Synchronize code edits across multiple clients using Operational Transform (JSON1 and ShareDB)
-- Ensure that the editor works well on top of the Vite dev server
-- Dogfood the product to identify ways it can be improved
-- Iterate based on feedback
-- Share the project with the world
-- Core component of [VizHub](https://vizhub.com/) next generation editor
+The project aims to:
+
+- Offer a feasible alternative to VSCode + Live Share for frontend development.
+- Facilitate easy project-specific IDE embedding.
+- Enhance user experience with advanced features.
+- Keep improving based on feedback.
+- Serve as a core for [VizHub's](https://vizhub.com/) next-gen editor.
 
 ## Prior Work
 
-This project is heavily based on prior work done in the [VizHub Project](https://github.com/vizhub-core/vizhub/). VizHub already has a code editor component that supports real-time collaboration. However, this was built using older versions of [CodeMirror](https://codemirror.net/5/) (version 5) and operational transform ([json0](https://github.com/ottypes/json0). Various prototypes were built as a proof-of-concept for building a similar editor using the latest CodeMirror (v6) and the latest operational transform library for ShareDB (json1).
+VZCode is inspired by the [VizHub Project](https://github.com/vizhub-core/vizhub/). VizHub's editor supports real-time collaboration using older versions of libraries. For VZCode, the aim is to leverage the latest technologies to deliver a more streamlined experience. 
 
-There is a working demo at https://vizhub.community/ci/viz1 (try it in multiple tabs to see the real-time sync), whose source code lives at https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3 . Also we'll draw from this standalone CodeMirror6 collaboration demo: https://github.com/vizhub-core/vizhub/tree/main/vizhub-v3/vizhub-codemirror. For this project we'll port components out of that demo so that the code editor is totally independent and isolated from anything specific to VizHub.
-
-![image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
-
-It will look something like this ☝️ once it's working. This VZCode project will draw inspiration (and possibly implementation) from the existing open source editor component of VizHub, and various prototypes that have been done with CodeMirror6.
+![Prior Work Image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
 
 ## Milestones
 
-See also [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1).
-
-February 2023
-
-- [x] Get the first version working, including:
-  - [x] ShareDB server
-  - [x] Auto-save
-  - [x] Edit the content of multiple files (no support for folders initially)
-
-March 2023
-
-- [x] Make it usable, including:
-  - [x] UX for adding new files, renaming files, deleting files
-  - [x] Implement presence (the ability to see the cursors of others in real time)
-  - [x] Publish an early release to NPM
-- [x] Test out how it works using tunneling services such as NGrok
-
-April 2023
-
-- [x] Add support for nested directories, including:
-- [x] Develop a tree-based sidebar UI allowing directory navigation
-- [ ] Dogfood the product and try to collaboratively develop something, maybe a data visualization
-- [ ] Gather feedback from early users and iterate based on that
-- [ ] Publish a YouTube video presentation of the work to date
+For detailed progress, visit the [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1). 
+- **February 2023**: Initial setup, server, and basic features.
+- **March 2023**: Enhancements, UX improvements, and NPM release.
+- **April 2023**: Directory support, feedback iterations, and promotion.
 
 ## Team
 
-- Curran Kelleher
-- Anooj Pai from [RPI RCOS](https://rcos.io/)
-- Contributions welcome!
+- **Curran Kelleher**
+- **Anooj Pai** from [RPI RCOS](https://rcos.io/)
+  
+  We welcome contributions!
 
 ## Spaces
 
-- https://github.com/vizhub-core/vzcode
-- [Discord channel within RCOS](https://discord.com/channels/738593165438746634/1066068656045441044)
+- [GitHub Repository](https://github.com/vizhub-core/vzcode)
+- [Discord Channel within RCOS](https://discord.com/channels/738593165438746634/1066068656045441044)
