@@ -1,8 +1,6 @@
 import { JSONOp } from 'ot-json1';
 import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
 import { useEffect, useRef } from 'react';
-// @ts-ignore
-import PrettierWorker from './worker?worker';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoPrettierDebounceTimeMS = 1200;
@@ -20,7 +18,8 @@ const extension = (fileName: string) => {
 
 export const usePrettier = (
   shareDBDoc: ShareDBDoc<VZCodeContent> | null,
-  submitOperation,
+  submitOperation: (next: (content: VZCodeContent) => VZCodeContent) => void,
+  prettierWorker: Worker,
 ) => {
   // The set of files that have been modified
   // since the last Prettier run.
@@ -35,8 +34,6 @@ export const usePrettier = (
     if (!shareDBDoc) {
       return;
     }
-
-    const prettierWorker = new PrettierWorker();
 
     // Get the message that comes back from the worker.
     // This is the prettified text for a specific file.
