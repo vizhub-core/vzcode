@@ -12,9 +12,14 @@ import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
 import { ThemeLabel, defaultTheme } from './themes';
 import './style.scss';
-import { usePrettier } from './usePrettier';
 import { useEditorCache } from './useEditorCache';
 import { useDynamicTheme } from './useDynamicTheme';
+import { usePrettier } from './usePrettier';
+// @ts-ignore
+import PrettierWorker from './usePrettier/worker?worker';
+
+// Instantiate the Prettier worker.
+const prettierWorker = new PrettierWorker();
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -47,7 +52,7 @@ function App() {
   );
 
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc, submitOperation);
+  usePrettier(shareDBDoc, submitOperation, prettierWorker);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
