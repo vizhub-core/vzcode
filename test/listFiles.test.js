@@ -9,13 +9,19 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
 const getSampleFiles = (sampleDirectory) => {
-  const fullPath = path.join(dirname, 'sampleDirectories', sampleDirectory);
-  const initialDocument = computeInitialDocument({ fullPath });
+  const fullPath = path.join(
+    dirname,
+    'sampleDirectories',
+    sampleDirectory,
+  );
+  const initialDocument = computeInitialDocument({
+    fullPath,
+  });
 
   // Sort files for stability of tests, as ordering of fs listing
   // is not guaranteed.
-  const files = Object.values(initialDocument.files).sort((a, b) =>
-    ascending(a.name, b.name),
+  const files = Object.values(initialDocument.files).sort(
+    (a, b) => ascending(a.name, b.name),
   );
 
   // console.log(JSON.stringify(files, null, 2));
@@ -34,7 +40,10 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
+      {
+        text: 'body {\n  background-color: red;\n}\n',
+        name: 'styles.css',
+      },
     ]);
   });
 
@@ -53,7 +62,9 @@ describe('Listing files', () => {
       fs.mkdirSync(emptyDir);
     }
 
-    expect(getSampleFiles('listFilesEmptyDirectory')).toEqual([
+    expect(
+      getSampleFiles('listFilesEmptyDirectory'),
+    ).toEqual([
       {
         text: null,
         name: 'emptyDirectory/',
@@ -74,7 +85,9 @@ describe('Listing files', () => {
   });
 
   it('should list files, full directory', () => {
-    expect(getSampleFiles('listFilesFullDirectory')).toEqual([
+    expect(
+      getSampleFiles('listFilesFullDirectory'),
+    ).toEqual([
       { text: null, name: 'fullDirectory/' },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
@@ -96,7 +109,10 @@ describe('Listing files', () => {
         text: "console.log('This is a test file to edit');\n",
         name: 'index.js',
       },
-      { text: 'body {\n  background-color: red;\n}\n', name: 'styles.css' },
+      {
+        text: 'body {\n  background-color: red;\n}\n',
+        name: 'styles.css',
+      },
     ]);
   });
 
@@ -111,7 +127,10 @@ describe('Listing files', () => {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'outerDirectory/index.html',
       },
-      { text: null, name: 'outerDirectory/innerDirectory/' },
+      {
+        text: null,
+        name: 'outerDirectory/innerDirectory/',
+      },
       {
         text: '<!DOCTYPE html>\n<html>\n  <head>\n    <meta charset="utf-8" />\n    <meta namde="viewport" content="width=device-width" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n',
         name: 'outerDirectory/innerDirectory/index.html',

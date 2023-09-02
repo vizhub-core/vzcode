@@ -13,8 +13,11 @@ export const useDynamicTheme = (
       isFirstRun.current = false;
     } else {
       // When the user changes the theme, update the theme of all editors.
-      for (const editorCacheValue of Array.from(editorCache.values())) {
-        const { editor, themeCompartment } = editorCacheValue;
+      for (const editorCacheValue of Array.from(
+        editorCache.values(),
+      )) {
+        const { editor, themeCompartment } =
+          editorCacheValue;
         editor.dispatch({
           effects: themeCompartment.reconfigure([
             themeOptionsByLabel[theme].value,

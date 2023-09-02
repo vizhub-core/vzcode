@@ -3,7 +3,11 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Select from 'react-select';
-import { ThemeLabel, themeOptionsByLabel, themes } from './themes';
+import {
+  ThemeLabel,
+  themeOptionsByLabel,
+  themes,
+} from './themes';
 
 const saveTimes = [
   { value: 1, label: '1 second' },
@@ -34,16 +38,19 @@ export const Settings = ({
     // });
   }, []);
 
-  const handleSaveTimeChange = useCallback((selectedOption) => {
-    const time = [{ value: selectedOption.value }];
-    fetch('/saveTime', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(time),
-    });
-  }, []);
+  const handleSaveTimeChange = useCallback(
+    (selectedOption) => {
+      const time = [{ value: selectedOption.value }];
+      fetch('/saveTime', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(time),
+      });
+    },
+    [],
+  );
 
   return show ? (
     <Modal
@@ -58,7 +65,10 @@ export const Settings = ({
       <Modal.Body>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Username</Form.Label>
-          <Form.Control type="text" placeholder="Enter username" />
+          <Form.Control
+            type="text"
+            placeholder="Enter username"
+          />
           <Form.Text className="text-muted">
             Enter a username to be displayed on your cursor
           </Form.Text>
@@ -76,8 +86,13 @@ export const Settings = ({
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Auto-Save Time</Form.Label>
-          <Select options={saveTimes} onChange={handleSaveTimeChange} />
-          <Form.Text className="text-muted">Select an auto save time</Form.Text>
+          <Select
+            options={saveTimes}
+            onChange={handleSaveTimeChange}
+          />
+          <Form.Text className="text-muted">
+            Select an auto save time
+          </Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>

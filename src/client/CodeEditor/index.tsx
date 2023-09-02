@@ -1,7 +1,10 @@
 import { useRef, useLayoutEffect } from 'react';
 import { FileId } from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
-import { EditorCache, EditorCacheValue } from '../useEditorCache';
+import {
+  EditorCache,
+  EditorCacheValue,
+} from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
 
@@ -40,16 +43,17 @@ export const CodeEditor = ({
 
     // Get the editor corresponding to the active file.
     // Looks in `editorCache` first, and if not found, creates a new editor.
-    const editorCacheValue: EditorCacheValue = getOrCreateEditor({
-      fileId: activeFileId,
-      shareDBDoc,
-      filesPath,
-      localPresence,
-      docPresence,
-      theme,
-      onInteract,
-      editorCache,
-    });
+    const editorCacheValue: EditorCacheValue =
+      getOrCreateEditor({
+        fileId: activeFileId,
+        shareDBDoc,
+        filesPath,
+        localPresence,
+        docPresence,
+        theme,
+        onInteract,
+        editorCache,
+      });
 
     // Add the editor to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);

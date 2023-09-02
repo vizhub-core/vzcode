@@ -1,5 +1,9 @@
 import { DirectoryListing } from './DirectoryListing';
-import { FileId, FileTree, FileTreeFile } from '../../types';
+import {
+  FileId,
+  FileTree,
+  FileTreeFile,
+} from '../../types';
 import { FileListing } from './FileListing';
 
 // A "Listing" is a "FileListing" or a "DirectoryListing"
@@ -14,7 +18,10 @@ export const Listing = ({
 }: {
   entity: FileTree | FileTreeFile;
   handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
+  handleDeleteFileClick: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;

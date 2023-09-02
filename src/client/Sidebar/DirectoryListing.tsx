@@ -18,7 +18,10 @@ export const DirectoryListing = ({
   path: string;
   children: Array<FileTree | FileTreeFile>;
   handleRenameFileClick: (fileId: string) => void;
-  handleDeleteFileClick: (fileId: string, event: React.MouseEvent) => void;
+  handleDeleteFileClick: (
+    fileId: string,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: string) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
@@ -35,7 +38,10 @@ export const DirectoryListing = ({
     console.log('TODO handleRenameDirectoryClick');
   }, []);
 
-  const isOpen = useMemo(() => isDirectoryOpen(path), [isDirectoryOpen, path]);
+  const isOpen = useMemo(
+    () => isDirectoryOpen(path),
+    [isDirectoryOpen, path],
+  );
 
   return (
     <>
@@ -47,7 +53,9 @@ export const DirectoryListing = ({
       >
         <div
           className="arrow-wrapper"
-          style={{ transform: `rotate(${isOpen ? 90 : 0}deg)` }}
+          style={{
+            transform: `rotate(${isOpen ? 90 : 0}deg)`,
+          }}
         >
           <DirectoryArrowSVG />
         </div>
@@ -62,8 +70,12 @@ export const DirectoryListing = ({
               <Listing
                 entity={entity}
                 key={fileId || path}
-                handleRenameFileClick={handleRenameFileClick}
-                handleDeleteFileClick={handleDeleteFileClick}
+                handleRenameFileClick={
+                  handleRenameFileClick
+                }
+                handleDeleteFileClick={
+                  handleDeleteFileClick
+                }
                 handleFileClick={handleFileClick}
                 isDirectoryOpen={isDirectoryOpen}
                 toggleDirectory={toggleDirectory}

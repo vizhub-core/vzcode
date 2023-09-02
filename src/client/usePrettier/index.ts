@@ -1,5 +1,9 @@
 import { JSONOp } from 'ot-json1';
-import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../types';
 import { useEffect, useRef } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.
@@ -18,7 +22,9 @@ const extension = (fileName: string) => {
 
 export const usePrettier = (
   shareDBDoc: ShareDBDoc<VZCodeContent> | null,
-  submitOperation: (next: (content: VZCodeContent) => VZCodeContent) => void,
+  submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void,
   prettierWorker: Worker,
 ) => {
   // The set of files that have been modified
@@ -38,7 +44,8 @@ export const usePrettier = (
     // Get the message that comes back from the worker.
     // This is the prettified text for a specific file.
     const handleMessage = (event) => {
-      const { fileId, error, fileTextPrettified } = event.data;
+      const { fileId, error, fileTextPrettified } =
+        event.data;
       if (error) {
         console.log(error);
         return;
@@ -59,7 +66,10 @@ export const usePrettier = (
     };
 
     // Listen for messages from the worker.
-    prettierWorker.addEventListener('message', handleMessage);
+    prettierWorker.addEventListener(
+      'message',
+      handleMessage,
+    );
 
     const runPrettier = async () => {
       // Get the content of the document
@@ -95,64 +105,73 @@ export const usePrettier = (
     let debounceTimeout;
     function debouncePrettier() {
       clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(runPrettier, autoPrettierDebounceTimeMS);
+      debounceTimeout = setTimeout(
+        runPrettier,
+        autoPrettierDebounceTimeMS,
+      );
     }
 
     // Listen for changes
-    shareDBDoc.on('op batch', (op: JSONOp, isLocal: boolean) => {
-      // Only act on changes coming from the client
-      if (isLocal) {
-        // If the op is coming from Prettier itself,
-        // then do nothing.
-        if (isApplyingOpRef.current) {
-          // console.log('ignoring op from Prettier');
-          return;
+    shareDBDoc.on(
+      'op batch',
+      (op: JSONOp, isLocal: boolean) => {
+        // Only act on changes coming from the client
+        if (isLocal) {
+          // If the op is coming from Prettier itself,
+          // then do nothing.
+          if (isApplyingOpRef.current) {
+            // console.log('ignoring op from Prettier');
+            return;
+          }
+
+          // Example op that we want to act on:
+          // op [
+          //   "files",
+          //   "2514857669",
+          //   "text",
+          //   {
+          //     "es": [
+          //       18,
+          //       "d"
+          //     ]
+          //   }
+          // ]
+
+          // Check if the path of this op is the text content of a file
+          if (
+            op &&
+            op.length === 4 &&
+            op[0] === 'files' &&
+            typeof op[1] === 'string' &&
+            op[2] === 'text'
+          ) {
+            // Get the file id
+            const fileId: FileId = op[1];
+
+            // Add the file id to the set of dirty files
+            dirtyFiles.add(fileId);
+
+            // Debounce running Prettier
+            debouncePrettier();
+
+            // console.log('Op is for file', fileId);
+          }
+        } else {
+          // console.log('ignoring op from remote', op, isLocal);
         }
 
-        // Example op that we want to act on:
-        // op [
-        //   "files",
-        //   "2514857669",
-        //   "text",
-        //   {
-        //     "es": [
-        //       18,
-        //       "d"
-        //     ]
-        //   }
-        // ]
+        // In the event that the component unmounts,
+        return () => {
+          // Remove the event listener
+          prettierWorker.removeEventListener(
+            'message',
+            handleMessage,
+          );
 
-        // Check if the path of this op is the text content of a file
-        if (
-          op &&
-          op.length === 4 &&
-          op[0] === 'files' &&
-          typeof op[1] === 'string' &&
-          op[2] === 'text'
-        ) {
-          // Get the file id
-          const fileId: FileId = op[1];
-
-          // Add the file id to the set of dirty files
-          dirtyFiles.add(fileId);
-
-          // Debounce running Prettier
-          debouncePrettier();
-
-          // console.log('Op is for file', fileId);
-        }
-      } else {
-        // console.log('ignoring op from remote', op, isLocal);
-      }
-
-      // In the event that the component unmounts,
-      return () => {
-        // Remove the event listener
-        prettierWorker.removeEventListener('message', handleMessage);
-
-        // Clear the timeout
-        clearTimeout(debounceTimeout);
-      };
-    });
+          // Clear the timeout
+          clearTimeout(debounceTimeout);
+        };
+      },
+    );
   }, [shareDBDoc]);
 };

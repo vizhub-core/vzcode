@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { randomId } from '../randomId.js';
-import { enableDirectories, debugDirectories } from './featureFlags.js';
+import {
+  enableDirectories,
+  debugDirectories,
+} from './featureFlags.js';
 
 const isDirectory = (file) => file.endsWith('/');
 
@@ -36,10 +39,17 @@ export const computeInitialDocument = ({ fullPath }) => {
 
   while (unsearchedDirectories.length !== 0) {
     const currentDirectory = unsearchedDirectories.pop();
-    const currentDirectoryPath = path.join(fullPath, currentDirectory);
+    const currentDirectoryPath = path.join(
+      fullPath,
+      currentDirectory,
+    );
     const newFiles = fs
-      .readdirSync(currentDirectoryPath, { withFileTypes: true })
-      .filter((dirent) => (enableDirectories ? true : dirent.isFile()))
+      .readdirSync(currentDirectoryPath, {
+        withFileTypes: true,
+      })
+      .filter((dirent) =>
+        enableDirectories ? true : dirent.isFile(),
+      )
 
       // Add a trailing slash for directories
       .map((dirent) => {
@@ -64,7 +74,10 @@ export const computeInitialDocument = ({ fullPath }) => {
     initialDocument.files[id] = {
       text: isDirectory(file)
         ? null
-        : fs.readFileSync(path.join(fullPath, file), 'utf-8'),
+        : fs.readFileSync(
+            path.join(fullPath, file),
+            'utf-8',
+          ),
       name: file,
     };
   });
