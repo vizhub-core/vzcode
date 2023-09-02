@@ -5,7 +5,12 @@ import { disableSettings } from '../featureFlags';
 import { Listing } from './Listing';
 
 import './styles.scss';
-import { FileId, FileTree, FileTreeFile, Files } from '../../types';
+import {
+  FileId,
+  FileTree,
+  FileTreeFile,
+  Files,
+} from '../../types';
 
 export const Sidebar = ({
   createFile,
@@ -20,7 +25,10 @@ export const Sidebar = ({
   files: Files;
   createFile?: () => void;
   handleRenameFileClick?: (fileId: FileId) => void;
-  handleDeleteFileClick?: (fileId: FileId, event: React.MouseEvent) => void;
+  handleDeleteFileClick?: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
   isDirectoryOpen?: (path: string) => boolean;
@@ -61,8 +69,12 @@ export const Sidebar = ({
                 <Listing
                   entity={entity}
                   key={key}
-                  handleRenameFileClick={handleRenameFileClick}
-                  handleDeleteFileClick={handleDeleteFileClick}
+                  handleRenameFileClick={
+                    handleRenameFileClick
+                  }
+                  handleDeleteFileClick={
+                    handleDeleteFileClick
+                  }
                   handleFileClick={handleFileClick}
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
@@ -72,7 +84,10 @@ export const Sidebar = ({
           : null}
       </div>
       {disableSettings ? null : (
-        <div className="settings" onClick={handleSettingsClick}>
+        <div
+          className="settings"
+          onClick={handleSettingsClick}
+        >
           Settings
         </div>
       )}

@@ -12,7 +12,10 @@ export const FileListing = ({
   name: string;
   fileId: FileId;
   handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (fileId: FileId, event: React.MouseEvent) => void;
+  handleDeleteFileClick: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: FileId) => void;
 }) => {
   const handleClick = useCallback(() => {

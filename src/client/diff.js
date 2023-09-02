@@ -3,4 +3,10 @@ import diffMatchPatch from 'diff-match-patch';
 import { json1Presence, textUnicode } from '../ot';
 
 export const diff = (a, b) =>
-  jsondiff(a, b, diffMatchPatch, json1Presence, textUnicode);
+  jsondiff(
+    a,
+    b,
+    diffMatchPatch,
+    json1Presence,
+    textUnicode,
+  );

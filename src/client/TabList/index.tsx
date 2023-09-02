@@ -6,7 +6,9 @@ import './style.scss';
 const fileNameSplit = (fileName) => {
   const split = fileName.split('/');
   if (split.length === 1) return split[split.length - 1];
-  return split[split.length - 2] + '/' + split[split.length - 1];
+  return (
+    split[split.length - 2] + '/' + split[split.length - 1]
+  );
 };
 
 const Tab = ({
@@ -32,7 +34,10 @@ const Tab = ({
     [closeTab, fileId],
   );
 
-  const tabName = useMemo(() => fileNameSplit(fileName), [fileName]);
+  const tabName = useMemo(
+    () => fileNameSplit(fileName),
+    [fileName],
+  );
 
   return (
     <div

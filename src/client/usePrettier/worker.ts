@@ -78,7 +78,10 @@ onmessage = async ({
   }
 
   try {
-    const fileTextPrettified = await format(fileText, { parser, plugins });
+    const fileTextPrettified = await format(fileText, {
+      parser,
+      plugins,
+    });
 
     postMessage({
       fileId,

@@ -14,7 +14,10 @@ import { Annotation, RangeSet } from '@codemirror/state';
 //  * https://codemirror.net/examples/decoration/
 //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js
 //  * https://share.github.io/sharedb/presence
-export const json1PresenceDisplay = ({ path, docPresence }) => [
+export const json1PresenceDisplay = ({
+  path,
+  docPresence,
+}) => [
   ViewPlugin.fromClass(
     class {
       constructor(view) {
@@ -67,7 +70,9 @@ export const json1PresenceDisplay = ({ path, docPresence }) => [
           // Set timeout so that the current CodeMirror update finishes
           // before the next ones that render presence begin.
           setTimeout(() => {
-            view.dispatch({ annotations: [presenceAnnotation.of(true)] });
+            view.dispatch({
+              annotations: [presenceAnnotation.of(true)],
+            });
           }, 0);
         });
       }

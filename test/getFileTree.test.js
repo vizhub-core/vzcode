@@ -54,11 +54,30 @@ describe('getFileTree', () => {
   it('Parses a complex directory structure', () => {
     const file1 = { name: 'name1', text: 'text1' };
     const file2 = { name: 'dir1/name2', text: 'text2' };
-    const file3 = { name: 'dir1/deep/name1deep', text: 'text1deep' };
-    const file4 = { name: 'dir1/dar/name2dar', text: 'text2dar' };
-    const file5 = { name: 'dir1/dar/name3dar', text: 'text3dar' };
-    const file6 = { name: 'dir2/name2dor', text: 'text2dor' };
-    const tree = getFileTree([file1, file2, file3, file4, file5, file6]);
+    const file3 = {
+      name: 'dir1/deep/name1deep',
+      text: 'text1deep',
+    };
+    const file4 = {
+      name: 'dir1/dar/name2dar',
+      text: 'text2dar',
+    };
+    const file5 = {
+      name: 'dir1/dar/name3dar',
+      text: 'text3dar',
+    };
+    const file6 = {
+      name: 'dir2/name2dor',
+      text: 'text2dor',
+    };
+    const tree = getFileTree([
+      file1,
+      file2,
+      file3,
+      file4,
+      file5,
+      file6,
+    ]);
     expect(tree.children.length).toBe(3);
 
     expect(tree.children[0].name).toBe('name1');
@@ -71,23 +90,45 @@ describe('getFileTree', () => {
     expect(tree.children[1].children[0].file).toBe(file2);
 
     expect(tree.children[1].children[1].name).toBe('deep');
-    expect(tree.children[1].children[1].path).toBe('dir1/deep');
-    expect(tree.children[1].children[1].children.length).toBe(1);
-    expect(tree.children[1].children[1].children[0].name).toBe('name1deep');
-    expect(tree.children[1].children[1].children[0].file).toBe(file3);
+    expect(tree.children[1].children[1].path).toBe(
+      'dir1/deep',
+    );
+    expect(
+      tree.children[1].children[1].children.length,
+    ).toBe(1);
+    expect(
+      tree.children[1].children[1].children[0].name,
+    ).toBe('name1deep');
+    expect(
+      tree.children[1].children[1].children[0].file,
+    ).toBe(file3);
 
     expect(tree.children[1].children[2].name).toBe('dar');
-    expect(tree.children[1].children[2].path).toBe('dir1/dar');
-    expect(tree.children[1].children[2].children.length).toBe(2);
-    expect(tree.children[1].children[2].children[0].name).toBe('name2dar');
-    expect(tree.children[1].children[2].children[0].file).toBe(file4);
-    expect(tree.children[1].children[2].children[1].name).toBe('name3dar');
-    expect(tree.children[1].children[2].children[1].file).toBe(file5);
+    expect(tree.children[1].children[2].path).toBe(
+      'dir1/dar',
+    );
+    expect(
+      tree.children[1].children[2].children.length,
+    ).toBe(2);
+    expect(
+      tree.children[1].children[2].children[0].name,
+    ).toBe('name2dar');
+    expect(
+      tree.children[1].children[2].children[0].file,
+    ).toBe(file4);
+    expect(
+      tree.children[1].children[2].children[1].name,
+    ).toBe('name3dar');
+    expect(
+      tree.children[1].children[2].children[1].file,
+    ).toBe(file5);
 
     expect(tree.children[2].name).toBe('dir2');
     expect(tree.children[2].children.length).toBe(1);
 
-    expect(tree.children[2].children[0].name).toBe('name2dor');
+    expect(tree.children[2].children[0].name).toBe(
+      'name2dor',
+    );
     expect(tree.children[2].children[0].file).toBe(file6);
   });
 

@@ -8,7 +8,11 @@ import interact from '@replit/codemirror-interact';
 // Inspired by:
 // https://github.com/replit/codemirror-interact/blob/master/dev/index.ts
 // `onInteract` is called when the user interacts with a widget.
-export const widgets = ({ onInteract }: { onInteract?: () => void }) =>
+export const widgets = ({
+  onInteract,
+}: {
+  onInteract?: () => void;
+}) =>
   interact({
     rules: [
       // a rule for a number dragger

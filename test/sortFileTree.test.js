@@ -117,7 +117,10 @@ const complexTreeUnsorted = {
     },
     {
       name: 'script.ts',
-      file: { text: "const testing = 'Hello World!';\n", name: 'script.ts' },
+      file: {
+        text: "const testing = 'Hello World!';\n",
+        name: 'script.ts',
+      },
       fileId: '9422527787',
     },
     {
@@ -238,7 +241,10 @@ const complexTreeSorted = {
     },
     {
       name: 'script.ts',
-      file: { text: "const testing = 'Hello World!';\n", name: 'script.ts' },
+      file: {
+        text: "const testing = 'Hello World!';\n",
+        name: 'script.ts',
+      },
       fileId: '9422527787',
     },
     {

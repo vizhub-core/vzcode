@@ -19,21 +19,24 @@ import { useState, useCallback } from 'react';
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/useOpenDirectories.js
 export const useOpenDirectories = () => {
   // The set of open directories by path/
-  const [openDirectories, setOpenDirectories] = useState<Set<string>>(
-    new Set(),
-  );
+  const [openDirectories, setOpenDirectories] = useState<
+    Set<string>
+  >(new Set());
 
   // Whether a directory is open.
-  const isDirectoryOpen: (path: string) => boolean = useCallback(
-    (path) => openDirectories.has(path),
-    [openDirectories],
-  );
+  const isDirectoryOpen: (path: string) => boolean =
+    useCallback(
+      (path) => openDirectories.has(path),
+      [openDirectories],
+    );
 
   // Toggle whether a directory is open.
   const toggleDirectory = useCallback(
     (path) => {
       const newOpenDirectories = new Set(openDirectories);
-      newOpenDirectories[isDirectoryOpen(path) ? 'delete' : 'add'](path);
+      newOpenDirectories[
+        isDirectoryOpen(path) ? 'delete' : 'add'
+      ](path);
       setOpenDirectories(newOpenDirectories);
     },
     [openDirectories, isDirectoryOpen],

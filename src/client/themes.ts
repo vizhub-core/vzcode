@@ -41,14 +41,16 @@ export const themes: Array<ThemeOption> = [
 ];
 
 // Map theme labels to theme values
-export const themeOptionsByLabel: Record<ThemeLabel, ThemeOption> =
-  themes.reduce(
-    (acc, themeOption: ThemeOption) => {
-      acc[themeOption.label] = themeOption;
-      return acc;
-    },
-    {} as Record<ThemeLabel, any>,
-  );
+export const themeOptionsByLabel: Record<
+  ThemeLabel,
+  ThemeOption
+> = themes.reduce(
+  (acc, themeOption: ThemeOption) => {
+    acc[themeOption.label] = themeOption;
+    return acc;
+  },
+  {} as Record<ThemeLabel, any>,
+);
 
 // The default theme
 export const defaultTheme: ThemeLabel = 'oneDark';

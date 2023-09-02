@@ -163,7 +163,10 @@ function throttleSave() {
 let debounceTimeout;
 function debounceSave() {
   clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(save, autoSaveDebounceTimeMS);
+  debounceTimeout = setTimeout(
+    save,
+    autoSaveDebounceTimeMS,
+  );
 }
 
 // Subscribe to listen for modifications
@@ -186,7 +189,9 @@ server.listen(port, async () => {
       open(url);
     })();
   } else {
-    console.log(`Editor is live at http://localhost:${port}`);
+    console.log(
+      `Editor is live at http://localhost:${port}`,
+    );
     open(`http://localhost:${port}`);
   }
 });

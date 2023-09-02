@@ -11,7 +11,9 @@ export const sortFileTree = (fileTree: FileTree) => {
       const aIsFile = (a as FileTreeFile).file ? 1 : 0;
       const bIsFile = (b as FileTreeFile).file ? 1 : 0;
       // Directories before files.
-      return aIsFile - bIsFile || a.name.localeCompare(b.name);
+      return (
+        aIsFile - bIsFile || a.name.localeCompare(b.name)
+      );
     });
     fileTree.children.forEach(sortFileTree);
   }

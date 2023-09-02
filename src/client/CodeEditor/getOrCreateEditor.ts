@@ -1,16 +1,26 @@
 import { EditorView, basicSetup } from 'codemirror';
-import { Compartment, EditorState } from '@codemirror/state';
+import {
+  Compartment,
+  EditorState,
+} from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { json1Presence, textUnicode } from '../../ot';
-import { FileId, ShareDBDoc, VZCodeContent } from '../../types';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import { widgets } from './widgets';
-import { EditorCache, EditorCacheValue } from '../useEditorCache';
+import {
+  EditorCache,
+  EditorCacheValue,
+} from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 
 // Language extensions for CodeMirror.
@@ -104,11 +114,18 @@ export const getOrCreateEditor = ({
 
   // Deals with broadcasting changes in cursor location and selection.
   if (localPresence)
-    extensions.push(json1PresenceBroadcast({ path: textPath, localPresence }));
+    extensions.push(
+      json1PresenceBroadcast({
+        path: textPath,
+        localPresence,
+      }),
+    );
 
   // Deals with receiving the broadcas from other clients and displaying them.
   if (docPresence)
-    extensions.push(json1PresenceDisplay({ path: textPath, docPresence }));
+    extensions.push(
+      json1PresenceDisplay({ path: textPath, docPresence }),
+    );
 
   // This is the "basic setup" for CodeMirror,
   // which actually adds a ton on functionality.
@@ -118,7 +135,9 @@ export const getOrCreateEditor = ({
   extensions.push(basicSetup);
 
   // This supports dynamic changing of the theme.
-  extensions.push(themeCompartment.of(themeOptionsByLabel[theme].value));
+  extensions.push(
+    themeCompartment.of(themeOptionsByLabel[theme].value),
+  );
 
   // TODO handle dynamic changing of the file extension.
   // TODO handle dynamic file extensions by making
@@ -131,15 +150,20 @@ export const getOrCreateEditor = ({
     return languageFunc ? languageFunc() : undefined;
   };
 
-  const languageExtension = getLanguageExtension(fileExtension);
+  const languageExtension =
+    getLanguageExtension(fileExtension);
   if (languageExtension) {
-    extensions.push(languageCompartment.of(languageExtension));
+    extensions.push(
+      languageCompartment.of(languageExtension),
+    );
   } else {
     // Not sure if this case even works.
     // TODO manually test this case by creating a file
     // that has no extension, opening it up,
     // and then adding an extension.
-    console.warn(`No language extension for file extension: ${fileExtension}`);
+    console.warn(
+      `No language extension for file extension: ${fileExtension}`,
+    );
     // We still need to push the compartment,
     // otherwise the compartment won't work when
     // a file extension _is_ added later on.

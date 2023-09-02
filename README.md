@@ -1,10 +1,11 @@
 # VZCode: Multiplayer Code Editor
 
-VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. 
+VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience.
 
 ![VZCode Interface](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
 
 ## Table of Contents
+
 - [Development](#development)
 - [Features](#features)
 - [Use Cases](#use-cases)
@@ -20,17 +21,20 @@ VZCode offers a multiplayer code editing environment that caters to a real-time 
 - **Backlog & Issues**: Use our [Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1) to track the backlog, [good first issues](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3A%22good+first+issue%22), and [known bugs](https://github.com/orgs/vizhub-core/projects/2/views/1?filterQuery=label%3Abug).
 
 - **Local Setup**:
-    ```bash
-    cd vzcode
-    npm install
-    npm run test-interactive
-    ```
-    For hot reloading (client-side only), run:
-    ```bash
-    npm run dev
-    ```
 
-    You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to set up the `vzcode` NPM package in another project to point to your clone of the repository. This can be useful when testing out how `vzcode` functions as a dependency.
+  ```bash
+  cd vzcode
+  npm install
+  npm run test-interactive
+  ```
+
+  For hot reloading (client-side only), run:
+
+  ```bash
+  npm run dev
+  ```
+
+  You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to set up the `vzcode` NPM package in another project to point to your clone of the repository. This can be useful when testing out how `vzcode` functions as a dependency.
 
 ## Features
 
@@ -47,37 +51,41 @@ VZCode offers a multiplayer code editing environment that caters to a real-time 
 ## Use Cases
 
 - **Local Editor**:
-    Use VZCode like VSCode or Vim:
-    ```bash
-    npm install -g vzcode
-    cd myProject
-    vzcode
-    ```
+  Use VZCode like VSCode or Vim:
 
-- **Project-specific Editor**: 
-    Embed VZCode within your project for developers who might not have a preferred IDE, or to provide an editing experience that seamlessly integrates with hot reloading.
-    ```json
-    {
-      "name": "example-project",
-      "scripts": {
-        "edit": "vzcode"
-      },
-      "dependencies": {
-        "vzcode": "^0.1.0"
-      }
+  ```bash
+  npm install -g vzcode
+  cd myProject
+  vzcode
+  ```
+
+- **Project-specific Editor**:
+  Embed VZCode within your project for developers who might not have a preferred IDE, or to provide an editing experience that seamlessly integrates with hot reloading.
+
+  ```json
+  {
+    "name": "example-project",
+    "scripts": {
+      "edit": "vzcode"
+    },
+    "dependencies": {
+      "vzcode": "^0.1.0"
     }
-    ```
-    Run using `npm run edit`.
+  }
+  ```
 
-    For example, as the editor of [Vite D3 Template](https://github.com/curran/vite-d3-template), which showcases the throttled auto-save behavior of VZCode while using the interactive widgets in the context of editing files served by the Vite dev server which supports hot reloading.
+  Run using `npm run edit`.
+
+  For example, as the editor of [Vite D3 Template](https://github.com/curran/vite-d3-template), which showcases the throttled auto-save behavior of VZCode while using the interactive widgets in the context of editing files served by the Vite dev server which supports hot reloading.
 
 - **Hosting with Ngrok**: Allow external collaborators to join your VZCode session.
-  
+
   - **With Ngrok Globally Installed**: (Requires authenticated Ngrok account)
-      ```bash
-      vzcode
-      ngrok http 3030
-      ```
+
+    ```bash
+    vzcode
+    ngrok http 3030
+    ```
 
   - **Through VZCode**: Coming soon!
 
@@ -109,7 +117,7 @@ The project aims to:
 
 ## Prior Work
 
-VZCode is inspired by [VizHub v2](https://github.com/vizhub-core/vizhub/). VizHub V2's code editor supports real-time collaboration using older versions of libraries such as CodeMirror 5 and JSON0 OT. For VZCode, the aim is to leverage the latest technologies to deliver a more streamlined experience. 
+VZCode is inspired by [VizHub v2](https://github.com/vizhub-core/vizhub/). VizHub V2's code editor supports real-time collaboration using older versions of libraries such as CodeMirror 5 and JSON0 OT. For VZCode, the aim is to leverage the latest technologies to deliver a more streamlined experience.
 
 ![Prior Work Image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
 
@@ -129,7 +137,7 @@ For detailed progress, visit the [VZCode Kanban Board](https://github.com/orgs/v
 
 - **Curran Kelleher**
 - **Anooj Pai** from [RPI RCOS](https://rcos.io/)
-  
+
   We welcome contributions!
 
 ## Spaces

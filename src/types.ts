@@ -67,9 +67,16 @@ export type ShareDBDoc<T> = {
   data: T;
   ingestSnapshot: (snapshot: any, callback) => void;
   subscribe: (callback) => void;
-  on: (event: string, callback: (op: JSONOp, source: boolean) => void) => void;
+  on: (
+    event: string,
+    callback: (op: JSONOp, source: boolean) => void,
+  ) => void;
   off: (event: string, callback: () => void) => void;
-  submitOp: (op: JSONOp, options?: any, callback?: () => void) => void;
+  submitOp: (
+    op: JSONOp,
+    options?: any,
+    callback?: () => void,
+  ) => void;
 };
 
 // The ShareDB document type for VZCode.
@@ -82,7 +89,7 @@ export type VZCodeContent = {
   //   * `true` when the user is interacting
   //     via interactive code widgets (e.g. Alt+drag)
   //     * Hot reloading is throttled when this is `true`.
-  //   * `false` when they are not (e.g. normal typing)
+  //   * `false` or `undefined` when they are not (e.g. normal typing)
   //     * Hot reloading is debounced when this is `false`.
-  isInteracting: boolean;
+  isInteracting?: boolean;
 };

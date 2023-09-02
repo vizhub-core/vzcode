@@ -1,4 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -6,7 +11,12 @@ import { CodeEditor } from './CodeEditor';
 import { diff } from './diff';
 import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
-import { FileId, Files, ShareDBDoc, VZCodeContent } from '../types';
+import {
+  FileId,
+  Files,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
@@ -28,8 +38,13 @@ ShareDBClient.types.register(json1Presence.type);
 // Establish the singleton ShareDB connection over WebSockets.
 // TODO consider using reconnecting WebSocket
 const { Connection } = ShareDBClient;
-const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
+const wsProtocol =
+  window.location.protocol === 'https:'
+    ? 'wss://'
+    : 'ws://';
+const socket = new WebSocket(
+  wsProtocol + window.location.host + '/ws',
+);
 const connection = new Connection(socket);
 
 function App() {
@@ -38,6 +53,7 @@ function App() {
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
   // A helper function to submit operations to the ShareDB document
+
   const submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void = useCallback(
@@ -66,7 +82,8 @@ function App() {
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [content, setContent] = useState<VZCodeContent | null>(null);
+  const [content, setContent] =
+    useState<VZCodeContent | null>(null);
 
   // Set up the connection to ShareDB.
   // TODO move this logic to a hook called `useShareDB`
@@ -99,7 +116,10 @@ function App() {
 
       // Set up presence.
       // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
-      const docPresence = connection.getDocPresence(collection, id);
+      const docPresence = connection.getDocPresence(
+        collection,
+        id,
+      );
 
       // Subscribe to receive remote presence updates.
       docPresence.subscribe(function (error) {
@@ -123,7 +143,8 @@ function App() {
 
   // The id of the currently open file tab.
   // TODO make this a URL param
-  const [activeFileId, setActiveFileId] = useState<FileId>(null);
+  const [activeFileId, setActiveFileId] =
+    useState<FileId>(null);
 
   // The ordered list of tabs.
   // TODO make this a URL param
@@ -139,7 +160,8 @@ function App() {
 
   // The current theme.
   // TODO persist this in local storage
-  const [theme, setTheme] = useState<ThemeLabel>(defaultTheme);
+  const [theme, setTheme] =
+    useState<ThemeLabel>(defaultTheme);
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
@@ -148,10 +170,12 @@ function App() {
   useDynamicTheme(editorCache, theme);
 
   // True to show the settings modal.
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] =
+    useState(false);
 
   // The set of open directories.
-  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
+  const { isDirectoryOpen, toggleDirectory } =
+    useOpenDirectories();
 
   // TODO move this logic to a hook called `useFileCRUD`
   // Include
@@ -164,7 +188,10 @@ function App() {
     if (name) {
       submitOperation((document) => ({
         ...document,
-        files: { ...document.files, [randomId()]: { name, text: '' } },
+        files: {
+          ...document.files,
+          [randomId()]: { name, text: '' },
+        },
       }));
     }
   }, [submitOperation]);
@@ -224,7 +251,10 @@ function App() {
   const handleInteract = useCallback(() => {
     // Set `isInteracting: true` if not already set.
     if (!interactTimeoutRef.current) {
-      submitOperation((document) => ({ ...document, isInteracting: true }));
+      submitOperation((document) => ({
+        ...document,
+        isInteracting: true,
+      }));
     } else {
       clearTimeout(interactTimeoutRef.current);
     }
@@ -232,12 +262,17 @@ function App() {
     // Set `isInteracting: false` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
-      submitOperation((document) => ({ ...document, isInteracting: false }));
+      submitOperation((document) => ({
+        ...document,
+        isInteracting: false,
+      }));
     }, 800);
   }, [submitOperation]);
 
   // Isolate the files object from the document.
-  const files: Files | null = content ? content.files : null;
+  const files: Files | null = content
+    ? content.files
+    : null;
 
   return (
     <div className="app">
