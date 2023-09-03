@@ -39,9 +39,6 @@ body,
   font-family: 'Poppins', sans-serif;
   display: flex;
 
-  /* To support Resizer, which is position: absolute */
-  position: relative;
-
   .left,
   .right {
     display: flex;
@@ -51,5 +48,7 @@ body,
     flex: 1;
     flex-direction: column;
     min-width: 0;
+    /* To support Resizer, which is position: absolute */
+    position: relative;
   }
 }

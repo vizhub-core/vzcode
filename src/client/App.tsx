@@ -146,7 +146,7 @@ function App() {
   // The id of the currently open file tab.
   // TODO make this a URL param
   const [activeFileId, setActiveFileId] =
-    useState<FileId>(null);
+    useState<FileId | null>(null);
 
   // The ordered list of tabs.
   // TODO make this a URL param
@@ -297,8 +297,8 @@ function App() {
             setTheme={setTheme}
           />
         </div>
-        <Resizer activeFile={activeFileId} />
         <div className="right">
+          <Resizer activeFileId={activeFileId} />
           <TabList
             files={files}
             tabList={tabList}

@@ -16,11 +16,13 @@ import { FileId } from '../../types';
 import './styles.scss';
 
 export const Resizer = ({
-  activeFile,
+  activeFileId,
 }: {
-  activeFile: FileId;
+  activeFileId: FileId | null;
 }) => {
-  const showResizer: boolean = activeFile !== undefined;
+  console.log('Resizer');
+  console.log('activeFileId', activeFileId);
+  const showResizer: boolean = activeFileId !== null;
   // TODO research what this does
   //
   //   const { showResizer } = useContext(URLStateContext);

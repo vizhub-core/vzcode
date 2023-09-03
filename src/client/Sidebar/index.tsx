@@ -44,18 +44,18 @@ export const Sidebar = ({
     setIsSettingsOpen(true);
   }, []);
 
-  const {
-    codeEditorWidth,
-    moveSplitPane,
-    isDragging,
-    setIsDragging,
-  } = useContext(SplitPaneResizeContext);
-  console.log({
-    codeEditorWidth,
-    moveSplitPane,
-    isDragging,
-    setIsDragging,
-  });
+  // const {
+  //   codeEditorWidth,
+  //   moveSplitPane,
+  //   isDragging,
+  //   setIsDragging,
+  // } = useContext(SplitPaneResizeContext);
+  // console.log({
+  //   codeEditorWidth,
+  //   moveSplitPane,
+  //   isDragging,
+  //   setIsDragging,
+  // });
   return (
     <div className="vz-sidebar">
       <div className="files">
