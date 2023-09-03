@@ -298,7 +298,6 @@ function App() {
           />
         </div>
         <div className="right">
-          <Resizer activeFileId={activeFileId} />
           <TabList
             files={files}
             tabList={tabList}
@@ -318,6 +317,7 @@ function App() {
             />
           ) : null}
         </div>
+        <Resizer />
       </div>
     </SplitPaneResizeProvider>
   );

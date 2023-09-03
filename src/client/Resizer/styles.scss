@@ -14,22 +14,9 @@
 .vz-resizer .vz-resizer-thumb {
   position: absolute;
   top: 0;
-  left: 0;
   bottom: 0;
-  width: 10px;
-}
-
-:root {
-  // --vzHoverBackground: rgba(0, 0, 0, 0.05);
-  // --vzActiveBackground: rgba(0, 0, 0, 0.1);
-  --vzHoverBackground: rgba(255, 255, 255, 0.05);
-  --vzActiveBackground: rgba(255, 255, 255, 0.1);
 }
 
 .vz-resizer:hover .vz-resizer-thumb {
-  background-color: var(--vzHoverBackground);
-}
-
-.vz-resizer:active .vz-resizer-thumb {
-  background-color: var(--vzActiveBackground);
+  background-color: #0078d4;
 }

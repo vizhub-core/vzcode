@@ -10,9 +10,21 @@ import {
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import './styles.scss';
 
+// This is the width of the resizer interaction surface.
+// On this surface, the cursor changes to a resize cursor.
+const resizerInteractionSurfaceWidth = 20;
+
+// This is the width of the resizer visible area.
+// This is the part of the resizer that is visible to the user.
+const resizerThumbWidth = 6;
+
 export const Resizer = () => {
-  const { moveSplitPane, isDragging, setIsDragging } =
-    useContext(SplitPaneResizeContext);
+  const {
+    codeEditorWidth,
+    moveSplitPane,
+    isDragging,
+    setIsDragging,
+  } = useContext(SplitPaneResizeContext);
   const previousClientX = useRef<number>(0);
 
   const onMouseDown = useCallback(
@@ -56,8 +68,25 @@ export const Resizer = () => {
   }, [isDragging, onMouseMove, onMouseUp]);
 
   return (
-    <div className="vz-resizer" onMouseDown={onMouseDown}>
-      <div className="vz-resizer-thumb" />
+    <div
+      className="vz-resizer"
+      onMouseDown={onMouseDown}
+      style={{
+        left:
+          codeEditorWidth -
+          resizerInteractionSurfaceWidth / 2,
+        width: resizerInteractionSurfaceWidth,
+      }}
+    >
+      <div
+        className="vz-resizer-thumb"
+        style={{
+          left:
+            resizerInteractionSurfaceWidth / 2 -
+            resizerThumbWidth / 2,
+          width: resizerThumbWidth,
+        }}
+      />
     </div>
   );
 };
