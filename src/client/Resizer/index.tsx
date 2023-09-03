@@ -14,9 +14,13 @@ import './styles.scss';
 // On this surface, the cursor changes to a resize cursor.
 const resizerInteractionSurfaceWidth = 20;
 
+// Expand while dragging to make it easier to hit.
+// Without this, various sidebar elements get hovered on and change style.
+const resizerInteractionSurfaceWidthWhileDragging = 200;
+
 // This is the width of the resizer visible area.
 // This is the part of the resizer that is visible to the user.
-const resizerThumbWidth = 6;
+const resizerThumbWidth = 4;
 
 export const Resizer = () => {
   const {
@@ -67,23 +71,23 @@ export const Resizer = () => {
     }
   }, [isDragging, onMouseMove, onMouseUp]);
 
+  const resizerWidth = isDragging
+    ? resizerInteractionSurfaceWidthWhileDragging
+    : resizerInteractionSurfaceWidth;
+
   return (
     <div
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left:
-          codeEditorWidth -
-          resizerInteractionSurfaceWidth / 2,
-        width: resizerInteractionSurfaceWidth,
+        left: codeEditorWidth - resizerWidth / 2,
+        width: resizerWidth,
       }}
     >
       <div
         className="vz-resizer-thumb"
         style={{
-          left:
-            resizerInteractionSurfaceWidth / 2 -
-            resizerThumbWidth / 2,
+          left: resizerWidth / 2 - resizerThumbWidth / 2,
           width: resizerThumbWidth,
         }}
       />
