@@ -29,13 +29,6 @@ export const Settings = ({
 }) => {
   const handleChange = useCallback((selectedOption) => {
     setTheme(selectedOption.label);
-    // TODO make this work.
-    // Sketch of algorithm:
-    // for each editor in the editor cache,
-    //   update the theme
-    // editor.dispatch({
-    //   effects: themeSet.reconfigure(selectedOption.value),
-    // });
   }, []);
 
   const handleSaveTimeChange = useCallback(
