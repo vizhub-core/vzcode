@@ -19,9 +19,10 @@ const localStoragePropertyName = 'vizHubCodeEditorWidth';
 const initialWidthLocalStorage = +localStorage.getItem(
   localStoragePropertyName,
 );
-const initialWidthPercentage = window.innerWidth / 3;
+// const initialWidthPercentage = window.innerWidth / 3;
+const initialWidthDefault = 220;
 const initialWidth =
-  initialWidthLocalStorage || initialWidthPercentage;
+  initialWidthLocalStorage || initialWidthDefault;
 // console.log(
 //   'initialWidthLocalStorage ',
 //   initialWidthLocalStorage,
