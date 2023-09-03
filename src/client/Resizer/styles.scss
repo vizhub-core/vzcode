@@ -1,0 +1,29 @@
+.vz-resizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  // Useful for debugging:
+  // background-color: #ffd0007c;
+}
+
+.vz-resizer:hover {
+  cursor: col-resize;
+}
+
+.vz-resizer .vz-resizer-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  // Transition the background color after a delay.
+  // First value is the duration of the transition,
+  // second value is the delay before the transition starts.
+  // Tuned to roughly match VSCode's resizer.
+  transition: background-color 0.15s 0.25s;
+}
+
+.vz-resizer:hover .vz-resizer-thumb {
+  background-color: #0078d4;
+}

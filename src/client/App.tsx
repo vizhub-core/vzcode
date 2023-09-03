@@ -21,12 +21,14 @@ import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { useTabsState } from './useTabsState';
 import { ThemeLabel, defaultTheme } from './themes';
-import './style.scss';
 import { useEditorCache } from './useEditorCache';
 import { useDynamicTheme } from './useDynamicTheme';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';
+import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
+import { Resizer } from './Resizer';
+import './style.scss';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -144,7 +146,7 @@ function App() {
   // The id of the currently open file tab.
   // TODO make this a URL param
   const [activeFileId, setActiveFileId] =
-    useState<FileId>(null);
+    useState<FileId | null>(null);
 
   // The ordered list of tabs.
   // TODO make this a URL param
@@ -275,46 +277,49 @@ function App() {
     : null;
 
   return (
-    <div className="app">
-      <div className="left">
-        <Sidebar
-          createFile={createFile}
-          files={files}
-          handleRenameFileClick={handleRenameFileClick}
-          handleDeleteFileClick={handleDeleteFileClick}
-          handleFileClick={openTab}
-          setIsSettingsOpen={setIsSettingsOpen}
-          isDirectoryOpen={isDirectoryOpen}
-          toggleDirectory={toggleDirectory}
-        />
-        <Settings
-          show={isSettingsOpen}
-          onClose={handleSettingsClose}
-          theme={theme}
-          setTheme={setTheme}
-        />
-      </div>
-      <div className="right">
-        <TabList
-          files={files}
-          tabList={tabList}
-          activeFileId={activeFileId}
-          setActiveFileId={setActiveFileId}
-          closeTab={closeTab}
-        />
-        {content && activeFileId ? (
-          <CodeEditor
-            shareDBDoc={shareDBDoc}
-            localPresence={localPresence}
-            docPresence={docPresence}
-            activeFileId={activeFileId}
-            theme={theme}
-            onInteract={handleInteract}
-            editorCache={editorCache}
+    <SplitPaneResizeProvider>
+      <div className="app">
+        <div className="left">
+          <Sidebar
+            createFile={createFile}
+            files={files}
+            handleRenameFileClick={handleRenameFileClick}
+            handleDeleteFileClick={handleDeleteFileClick}
+            handleFileClick={openTab}
+            setIsSettingsOpen={setIsSettingsOpen}
+            isDirectoryOpen={isDirectoryOpen}
+            toggleDirectory={toggleDirectory}
           />
-        ) : null}
+          <Settings
+            show={isSettingsOpen}
+            onClose={handleSettingsClose}
+            theme={theme}
+            setTheme={setTheme}
+          />
+        </div>
+        <div className="right">
+          <TabList
+            files={files}
+            tabList={tabList}
+            activeFileId={activeFileId}
+            setActiveFileId={setActiveFileId}
+            closeTab={closeTab}
+          />
+          {content && activeFileId ? (
+            <CodeEditor
+              shareDBDoc={shareDBDoc}
+              localPresence={localPresence}
+              docPresence={docPresence}
+              activeFileId={activeFileId}
+              theme={theme}
+              onInteract={handleInteract}
+              editorCache={editorCache}
+            />
+          ) : null}
+        </div>
+        <Resizer />
       </div>
-    </div>
+    </SplitPaneResizeProvider>
   );
 }
 

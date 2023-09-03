@@ -1,16 +1,16 @@
-import { useCallback, useMemo } from 'react';
-import { getFileTree } from '../getFileTree';
-import { sortFileTree } from '../sortFileTree';
-import { disableSettings } from '../featureFlags';
-import { Listing } from './Listing';
-
-import './styles.scss';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   FileId,
   FileTree,
   FileTreeFile,
   Files,
 } from '../../types';
+import { getFileTree } from '../getFileTree';
+import { sortFileTree } from '../sortFileTree';
+import { disableSettings } from '../featureFlags';
+import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
+import { Listing } from './Listing';
+import './styles.scss';
 
 export const Sidebar = ({
   createFile,
@@ -43,8 +43,15 @@ export const Sidebar = ({
     setIsSettingsOpen(true);
   }, []);
 
+  const { codeEditorWidth } = useContext(
+    SplitPaneResizeContext,
+  );
+
   return (
-    <div className="vz-sidebar">
+    <div
+      className="vz-sidebar"
+      style={{ width: codeEditorWidth + 'px' }}
+    >
       <div className="files">
         <div className="full-box">
           <div>
