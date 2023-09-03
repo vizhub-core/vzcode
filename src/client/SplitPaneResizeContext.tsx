@@ -16,13 +16,15 @@ export const SplitPaneResizeContext = createContext<{
 const localStorageWriteDebounceMS = 800;
 
 const localStoragePropertyName = 'vizHubCodeEditorWidth';
-const initialWidthLocalStorage = +localStorage.getItem(
-  localStoragePropertyName,
-);
-// const initialWidthPercentage = window.innerWidth / 3;
+
 const initialWidthDefault = 220;
-const initialWidth =
-  initialWidthLocalStorage || initialWidthDefault;
+let initialWidth = initialWidthDefault;
+
+if (typeof window !== 'undefined') {
+  const initialWidthLocalStorage =
+    +window.localStorage.getItem(localStoragePropertyName);
+  initialWidth = initialWidthLocalStorage;
+}
 
 const add = (a: number, b: number) => a + b;
 
@@ -36,7 +38,7 @@ export const SplitPaneResizeProvider = ({ children }) => {
   useEffect(() => {
     if (codeEditorWidth !== initialWidth) {
       const timeout = setTimeout(() => {
-        localStorage.setItem(
+        window.localStorage.setItem(
           localStoragePropertyName,
           '' + codeEditorWidth,
         );
