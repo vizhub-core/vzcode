@@ -23,15 +23,6 @@ const initialWidthLocalStorage = +localStorage.getItem(
 const initialWidthDefault = 220;
 const initialWidth =
   initialWidthLocalStorage || initialWidthDefault;
-// console.log(
-//   'initialWidthLocalStorage ',
-//   initialWidthLocalStorage,
-// );
-// console.log(
-//   'initialWidthPercentage ',
-//   initialWidthPercentage,
-// );
-// console.log('initialWidth ', initialWidth);
 
 const add = (a: number, b: number) => a + b;
 
