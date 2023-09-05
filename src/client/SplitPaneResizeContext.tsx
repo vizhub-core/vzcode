@@ -21,7 +21,7 @@ const localStorageWriteDebounceMS = 800;
 const localStoragePropertyName = 'vizHubCodeEditorWidth';
 
 const initialWidthDefault = 220;
-let initialWidth: number;
+let initialWidth: number = initialWidthDefault;
 
 // If we're in the browser,
 if (typeof window !== 'undefined') {
@@ -30,16 +30,12 @@ if (typeof window !== 'undefined') {
     window.localStorage.getItem(localStoragePropertyName);
 
   // If there is a previously stored width,
-  const isPreviouslyStored: boolean =
-    initialWidthFromLocalStorage !== null;
-
-  if (isPreviouslyStored) {
+  if (initialWidthFromLocalStorage !== null) {
     // use it as the initial width.
     initialWidth = +initialWidthFromLocalStorage;
   }
 } else {
   // If we're not in the browser, use the default initial width.
-  initialWidth = initialWidthDefault;
 }
 
 const add = (a: number, b: number) => a + b;
