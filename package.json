@@ -68,8 +68,8 @@
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
     "react-select": "^5.7.4",
-    "sharedb": "^4.0.0",
-    "sharedb-client-browser": "^4.3.0",
+    "sharedb": "^4.0.1",
+    "sharedb-client-browser": "^4.3.1",
     "ot-json1": "^1.0.2",
     "ws": "^8.13.0"
   },
