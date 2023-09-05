@@ -13,17 +13,29 @@ export const SplitPaneResizeContext = createContext<{
   setIsDragging: (a: boolean) => void;
 }>(null);
 
+// The amount of time to wait idle before writing to localStorage.
+// This is to avoid writing to localStorage on every resize event.
+// MS = milliseconds
 const localStorageWriteDebounceMS = 800;
 
 const localStoragePropertyName = 'vizHubCodeEditorWidth';
 
 const initialWidthDefault = 220;
-let initialWidth = initialWidthDefault;
+let initialWidth: number = initialWidthDefault;
 
+// If we're in the browser,
 if (typeof window !== 'undefined') {
-  const initialWidthLocalStorage =
-    +window.localStorage.getItem(localStoragePropertyName);
-  initialWidth = initialWidthLocalStorage;
+  //check localStorage for a previously stored width.
+  const initialWidthFromLocalStorage: string | null =
+    window.localStorage.getItem(localStoragePropertyName);
+
+  // If there is a previously stored width,
+  if (initialWidthFromLocalStorage !== null) {
+    // use it as the initial width.
+    initialWidth = +initialWidthFromLocalStorage;
+  }
+} else {
+  // If we're not in the browser, use the default initial width.
 }
 
 const add = (a: number, b: number) => a + b;
