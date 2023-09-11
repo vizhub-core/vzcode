@@ -6,6 +6,7 @@ VZCode offers a multiplayer code editing environment that caters to a real-time 
 
 ## Table of Contents
 
+- [Usage](#usage)
 - [Development](#development)
 - [Features](#features)
 - [Use Cases](#use-cases)
@@ -15,6 +16,26 @@ VZCode offers a multiplayer code editing environment that caters to a real-time 
 - [Milestones](#milestones)
 - [Team](#team)
 - [Spaces](#spaces)
+
+## Usage
+
+You can use VZCode as an editor for your current directory if you install it globally with:
+
+```
+npm install -g vzcode
+```
+
+To open it, navigate to the directory of your choice in the terminal, then run 
+
+```
+vzcode
+```
+
+A new browser window should automatically pop open with the files in that directory exposed for interactive multiplayer editing.
+
+**Note:** A known shortcoming of VZCode is that it does not (yet) watch for changes from the file system. VZCode assumes that no other programs are modifying the same files. If another program does modify the same files at the same time, each VZCode auto-save will clobber the changes made by the other program.
+
+To invite others to edit with you in real time, share your IP in your LAN with them to access. You can also expose your VZCode instance publicly using a tunneling service such as [NGrok](https://ngrok.com/). In fact, if you set your `NGROK_TOKEN` environment variable, VZCode will automatically connect and log the public URL when it starts.
 
 ## Development
 
