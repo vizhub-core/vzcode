@@ -149,8 +149,20 @@ function App() {
     useState<FileId | null>(null);
 
   // The ordered list of tabs.
-  // TODO make this a URL param
+
   const [tabList, setTabList] = useState<Array<FileId>>([]);
+
+  // TODO make this a URL param
+  useEffect(() => {
+    const urlParams = new URLSearchParams(
+      window.location.search,
+    );
+    const fileId = urlParams.get('fileId');
+    if (fileId) {
+      setActiveFileId(fileId);
+      openTab(fileId);
+    }
+  }, [content]);
 
   // Logic for opening and closing tabs.
   const { closeTab, openTab } = useTabsState(
