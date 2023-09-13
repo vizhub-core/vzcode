@@ -38,6 +38,7 @@ export const FileListing = ({
       handleClick={handleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
+      isDir={false}
     >
       {name}
     </Item>

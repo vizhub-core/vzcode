@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
 
 export const Item = ({
+  name,
   children,
   handleClick,
   handleRenameClick,
   handleDeleteClick,
+  isDir,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -32,12 +34,13 @@ export const Item = ({
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
+    setIsRenaming(false);
   }, []);
 
   return (
     <div
       className="full-box file-or-directory"
-      onClick={handleClick}
+      onClick={isRenaming?console.log(isRenaming):handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -58,7 +61,7 @@ export const Item = ({
             style={{ color: '#abdafb' }}
             onClick={() => {
               setIsRenaming(!isRenaming);
-              setRenameValue(children);
+              setRenameValue(isDir?name:children);
             }}
           ></i>
           <i

@@ -50,6 +50,7 @@ export const DirectoryListing = ({
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
+        isDir={true}
       >
         <div
           className="arrow-wrapper"
