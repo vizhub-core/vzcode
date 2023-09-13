@@ -11,7 +11,7 @@ export const FileListing = ({
 }: {
   name: string;
   fileId: FileId;
-  handleRenameFileClick: (fileId: FileId) => void;
+  handleRenameFileClick: (fileId: FileId, newName: string) => void;
   handleDeleteFileClick: (
     fileId: FileId,
     event: React.MouseEvent,
@@ -29,8 +29,8 @@ export const FileListing = ({
     [fileId],
   );
 
-  const handleRenameClick = useCallback(() => {
-    handleRenameFileClick(fileId);
+  const handleRenameClick = useCallback((newName) => {
+    handleRenameFileClick(fileId,newName);
   }, [fileId]);
 
   return (

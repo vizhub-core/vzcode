@@ -24,7 +24,7 @@ export const Sidebar = ({
 }: {
   files: Files;
   createFile?: () => void;
-  handleRenameFileClick?: (fileId: FileId) => void;
+  handleRenameFileClick?: (fileId: FileId, newName: string) => void;
   handleDeleteFileClick?: (
     fileId: FileId,
     event: React.MouseEvent,

@@ -8,6 +8,24 @@ export const Item = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  const [isRenaming, setIsRenaming] = useState(false);
+
+  const [renameValue, setRenameValue] = useState("");
+
+  const onKeyDown = (event) => {
+    if(event.key === "Enter" || event.key === "Escape") {
+      event.target.blur();    
+    }
+  }
+  const onBlur = (event) => {
+    if (event.target.value.trim() === "") {
+      setEditingValue(value);
+    } else {
+      setIsRenaming(false)
+      handleRenameClick(event.target.value)
+    }
+  }
+
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
@@ -23,13 +41,25 @@ export const Item = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="name">{children}</div>
+      <div className="name">{isRenaming ?
+        (<input
+          type="text"
+          aria-label="Field name"
+          value={renameValue}
+          onKeyDown={onKeyDown}
+          onBlur={onBlur}
+          onChange={(event) => setRenameValue(event.target.value)}
+        />) : children}
+      </div>
       {isHovered ? (
         <div className="utils">
           <i
             className="bx bxs-edit utilities"
             style={{ color: '#abdafb' }}
-            onClick={handleRenameClick}
+            onClick={() => {
+              setIsRenaming(!isRenaming);
+              setRenameValue(children);
+            }}
           ></i>
           <i
             className="bx bx-trash"

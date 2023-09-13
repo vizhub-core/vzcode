@@ -17,7 +17,7 @@ export const DirectoryListing = ({
   name: string;
   path: string;
   children: Array<FileTree | FileTreeFile>;
-  handleRenameFileClick: (fileId: string) => void;
+  handleRenameFileClick: (fileId: string, newName: string) => void;
   handleDeleteFileClick: (
     fileId: string,
     event: React.MouseEvent,
