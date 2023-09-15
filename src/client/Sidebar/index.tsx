@@ -23,8 +23,11 @@ export const Sidebar = ({
   toggleDirectory,
 }: {
   files: Files;
-  createFile?: (name : string) => void;
-  handleRenameFileClick?: (fileId: FileId, newName: string) => void;
+  createFile?: (name: string) => void;
+  handleRenameFileClick?: (
+    fileId: FileId,
+    newName: string,
+  ) => void;
   handleDeleteFileClick?: (
     fileId: FileId,
     event: React.MouseEvent,
@@ -63,7 +66,7 @@ export const Sidebar = ({
             <i
               className="bx bxs-file-plus new-btn"
               style={{ color: '#dbdde1' }}
-              onClick={()=>(createFile("New File"))}
+              onClick={() => createFile('New File')}
             ></i>
           </div>
         </div>

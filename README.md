@@ -25,7 +25,7 @@ You can use VZCode as an editor for your current directory if you install it glo
 npm install -g vzcode
 ```
 
-To open it, navigate to the directory of your choice in the terminal, then run 
+To open it, navigate to the directory of your choice in the terminal, then run
 
 ```
 vzcode

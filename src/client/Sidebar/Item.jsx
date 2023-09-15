@@ -12,21 +12,21 @@ export const Item = ({
 
   const [isRenaming, setIsRenaming] = useState(false);
 
-  const [renameValue, setRenameValue] = useState("");
+  const [renameValue, setRenameValue] = useState('');
 
   const onKeyDown = (event) => {
-    if(event.key === "Enter" || event.key === "Escape") {
-      event.target.blur();    
+    if (event.key === 'Enter' || event.key === 'Escape') {
+      event.target.blur();
     }
-  }
+  };
   const onBlur = (event) => {
-    if (event.target.value.trim() === "") {
+    if (event.target.value.trim() === '') {
       setEditingValue(value);
     } else {
-      setIsRenaming(false)
-      handleRenameClick(event.target.value)
+      setIsRenaming(false);
+      handleRenameClick(event.target.value);
     }
-  }
+  };
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -40,19 +40,27 @@ export const Item = ({
   return (
     <div
       className="full-box file-or-directory"
-      onClick={isRenaming?console.log(isRenaming):handleClick}
+      onClick={
+        isRenaming ? console.log(isRenaming) : handleClick
+      }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="name">{isRenaming ?
-        (<input
-          type="text"
-          aria-label="Field name"
-          value={renameValue}
-          onKeyDown={onKeyDown}
-          onBlur={onBlur}
-          onChange={(event) => setRenameValue(event.target.value)}
-        />) : children}
+      <div className="name">
+        {isRenaming ? (
+          <input
+            type="text"
+            aria-label="Field name"
+            value={renameValue}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+            onChange={(event) =>
+              setRenameValue(event.target.value)
+            }
+          />
+        ) : (
+          children
+        )}
       </div>
       {isHovered ? (
         <div className="utils">
@@ -61,7 +69,7 @@ export const Item = ({
             style={{ color: '#abdafb' }}
             onClick={() => {
               setIsRenaming(!isRenaming);
-              setRenameValue(isDir?name:children);
+              setRenameValue(isDir ? name : children);
             }}
           ></i>
           <i
