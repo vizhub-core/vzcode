@@ -75,7 +75,6 @@ export const TabList = ({
       if (event.altKey == true) {
         if (event.key == 'w') {
           closeTab(activeFileId);
-          console.log(`Key pressed: ${event.key}`);
         }
       }
     },
