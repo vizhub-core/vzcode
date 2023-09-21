@@ -91,6 +91,13 @@ export const TabList = ({
       );
     };
   }, [handleKeyPress]);
+  //Checks the current state of the tablist and if it is an invalid file it removes it from the files array.
+  for (let i = 0; i < tabList.length; i++) {
+    if (files[tabList[i]] == undefined) {
+      closeTab(tabList[i]);
+      tabList = tabList.splice(i, i);
+    }
+  }
   return (
     <div className="vz-tab-list">
       {files &&
