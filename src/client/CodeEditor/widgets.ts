@@ -138,7 +138,7 @@ export const widgets = ({
   });
 
 
-var rotationOrigin: { x: number; y: number } = null;
+let rotationOrigin: { x: number; y: number } = null;
 
 // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L108
 const hex2RGB = (hex: string): [number, number, number] => {
