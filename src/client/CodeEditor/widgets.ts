@@ -44,6 +44,7 @@ export const widgets = ({
         },
       },
       //vec2 slider
+      // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
       {
         regexp:
           /vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)/g,
@@ -54,7 +55,7 @@ export const widgets = ({
             /vec2\((?<x>-?\b\d+\.?\d*\b)\s*(,\s*(?<y>-?\b\d+\.?\d*\b))?\)/.exec(
               text,
             );
-          let x = Number(res?.groups?.x);
+          const x = Number(res?.groups?.x);
           let y = Number(res?.groups?.y);
           if (isNaN(x)) return;
           if (isNaN(y)) y = x;
@@ -64,6 +65,7 @@ export const widgets = ({
         },
       },
       //color picker
+      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
       //TODO: create color picker for hsl colors
       {
         regexp: /rgb\(.*\)/g,
@@ -135,12 +137,15 @@ export const widgets = ({
     ],
   });
 
+
 var rotationOrigin: { x: number; y: number } = null;
 
+// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L108
 const hex2RGB = (hex: string): [number, number, number] => {
   const v = parseInt(hex.substring(1), 16);
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 };
 
+// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L117
 const rgb2Hex = (r: number, g: number, b: number): string =>
   '#' + r.toString(16) + g.toString(16) + b.toString(16);
