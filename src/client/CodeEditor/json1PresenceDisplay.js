@@ -47,15 +47,15 @@ export const json1PresenceDisplay = ({
               const { start, end } = presence;
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
-              //const to = end[end.length - 1];
+              const to = end[end.length - 1];
               return {
                 from,
-                //to,
-                to: from, // Temporary meaure
+                to,
+                // to: from, // Temporary meaure
                 value: Decoration.widget({
                   side: -1,
                   block: false,
-                  widget: new PresenceWidget(id),
+                  widget: new PresenceWidget(id, from, to),
                 }),
               };
             }),
@@ -102,19 +102,27 @@ const pathMatches = (path, presence) => {
 
 // Displays a single remote presence cursor.
 class PresenceWidget extends WidgetType {
-  constructor(id) {
+  constructor(id, from, to) {
     super();
     this.id = id;
+    this.from = from;
+    this.to = to;
+    this.isSelection = from !== to; // check if selection or cursor (from == to)
   }
 
   eq(other) {
-    return other.id === this.id;
+    return other.id === this.id && other.from === this.from && other.to === this.to;
   }
 
   toDOM() {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
+
+    // change background color to show remote selection (slightly yellow)
+    if (this.isSelection){
+      span.style.backgroundColor = "rgba(255, 223, 0, 0.3)";
+    }
 
     // This child is what actually displays the presence.
     // Nested so that the layout is not impacted.
@@ -142,6 +150,6 @@ const presenceTheme = EditorView.baseTheme({
     left: '0',
     right: '0',
     borderLeft: '1px solid yellow',
-    //borderRight: '1px solid black',
+    borderRight: '1px solid black',
   },
 });
