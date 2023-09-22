@@ -106,8 +106,39 @@ export const widgets = ({
           window.open(text);
         },
       },
+
+      //Set rotation to the angle between the x-axis and a line from the word "rotate" to the mouse pointer  (while dragging).
+      //The rotation is in range (-180,180] 
+      {
+        regexp: /rotate\(-?\d*\.?\d*\)/g,
+        cursor: 'move',
+        onDragStart(text, setText, e) {
+          rotationOrigin = { x: e.screenX, y: e.screenY };
+        },
+
+        onDrag(text, setText, e) {
+          if (rotationOrigin == null) return;
+          //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
+          setText(
+            `rotate(${Math.round(
+              (Math.atan2(
+                rotationOrigin.y - e.screenY,
+                e.screenX - rotationOrigin.x,
+              ) *
+                180) /
+                Math.PI,
+            )})`,
+          );
+        },
+        onDragEnd(text, setText) {
+          rotationOrigin = null;
+        },
+      },
     ],
   });
+
+
+let rotationOrigin: { x: number; y: number } = null;
 
 // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L108
 const hex2RGB = (hex: string): [number, number, number] => {
