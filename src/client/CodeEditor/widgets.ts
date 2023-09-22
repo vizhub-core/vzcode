@@ -55,7 +55,7 @@ export const widgets = ({
             /vec2\((?<x>-?\b\d+\.?\d*\b)\s*(,\s*(?<y>-?\b\d+\.?\d*\b))?\)/.exec(
               text,
             );
-          let x = Number(res?.groups?.x);
+          const x = Number(res?.groups?.x);
           let y = Number(res?.groups?.y);
           if (isNaN(x)) return;
           if (isNaN(y)) y = x;
