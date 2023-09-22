@@ -109,6 +109,7 @@ export const widgets = ({
     ],
   });
 
+// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L108
 const hex2RGB = (hex: string): [number, number, number] => {
   const v = parseInt(hex.substring(1), 16);
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
