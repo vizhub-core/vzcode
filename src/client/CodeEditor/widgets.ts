@@ -115,5 +115,6 @@ const hex2RGB = (hex: string): [number, number, number] => {
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 };
 
+// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L117
 const rgb2Hex = (r: number, g: number, b: number): string =>
   '#' + r.toString(16) + g.toString(16) + b.toString(16);
