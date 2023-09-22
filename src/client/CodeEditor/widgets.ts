@@ -65,6 +65,7 @@ export const widgets = ({
         },
       },
       //color picker
+      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
       //TODO: create color picker for hsl colors
       {
         regexp: /rgb\(.*\)/g,
