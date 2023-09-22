@@ -44,6 +44,7 @@ export const widgets = ({
         },
       },
       //vec2 slider
+      // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
       {
         regexp:
           /vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)/g,
