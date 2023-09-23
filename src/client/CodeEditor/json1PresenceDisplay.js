@@ -64,9 +64,17 @@ export const json1PresenceDisplay = ({
                   from,
                   to,
                   value: Decoration.mark({
-                    attributes: { style: `background-color: yellow` },
-                    class: 'cm-json1-presence'
+                    class: 'cm-json1-presence',
+                    attributes: { 
+                      style:`
+                        background-color: rgba(255, 255, 0, 0.5);
+                        box-shadow: 1px 0 0 yellow;
+                        `,
+                      
+                    },
+                    
                   }),
+
                 };
               }
             }),
@@ -153,6 +161,5 @@ const presenceTheme = EditorView.baseTheme({
     left: '0',
     right: '0',
     borderLeft: '1px solid yellow',
-    borderRight: '1px solid black',
   },
 });
