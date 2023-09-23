@@ -24,8 +24,10 @@ export const FileListing = ({
 
   const handleDeleteClick = useCallback(
     (event) => {
-      const x = window.confirm("Are you sure you want to delete?");
-      if( x === true ){
+      const x = window.confirm(
+        'Are you sure you want to delete?',
+      );
+      if (x === true) {
         handleDeleteFileClick(fileId, event);
       }
     },

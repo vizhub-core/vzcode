@@ -108,7 +108,7 @@ export const widgets = ({
       },
 
       //Set rotation to the angle between the x-axis and a line from the word "rotate" to the mouse pointer  (while dragging).
-      //The rotation is in range (-180,180] 
+      //The rotation is in range (-180,180]
       {
         regexp: /rotate\(-?\d*\.?\d*\)/g,
         cursor: 'move',
@@ -136,7 +136,6 @@ export const widgets = ({
       },
     ],
   });
-
 
 let rotationOrigin: { x: number; y: number } = null;
 
