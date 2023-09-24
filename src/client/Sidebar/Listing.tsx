@@ -18,10 +18,7 @@ export const Listing = ({
 }: {
   entity: FileTree | FileTreeFile;
   handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  handleDeleteFileClick: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;

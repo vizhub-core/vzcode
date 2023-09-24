@@ -25,10 +25,7 @@ export const Sidebar = ({
   files: Files;
   createFile?: () => void;
   handleRenameFileClick?: (fileId: FileId) => void;
-  handleDeleteFileClick?: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  handleDeleteFileClick?: (fileId: FileId) => void;
   handleFileClick?: (fileId: FileId) => void;
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
   isDirectoryOpen?: (path: string) => boolean;

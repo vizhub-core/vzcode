@@ -12,10 +12,7 @@ export const FileListing = ({
   name: string;
   fileId: FileId;
   handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  handleDeleteFileClick: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
 }) => {
   const handleClick = useCallback(() => {
@@ -24,12 +21,7 @@ export const FileListing = ({
 
   const handleDeleteClick = useCallback(
     (event) => {
-      const x = window.confirm(
-        'Are you sure you want to delete?',
-      );
-      if (x === true) {
-        handleDeleteFileClick(fileId, event);
-      }
+      handleDeleteFileClick(fileId);
     },
     [fileId, handleDeleteFileClick],
   );
