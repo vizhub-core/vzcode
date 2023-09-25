@@ -48,7 +48,7 @@ export const json1PresenceDisplay = ({
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
-              if (from == to){
+              if (from === to){
                 return {
                   from,
                   to,
