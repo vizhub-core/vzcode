@@ -4,7 +4,7 @@ import {
   useEffect,
   useRef,
 } from 'react';
-import { ConfirmationBox } from './confirmationBox';
+import { ConfirmationBox } from './ConfirmationBox';
 
 export const Item = ({
   children,
@@ -16,49 +16,21 @@ export const Item = ({
 
   const [showModal, setShowModal] = useState(false);
 
-  //Function to open the modal
+  // Function to open the delete file confirmation modal
   const handleModalOpen = useCallback(() => {
     setShowModal(true);
   }, []);
 
-  //Function to close the modal
+  // Function to close the modal
   const handleModalClose = useCallback(() => {
     setShowModal(false);
   }, []);
 
-  //function to handle confirmation on modal
+  // Function to handle confirmation on modal
   const handleConfirmModal = useCallback(() => {
     setShowModal(false);
     handleDeleteClick();
   }, [handleDeleteClick]);
-
-  //function to close Modal if anywhere else on the screen is clicked
-  const outsideClickHandler = useCallback((ref) => {
-    useEffect(() => {
-      //check if clicked outside
-      function handleClickOutside(event) {
-        if (
-          ref.current &&
-          !ref.current.contains(event.target)
-        ) {
-          handleModalClose();
-        }
-      }
-      document.addEventListener(
-        'click',
-        handleClickOutside,
-      );
-      return () => {
-        document.removeEventListener(
-          'click',
-          handleClickOutside,
-        );
-      };
-    }, [ref]);
-  }, []);
-
-  const wrapperRef = useRef(null);
-  outsideClickHandler(wrapperRef);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -84,7 +56,6 @@ export const Item = ({
             onClick={handleRenameClick}
           ></i>
           <i
-            ref={wrapperRef}
             className="bx bx-trash"
             style={{ color: '#eb336c' }}
             onClick={handleModalOpen}
@@ -92,13 +63,11 @@ export const Item = ({
         </div>
       ) : null}
 
-      {showModal ? (
-        <ConfirmationBox
-          show={showModal}
-          onClose={handleModalClose}
-          onConfirm={handleConfirmModal}
-        />
-      ) : null}
+      <ConfirmationBox
+        show={showModal}
+        onClose={handleModalClose}
+        onConfirm={handleConfirmModal}
+      />
     </div>
   );
 };
