@@ -186,9 +186,9 @@ function App() {
   //  - `deleteFile`
   //  - `handleDeleteFileClick`
   const createFile = useCallback(
-    (name: string) => {
-      // const name = prompt('Enter new file name');
-      // if (name) {
+    () => {
+      const name = prompt('Enter new file name');
+      if (name) {
       submitOperation((document) => ({
         ...document,
         files: {
@@ -196,7 +196,7 @@ function App() {
           [randomId()]: { name, text: '' },
         },
       }));
-      // }
+      }
     },
     [submitOperation],
   );

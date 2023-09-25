@@ -66,7 +66,7 @@ export const Sidebar = ({
             <i
               className="bx bxs-file-plus new-btn"
               style={{ color: '#dbdde1' }}
-              onClick={() => createFile('New File')}
+              onClick={() => createFile}
             ></i>
           </div>
         </div>
