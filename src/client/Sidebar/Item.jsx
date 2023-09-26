@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 export const Item = ({
   name,
@@ -27,6 +27,30 @@ export const Item = ({
       handleRenameClick(event.target.value);
     }
   });
+  const getDisplayMode = (renaming) => {
+    if (isRenaming) {
+      return (
+        <>
+          <input
+            type="text"
+            aria-label="Field name"
+            value={renameValue}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+            onChange={(event) =>
+              setRenameValue(event.target.value)
+            }
+          />
+        </>
+      );
+    } else {
+      return <>{children}</>;
+    }
+  };
+  const displayMode = useMemo(
+    (isRenaming) => getDisplayMode(isRenaming),
+    [isRenaming, renameValue],
+  );
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -44,22 +68,7 @@ export const Item = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="name">
-        {isRenaming ? (
-          <input
-            type="text"
-            aria-label="Field name"
-            value={renameValue}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onChange={(event) =>
-              setRenameValue(event.target.value)
-            }
-          />
-        ) : (
-          children
-        )}
-      </div>
+      <div className="name">{displayMode}</div>
       {isHovered ? (
         <div className="utils">
           <i
