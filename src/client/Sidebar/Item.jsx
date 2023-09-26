@@ -41,7 +41,7 @@ export const Item = ({
     <div
       className="full-box file-or-directory"
       onClick={
-        isRenaming ? console.log(isRenaming) : handleClick
+        isRenaming?null:handleClick
       }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
