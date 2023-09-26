@@ -1,4 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
+import { ConfirmationBox } from './ConfirmationBox';
 
 export const Item = ({
   name,
@@ -52,6 +58,24 @@ export const Item = ({
     [isRenaming, renameValue],
   );
 
+  const [showModal, setShowModal] = useState(false);
+
+  // Function to open the delete file confirmation modal
+  const handleModalOpen = useCallback(() => {
+    setShowModal(true);
+  }, []);
+
+  // Function to close the modal
+  const handleModalClose = useCallback(() => {
+    setShowModal(false);
+  }, []);
+
+  // Function to handle confirmation on modal
+  const handleConfirmModal = useCallback(() => {
+    setShowModal(false);
+    handleDeleteClick();
+  }, [handleDeleteClick]);
+
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
@@ -82,10 +106,16 @@ export const Item = ({
           <i
             className="bx bx-trash"
             style={{ color: '#eb336c' }}
-            onClick={handleDeleteClick}
+            onClick={handleModalOpen}
           ></i>
         </div>
       ) : null}
+
+      <ConfirmationBox
+        show={showModal}
+        onClose={handleModalClose}
+        onConfirm={handleConfirmModal}
+      />
     </div>
   );
 };

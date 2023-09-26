@@ -47,17 +47,32 @@ export const json1PresenceDisplay = ({
               const { start, end } = presence;
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
-              //const to = end[end.length - 1];
-              return {
-                from,
-                //to,
-                to: from, // Temporary meaure
-                value: Decoration.widget({
-                  side: -1,
-                  block: false,
-                  widget: new PresenceWidget(id),
-                }),
-              };
+              const to = end[end.length - 1];
+              if (from === to) {
+                return {
+                  from,
+                  to,
+                  value: Decoration.widget({
+                    side: -1,
+                    block: false,
+                    widget: new PresenceWidget(id),
+                  }),
+                };
+              } else {
+                return {
+                  from,
+                  to,
+                  value: Decoration.mark({
+                    class: 'cm-json1-presence',
+                    attributes: {
+                      style: `
+                        background-color: rgba(255, 255, 0, 0.5);
+                        box-shadow: 1px 0 0 yellow;
+                        `,
+                    },
+                  }),
+                };
+              }
             }),
             // Without this argument, we get the following error:
             // Uncaught Error: Ranges must be added sorted by `from` position and `startSide`
@@ -142,6 +157,5 @@ const presenceTheme = EditorView.baseTheme({
     left: '0',
     right: '0',
     borderLeft: '1px solid yellow',
-    //borderRight: '1px solid black',
   },
 });

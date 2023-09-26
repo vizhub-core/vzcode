@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { FileId, Files } from '../../types';
 import './style.scss';
 
@@ -69,6 +69,28 @@ export const TabList = ({
   setActiveFileId: (fileId: FileId) => void;
   closeTab: (fileId: FileId) => void;
 }) => {
+  //Create a function to perform the logic to delete the current tab
+  const handleKeyPress = useCallback(
+    (event: { altKey: boolean; key: string }) => {
+      if (event.altKey == true) {
+        if (event.key == 'w') {
+          closeTab(activeFileId);
+        }
+      }
+    },
+    [closeTab, activeFileId],
+  );
+  useEffect(() => {
+    // attach the event listener
+    document.addEventListener('keydown', handleKeyPress);
+    // remove the event listener
+    return () => {
+      document.removeEventListener(
+        'keydown',
+        handleKeyPress,
+      );
+    };
+  }, [handleKeyPress]);
   return (
     <div className="vz-tab-list">
       {files &&
