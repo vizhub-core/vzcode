@@ -14,19 +14,19 @@ export const Item = ({
 
   const [renameValue, setRenameValue] = useState('');
 
-  const onKeyDown = (event) => {
+  const onKeyDown = useCallback((event) => {
     if (event.key === 'Enter' || event.key === 'Escape') {
       event.target.blur();
     }
-  };
-  const onBlur = (event) => {
+  });
+  const onBlur = useCallback((event) => {
     if (event.target.value.trim() === '') {
       setEditingValue(value);
     } else {
       setIsRenaming(false);
       handleRenameClick(event.target.value);
     }
-  };
+  });
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
