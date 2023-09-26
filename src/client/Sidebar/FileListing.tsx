@@ -26,17 +26,17 @@ export const FileListing = ({
   }, [fileId, handleFileClick]);
 
   const handleDeleteClick = useCallback(
-    (event) => {
-      handleDeleteFileClick(fileId);
+    (event: React.MouseEvent) => {
+      handleDeleteFileClick(fileId, event);
     },
     [fileId, handleDeleteFileClick],
   );
 
   const handleRenameClick = useCallback(
-    (newName) => {
+    (newName: string) => {
       handleRenameFileClick(fileId, newName);
     },
-    [fileId, handleRenameClick],
+    [fileId, handleRenameFileClick],
   );
 
   return (

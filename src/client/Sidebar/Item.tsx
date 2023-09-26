@@ -1,9 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ConfirmationBox } from './ConfirmationBox';
 
 export const Item = ({
@@ -24,35 +19,33 @@ export const Item = ({
     if (event.key === 'Enter' || event.key === 'Escape') {
       event.target.blur();
     }
-  });
+  }, []);
+
   const onBlur = useCallback((event) => {
     if (event.target.value.trim() === '') {
-      setEditingValue(value);
+      // setEditingValue(value);
+      console.log('TODO: handle empty rename');
     } else {
       setIsRenaming(false);
       handleRenameClick(event.target.value);
     }
-  });
-  const getDisplayMode = (renaming) => {
-    if (isRenaming) {
-      return (
-        <>
-          <input
-            type="text"
-            aria-label="Field name"
-            value={renameValue}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onChange={(event) =>
-              setRenameValue(event.target.value)
-            }
-          />
-        </>
-      );
-    } else {
-      return <>{children}</>;
-    }
-  };
+  }, []);
+  const getDisplayMode = (renaming) =>
+    isRenaming ? (
+      <input
+        type="text"
+        aria-label="Field name"
+        value={renameValue}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+        onChange={(event) =>
+          setRenameValue(event.target.value)
+        }
+      />
+    ) : (
+      children
+    );
+
   const displayMode = useMemo(
     (isRenaming) => getDisplayMode(isRenaming),
     [isRenaming, renameValue],
