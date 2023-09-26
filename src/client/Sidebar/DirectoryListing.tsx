@@ -34,10 +34,12 @@ export const DirectoryListing = ({
   }, [toggleDirectory]);
 
   const handleDeleteClick = useCallback(() => {
+    // https://github.com/vizhub-core/vzcode/issues/102
     console.log('TODO handleDeleteDirectoryClick');
   }, []);
 
   const handleRenameClick = useCallback(() => {
+    // https://github.com/vizhub-core/vzcode/issues/103
     console.log('TODO handleRenameDirectoryClick');
   }, []);
 

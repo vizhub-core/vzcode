@@ -198,13 +198,9 @@ function App() {
     }
   }, [submitOperation]);
 
-  // Called when a file in the sidebar is double-clicked.
+  // Called when a file in the sidebar is renamed.
   const handleRenameFileClick = useCallback(
     (fileId: FileId, newName: string) => {
-      // TODO better UX, maybe Bootstrap modal? Maybe edit inline?
-      // const d = prompt('Enter new name');
-
-      // if (newName) {
       submitOperation((document) => ({
         ...document,
         files: {
@@ -215,7 +211,6 @@ function App() {
           },
         },
       }));
-      // }
     },
     [submitOperation],
   );
