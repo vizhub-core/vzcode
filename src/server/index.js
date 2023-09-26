@@ -109,7 +109,7 @@ const save = () => {
 
       // Handle renaming files.
       if (previous.name !== current.name) {
-        fs.renamesync(previous.name, current.name);
+        fs.renameSync(previous.name, current.name);
       }
     }
 

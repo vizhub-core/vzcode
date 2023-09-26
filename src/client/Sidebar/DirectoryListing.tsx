@@ -17,8 +17,14 @@ export const DirectoryListing = ({
   name: string;
   path: string;
   children: Array<FileTree | FileTreeFile>;
-  handleRenameFileClick: (fileId: string) => void;
-  handleDeleteFileClick: (fileId: string) => void;
+  handleRenameFileClick: (
+    fileId: string,
+    newName: string,
+  ) => void;
+  handleDeleteFileClick: (
+    fileId: string,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: string) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
@@ -28,10 +34,12 @@ export const DirectoryListing = ({
   }, [toggleDirectory]);
 
   const handleDeleteClick = useCallback(() => {
+    // https://github.com/vizhub-core/vzcode/issues/102
     console.log('TODO handleDeleteDirectoryClick');
   }, []);
 
   const handleRenameClick = useCallback(() => {
+    // https://github.com/vizhub-core/vzcode/issues/103
     console.log('TODO handleRenameDirectoryClick');
   }, []);
 
@@ -47,6 +55,7 @@ export const DirectoryListing = ({
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
+        isDir={true}
       >
         <div
           className="arrow-wrapper"

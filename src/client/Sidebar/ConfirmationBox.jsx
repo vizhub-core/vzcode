@@ -11,7 +11,7 @@ export const ConfirmationBox = ({
   <Modal
     show={show}
     onHide={onClose}
-    confirm={onConfirm}
+    // confirm={onConfirm}
     centered
   >
     <Modal.Header closeButton onClick={onClose}>

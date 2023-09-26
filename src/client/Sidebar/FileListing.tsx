@@ -11,8 +11,14 @@ export const FileListing = ({
 }: {
   name: string;
   fileId: FileId;
-  handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (fileId: FileId) => void;
+  handleRenameFileClick: (
+    fileId: FileId,
+    newName: string,
+  ) => void;
+  handleDeleteFileClick: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: FileId) => void;
 }) => {
   const handleClick = useCallback(() => {
@@ -20,21 +26,25 @@ export const FileListing = ({
   }, [fileId, handleFileClick]);
 
   const handleDeleteClick = useCallback(
-    (event) => {
-      handleDeleteFileClick(fileId);
+    (event: React.MouseEvent) => {
+      handleDeleteFileClick(fileId, event);
     },
     [fileId, handleDeleteFileClick],
   );
 
-  const handleRenameClick = useCallback(() => {
-    handleRenameFileClick(fileId);
-  }, [fileId, handleRenameFileClick]);
+  const handleRenameClick = useCallback(
+    (newName: string) => {
+      handleRenameFileClick(fileId, newName);
+    },
+    [fileId, handleRenameFileClick],
+  );
 
   return (
     <Item
       handleClick={handleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
+      isDir={false}
     >
       {name}
     </Item>
