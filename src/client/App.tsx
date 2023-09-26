@@ -185,10 +185,9 @@ function App() {
   //  - `handleRenameFileClick`
   //  - `deleteFile`
   //  - `handleDeleteFileClick`
-  const createFile = useCallback(
-    () => {
-      const name = prompt('Enter new file name');
-      if (name) {
+  const createFile = useCallback(() => {
+    const name = prompt('Enter new file name');
+    if (name) {
       submitOperation((document) => ({
         ...document,
         files: {
@@ -196,10 +195,8 @@ function App() {
           [randomId()]: { name, text: '' },
         },
       }));
-      }
-    },
-    [submitOperation],
-  );
+    }
+  }, [submitOperation]);
 
   // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(

@@ -40,9 +40,7 @@ export const Item = ({
   return (
     <div
       className="full-box file-or-directory"
-      onClick={
-        isRenaming?null:handleClick
-      }
+      onClick={isRenaming ? null : handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
