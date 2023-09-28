@@ -95,7 +95,7 @@ export const Sidebar = ({
           className="settings"
           onClick={handleSettingsClick}
         >
-          Settings
+          Settings test
         </div>
       )}
     </div>
