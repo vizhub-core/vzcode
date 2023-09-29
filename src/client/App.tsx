@@ -29,7 +29,7 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import './style.scss';
-
+import { forEach } from 'react-bootstrap/ElementChildren';
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
 
@@ -198,19 +198,24 @@ function App() {
     }
   }, [submitOperation]);
 
-  // Called when a file in the sidebar is renamed.
+  // Called when a file in the sidebar is double-clicked.
   const handleRenameFileClick = useCallback(
-    (fileId: FileId, newName: string) => {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [fileId]: {
-            ...document.files[fileId],
-            name: newName,
+    (fileId: FileId) => {
+      // TODO better UX, maybe Bootstrap modal? Maybe edit inline?
+      const newName = prompt('Enter new name');
+
+      if (newName) {
+        submitOperation((document) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: {
+              ...document.files[fileId],
+              name: newName,
+            },
           },
-        },
-      }));
+        }));
+      }
     },
     [submitOperation],
   );
@@ -227,11 +232,34 @@ function App() {
     [submitOperation, closeTab],
   );
 
-  const handleDeleteFileClick = useCallback(
-    (fileId: FileId) => {
-      deleteFile(fileId);
+  const deleteDirectory = useCallback(
+    (path: FileId) => {
+      submitOperation((document) => {
+        const updatedFiles = { ...document.files };
+        for (const key in updatedFiles) {
+          if (updatedFiles[key].name.includes(path)) {
+            closeTab(key);
+            delete updatedFiles[key];
+          }
+        }
+        return { ...document, files: updatedFiles };
+      });
     },
-    [deleteFile],
+    [submitOperation, closeTab],
+  );
+
+  const handleDeleteClick = useCallback(
+    (key: string) => {
+      //Regex to identify if the key is a file path or a file id.
+      if (/^[0-9]*$/.test(key)) {
+        if (key.length == 10) {
+          deleteFile(key);
+        } else {
+          deleteDirectory(key);
+        }
+      }
+    },
+    [deleteFile, deleteDirectory],
   );
 
   const handleSettingsClose = useCallback(() => {
@@ -275,7 +303,7 @@ function App() {
             createFile={createFile}
             files={files}
             handleRenameFileClick={handleRenameFileClick}
-            handleDeleteFileClick={handleDeleteFileClick}
+            handleDeleteFileClick={handleDeleteClick}
             handleFileClick={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
