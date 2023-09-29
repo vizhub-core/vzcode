@@ -15,10 +15,50 @@ export const widgets = ({
 }) =>
   interact({
     rules: [
+      // hex color picker
+      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
+      {
+        regexp: /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+        cursor: 'pointer',
+        onClick(text, setText, e) {
+          const res =
+            /\"(?<hex>\#([0-9]|[A-F]|[a-f]){6})\"/.exec(
+              text,
+            );
+          const startingColor = res.groups?.hex;
+
+          const sel = document.createElement('input');
+          sel.type = 'color';
+
+          sel.value = startingColor.toLowerCase();
+
+          //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
+          const valueIsUpper =
+            startingColor.toUpperCase() == startingColor;
+
+          const updateHex = (e: Event) => {
+            const el = e.target as HTMLInputElement;
+
+            if (el.value) {
+              setText(
+                `"${
+                  valueIsUpper
+                    ? el.value.toUpperCase()
+                    : el.value
+                }"`,
+              );
+            }
+            sel.removeEventListener('change', updateHex);
+          };
+          sel.addEventListener('change', updateHex);
+          sel.click();
+        },
+      },
+
       // a rule for a number dragger
       {
         // the regexp matching the value
-        regexp: /-?\b\d+\.?\d*\b/g,
+        regexp: /(?<!\#)-?\b\d+\.?\d*\b/g,
         // set cursor to "ew-resize" on hover
         cursor: 'ew-resize',
         // change number value based on mouse X movement on drag
@@ -43,7 +83,7 @@ export const widgets = ({
           }
         },
       },
-      //vec2 slider
+      // vec2 slider
       // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
       {
         regexp:
@@ -64,7 +104,7 @@ export const widgets = ({
           );
         },
       },
-      //color picker
+      // rgb color picker
       // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
       //TODO: create color picker for hsl colors
       {
@@ -82,6 +122,7 @@ export const widgets = ({
           //sel will open the color picker when sel.click is called.
           const sel = document.createElement('input');
           sel.type = 'color';
+
           if (!isNaN(r + g + b))
             sel.value = rgb2Hex(r, g, b);
 
@@ -97,7 +138,7 @@ export const widgets = ({
           sel.addEventListener('change', updateRGB);
           sel.click();
         },
-      },
+      },     
       // url clicker
       {
         regexp: /https?:\/\/[^ "]+/g,
