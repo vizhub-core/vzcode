@@ -32,13 +32,14 @@ export const json1PresenceDisplay = ({
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
           // If presence === null, the user has disconnected / exited
+          notification(presence);
+
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
             presenceState[id] = presence;
-          } else {
+          }else {
             delete presenceState[id];
           }
-
           // Update decorations to reflect new presence state.
           // TODO consider mutating this rather than recomputing it on each change.
           this.decorations = Decoration.set(
@@ -102,6 +103,36 @@ export const json1PresenceDisplay = ({
   ),
   presenceTheme,
 ];
+
+const notification = (presence) => {
+  const notif = document.createElement('div');
+  notif.className = 'notification-presence';
+  if (presence === null){
+    notif.textContent = 'User left the collaboration session.';
+    notif.style.display = 'block';
+  }
+  document.body.appendChild(notif);
+
+  const notifStyle = document.createElement('style');
+  notifStyle.innerText = `
+    .notification-presence {
+      position: fixed;
+      display: none;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgb(54, 65, 89);
+      color: rgb(154, 160, 172);
+      padding: 15px;
+    }`;
+  document.head.appendChild(notifStyle);
+
+  // Close the popup after 3 seconds
+  setTimeout(() => {
+    notif.style.display = 'none';
+  }, 10000);
+
+  return notif;
+};
 
 const presenceAnnotation = Annotation.define();
 
