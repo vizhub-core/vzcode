@@ -49,7 +49,7 @@ export const json1PresenceDisplay = ({
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
-              if (from === to) {
+              if (from === to){
                 return {
                   from,
                   to,
@@ -59,14 +59,15 @@ export const json1PresenceDisplay = ({
                     widget: new PresenceWidget(id),
                   }),
                 };
-              } else {
+              }
+              else {
                 return {
                   from,
                   to,
                   value: Decoration.mark({
                     class: 'cm-json1-presence',
-                    attributes: {
-                      style: `
+                    attributes: { 
+                      style:`
                         background-color: rgba(255, 255, 0, 0.5);
                         box-shadow: 1px 0 0 yellow;
                         `,
@@ -107,6 +108,12 @@ const notification = (presence) => {
     notif.textContent = 'User left the collaboration session.';
     notif.style.display = 'block';
   }
+  // The following causes the popup to show every time the remote cursor moves
+  // to a different location on the file and not when the user first joins
+  // else {
+  //   notif.textContent = presence + 'joined the collaboration session.';
+  //   notif.style.display = 'block';
+  // }
   document.body.appendChild(notif);
 
   const notifStyle = document.createElement('style');
@@ -116,13 +123,18 @@ const notification = (presence) => {
       display: none;
       bottom: 20px;
       right: 20px;
+      max-width: 300px; 
+      overflow-x: hidden; 
+      white-space: nowrap;
       background-color: rgb(54, 65, 89);
       color: rgb(154, 160, 172);
       padding: 15px;
+    }
+    .notification-presence:hover {
+      overflow-x: auto;
     }`;
   document.head.appendChild(notifStyle);
 
-  // Close the popup after 3 seconds
   setTimeout(() => {
     notif.style.display = 'none';
   }, 10000);
