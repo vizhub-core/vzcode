@@ -1,6 +1,5 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from '../bootstrap';
 
 // Inspired by https://react-bootstrap.netlify.app/docs/components/modal/#live-demo
 export const ConfirmationBox = ({
@@ -11,7 +10,7 @@ export const ConfirmationBox = ({
   <Modal
     show={show}
     onHide={onClose}
-    confirm={onConfirm}
+    // confirm={onConfirm}
     centered
   >
     <Modal.Header closeButton onClick={onClose}>

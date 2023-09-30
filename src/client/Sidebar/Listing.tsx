@@ -17,8 +17,14 @@ export const Listing = ({
   toggleDirectory,
 }: {
   entity: FileTree | FileTreeFile;
-  handleRenameFileClick: (fileId: FileId) => void;
-  handleDeleteFileClick: (fileId: FileId) => void;
+  handleRenameFileClick: (
+    fileId: FileId,
+    newName: string,
+  ) => void;
+  handleDeleteFileClick: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
   handleFileClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;

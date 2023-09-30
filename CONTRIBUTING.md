@@ -4,14 +4,13 @@ Thank you for your interest in contributing to VZCode! We truly appreciate the t
 
 ## Getting Started
 
-- **Team Member Access**: 
+- **Team Member Access**:
   - **New Contributors**: If you're new to the project, please fork the repository and submit your pull requests from your fork.
   - **Regular Contributors**: Regular contributors will be added directly to the VZCode repository. Once added, there's no need to fork the repository to create a pull request (PR).
 
 ## Picking Up Issues
 
 - **Self-Assign**: If you decide to work on an issue, please self-assign it. This is to make sure no two contributors end up working on the same issue and duplicating efforts.
-  
 - **Kanban Board**: Once you've picked up an issue, make sure you move it to the "In Progress" column on our Kanban board. This gives everyone real-time visibility into who is actively working on what.
 
 ## Pull Requests
