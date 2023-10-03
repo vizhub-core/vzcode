@@ -109,13 +109,30 @@ const save = () => {
 
       // Handle renaming files.
       if (previous.name !== current.name) {
-        fs.renameSync(previous.name, current.name);
+        fs.renamesync(previous.name, current.name);
       }
     }
 
-    // handle deleting files.
+    // handle deleting files and directories.
     if (previous && !current) {
-      fs.unlinkSync(previous.name);
+      let stats = fs.statSync(previous.name);
+      //Check if the file path we are trying to delete is a directory
+      if (!stats.isDirectory()) {
+        fs.unlinkSync(previous.name);
+      } else {
+        //Performs directory deletion.
+        fs.rm(
+          previous.name,
+          {
+            recursive: true, //Makes sure that all files in directory are deleted.
+          },
+          (error) => {
+            if (error) {
+              console.log(error);
+            }
+          },
+        );
+      }
     }
 
     // Handle creating files.
