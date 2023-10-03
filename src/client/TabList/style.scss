@@ -2,6 +2,9 @@
   display: flex;
   background-color: rgb(37, 37, 38);
 
+  //when the tab list becomes too large scroll bar appears
+  overflow-x: scroll; 
+
   .tab {
     background: rgb(45, 45, 45);
     color: #fff;
@@ -17,6 +20,9 @@
     margin-left: 2px;
     margin-right: 2px;
     cursor: pointer;
+
+    //making sure text doesnt wrap within tabs
+    white-space: nowrap;
 
     .tab-close {
       margin-left: 5px;
