@@ -227,11 +227,37 @@ function App() {
     [submitOperation, closeTab],
   );
 
-  const handleDeleteFileClick = useCallback(
-    (fileId: FileId) => {
-      deleteFile(fileId);
-    },
-    [deleteFile],
+  const deleteDirectory = useCallback(
+      (path: FileId) => {
+        submitOperation((document) => {
+          const updatedFiles = { ...document.files };
+          for (const key in updatedFiles) {
+            if (updatedFiles[key].name.includes(path)) {
+              closeTab(key);
+              delete updatedFiles[key];
+            }
+          }
+          return { ...document, files: updatedFiles };
+        });
+      },
+      [submitOperation, closeTab],
+  );
+
+  const handleDeleteClick = useCallback(
+      (key: string) => {
+        //Regex to identify if the key is a file path or a file id.
+        if (/^[0-9]*$/.test(key)) {
+          if (key.length == 8) {
+            deleteFile(key);
+          } else {
+            deleteDirectory(key);
+          }
+        }
+        else{
+          deleteDirectory(key);
+        }
+      },
+      [deleteFile, deleteDirectory],
   );
 
   const handleSettingsClose = useCallback(() => {
@@ -275,7 +301,7 @@ function App() {
             createFile={createFile}
             files={files}
             handleRenameFileClick={handleRenameFileClick}
-            handleDeleteFileClick={handleDeleteFileClick}
+            handleDeleteFileClick={handleDeleteClick}
             handleFileClick={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
