@@ -48,9 +48,8 @@ export const widgets = ({
                 }"`,
               );
             }
-            sel.removeEventListener('change', updateHex);
           };
-          sel.addEventListener('change', updateHex);
+          sel.addEventListener('input', updateHex);
           sel.click();
         },
       },
@@ -138,7 +137,7 @@ export const widgets = ({
           sel.addEventListener('change', updateRGB);
           sel.click();
         },
-      },     
+      },
       // url clicker
       {
         regexp: /https?:\/\/[^ "]+/g,
