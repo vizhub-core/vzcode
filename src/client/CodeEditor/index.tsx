@@ -66,12 +66,15 @@ export const CodeEditor = ({
   }, [shareDBDoc, activeFileId]);
 
   return(
-  <div className="vz-code-editor" ref={ref}>
-  {/* Overlay div */}
+    <div className="vz-code-editor" ref={ref}>
+    {/* CodeMirror editor */}
+    {/* Add your CodeMirror editor content here */}
+
+    {/* Overlay div below the editor */}
     <div className="overlay-div">
       <h2>Overlay Content</h2>
-      <p>This is some example overlay content on top of the editor.</p>
+      <p>This is some example overlay content below the editor.</p>
       <button onClick={() => alert('Button Clicked!')}>Click Me</button>
     </div>
-  </div>); 
+  </div>
 };
