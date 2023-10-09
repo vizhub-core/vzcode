@@ -26,6 +26,7 @@ export const usePrettier = (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void,
   prettierWorker: Worker,
+  onError: (error: string) => void // New parameter to handle errors
 ) => {
   // The set of files that have been modified
   // since the last Prettier run.
@@ -48,6 +49,8 @@ export const usePrettier = (
         event.data;
       if (error) {
         console.log(error);
+        // Handle error by invoking the provided error callback
+        onError(error);
         return;
       }
 
