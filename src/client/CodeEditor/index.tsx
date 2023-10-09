@@ -77,4 +77,5 @@ export const CodeEditor = ({
       <button onClick={() => alert('Button Clicked!')}>Click Me</button>
     </div>
   </div>
+  );
 };
