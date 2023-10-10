@@ -1,6 +1,7 @@
 .vz-tab-list {
   display: flex;
   background-color: rgb(37, 37, 38);
+  // When the tab list becomes too large, a horizontal scroll bar appears.
   overflow-x: auto;
 
   .tab {
