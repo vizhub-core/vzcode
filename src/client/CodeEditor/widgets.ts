@@ -278,7 +278,7 @@ class ColorWidget extends WidgetType {
   }
 
   toDOM(view: EditorView): HTMLElement {
-    let parent = document.createElement('div');
+    const parent = document.createElement('div');
 
     parent.setAttribute('style', 'width:10px;height:10px');
     parent.className = 'color-circle-parent';
