@@ -219,7 +219,7 @@ export const colorsInTextPlugin: Extension = [
     },
     {
       decorations: (v) => {
-        let colorInfos = [];
+        const colorInfos = [];
 
         const lines = v.view.state.doc.iter();
         let line = lines.next();
