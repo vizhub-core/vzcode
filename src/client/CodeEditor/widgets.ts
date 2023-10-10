@@ -286,7 +286,7 @@ class ColorWidget extends WidgetType {
       'http://www.w3.org/2000/svg',
       'svg',
     );
-    let colorCircle = document.createElementNS(
+    const colorCircle = document.createElementNS(
       'http://www.w3.org/2000/svg',
       'circle',
     );
