@@ -227,7 +227,7 @@ export const colorsInTextPlugin: Extension = [
         //Offset is the number of characters before the hex so the circle can be placed properly.
         let offset = 0;
         while (!line.done) {
-          if (line.value == '\n') {
+          if (line.value === '\n') {
             offset++;
             line = lines.next();
             continue;
