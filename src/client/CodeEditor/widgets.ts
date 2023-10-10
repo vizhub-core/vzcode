@@ -237,7 +237,7 @@ export const colorsInTextPlugin: Extension = [
           );
           let hexOccurance = hexColorOccurances.next();
           while (!hexOccurance.done) {
-            let offsetColorInfo = hexOccurance.value;
+            const offsetColorInfo = hexOccurance.value;
             offsetColorInfo.index += offset;
             colorInfos.push(offsetColorInfo);
             hexOccurance = hexColorOccurances.next();
