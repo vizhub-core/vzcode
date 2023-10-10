@@ -16,7 +16,7 @@ import {
 } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
-import { widgets } from './widgets';
+import { colorsInTextPlugin, widgets } from './widgets';
 import {
   EditorCache,
   EditorCacheValue,
@@ -126,6 +126,8 @@ export const getOrCreateEditor = ({
     extensions.push(
       json1PresenceDisplay({ path: textPath, docPresence }),
     );
+
+    extensions.push(colorsInTextPlugin);
 
   // This is the "basic setup" for CodeMirror,
   // which actually adds a ton on functionality.
