@@ -28,6 +28,7 @@ import { usePrettier } from './usePrettier';
 import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
+import { PresenceNotifications } from './PresenceNotifications'
 import './style.scss';
 
 // Instantiate the Prettier worker.
@@ -307,6 +308,9 @@ function App() {
               editorCache={editorCache}
             />
           ) : null}
+          <PresenceNotifications 
+            docPresence={docPresence} 
+          />
         </div>
         <Resizer />
       </div>

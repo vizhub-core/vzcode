@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { Button, Modal, Form } from './bootstrap';
 import Select from 'react-select';
 import {
@@ -13,6 +13,8 @@ const saveTimes = [
   { value: 10, label: '10 seconds' },
   { value: 30, label: '30 seconds' },
 ];
+
+export let username = "Anonymous";
 
 export const Settings = ({
   show,
@@ -43,6 +45,12 @@ export const Settings = ({
     [],
   );
 
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const handleUsernameChange = () => {
+    const usernameValue = usernameRef.current?.value;
+    username = usernameValue;
+  };
+
   return show ? (
     <Modal
       className="vz-settings"
@@ -58,6 +66,8 @@ export const Settings = ({
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
+            ref={usernameRef}
+            onChange={handleUsernameChange}
             placeholder="Enter username"
           />
           <Form.Text className="text-muted">
@@ -94,3 +104,4 @@ export const Settings = ({
     </Modal>
   ) : null;
 };
+
