@@ -46,7 +46,7 @@ export const widgets = ({
 
           //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
           const valueIsUpper =
-            startingColor.toUpperCase() == startingColor;
+            startingColor.toUpperCase() === startingColor;
 
           const updateHex = (e: Event) => {
             const el = e.target as HTMLInputElement;
