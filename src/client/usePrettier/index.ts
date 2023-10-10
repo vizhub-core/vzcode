@@ -50,7 +50,7 @@ export const usePrettier = (
         event.data;
       if (error) {
         console.log(error);    
-        setPrettierErrors((prevErrors) => [prevErrors, error]);
+        setPrettierErrors((prevErrors) => [...prevErrors, error]);
         return;
       }
 
@@ -177,7 +177,6 @@ export const usePrettier = (
       },
     );
   }, [shareDBDoc]);
-  return { prettierErrors };
 };
 
 

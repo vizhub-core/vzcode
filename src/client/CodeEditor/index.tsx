@@ -36,13 +36,6 @@ export const CodeEditor = ({
   editorCache: EditorCache;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const prettierWorker = new Worker('../worker');
-  const { prettierErrors } = usePrettier(
-    shareDBDoc,
-    (next: (content: VZCodeContent) => VZCodeContent) => {},  // Placeholder submitOperation
-    prettierWorker
-    );
-
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
   // and the editor corresponding to the new file is added to the DOM.
@@ -78,18 +71,7 @@ export const CodeEditor = ({
 
   return(
     <div className="vz-code-editor" ref={ref}>
-    <div>
-      <h2>Prettier Errors</h2>
-      {prettierErrors.length > 0 ? (
-        <ul>
-          {prettierErrors.map((error, index) => (
-            <li key={index}>{error}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No Prettier errors.</p>
-      )}
-    </div>
+
   </div>
   );
 };
