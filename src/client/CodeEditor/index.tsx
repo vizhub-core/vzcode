@@ -24,7 +24,7 @@ export const CodeEditor = ({
   editorCache,
 }: {
   activeFileId: FileId;
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+  shareDBDoc: any;
   localPresence?: any;
   docPresence?: any;
   theme?: ThemeLabel;
