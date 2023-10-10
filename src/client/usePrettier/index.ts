@@ -27,11 +27,12 @@ export const usePrettier = (
   ) => void,
   prettierWorker: Worker,
 ) => {
-  const [prettierErrors, setPrettierErrors] = useState<string[]>([]);
-
   // The set of files that have been modified
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
+
+  // State to hold errors
+  const [prettierErrors, setPrettierErrors] = useState<string[]>([]);
 
   // A ref to keep track of whether an op is being applied.
   // This is used to prevent Prettier from running
@@ -49,8 +50,9 @@ export const usePrettier = (
       const { fileId, error, fileTextPrettified } =
         event.data;
       if (error) {
-        console.log(error);    
-        setPrettierErrors((prevErrors) => [...prevErrors, error]);
+        console.log(error);  
+        // Add the error to the errors state
+        setPrettierErrors((prevErrors) => [...prevErrors, error]);  
         return;
       }
 
@@ -173,10 +175,14 @@ export const usePrettier = (
 
           // Clear the timeout
           clearTimeout(debounceTimeout);
+          
+          // Clear the errors when component unmounts
+          setPrettierErrors([]);
         };
       },
     );
   }, [shareDBDoc]);
+  return { prettierErrors }; // Return the errors for use in other files
 };
 
 
