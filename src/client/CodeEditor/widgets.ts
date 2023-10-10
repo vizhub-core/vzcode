@@ -273,7 +273,8 @@ class ColorWidget extends WidgetType {
   }
 
   eq(widget: ColorWidget): boolean {
-    return widget.color == this.color;
+    // TODO consider possibly adding a random ID to support multiple instances with the same color
+    return widget.color === this.color;
   }
 
   toDOM(view: EditorView): HTMLElement {
