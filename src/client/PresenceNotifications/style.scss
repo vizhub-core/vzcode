@@ -1,13 +1,17 @@
 .vz-notification {
-  // position: fixed;
-  // display: block;
-  // bottom: 20px;
-  // right: 20px;
-  // max-width: 300px;
-  // overflow-x: hidden; 
-  // white-space: nowrap;
-  // background-color: rgb(54, 65, 89);
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  bottom: 20px;
+  right: 20px;
+
   color: rgb(154, 160, 172);
-  // padding: 15px;
+  padding: 15px;
+
+  .vz-notification-item {
+    background-color: rgb(54, 65, 89);
+    padding: 5px;
+    border-radius: 5px;
+  }
 }
-  
