@@ -282,7 +282,7 @@ class ColorWidget extends WidgetType {
 
     parent.setAttribute('style', 'width:10px;height:10px');
     parent.className = 'color-circle-parent';
-    let svg = document.createElementNS(
+    const svg = document.createElementNS(
       'http://www.w3.org/2000/svg',
       'svg',
     );
