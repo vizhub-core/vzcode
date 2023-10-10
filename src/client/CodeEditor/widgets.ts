@@ -221,7 +221,7 @@ export const colorsInTextPlugin: Extension = [
       decorations: (v) => {
         let colorInfos = [];
 
-        let lines = v.view.state.doc.iter();
+        const lines = v.view.state.doc.iter();
         let line = lines.next();
 
         //Offset is the number of characters before the hex so the circle can be placed properly.
