@@ -1,5 +1,9 @@
-import { useRef, useLayoutEffect } from 'react';
-import { FileId } from '../../types';
+import { useRef, useLayoutEffect, useContext } from 'react';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
 import {
   EditorCache,
@@ -7,6 +11,7 @@ import {
 } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
+import { usePrettier } from '../usePrettier';
 
 export const CodeEditor = ({
   activeFileId,
@@ -19,7 +24,7 @@ export const CodeEditor = ({
   editorCache,
 }: {
   activeFileId: FileId;
-  shareDBDoc: any;
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   localPresence?: any;
   docPresence?: any;
   theme?: ThemeLabel;
@@ -31,6 +36,12 @@ export const CodeEditor = ({
   editorCache: EditorCache;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const prettierWorker = new Worker('../worker');
+  const { prettierErrors } = usePrettier(
+    shareDBDoc,
+    (next: (content: VZCodeContent) => VZCodeContent) => {},  // Placeholder submitOperation
+    prettierWorker
+    );
 
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
@@ -67,14 +78,17 @@ export const CodeEditor = ({
 
   return(
     <div className="vz-code-editor" ref={ref}>
-    {/* CodeMirror editor */}
-    {/* Add your CodeMirror editor content here */}
-
-    {/* Overlay div below the editor */}
-    <div className="overlay-div">
-      <h2>Overlay Content</h2>
-      <p>This is some example overlay content below the editor.</p>
-      <button onClick={() => alert('Button Clicked!')}>Click Me</button>
+    <div>
+      <h2>Prettier Errors</h2>
+      {prettierErrors.length > 0 ? (
+        <ul>
+          {prettierErrors.map((error, index) => (
+            <li key={index}>{error}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No Prettier errors.</p>
+      )}
     </div>
   </div>
   );

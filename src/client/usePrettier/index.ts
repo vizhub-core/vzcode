@@ -4,7 +4,7 @@ import {
   ShareDBDoc,
   VZCodeContent,
 } from '../../types';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoPrettierDebounceTimeMS = 1200;
@@ -26,8 +26,9 @@ export const usePrettier = (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void,
   prettierWorker: Worker,
-  onError: (error: string) => void // New parameter to handle errors
 ) => {
+  const [prettierErrors, setPrettierErrors] = useState<string[]>([]);
+
   // The set of files that have been modified
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
@@ -48,9 +49,8 @@ export const usePrettier = (
       const { fileId, error, fileTextPrettified } =
         event.data;
       if (error) {
-        console.log(error);
-        // Handle error by invoking the provided error callback
-        onError(error);
+        console.log(error);    
+        setPrettierErrors((prevErrors) => [prevErrors, error]);
         return;
       }
 
@@ -177,4 +177,7 @@ export const usePrettier = (
       },
     );
   }, [shareDBDoc]);
+  return { prettierErrors };
 };
+
+
