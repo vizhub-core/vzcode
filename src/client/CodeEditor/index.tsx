@@ -11,7 +11,7 @@ import {
 } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
-import { usePrettier } from '../usePrettier';
+// import { usePrettier } from '../usePrettier';
 
 export const CodeEditor = ({
   activeFileId,
@@ -35,15 +35,6 @@ export const CodeEditor = ({
   onInteract?: () => void;
   editorCache: EditorCache;
 }) => {
-  
-
-  const { prettierErrors } = usePrettier(
-    shareDBDoc,
-    null,
-    new Worker('../worker')  // Adjust the path
-  );
-
-
   const ref = useRef<HTMLDivElement>(null);
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
@@ -78,18 +69,5 @@ export const CodeEditor = ({
     };
   }, [shareDBDoc, activeFileId]);
 
-  return(
-    <div className="vz-code-editor" ref={ref}>
-       <div className="overlay-div">
-        <h2>Overlay Content</h2>
-        <p>This is some example overlay content below the editor.</p>
-        <button onClick={() => alert('Button Clicked!')}>Click Me</button>
-      </div>
-      {prettierErrors && (
-        <div className="prettier-error">
-          <p>Prettier Error: {prettierErrors}</p>
-        </div>
-      )}
-  </div>
-  );
+  return <div className="vz-code-editor" ref={ref}></div>;
 };

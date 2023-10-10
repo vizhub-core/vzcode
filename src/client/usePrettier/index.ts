@@ -31,8 +31,13 @@ export const usePrettier = (
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
 
-  // State to hold errors
-  const [prettierErrors, setPrettierErrors] = useState<string[]>([]);
+  // State to hold the error from Prettier
+  // `null` means no errors
+  // If this is a string, it's the
+  // error message from Prettier.
+  const [prettierError, setPrettierError] = useState<
+    string | null
+  >(null);
 
   // A ref to keep track of whether an op is being applied.
   // This is used to prevent Prettier from running
@@ -50,9 +55,10 @@ export const usePrettier = (
       const { fileId, error, fileTextPrettified } =
         event.data;
       if (error) {
-        console.log(error);  
+        console.log('error', error);
+        console.log(typeof error);
         // Add the error to the errors state
-        setPrettierErrors((prevErrors) => [...prevErrors, error]);  
+        setPrettierError(error);
         return;
       }
 
@@ -164,25 +170,20 @@ export const usePrettier = (
         } else {
           // console.log('ignoring op from remote', op, isLocal);
         }
-
-        // In the event that the component unmounts,
-        return () => {
-          // Remove the event listener
-          prettierWorker.removeEventListener(
-            'message',
-            handleMessage,
-          );
-
-          // Clear the timeout
-          clearTimeout(debounceTimeout);
-          
-          // Clear the errors when component unmounts
-          setPrettierErrors([]);
-        };
       },
     );
+
+    // In the event that the component unmounts,
+    return () => {
+      // Remove the event listener
+      prettierWorker.removeEventListener(
+        'message',
+        handleMessage,
+      );
+
+      // Clear the timeout
+      clearTimeout(debounceTimeout);
+    };
   }, [shareDBDoc]);
-  return { prettierErrors }; // Return the errors for use in other files
+  return { prettierError }; // Return the errors for use in other files
 };
-
-

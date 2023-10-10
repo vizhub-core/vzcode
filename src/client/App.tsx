@@ -29,6 +29,7 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import './style.scss';
+import { PrettierErrorOverlay } from './PrettierErrorOverlay';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -70,7 +71,13 @@ function App() {
   );
 
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc, submitOperation, prettierWorker);
+  const { prettierError } = usePrettier(
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
+
+  console.log('prettierError', prettierError);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -228,36 +235,35 @@ function App() {
   );
 
   const deleteDirectory = useCallback(
-      (path: FileId) => {
-        submitOperation((document) => {
-          const updatedFiles = { ...document.files };
-          for (const key in updatedFiles) {
-            if (updatedFiles[key].name.includes(path)) {
-              closeTab(key);
-              delete updatedFiles[key];
-            }
+    (path: FileId) => {
+      submitOperation((document) => {
+        const updatedFiles = { ...document.files };
+        for (const key in updatedFiles) {
+          if (updatedFiles[key].name.includes(path)) {
+            closeTab(key);
+            delete updatedFiles[key];
           }
-          return { ...document, files: updatedFiles };
-        });
-      },
-      [submitOperation, closeTab],
+        }
+        return { ...document, files: updatedFiles };
+      });
+    },
+    [submitOperation, closeTab],
   );
 
   const handleDeleteClick = useCallback(
-      (key: string) => {
-        //Regex to identify if the key is a file path or a file id.
-        if (/^[0-9]*$/.test(key)) {
-          if (key.length == 8) {
-            deleteFile(key);
-          } else {
-            deleteDirectory(key);
-          }
-        }
-        else{
+    (key: string) => {
+      //Regex to identify if the key is a file path or a file id.
+      if (/^[0-9]*$/.test(key)) {
+        if (key.length == 8) {
+          deleteFile(key);
+        } else {
           deleteDirectory(key);
         }
-      },
-      [deleteFile, deleteDirectory],
+      } else {
+        deleteDirectory(key);
+      }
+    },
+    [deleteFile, deleteDirectory],
   );
 
   const handleSettingsClose = useCallback(() => {
@@ -333,6 +339,9 @@ function App() {
               editorCache={editorCache}
             />
           ) : null}
+          <PrettierErrorOverlay
+            prettierError={prettierError}
+          />
         </div>
         <Resizer />
       </div>
