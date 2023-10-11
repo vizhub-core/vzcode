@@ -127,7 +127,7 @@ export const getOrCreateEditor = ({
       json1PresenceDisplay({ path: textPath, docPresence }),
     );
 
-    extensions.push(colorsInTextPlugin);
+  extensions.push(colorsInTextPlugin);
 
   // This is the "basic setup" for CodeMirror,
   // which actually adds a ton on functionality.
