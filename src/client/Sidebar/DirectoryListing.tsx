@@ -33,10 +33,13 @@ export const DirectoryListing = ({
     toggleDirectory(path);
   }, [toggleDirectory]);
 
-  const handleDeleteClick = useCallback((event) => {
-    // https://github.com/vizhub-core/vzcode/issues/102
-    handleDeleteFileClick(path,event);
-  }, [handleDeleteFileClick,path]);
+  const handleDeleteClick = useCallback(
+    (event) => {
+      // https://github.com/vizhub-core/vzcode/issues/102
+      handleDeleteFileClick(path, event);
+    },
+    [handleDeleteFileClick, path],
+  );
 
   const handleRenameClick = useCallback(() => {
     // https://github.com/vizhub-core/vzcode/issues/103
