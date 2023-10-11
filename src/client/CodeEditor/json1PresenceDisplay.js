@@ -39,7 +39,7 @@ export const json1PresenceDisplay = ({
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
             presenceState[id] = presence;
-          }else {
+          } else {
             delete presenceState[id];
           }
           // Update decorations to reflect new presence state.
@@ -51,7 +51,7 @@ export const json1PresenceDisplay = ({
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
-              if (from === to){
+              if (from === to) {
                 return {
                   from,
                   to,
@@ -61,15 +61,14 @@ export const json1PresenceDisplay = ({
                     widget: new PresenceWidget(id),
                   }),
                 };
-              }
-              else {
+              } else {
                 return {
                   from,
                   to,
                   value: Decoration.mark({
                     class: 'cm-json1-presence',
-                    attributes: { 
-                      style:`
+                    attributes: {
+                      style: `
                         background-color: rgba(255, 255, 0, 0.5);
                         box-shadow: 1px 0 0 yellow;
                         `,
@@ -126,7 +125,7 @@ export const json1PresenceDisplay = ({
 //       bottom: 20px;
 //       right: 20px;
 //       max-width: 300px;
-//       overflow-x: hidden; 
+//       overflow-x: hidden;
 //       white-space: nowrap;
 //       background-color: rgb(54, 65, 89);
 //       color: rgb(154, 160, 172);

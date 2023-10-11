@@ -14,7 +14,7 @@ const saveTimes = [
   { value: 30, label: '30 seconds' },
 ];
 
-export let username = "Anonymous";
+export let username = 'Anonymous';
 
 export const Settings = ({
   show,
@@ -104,4 +104,3 @@ export const Settings = ({
     </Modal>
   ) : null;
 };
-

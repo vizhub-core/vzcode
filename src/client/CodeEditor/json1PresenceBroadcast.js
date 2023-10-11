@@ -1,5 +1,5 @@
 import { EditorView } from 'codemirror';
-import { username } from '../Settings.tsx'
+import { username } from '../Settings.tsx';
 
 // Deals with broadcasting changes in cursor location and selection.
 export const json1PresenceBroadcast = ({
