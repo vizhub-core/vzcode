@@ -42,9 +42,13 @@ export const Item = ({
   const [showModal, setShowModal] = useState(false);
 
   // Function to open the delete file confirmation modal
-  const handleModalOpen = useCallback(() => {
-    setShowModal(true);
-  }, []);
+  const handleModalOpen = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setShowModal(true);
+    },
+    [],
+  );
 
   // Function to close the modal
   const handleModalClose = useCallback(() => {
@@ -52,10 +56,14 @@ export const Item = ({
   }, []);
 
   // Function to handle confirmation on modal
-  const handleConfirmModal = useCallback(() => {
-    setShowModal(false);
-    handleDeleteClick();
-  }, [handleDeleteClick]);
+  const handleConfirmModal = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setShowModal(false);
+      handleDeleteClick();
+    },
+    [handleDeleteClick],
+  );
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -98,7 +106,8 @@ export const Item = ({
           <i
             className="bx bxs-edit utilities"
             style={{ color: '#abdafb' }}
-            onClick={() => {
+            onClick={(event: React.MouseEvent) => {
+              event.stopPropagation();
               setIsRenaming(!isRenaming);
               setRenameValue(isDir ? name : children);
             }}
