@@ -2,7 +2,7 @@ export const reducer = (state, action) => {
   switch (action.type) {
     // TODO phase this out
     case 'set_tab_list': {
-      return {...state, tabList: action.tabList}
+      return { ...state, tabList: action.tabList };
     }
     // TODO eventually
     // case 'init_sharedb': {
@@ -33,9 +33,6 @@ export const reducer = (state, action) => {
     //     }
     // case 'rename_file': {
     // ...
-
-
-
   }
   throw Error('Unknown action: ' + action.type);
 };

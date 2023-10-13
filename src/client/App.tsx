@@ -3,7 +3,7 @@ import {
   useEffect,
   useCallback,
   useRef,
-  useReducer
+  useReducer,
 } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
@@ -29,7 +29,7 @@ import { usePrettier } from './usePrettier';
 import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
-import {reducer} from './reducer'
+import { reducer } from './reducer';
 import './style.scss';
 
 // Instantiate the Prettier worker.
@@ -162,16 +162,16 @@ function App() {
     // isSettingsOpen:false
   });
 
-  const tabList = state.tabList
+  const tabList = state.tabList;
 
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
   const setTabList = (tabList) => {
     dispatch({
-      type:'set_tab_list',
-      tabList
-    })
-  }
+      type: 'set_tab_list',
+      tabList,
+    });
+  };
 
   // const openTab = (fileId:FileId) => {
   //   dispatch({
