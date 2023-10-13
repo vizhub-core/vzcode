@@ -1,4 +1,4 @@
-import { useCallback} from 'react';
+import { useCallback } from 'react';
 import { FileId } from '../types';
 
 // Encapsulates the state and logic for managing the list of open tabs.
