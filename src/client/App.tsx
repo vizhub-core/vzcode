@@ -153,7 +153,7 @@ function App() {
   const [tabList, setTabList] = useState<Array<FileId>>([]);
 
   // Logic for opening and closing tabs.
-  const { closeTab, openTab } = useTabsState(
+  const { closeTab, openTab, multiCloseTab } = useTabsState(
     activeFileId,
     setActiveFileId,
     tabList,
@@ -217,30 +217,32 @@ function App() {
 
   const deleteFile = useCallback(
     (fileId: FileId) => {
-      closeTab(fileId);
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         delete updatedFiles[fileId];
         return { ...document, files: updatedFiles };
       });
+      closeTab(fileId);
     },
     [submitOperation, closeTab],
   );
 
   const deleteDirectory = useCallback(
     (path: FileId) => {
+      let tabsToDelete: Array<FileId> = [];
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
           if (updatedFiles[key].name.includes(path)) {
-            closeTab(key);
+            tabsToDelete.push(key);
             delete updatedFiles[key];
           }
         }
         return { ...document, files: updatedFiles };
       });
+      multiCloseTab(tabsToDelete);
     },
-    [submitOperation, closeTab],
+    [submitOperation, multiCloseTab],
   );
 
   const handleDeleteClick = useCallback(
