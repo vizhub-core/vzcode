@@ -147,8 +147,9 @@ function App() {
 
   // The id of the currently open file tab.
   // TODO make this a URL param
-  const [activeFileId, setActiveFileId] =
-    useState<FileId | null>(null);
+  // Migrated to useReducer
+  //const [activeFileId, setActiveFileId] =
+  //useState<FileId | null>(null);
 
   // The ordered list of tabs.
   // TODO make this a URL param
@@ -162,8 +163,9 @@ function App() {
     // isSettingsOpen:false
   });
 
+  //Reducer states
   const tabList = state.tabList;
-
+  const activeFileId = state.activeFileId;
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
   const setTabList = (tabList) => {
@@ -173,20 +175,41 @@ function App() {
     });
   };
 
-  // const openTab = (fileId:FileId) => {
-  //   dispatch({
-  //     type:'open_tab',
-  //     fileId
-  //   })
-  // }
+  const setActiveFileId = (activeFileId) => {
+    dispatch({
+      type: 'set_active_fileId',
+      activeFileId,
+    });
+  };
+  const openTab = (fileId: FileId) => {
+    dispatch({
+      type: 'open_tab',
+      fileId,
+    });
+  };
 
-  // Logic for opening and closing tabs.
-  const { closeTab, openTab, multiCloseTab } = useTabsState(
+  const closeTab = (fileIdToRemove: FileId) => {
+    dispatch({
+      type: 'close_tab',
+      fileIdToRemove,
+    });
+  };
+
+  const multiCloseTab = (idsToDelete: Array<FileId>) => {
+    dispatch({
+      type: 'multi_close_tab',
+      idsToDelete,
+    });
+  };
+
+  // Logic for opening and closing tabs. Migrated to useReducer
+  /*
+  const {} = useTabsState(
     activeFileId,
     setActiveFileId,
     tabList,
     setTabList,
-  );
+  ); */
 
   // The current theme.
   // TODO persist this in local storage
