@@ -20,6 +20,8 @@ export const PresenceNotifications = ({
 }) => {
   const [presenceNotifications, setPresenceNotifications] =
     useState<Array<PresenceNotification>>([]);
+  
+  const [presenceIds, setPresenceIds] = useState<Array<String>>([]);
 
   // // console.log('docPresence:', docPresence);
   // const [visible, setVisible] = useState(true);
@@ -39,13 +41,36 @@ export const PresenceNotifications = ({
 
         // `true` means user has joined the session.
         // `false` means user has left the session.
-        const join = update === null;
+        const join = update !== null;
 
-        // Add an entry to the presence notifications array.
-        setPresenceNotifications((prev) => [
-          ...prev,
-          { user, join, presenceId },
-        ]);
+        // Check if user already joined (presenceId is in presenceIds array)
+        // If user hasn't joined, add notification and presenceId to array.
+        // Else if user is leaving, add notification and remove presenceId from array
+
+        if (join && !presenceIds.includes(presenceId)){
+          setPresenceNotifications((prev) => [
+            ...prev,
+            { user, join, presenceId },
+          ]);
+          setPresenceIds((prev) => [
+            ...prev,
+            presenceId,
+          ]);
+        }
+        else if (!join){
+          setPresenceNotifications((prev) => [
+            ...prev,
+            { user, join, presenceId },
+          ]);
+          setPresenceIds((prev) =>
+            prev.filter(
+              (id) =>
+                id !== presenceId,
+            ),
+          );
+        }
+
+
 
         // Remove it after 5 seconds.
         setTimeout(() => {
@@ -79,18 +104,18 @@ export const PresenceNotifications = ({
       // const timer = setTimeout(() => {
       //   setVisible(false);
       // }, 10000);
-      return () => {
-        // clearTimeout(timer);
-      };
-    } else {
-      // setVisible(false);
+    //   return () => {
+    //     // clearTimeout(timer);
+    //   };
+    // } else {
+    //   // setVisible(false);
     }
   }, [docPresence]);
 
-  console.log(
-    'presenceNotifications',
-    presenceNotifications,
-  );
+  // console.log(
+  //   'presenceNotifications',
+  //   presenceNotifications,
+  // );
 
   return presenceNotifications.length > 0 ? (
     <div className="vz-notification">
