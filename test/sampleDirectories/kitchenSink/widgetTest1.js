@@ -4,7 +4,7 @@ let aColor = rgb(81, 89, 194);
 
 let b = vec2(181, 110);
 
-let hexColor = "#ABCDE4"
+let hexColor = "#ABCDE4";
 /*
 
 
