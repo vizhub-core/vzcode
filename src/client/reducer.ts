@@ -1,11 +1,17 @@
 import { FileId } from '../types';
-
+import { diff } from './diff';
+import { randomId } from '../randomId';
 export const reducer = (state, action) => {
   switch (action.type) {
     // TODO phase this out
+
+    // The ordered list of tabs.
+    // TODO make this a URL param
     case 'set_tab_list': {
       return { ...state, tabList: action.tabList };
     }
+    // The id of the currently open file tab.
+    // TODO make this a URL param
     case 'set_active_fileId': {
       return {
         ...state,
@@ -95,28 +101,92 @@ export const reducer = (state, action) => {
         activeFileId: newActiveFileId,
       };
     }
-    // TODO eventually
-    // case 'init_sharedb': {
-    //   return {
-    //     ...state,
-    //     submitOperation: action.submitOperation
-    //   }
-    // }
-    // case 'delete_file': {
-    // case 'delete_directory': {
-    // case 'create_file': {
-    //           state.submitOperation((document) => ({
-    //             ...document,
-    //             files: {
-    //               ...document.files,
-    //               [randomId()]: { name:action.name, text: '' },
-    //             },
-    //           }))
-    //           return state;
-
-    //     }
-    // case 'rename_file': {
-    // ...
+    // A helper function to submit operations to the ShareDB document
+    case 'submit_Operation': {
+      //Used to submit Operations to the shareDB doc
+      const next = action.next;
+      const content = state.shareDBDoc.data;
+      const op = diff(content, next(content));
+      if (op && state.shareDBDoc) {
+        state.shareDBDoc.submitOp(op);
+      }
+      return { ...state };
+    }
+    case 'set_Share_DB_Doc': {
+      return {
+        ...state,
+        shareDBDoc: action.shareDBDoc,
+      };
+    }
+    case 'delete_File': {
+      state.submitOperation((document) => {
+        const updatedFiles = { ...document.files };
+        delete updatedFiles[action.fileId];
+        return { ...document, files: updatedFiles };
+      });
+      state.closeTab(action.fileId);
+      return {
+        ...state,
+      };
+    }
+    case 'delete_Directory': {
+      let tabsToDelete: Array<FileId> = [];
+      state.submitOperation((document) => {
+        const updatedFiles = { ...document.files };
+        for (const key in updatedFiles) {
+          if (
+            updatedFiles[key].name.includes(action.path)
+          ) {
+            tabsToDelete.push(key);
+            delete updatedFiles[key];
+          }
+        }
+        return { ...document, files: updatedFiles };
+      });
+      state.multiCloseTab(tabsToDelete);
+      return { ...state };
+    }
+    case 'create_File': {
+      const name = prompt('Enter new file name');
+      if (name) {
+        state.submitOperation((document) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [randomId()]: { name, text: '' },
+          },
+        }));
+      }
+      return { ...state };
+    }
+    // Called when a file in the sidebar is renamed.
+    case 'rename_File': {
+      state.submitOperation((document) => ({
+        ...document,
+        files: {
+          ...document.files,
+          [action.fileId]: {
+            ...document.files[action.fileId],
+            name: action.newName,
+          },
+        },
+      }));
+      return { ...state };
+    }
+    //The current theme
+    // TODO persist this in local storage
+    case 'set_Theme': {
+      return {
+        ...state,
+        theme: action.theme,
+      };
+    }
+    case 'is_Settings_Open': {
+      return {
+        ...state,
+        isSettingsOpen: action.isSettingsOpen,
+      };
+    }
   }
   throw Error('Unknown action: ' + action.type);
 };

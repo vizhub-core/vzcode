@@ -9,18 +9,11 @@ import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
-import { diff } from './diff';
 import { Settings } from './Settings';
 import { Sidebar } from './Sidebar';
-import {
-  FileId,
-  Files,
-  ShareDBDoc,
-  VZCodeContent,
-} from '../types';
+import { FileId, Files, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { useTabsState } from './useTabsState';
 import { ThemeLabel, defaultTheme } from './themes';
 import { useEditorCache } from './useEditorCache';
 import { useDynamicTheme } from './useDynamicTheme';
@@ -53,26 +46,129 @@ const connection = new Connection(socket);
 
 function App() {
   // The ShareDB document.
-  const [shareDBDoc, setShareDBDoc] =
-    useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  // A helper function to submit operations to the ShareDB document
-
-  const submitOperation: (
+  //UseReducer declaration and dispatch calls.
+  // TODO phase this out as we complete the refactoring
+  // It's here now for backwards compatibility
+  const submitOperation = (
     next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useCallback(
-    (next) => {
-      const content: VZCodeContent = shareDBDoc.data;
-      const op = diff(content, next(content));
-      if (op && shareDBDoc) {
-        shareDBDoc.submitOp(op);
-      }
-    },
-    [shareDBDoc],
-  );
+  ) => {
+    dispatch({
+      type: 'submit_Operation',
+      next: next,
+    });
+  };
+
+  const closeTab = (fileIdToRemove: FileId) => {
+    dispatch({
+      type: 'close_tab',
+      fileIdToRemove,
+    });
+  };
+
+  const multiCloseTab = (idsToDelete: Array<FileId>) => {
+    dispatch({
+      type: 'multi_close_tab',
+      idsToDelete,
+    });
+  };
+
+  // https://react.dev/reference/react/useReducer
+  const [state, dispatch] = useReducer(reducer, {
+    ShareDBDoc: null,
+    tabList: [],
+    activeFileId: null,
+    submitOperation,
+    closeTab,
+    multiCloseTab,
+    theme: defaultTheme,
+    isSettingsOpen: false,
+  });
+
+  const setShareDBDoc = (shareDBDoc) => {
+    dispatch({
+      type: 'set_Share_DB_Doc',
+      shareDBDoc: shareDBDoc,
+    });
+  };
+
+  //Reducer states. Used globally within App.tsx
+  const tabList = state.tabList;
+  const activeFileId = state.activeFileId;
+  const theme = state.theme;
+  const isSettingsOpen = state.isSettingsOpen;
+  const shareDBDoc = state.ShareDBDoc;
+  const setTabList = (tabList) => {
+    dispatch({
+      type: 'set_tab_list',
+      tabList,
+    });
+  };
+
+  const setActiveFileId = (activeFileId) => {
+    dispatch({
+      type: 'set_active_fileId',
+      activeFileId,
+    });
+  };
+  const openTab = (fileId: FileId) => {
+    dispatch({
+      type: 'open_tab',
+      fileId,
+    });
+  };
+
+  const deleteFile = (fileId) => {
+    dispatch({
+      type: 'delete_File',
+      fileId: fileId,
+    });
+  };
+
+  const deleteDirectory = (path) => {
+    dispatch({
+      type: 'delete_Directory',
+      path: path,
+    });
+  };
+
+  const createFile = () => {
+    dispatch({
+      type: 'create_File',
+    });
+  };
+
+  const handleRenameFileClick = (
+    fileId: FileId,
+    newName: string,
+  ) => {
+    dispatch({
+      type: 'rename_File',
+      fileId: fileId,
+      newName: newName,
+    });
+  };
+
+  const setTheme = (themeLabel: ThemeLabel) => {
+    dispatch({
+      type: 'set_Theme',
+      themeLabel: themeLabel,
+    });
+  };
+
+  const setIsSettingsOpen = (isSettingsOpen: boolean) => {
+    dispatch({
+      type: 'is_Settings_Open',
+      isSettingsOpen: isSettingsOpen,
+    });
+  };
 
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc, submitOperation, prettierWorker);
+  usePrettier(
+    state.shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -145,86 +241,11 @@ function App() {
     };
   }, []);
 
-  // The id of the currently open file tab.
-  // TODO make this a URL param
-  // Migrated to useReducer
-  //const [activeFileId, setActiveFileId] =
-  //useState<FileId | null>(null);
-
-  // The ordered list of tabs.
-  // TODO make this a URL param
-  // https://react.dev/reference/react/useReducer
-  // const [tabList, setTabList] = useState<Array<FileId>>([]);
-  const [state, dispatch] = useReducer(reducer, {
-    submitOperation,
-    tabList: [],
-    // activeFileId: null,
-    // theme: defaultTheme,
-    // isSettingsOpen:false
-  });
-
-  //Reducer states
-  const tabList = state.tabList;
-  const activeFileId = state.activeFileId;
-  // TODO phase this out as we complete the refactoring
-  // It's here now for backwards compatibility
-  const setTabList = (tabList) => {
-    dispatch({
-      type: 'set_tab_list',
-      tabList,
-    });
-  };
-
-  const setActiveFileId = (activeFileId) => {
-    dispatch({
-      type: 'set_active_fileId',
-      activeFileId,
-    });
-  };
-  const openTab = (fileId: FileId) => {
-    dispatch({
-      type: 'open_tab',
-      fileId,
-    });
-  };
-
-  const closeTab = (fileIdToRemove: FileId) => {
-    dispatch({
-      type: 'close_tab',
-      fileIdToRemove,
-    });
-  };
-
-  const multiCloseTab = (idsToDelete: Array<FileId>) => {
-    dispatch({
-      type: 'multi_close_tab',
-      idsToDelete,
-    });
-  };
-
-  // Logic for opening and closing tabs. Migrated to useReducer
-  /*
-  const {} = useTabsState(
-    activeFileId,
-    setActiveFileId,
-    tabList,
-    setTabList,
-  ); */
-
-  // The current theme.
-  // TODO persist this in local storage
-  const [theme, setTheme] =
-    useState<ThemeLabel>(defaultTheme);
-
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
-
-  // True to show the settings modal.
-  const [isSettingsOpen, setIsSettingsOpen] =
-    useState(false);
 
   // The set of open directories.
   const { isDirectoryOpen, toggleDirectory } =
@@ -236,65 +257,6 @@ function App() {
   //  - `handleRenameFileClick`
   //  - `deleteFile`
   //  - `handleDeleteFileClick`
-  const createFile = useCallback(() => {
-    const name = prompt('Enter new file name');
-    if (name) {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [randomId()]: { name, text: '' },
-        },
-      }));
-    }
-  }, [submitOperation]);
-
-  // Called when a file in the sidebar is renamed.
-  const handleRenameFileClick = useCallback(
-    (fileId: FileId, newName: string) => {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [fileId]: {
-            ...document.files[fileId],
-            name: newName,
-          },
-        },
-      }));
-    },
-    [submitOperation],
-  );
-
-  const deleteFile = useCallback(
-    (fileId: FileId) => {
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        delete updatedFiles[fileId];
-        return { ...document, files: updatedFiles };
-      });
-      closeTab(fileId);
-    },
-    [submitOperation, closeTab],
-  );
-
-  const deleteDirectory = useCallback(
-    (path: FileId) => {
-      let tabsToDelete: Array<FileId> = [];
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        for (const key in updatedFiles) {
-          if (updatedFiles[key].name.includes(path)) {
-            tabsToDelete.push(key);
-            delete updatedFiles[key];
-          }
-        }
-        return { ...document, files: updatedFiles };
-      });
-      multiCloseTab(tabsToDelete);
-    },
-    [submitOperation, multiCloseTab],
-  );
 
   const handleDeleteClick = useCallback(
     (key: string) => {
