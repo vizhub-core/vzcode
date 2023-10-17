@@ -1,4 +1,5 @@
 import { EditorView } from 'codemirror';
+import { username } from '../Settings.tsx';
 
 // Deals with broadcasting changes in cursor location and selection.
 export const json1PresenceBroadcast = ({
@@ -22,6 +23,7 @@ export const json1PresenceBroadcast = ({
       const presence = {
         start: [...path, from],
         end: [...path, to],
+        username: username,
       };
 
       // Broadcast presence to remote clients!
