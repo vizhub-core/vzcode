@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './style.scss';
+
+type PresenceId = string;
 
 // A presence notification is a message that is displayed when a user joins or leaves a session.
 // It has the following properties:
@@ -10,7 +12,7 @@ import './style.scss';
 type PresenceNotification = {
   user: string;
   join: boolean;
-  presenceId: string;
+  presenceId: PresenceId;
 };
 
 export const PresenceNotifications = ({
@@ -20,17 +22,19 @@ export const PresenceNotifications = ({
 }) => {
   const [presenceNotifications, setPresenceNotifications] =
     useState<Array<PresenceNotification>>([]);
-  
-  const [presenceIds, setPresenceIds] = useState<Array<any>>([]);
 
+  // const [presenceIds, setPresenceIds] = useState<
+  //   Array<any>
+  // >([]);
+  const alreadyJoinedPresenceIds = useRef<Set<PresenceId>>(
+    new Set(),
+  );
 
   useEffect(() => {
     // console.log('useEffect triggered.');
     if (docPresence) {
-
       // See https://share.github.io/sharedb/presence
       docPresence.on('receive', (presenceId, update) => {
-
         // Reason for notifications appearing on every cursor movement:
         //  code doesn't check if a notification about a user joining was previously sent
 
@@ -51,7 +55,6 @@ export const PresenceNotifications = ({
         //      - could add another property to presence (true: already notified, false: need to be notified)
         //          - doesn't seem like an ideal solution
 
-
         // console.log('docPresence:', docPresence);
         // console.log('docPresence remotePresences:', docPresence.remotePresences);
         // console.log('check for presence:', docPresence.remotePresences[presenceId]);
@@ -62,42 +65,56 @@ export const PresenceNotifications = ({
         // `true` means user has joined the session.
         // `false` means user has left the session.
         const join = update !== null;
-        
 
-        if (join && docPresence.remotePresences[presenceId] === undefined){
+        console.log('join', join);
+
+        // Figure out if we have ever seen this user before.
+
+        // if (join && docPresence.remotePresences[presenceId] === undefined){
+        if (join) {
+          if (
+            !alreadyJoinedPresenceIds.current.has(
+              presenceId,
+            )
+          ) {
+            alreadyJoinedPresenceIds.current.add(
+              presenceId,
+            );
+            setPresenceNotifications((prev) => [
+              ...prev,
+              { user, join, presenceId },
+            ]);
+
+            // Remove it after 5 seconds.
+            setTimeout(() => {
+              setPresenceNotifications((prev) =>
+                prev.filter(
+                  (notification) =>
+                    notification.presenceId !==
+                      presenceId &&
+                    notification.join !== join,
+                ),
+              );
+            }, 5000);
+          }
+        } else if (!join) {
           setPresenceNotifications((prev) => [
             ...prev,
             { user, join, presenceId },
           ]);
-          // setPresenceIds((prev) => [
-          //   ...prev,
-          //   presenceId,
-          // ]);
+
+          // Remove it after 5 seconds.
+          // TODO clean up this duplication.
+          setTimeout(() => {
+            setPresenceNotifications((prev) =>
+              prev.filter(
+                (notification) =>
+                  notification.presenceId !== presenceId &&
+                  notification.join !== join,
+              ),
+            );
+          }, 5000);
         }
-        else if (!join){
-          setPresenceNotifications((prev) => [
-            ...prev,
-            { user, join, presenceId },
-          ]);
-          // setPresenceIds((prev) =>
-          //   prev.filter(
-          //     (id) =>
-          //       id !== presenceId,
-          //   ),
-          // );
-        }
-
-
-
-        // Remove it after 5 seconds.
-        setTimeout(() => {
-          setPresenceNotifications((prev) =>
-            prev.filter(
-              (notification) =>
-                notification.presenceId !== presenceId,
-            ),
-          );
-        }, 5000);
       });
     }
   }, [docPresence]);
@@ -113,13 +130,10 @@ export const PresenceNotifications = ({
 
   return presenceNotifications.length > 0 ? (
     <div className="vz-notification">
-      {presenceNotifications.map((notification) => {
+      {presenceNotifications.map((notification, i) => {
         const { user, join } = notification;
         return (
-          <div
-            key={notification.presenceId}
-            className="vz-notification-item"
-          >
+          <div key={i} className="vz-notification-item">
             {join
               ? `${user} has joined the session.`
               : `${user} has left the session.`}
