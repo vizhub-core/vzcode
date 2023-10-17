@@ -1,18 +1,13 @@
 import { useCallback, useRef } from 'react';
 import { Button, Modal, Form } from './bootstrap';
-import Select from 'react-select';
-import {
-  ThemeLabel,
-  themeOptionsByLabel,
-  themes,
-} from './themes';
+import { ThemeLabel, themes } from './themes';
 
-const saveTimes = [
-  { value: 1, label: '1 second' },
-  { value: 5, label: '5 seconds' },
-  { value: 10, label: '10 seconds' },
-  { value: 30, label: '30 seconds' },
-];
+// const saveTimes = [
+//   { value: 1, label: '1 second' },
+//   { value: 5, label: '5 seconds' },
+//   { value: 10, label: '10 seconds' },
+//   { value: 30, label: '30 seconds' },
+// ];
 
 export let username = 'Anonymous';
 
@@ -27,23 +22,26 @@ export const Settings = ({
   setTheme: (theme: ThemeLabel) => void;
   theme: ThemeLabel;
 }) => {
-  const handleChange = useCallback((selectedOption) => {
-    setTheme(selectedOption.label);
+  const handleThemeChange = useCallback((event) => {
+    const selectedValue = event.target.value;
+    console.log(selectedValue);
+    setTheme(selectedValue);
   }, []);
 
-  const handleSaveTimeChange = useCallback(
-    (selectedOption) => {
-      const time = [{ value: selectedOption.value }];
-      fetch('/saveTime', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(time),
-      });
-    },
-    [],
-  );
+  // TODO https://github.com/vizhub-core/vzcode/issues/95
+  // const handleSaveTimeChange = useCallback(
+  //   (selectedOption) => {
+  //     const time = [{ value: selectedOption.value }];
+  //     fetch('/saveTime', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(time),
+  //     });
+  //   },
+  //   [],
+  // );
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const handleUsernameChange = () => {
@@ -76,16 +74,26 @@ export const Settings = ({
         </Form.Group>
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
-          <Select
-            options={themes}
-            onChange={handleChange}
-            value={themeOptionsByLabel[theme]}
-          />
+
+          <select
+            className="form-select"
+            value={theme}
+            onChange={handleThemeChange}
+          >
+            {themes.map(({ label }) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
+          </select>
+
           <Form.Text className="text-muted">
             Select a color theme for the editor
           </Form.Text>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formFork">
+        {/*
+          TODO https://github.com/vizhub-core/vzcode/issues/95
+          <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Auto-Save Time</Form.Label>
           <Select
             options={saveTimes}
@@ -94,7 +102,7 @@ export const Settings = ({
           <Form.Text className="text-muted">
             Select an auto save time
           </Form.Text>
-        </Form.Group>
+        </Form.Group> */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={onClose}>

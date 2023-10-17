@@ -1,5 +1,18 @@
 import interact from '@replit/codemirror-interact';
 
+import {
+  ViewPlugin,
+  Decoration,
+  WidgetType,
+  keymap,
+} from '@codemirror/view';
+import {
+  Annotation,
+  Extension,
+  RangeSet,
+} from '@codemirror/state';
+import { EditorView } from 'codemirror';
+
 // Interactive code widgets.
 //  * Number dragger
 //  * Boolean toggler
@@ -15,10 +28,49 @@ export const widgets = ({
 }) =>
   interact({
     rules: [
+      // hex color picker
+      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
+      {
+        regexp: /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+        cursor: 'pointer',
+        onClick(text, setText, e) {
+          const res =
+            /\"(?<hex>\#([0-9]|[A-F]|[a-f]){6})\"/.exec(
+              text,
+            );
+          const startingColor = res.groups?.hex;
+
+          const sel = document.createElement('input');
+          sel.type = 'color';
+
+          sel.value = startingColor.toLowerCase();
+
+          //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
+          const valueIsUpper =
+            startingColor.toUpperCase() === startingColor;
+
+          const updateHex = (e: Event) => {
+            const el = e.target as HTMLInputElement;
+
+            if (el.value) {
+              setText(
+                `"${
+                  valueIsUpper
+                    ? el.value.toUpperCase()
+                    : el.value
+                }"`,
+              );
+            }
+          };
+          sel.addEventListener('input', updateHex);
+          sel.click();
+        },
+      },
+
       // a rule for a number dragger
       {
         // the regexp matching the value
-        regexp: /-?\b\d+\.?\d*\b/g,
+        regexp: /(?<!\#)-?\b\d+\.?\d*\b/g,
         // set cursor to "ew-resize" on hover
         cursor: 'ew-resize',
         // change number value based on mouse X movement on drag
@@ -43,7 +95,7 @@ export const widgets = ({
           }
         },
       },
-      //vec2 slider
+      // vec2 slider
       // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
       {
         regexp:
@@ -64,7 +116,7 @@ export const widgets = ({
           );
         },
       },
-      //color picker
+      // rgb color picker
       // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
       //TODO: create color picker for hsl colors
       {
@@ -82,6 +134,7 @@ export const widgets = ({
           //sel will open the color picker when sel.click is called.
           const sel = document.createElement('input');
           sel.type = 'color';
+
           if (!isNaN(r + g + b))
             sel.value = rgb2Hex(r, g, b);
 
@@ -148,3 +201,185 @@ const hex2RGB = (hex: string): [number, number, number] => {
 // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L117
 const rgb2Hex = (r: number, g: number, b: number): string =>
   '#' + r.toString(16) + g.toString(16) + b.toString(16);
+
+const colorCircleTheme = EditorView.baseTheme({
+  '.color-circle-parent': { display: 'inline-block' },
+});
+
+const colorCircleAnnotation = Annotation.define();
+
+export const colorsInTextPlugin: Extension = [
+  ViewPlugin.fromClass(
+    class {
+      decorations: any;
+      view: EditorView;
+      constructor(view: EditorView) {
+        this.decorations = RangeSet.of([]);
+        this.view = view;
+      }
+    },
+    {
+      decorations: (v) => {
+        const colorInfos = [];
+
+        const lines = v.view.state.doc.iter();
+        let line = lines.next();
+
+        //Offset is the number of characters before the hex so the circle can be placed properly.
+        let offset = 0;
+        while (!line.done) {
+          if (line.value === '\n') {
+            offset++;
+            line = lines.next();
+            continue;
+          }
+          const hexColorOccurances = line.value.matchAll(
+            /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+          );
+          let hexOccurance = hexColorOccurances.next();
+          while (!hexOccurance.done) {
+            const offsetColorInfo = hexOccurance.value;
+            offsetColorInfo.index += offset;
+            colorInfos.push(offsetColorInfo);
+            hexOccurance = hexColorOccurances.next();
+          }
+          offset += line.value.length;
+          line = lines.next();
+        }
+
+        return Decoration.set(
+          colorInfos.map((colorInfo) => {
+            return {
+              //9 is the length of the hex color string including quotation marks
+              from: colorInfo.index + 9,
+              to: colorInfo.index + 9,
+              value: Decoration.widget({
+                side: -1,
+                widget: new ColorWidget(colorInfo[0]),
+              }),
+            };
+          }),
+        );
+      },
+    },
+  ),
+  colorCircleTheme,
+];
+
+class ColorWidget extends WidgetType {
+  color: string;
+  constructor(color: string) {
+    super();
+    this.color = color;
+  }
+
+  eq(widget: ColorWidget): boolean {
+    // TODO consider possibly adding a random ID to support multiple instances with the same color
+    return widget.color === this.color;
+  }
+
+  toDOM(view: EditorView): HTMLElement {
+    const parent = document.createElement('div');
+
+    parent.setAttribute('style', 'width:10px;height:10px');
+    parent.className = 'color-circle-parent';
+    const svg = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'svg',
+    );
+    const colorCircle = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'circle',
+    );
+    colorCircle.setAttributeNS(
+      null,
+      'fill',
+      this.color.replace(/\"/g, ''),
+    );
+    colorCircle.setAttributeNS(null, 'r', '5');
+    colorCircle.setAttributeNS(null, 'cx', '5');
+    colorCircle.setAttributeNS(null, 'cy', '5');
+
+    svg.setAttributeNS(null, 'viewBox', '0 0 10 10');
+    svg.setAttributeNS(null, 'width', '10');
+    svg.setAttributeNS(null, 'height', '10');
+
+    svg.appendChild(colorCircle);
+
+    parent.appendChild(svg);
+    return parent;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
+export const highlightWidgets = ViewPlugin.fromClass(
+  class {
+    showHighlight: boolean;
+    view: EditorView;
+    constructor(view: EditorView) {
+      this.showHighlight = false;
+      this.view = view;
+    }
+  },
+  {
+    decorations: (v) => {
+      if (!v.showHighlight) {
+        return Decoration.none;
+      }
+
+      const interactOpportunities = [];
+      const lines = v.view.state.doc.iter();
+      let line = lines.next();
+
+      //Offset is the number of characters before the regex so the highlighting can be placed properly.
+      let offset = 0;
+      while (!line.done) {
+        if (line.value === '\n') {
+          offset++;
+          line = lines.next();
+          continue;
+        }
+        const interactiveOccurances = line.value.matchAll(
+          //The below line contains all of the Regexes for all of the interactive widgets.
+          /\"\#([0-9]|[A-F]|[a-f]){6}\"|rotate\(-?\d*\.?\d*\)|https?:\/\/[^ "]+|vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)|true|false|(?<!\#)-?\b\d+\.?\d*\b|rgb\(.*\)/dg,
+        );
+        let interactOccurance =
+          interactiveOccurances.next();
+        while (!interactOccurance.done) {
+          const offsetInteract = interactOccurance.value;
+          offsetInteract.indices[0][0] += offset;
+          offsetInteract.indices[0][1] += offset;
+          interactOpportunities.push(offsetInteract);
+          interactOccurance = interactiveOccurances.next();
+        }
+        offset += line.value.length;
+        line = lines.next();
+      }
+      return Decoration.set(
+        interactOpportunities.map((opportunity) => {
+          return {
+            from: opportunity.indices[0][0],
+            to: opportunity.indices[0][1],
+            value: Decoration.mark({
+              class: 'cm-interact ',
+            }),
+          };
+        }),
+      );
+    },
+    eventHandlers: {
+      keydown(event, view) {
+        if (event.key == 'Alt') {
+          this.showHighlight = true;
+        }
+      },
+      keyup(event, view) {
+        if (event.key == 'Alt') {
+          this.showHighlight = false;
+        }
+      },
+    },
+  },
+);
