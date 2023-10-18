@@ -3,6 +3,7 @@ import {
   useEffect,
   useCallback,
   useRef,
+  useReducer,
 } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
@@ -28,6 +29,8 @@ import { usePrettier } from './usePrettier';
 import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
+import { PresenceNotifications } from './PresenceNotifications';
+import { reducer } from './reducer';
 import './style.scss';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
 
@@ -152,20 +155,69 @@ function App() {
 
   // The id of the currently open file tab.
   // TODO make this a URL param
-  const [activeFileId, setActiveFileId] =
-    useState<FileId | null>(null);
+  // Migrated to useReducer
+  //const [activeFileId, setActiveFileId] =
+  //useState<FileId | null>(null);
 
   // The ordered list of tabs.
   // TODO make this a URL param
-  const [tabList, setTabList] = useState<Array<FileId>>([]);
+  // https://react.dev/reference/react/useReducer
+  // const [tabList, setTabList] = useState<Array<FileId>>([]);
+  const [state, dispatch] = useReducer(reducer, {
+    submitOperation,
+    tabList: [],
+    // activeFileId: null,
+    // theme: defaultTheme,
+    // isSettingsOpen:false
+  });
 
-  // Logic for opening and closing tabs.
-  const { closeTab, openTab } = useTabsState(
+  //Reducer states
+  const tabList = state.tabList;
+  const activeFileId = state.activeFileId;
+  // TODO phase this out as we complete the refactoring
+  // It's here now for backwards compatibility
+  const setTabList = (tabList) => {
+    dispatch({
+      type: 'set_tab_list',
+      tabList,
+    });
+  };
+
+  const setActiveFileId = (activeFileId) => {
+    dispatch({
+      type: 'set_active_fileId',
+      activeFileId,
+    });
+  };
+  const openTab = (fileId: FileId) => {
+    dispatch({
+      type: 'open_tab',
+      fileId,
+    });
+  };
+
+  const closeTab = (fileIdToRemove: FileId) => {
+    dispatch({
+      type: 'close_tab',
+      fileIdToRemove,
+    });
+  };
+
+  const multiCloseTab = (idsToDelete: Array<FileId>) => {
+    dispatch({
+      type: 'multi_close_tab',
+      idsToDelete,
+    });
+  };
+
+  // Logic for opening and closing tabs. Migrated to useReducer
+  /*
+  const {} = useTabsState(
     activeFileId,
     setActiveFileId,
     tabList,
     setTabList,
-  );
+  ); */
 
   // The current theme.
   // TODO persist this in local storage
@@ -224,30 +276,33 @@ function App() {
 
   const deleteFile = useCallback(
     (fileId: FileId) => {
-      closeTab(fileId);
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         delete updatedFiles[fileId];
         return { ...document, files: updatedFiles };
       });
+      closeTab(fileId);
     },
     [submitOperation, closeTab],
   );
 
+
   const deleteDirectory = useCallback(
     (path: FileId) => {
+      let tabsToDelete: Array<FileId> = [];
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
           if (updatedFiles[key].name.includes(path)) {
-            closeTab(key);
+            tabsToDelete.push(key);
             delete updatedFiles[key];
           }
         }
         return { ...document, files: updatedFiles };
       });
+      multiCloseTab(tabsToDelete);
     },
-    [submitOperation, closeTab],
+    [submitOperation, multiCloseTab],
   );
 
   const handleDeleteClick = useCallback(
@@ -341,6 +396,9 @@ function App() {
           ) : null}
           <PrettierErrorOverlay
             prettierError={prettierError}
+            />
+          <PresenceNotifications
+            docPresence={docPresence}
           />
         </div>
         <Resizer />

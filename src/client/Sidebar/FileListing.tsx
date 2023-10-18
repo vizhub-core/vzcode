@@ -41,12 +41,11 @@ export const FileListing = ({
 
   return (
     <Item
-        name={name}
-        handleClick={handleClick}
-        handleDeleteClick={handleDeleteClick}
-        handleRenameClick={handleRenameClick}
+      name={name}
+      handleClick={handleClick}
+      handleDeleteClick={handleDeleteClick}
+      handleRenameClick={handleRenameClick}
       isDir={false}
-      name = {name}
     >
       {name}
     </Item>

@@ -16,7 +16,11 @@ import {
 } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
-import { widgets } from './widgets';
+import {
+  colorsInTextPlugin,
+  highlightWidgets,
+  widgets,
+} from './widgets';
 import {
   EditorCache,
   EditorCacheValue,
@@ -127,6 +131,8 @@ export const getOrCreateEditor = ({
       json1PresenceDisplay({ path: textPath, docPresence }),
     );
 
+  extensions.push(colorsInTextPlugin);
+
   // This is the "basic setup" for CodeMirror,
   // which actually adds a ton on functionality.
   // TODO vet this functionality, and determine how much
@@ -183,6 +189,8 @@ export const getOrCreateEditor = ({
   // as they would also need to be able to handle `onInteractEnd`.
   // See https://github.com/replit/codemirror-interact/issues/14
   extensions.push(widgets({ onInteract }));
+
+  extensions.push(highlightWidgets);
 
   const editor = new EditorView({
     state: EditorState.create({
