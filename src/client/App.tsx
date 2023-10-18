@@ -286,7 +286,6 @@ function App() {
     [submitOperation, closeTab],
   );
 
-
   const deleteDirectory = useCallback(
     (path: FileId) => {
       let tabsToDelete: Array<FileId> = [];
@@ -396,7 +395,7 @@ function App() {
           ) : null}
           <PrettierErrorOverlay
             prettierError={prettierError}
-            />
+          />
           <PresenceNotifications
             docPresence={docPresence}
           />
