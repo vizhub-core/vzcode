@@ -54,12 +54,18 @@ export const usePrettier = (
     const handleMessage = (event) => {
       const { fileId, error, fileTextPrettified } =
         event.data;
+
+      // Handle syntax errors
       if (error) {
-        console.log('error', error);
-        console.log(typeof error);
-        // Add the error to the errors state
+        // If there's an error, set the error state
         setPrettierError(error);
+
+        // Return early as there is no text change to apply.
         return;
+      } else {
+        // Make sure the error overlay goes away
+        // when Prettier runs successfully with no errors.
+        setPrettierError(null);
       }
 
       isApplyingOpRef.current = true;
