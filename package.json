@@ -50,7 +50,7 @@
     "@codemirror/lang-html": "^6.4.6",
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-markdown": "^6.2.2",
-    "@codemirror/state": "^6.3.0",
+    "@codemirror/state": "^6.3.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.21.3",
     "@replit/codemirror-interact": "^6.3.0",
@@ -76,18 +76,18 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.0",
     "react-dom": "^18.2.0",
-    "sharedb": "^4.1.0",
+    "sharedb": "^4.1.1",
     "sharedb-client-browser": "^4.3.1",
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@types/react": "^18.2.28",
-    "@types/react-dom": "^18.2.13",
+    "@types/react": "^18.2.29",
+    "@types/react-dom": "^18.2.14",
     "@vitejs/plugin-react": "^4.1.0",
     "prettier": "^3.0.3",
-    "sass": "^1.69.3",
+    "sass": "^1.69.4",
     "typescript": "^5.2.2",
-    "vite": "^4.4.11",
+    "vite": "^4.5.0",
     "vitest": "^0.34.6"
   }
 }
