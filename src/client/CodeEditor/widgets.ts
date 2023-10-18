@@ -389,7 +389,6 @@ export const highlightWidgets = ViewPlugin.fromClass(
   },
 );
 
-
 export const rotationIndicator = ViewPlugin.fromClass(
   class {
     view: EditorView;
