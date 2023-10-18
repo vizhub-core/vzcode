@@ -1,5 +1,9 @@
-import { useRef, useLayoutEffect } from 'react';
-import { FileId } from '../../types';
+import { useRef, useLayoutEffect, useContext } from 'react';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
 import {
   EditorCache,
@@ -7,6 +11,7 @@ import {
 } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
+// import { usePrettier } from '../usePrettier';
 
 export const CodeEditor = ({
   activeFileId,
@@ -19,7 +24,7 @@ export const CodeEditor = ({
   editorCache,
 }: {
   activeFileId: FileId;
-  shareDBDoc: any;
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   localPresence?: any;
   docPresence?: any;
   theme?: ThemeLabel;
@@ -31,7 +36,6 @@ export const CodeEditor = ({
   editorCache: EditorCache;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
   // and the editor corresponding to the new file is added to the DOM.
@@ -65,5 +69,5 @@ export const CodeEditor = ({
     };
   }, [shareDBDoc, activeFileId]);
 
-  return <div className="vz-code-editor" ref={ref} />;
+  return <div className="vz-code-editor" ref={ref}></div>;
 };

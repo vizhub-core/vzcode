@@ -32,6 +32,7 @@ import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { reducer } from './reducer';
 import './style.scss';
+import { PrettierErrorOverlay } from './PrettierErrorOverlay';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -73,7 +74,13 @@ function App() {
   );
 
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc, submitOperation, prettierWorker);
+  const { prettierError } = usePrettier(
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
+
+  console.log('prettierError', prettierError);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -386,6 +393,9 @@ function App() {
               editorCache={editorCache}
             />
           ) : null}
+          <PrettierErrorOverlay
+            prettierError={prettierError}
+          />
           <PresenceNotifications
             docPresence={docPresence}
           />
