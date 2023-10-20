@@ -1,1 +1,1 @@
-const testing = 500;#$%$#$
+const testing = 500;
