@@ -55,6 +55,7 @@ export function vizhubThemeInit(
           t.special(t.variableName),
         ],
         color: vizhubThemeColors.keyword.color,
+        // color: '#ff0000',
       },
       {
         tag: [t.controlKeyword, t.moduleKeyword],

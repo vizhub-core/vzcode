@@ -32,9 +32,8 @@ const dark = hcl(
 
 export const defaultRotation = 0.397;
 
-export const vizhubThemeColorsComputation = (
-  rotation = defaultRotation,
-) => {
+export const vizhubThemeColorsComputation = () => {
+  const rotation = defaultRotation;
   const entries = [
     'keyword',
     [
