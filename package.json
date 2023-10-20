@@ -53,6 +53,7 @@
     "@codemirror/state": "^6.3.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.21.3",
+    "@lezer/highlight": "^1.1.6",
     "@replit/codemirror-interact": "^6.3.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@uiw/codemirror-theme-abcdef": "^4.21.20",
