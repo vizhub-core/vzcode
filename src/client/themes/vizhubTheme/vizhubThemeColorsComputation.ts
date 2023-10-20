@@ -1,4 +1,3 @@
-// TODO
 import { hcl } from 'd3-color';
 
 const sidebarDark = hcl('#3d4b65');
@@ -31,7 +30,11 @@ const dark = hcl(
   80,
 ).formatHex();
 
-export const vizhubTheme = (rotation) => {
+export const defaultRotation = 0.397;
+
+export const vizhubThemeColorsComputation = (
+  rotation = defaultRotation,
+) => {
   const entries = [
     'keyword',
     [

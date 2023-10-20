@@ -1,3 +1,8 @@
 body {
   background-color: red;
 }
+
+#message {
+  text-align: center;
+  font-size: 12em;
+}
