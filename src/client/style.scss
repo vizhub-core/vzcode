@@ -45,9 +45,6 @@ body,
   .left,
   .right {
     display: flex;
-
-    /* To suport PrettierErrorOverlay, which is position: absolute */
-    position: relative;
   }
 
   .right {
