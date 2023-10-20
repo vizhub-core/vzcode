@@ -20,18 +20,13 @@ export const PresenceNotifications = ({
 }: {
   docPresence?: any;
 }) => {
-  const [presenceNotifications, setPresenceNotifications] =
-    useState<Array<PresenceNotification>>([]);
+  // Keep track of the presence notifications that are displayed
+  const [presenceNotifications, setPresenceNotifications] = useState<Array<PresenceNotification>>([]);
 
-  // const [presenceIds, setPresenceIds] = useState<
-  //   Array<any>
-  // >([]);
-  const alreadyJoinedPresenceIds = useRef<Set<PresenceId>>(
-    new Set(),
-  );
+  // Keep track of the presence IDs that have already joined the session
+  const alreadyJoinedPresenceIds = useRef<Set<PresenceId>>(new Set());
 
   useEffect(() => {
-    // console.log('useEffect triggered.');
     if (docPresence) {
       // See https://share.github.io/sharedb/presence
       docPresence.on('receive', (presenceId, update) => {
@@ -55,10 +50,6 @@ export const PresenceNotifications = ({
         //      - could add another property to presence (true: already notified, false: need to be notified)
         //          - doesn't seem like an ideal solution
 
-        // console.log('docPresence:', docPresence);
-        // console.log('docPresence remotePresences:', docPresence.remotePresences);
-        // console.log('check for presence:', docPresence.remotePresences[presenceId]);
-
         // TODO figure out how to get username from `presenceId`.
         const user = 'someone';
 
@@ -66,67 +57,41 @@ export const PresenceNotifications = ({
         // `false` means user has left the session.
         const join = update !== null;
 
-        console.log('join', join);
-
-        // Figure out if we have ever seen this user before.
-
-        // if (join && docPresence.remotePresences[presenceId] === undefined){
         if (join) {
-          if (
-            !alreadyJoinedPresenceIds.current.has(
-              presenceId,
-            )
-          ) {
-            alreadyJoinedPresenceIds.current.add(
-              presenceId,
-            );
+          // Figure out if we have ever seen this user before.
+          if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
+            alreadyJoinedPresenceIds.current.add(presenceId);
             setPresenceNotifications((prev) => [
               ...prev,
               { user, join, presenceId },
             ]);
-
-            // Remove it after 5 seconds.
-            setTimeout(() => {
-              setPresenceNotifications((prev) =>
-                prev.filter(
-                  (notification) =>
-                    notification.presenceId !==
-                      presenceId &&
-                    notification.join !== join,
-                ),
-              );
-            }, 5000);
           }
         } else if (!join) {
+          alreadyJoinedPresenceIds.current.delete(presenceId);
           setPresenceNotifications((prev) => [
             ...prev,
             { user, join, presenceId },
           ]);
-
-          // Remove it after 5 seconds.
-          // TODO clean up this duplication.
-          setTimeout(() => {
-            setPresenceNotifications((prev) =>
-              prev.filter(
-                (notification) =>
-                  notification.presenceId !== presenceId &&
-                  notification.join !== join,
-              ),
-            );
-          }, 5000);
         }
+        
+        // Remove the notification after 5 seconds.
+        setTimeout(() => {
+          // setPresenceNotifications((prev) =>
+          //   prev.filter(
+          //     (notification) =>
+          //       notification.presenceId !== presenceId &&
+          //       notification.join !== join,
+          //   ),
+          // );
+          setPresenceNotifications((prev) =>
+            prev.filter(function (_, i) {
+              return i !== 0;
+            }),
+          );
+        }, 5000);
       });
     }
   }, [docPresence]);
-
-  // console.log(
-  //   'presenceNotifications',
-  //   presenceNotifications,
-  // );
-  // console.log(
-  //   'presenceIds',
-  //   presenceIds,
-  // );
 
   return presenceNotifications.length > 0 ? (
     <div className="vz-notification">
