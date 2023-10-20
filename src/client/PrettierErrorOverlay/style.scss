@@ -7,3 +7,23 @@
   right: 0;
   pointer-events: none;
 }
+
+.editor-container {
+  position: relative;
+}
+
+.editor {
+  height: 200px; /* Initial height */
+  min-height: 100px; /* Minimum height to prevent excessive shrinking */
+  background-color: #f0f0f0;
+  /* Other styles for your editor */
+}
+
+#resize-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  cursor: row-resize; /* Use "row-resize" cursor for vertical resizing */
+  /* Button styles */
+}
+
