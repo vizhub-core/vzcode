@@ -6,55 +6,28 @@ import React, { useState } from 'react';
 
 // Define a React functional component named 'PrettierErrorOverlay' that accepts a 'prettierError' prop
 export const PrettierErrorOverlay = ({ prettierError }) => {
-  // Define a state variable 'editorHeight' using the 'useState' hook, with an initial height of 200 pixels
-  const [editorHeight, setEditorHeight] = useState(200);
+  // Define a state variable 'isOpen' using the 'useState' hook, with an initial value of 'false'
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Define an event handler function 'handleResizeStart' that triggers when the user clicks and holds the mouse button
-  const handleResizeStart = (e) => {
-    // Capture the starting vertical position of the mouse
-    let startY = e.clientY;
-
-    // Define an event handler function 'handleResize' that calculates the new height while the user is dragging
-    const handleResize = (e) => {
-      // Calculate the new height based on the initial height and the vertical movement of the mouse
-      const newHeight = editorHeight + (e.clientY - startY);
-
-      // Ensure the new height is greater than or equal to 100 pixels to prevent excessive shrinking
-      if (newHeight >= 100) {
-        setEditorHeight(newHeight);
-      }
-
-      // Update the starting position for the next calculation
-      startY = e.clientY;
-    };
-
-    // Define an event handler function 'handleResizeEnd' that executes when the user releases the mouse button
-    const handleResizeEnd = () => {
-      // Remove the event listeners for mouse movement and mouse button release
-      document.removeEventListener('mousemove', handleResize);
-      document.removeEventListener('mouseup', handleResizeEnd);
-    };
-
-    // Add event listeners to the 'document' element to track mouse movement and button release while resizing
-    document.addEventListener('mousemove', handleResize);
-    document.addEventListener('mouseup', handleResizeEnd);
+  // Define an event handler function 'toggleEditor' that toggles the 'isOpen' state
+  const toggleEditor = () => {
+    setIsOpen(!isOpen); // Toggle the value of 'isOpen'
   };
 
-  // Conditionally render content based on whether the 'prettierError' prop is not null
-  return prettierError !== null ? (
+  // Return the JSX content to be rendered
+  return (
     <div className="editor-container">
-      {/* Button element with ID 'resize-button' triggers 'handleResizeStart' on mouse down */}
+      {/* Button element with ID 'toggle-button' triggers 'toggleEditor' function on click */}
       <button
-        id="resize-button"
-        onMouseDown={handleResizeStart}
+        id="toggle-button"
+        onClick={toggleEditor}
       >
-        Resize
+        {isOpen ? 'Close' : 'Open'} Editor
       </button>
-      {/* Div element with class 'editor' that displays content with a dynamic height based on 'editorHeight' */}
-      <div className="editor" style={{ height: editorHeight + 'px' }}>
+      {/* Div element with dynamic classes based on 'isOpen' state */}
+      <div className={`prettier-error-overlay${isOpen ? '' : ' hidden'}`}>
         {prettierError}
       </div>
     </div>
-  ) : null; // If 'prettierError' is null, render nothing
+  );
 };
-

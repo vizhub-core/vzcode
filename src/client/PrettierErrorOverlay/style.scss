@@ -1,4 +1,4 @@
-/*.prettier-error-overlay {
+.prettier-error-overlay {
   color: rgb(255, 53, 53);
   background-color: rgba(0, 0, 0, 0.6);
   position: absolute;
@@ -6,26 +6,24 @@
   left: 0;
   right: 0;
   pointer-events: none;
+  height: 200px; /* Set an initial height */
+  display: none; /* Initially hide the editor */
 }
-*/
-
 .editor-container {
   position: relative;
 }
 
 .editor {
   height: 200px; /* Initial height */
-  min-height: 10px; /* Minimum height to prevent excessive shrinking */
-  background-color:rgba(0, 0, 0, 0.6);
-  color: rgb(255, 53, 53);
+  background-color: #f0f0f0;
   /* Other styles for your editor */
 }
 
-#resize-button {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: row-resize; /* Use "row-resize" cursor for vertical resizing */
+#toggle-button {
+  cursor: pointer;
   /* Button styles */
+}
+.hidden {
+  display: none;
 }
 
