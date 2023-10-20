@@ -1,17 +1,15 @@
+// A CodeMirror 6 theme for the VizHub syntax highlighting colors.
+
 // Inspired by https://github.com/uiwjs/react-codemirror/blob/master/themes/vscode/src/index.ts
 
-/**
- * https://github.com/uiwjs/react-codemirror/issues/409
- */
 import { tags as t } from '@lezer/highlight';
 import {
   createTheme,
   CreateThemeOptions,
 } from '@uiw/codemirror-themes';
 
-// TODO replace hex codes below with these variables,
-// each of which is a string containing a hex code.
 import {
+  // Colors for various things outside the code itself
   backgroundColor,
   lineHighlight,
   light,
@@ -21,16 +19,16 @@ import {
   selectionBackground,
   selectionBackgroundMatch,
   caretColor,
-  highlightColors,
-} from './colors';
 
-const MINT = highlightColors[0];
-const AQUA = highlightColors[1];
-const SKY = highlightColors[2];
-const LAVENDER = highlightColors[3];
-const SALMON = highlightColors[4];
-const GOLDENROD = highlightColors[5];
-const PANIC = '#ff2222';
+  // Syntax highlighting colors
+  MINT,
+  AQUA,
+  SKY,
+  LAVENDER,
+  SALMON,
+  GOLDENROD,
+  PANIC,
+} from './colors';
 
 const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] =
   {
