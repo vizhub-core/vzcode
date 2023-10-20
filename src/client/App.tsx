@@ -20,10 +20,12 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { useTabsState } from './useTabsState';
-import { ThemeLabel, defaultTheme } from './themes';
+import {
+  ThemeLabel,
+  defaultTheme,
+  useDynamicTheme,
+} from './themes';
 import { useEditorCache } from './useEditorCache';
-import { useDynamicTheme } from './useDynamicTheme';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';

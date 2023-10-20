@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { EditorCache } from './useEditorCache';
+import { EditorCache } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from './themes';
 
 export const useDynamicTheme = (
