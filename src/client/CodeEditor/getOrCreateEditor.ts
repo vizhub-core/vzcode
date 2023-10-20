@@ -19,6 +19,7 @@ import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
   colorsInTextPlugin,
   highlightWidgets,
+  rotationIndicator,
   widgets,
 } from './widgets';
 import {
@@ -191,6 +192,8 @@ export const getOrCreateEditor = ({
   extensions.push(widgets({ onInteract }));
 
   extensions.push(highlightWidgets);
+
+  extensions.push(rotationIndicator);
 
   const editor = new EditorView({
     state: EditorState.create({

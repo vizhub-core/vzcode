@@ -19,9 +19,9 @@ export const Item = ({
   const [renameValue, setRenameValue] = useState('');
 
   const onKeyDown = useCallback((event) => {
-    // TODO make 'Escape' cancel the changes - do not commit the rename
-    // https://github.com/vizhub-core/vzcode/issues/207
-    if (event.key === 'Enter' || event.key === 'Escape') {
+    if (event.key === 'Escape') {
+      setIsRenaming(false);
+    } else if (event.key === 'Enter') {
       event.target.blur();
     }
   }, []);

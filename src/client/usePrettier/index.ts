@@ -4,7 +4,7 @@ import {
   ShareDBDoc,
   VZCodeContent,
 } from '../../types';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoPrettierDebounceTimeMS = 1200;
@@ -31,6 +31,14 @@ export const usePrettier = (
   // since the last Prettier run.
   const dirtyFiles: Set<FileId> = new Set<FileId>();
 
+  // State to hold the error from Prettier
+  // `null` means no errors
+  // If this is a string, it's the
+  // error message from Prettier.
+  const [prettierError, setPrettierError] = useState<
+    string | null
+  >(null);
+
   // A ref to keep track of whether an op is being applied.
   // This is used to prevent Prettier from running
   // when the op is coming from Prettier itself.
@@ -46,9 +54,18 @@ export const usePrettier = (
     const handleMessage = (event) => {
       const { fileId, error, fileTextPrettified } =
         event.data;
+
+      // Handle syntax errors
       if (error) {
-        console.log(error);
+        // If there's an error, set the error state
+        setPrettierError(error);
+
+        // Return early as there is no text change to apply.
         return;
+      } else {
+        // Make sure the error overlay goes away
+        // when Prettier runs successfully with no errors.
+        setPrettierError(null);
       }
 
       isApplyingOpRef.current = true;
@@ -159,19 +176,20 @@ export const usePrettier = (
         } else {
           // console.log('ignoring op from remote', op, isLocal);
         }
-
-        // In the event that the component unmounts,
-        return () => {
-          // Remove the event listener
-          prettierWorker.removeEventListener(
-            'message',
-            handleMessage,
-          );
-
-          // Clear the timeout
-          clearTimeout(debounceTimeout);
-        };
       },
     );
+
+    // In the event that the component unmounts,
+    return () => {
+      // Remove the event listener
+      prettierWorker.removeEventListener(
+        'message',
+        handleMessage,
+      );
+
+      // Clear the timeout
+      clearTimeout(debounceTimeout);
+    };
   }, [shareDBDoc]);
+  return { prettierError }; // Return the errors for use in other files
 };
