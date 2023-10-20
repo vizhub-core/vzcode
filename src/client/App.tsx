@@ -32,6 +32,7 @@ import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { reducer } from './reducer';
 import './style.scss';
+import { PrettierErrorOverlay } from './PrettierErrorOverlay';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -73,7 +74,13 @@ function App() {
   );
 
   // Auto-run Pretter after local changes.
-  usePrettier(shareDBDoc, submitOperation, prettierWorker);
+  const { prettierError } = usePrettier(
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
+
+  console.log('prettierError', prettierError);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -146,86 +153,98 @@ function App() {
     };
   }, []);
 
-  // The id of the currently open file tab.
-  // TODO make this a URL param
-  // Migrated to useReducer
-  //const [activeFileId, setActiveFileId] =
-  //useState<FileId | null>(null);
-
-  // The ordered list of tabs.
-  // TODO make this a URL param
   // https://react.dev/reference/react/useReducer
-  // const [tabList, setTabList] = useState<Array<FileId>>([]);
   const [state, dispatch] = useReducer(reducer, {
-    submitOperation,
     tabList: [],
-    // activeFileId: null,
-    // theme: defaultTheme,
-    // isSettingsOpen:false
+    activeFileId: null,
+    theme: defaultTheme,
+    isSettingsOpen: false,
   });
 
   //Reducer states
   const tabList = state.tabList;
   const activeFileId = state.activeFileId;
+  const theme = state.theme;
+  const isSettingsOpen = state.isSettingsOpen;
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
-  const setTabList = (tabList) => {
-    dispatch({
-      type: 'set_tab_list',
-      tabList,
-    });
-  };
 
-  const setActiveFileId = (activeFileId) => {
-    dispatch({
-      type: 'set_active_fileId',
-      activeFileId,
-    });
-  };
-  const openTab = (fileId: FileId) => {
-    dispatch({
-      type: 'open_tab',
-      fileId,
-    });
-  };
+  const setTabList = useCallback(
+    (tabList) => {
+      dispatch({
+        type: 'set_tab_list',
+        tabList,
+      });
+    },
+    [dispatch],
+  );
 
-  const closeTab = (fileIdToRemove: FileId) => {
-    dispatch({
-      type: 'close_tab',
-      fileIdToRemove,
-    });
-  };
+  const setActiveFileId = useCallback(
+    (activeFileId) => {
+      dispatch({
+        type: 'set_active_fileId',
+        activeFileId,
+      });
+    },
+    [dispatch],
+  );
 
-  const multiCloseTab = (idsToDelete: Array<FileId>) => {
-    dispatch({
-      type: 'multi_close_tab',
-      idsToDelete,
-    });
-  };
+  const openTab = useCallback(
+    (fileId: FileId) => {
+      dispatch({
+        type: 'open_tab',
+        fileId,
+      });
+    },
+    [dispatch],
+  );
 
-  // Logic for opening and closing tabs. Migrated to useReducer
-  /*
-  const {} = useTabsState(
-    activeFileId,
-    setActiveFileId,
-    tabList,
-    setTabList,
-  ); */
+  const closeTab = useCallback(
+    (fileIdToRemove: FileId) => {
+      dispatch({
+        type: 'close_tab',
+        fileIdToRemove,
+      });
+    },
+    [dispatch],
+  );
 
-  // The current theme.
-  // TODO persist this in local storage
-  const [theme, setTheme] =
-    useState<ThemeLabel>(defaultTheme);
+  const multiCloseTab = useCallback(
+    (idsToDelete: Array<FileId>) => {
+      dispatch({
+        type: 'multi_close_tab',
+        idsToDelete,
+      });
+    },
+    [dispatch],
+  );
+
+  const setTheme = useCallback(
+    (themeLabel: ThemeLabel) => {
+      dispatch({
+        type: 'set_Theme',
+        themeLabel: themeLabel,
+      });
+    },
+    [dispatch],
+  );
+
+  // True to show the settings modal.
+  const setIsSettingsOpen = useCallback(
+    (value: boolean) => {
+      dispatch({
+        type: 'set_Is_Settings_Open',
+        value: value,
+      });
+    },
+    [dispatch],
+  );
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
-
-  // True to show the settings modal.
-  const [isSettingsOpen, setIsSettingsOpen] =
-    useState(false);
 
   // The set of open directories.
   const { isDirectoryOpen, toggleDirectory } =
@@ -386,6 +405,9 @@ function App() {
               editorCache={editorCache}
             />
           ) : null}
+          <PrettierErrorOverlay
+            prettierError={prettierError}
+          />
           <PresenceNotifications
             docPresence={docPresence}
           />

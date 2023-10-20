@@ -90,7 +90,7 @@ onmessage = async ({
   } catch (error) {
     postMessage({
       fileId,
-      error,
+      error: error.toString(),
     });
   }
 };

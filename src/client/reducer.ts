@@ -1,11 +1,16 @@
 import { FileId } from '../types';
+import { act } from 'react-dom/test-utils';
 
 export const reducer = (state, action) => {
   switch (action.type) {
     // TODO phase this out
+
+    // The ordered list of tabs.
+    // TODO make this a URL param
     case 'set_tab_list': {
       return { ...state, tabList: action.tabList };
     }
+    // TODO make this a URL param
     case 'set_active_fileId': {
       return {
         ...state,
@@ -95,28 +100,20 @@ export const reducer = (state, action) => {
         activeFileId: newActiveFileId,
       };
     }
-    // TODO eventually
-    // case 'init_sharedb': {
-    //   return {
-    //     ...state,
-    //     submitOperation: action.submitOperation
-    //   }
-    // }
-    // case 'delete_file': {
-    // case 'delete_directory': {
-    // case 'create_file': {
-    //           state.submitOperation((document) => ({
-    //             ...document,
-    //             files: {
-    //               ...document.files,
-    //               [randomId()]: { name:action.name, text: '' },
-    //             },
-    //           }))
-    //           return state;
-
-    //     }
-    // case 'rename_file': {
-    // ...
+    // The current theme.
+    // TODO persist this in local storage
+    case 'set_Theme': {
+      return {
+        ...state,
+        theme: action.themeLabel,
+      };
+    }
+    case 'set_Is_Settings_Open': {
+      return {
+        ...state,
+        isSettingsOpen: action.value,
+      };
+    }
   }
   throw Error('Unknown action: ' + action.type);
 };
