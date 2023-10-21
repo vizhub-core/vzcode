@@ -66,8 +66,6 @@ export const PresenceNotifications = ({
         // `false` means user has left the session.
         const join = update !== null;
 
-        console.log('join', join);
-
         // Figure out if we have ever seen this user before.
 
         // if (join && docPresence.remotePresences[presenceId] === undefined){

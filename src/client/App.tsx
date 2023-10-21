@@ -82,8 +82,6 @@ function App() {
     prettierWorker,
   );
 
-  console.log('prettierError', prettierError);
-
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
   // See https://share.github.io/sharedb/api/local-presence
@@ -171,20 +169,20 @@ function App() {
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
 
-  const setTabList = useCallback(
-    (tabList) => {
-      dispatch({
-        type: 'set_tab_list',
-        tabList,
-      });
-    },
-    [dispatch],
-  );
+  // const setTabList = useCallback(
+  //   (tabList) => {
+  //     dispatch({
+  //       type: 'set_tab_list',
+  //       tabList,
+  //     });
+  //   },
+  //   [dispatch],
+  // );
 
   const setActiveFileId = useCallback(
-    (activeFileId) => {
+    (activeFileId: FileId) => {
       dispatch({
-        type: 'set_active_fileId',
+        type: 'set_active_file_id',
         activeFileId,
       });
     },
@@ -201,20 +199,10 @@ function App() {
     [dispatch],
   );
 
-  const closeTab = useCallback(
-    (fileIdToRemove: FileId) => {
-      dispatch({
-        type: 'close_tab',
-        fileIdToRemove,
-      });
-    },
-    [dispatch],
-  );
-
-  const multiCloseTab = useCallback(
+  const closeTabs = useCallback(
     (idsToDelete: Array<FileId>) => {
       dispatch({
-        type: 'multi_close_tab',
+        type: 'close_tabs',
         idsToDelete,
       });
     },
@@ -224,7 +212,7 @@ function App() {
   const setTheme = useCallback(
     (themeLabel: ThemeLabel) => {
       dispatch({
-        type: 'set_Theme',
+        type: 'set_theme',
         themeLabel: themeLabel,
       });
     },
@@ -235,7 +223,7 @@ function App() {
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
       dispatch({
-        type: 'set_Is_Settings_Open',
+        type: 'set_is_settings_open',
         value: value,
       });
     },
@@ -290,37 +278,40 @@ function App() {
 
   const deleteFile = useCallback(
     (fileId: FileId) => {
+      closeTabs([fileId]);
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         delete updatedFiles[fileId];
         return { ...document, files: updatedFiles };
       });
-      closeTab(fileId);
     },
-    [submitOperation, closeTab],
+    [submitOperation, closeTabs],
   );
 
   const deleteDirectory = useCallback(
     (path: FileId) => {
-      let tabsToDelete: Array<FileId> = [];
+      const tabsToClose: Array<FileId> = [];
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
           if (updatedFiles[key].name.includes(path)) {
-            tabsToDelete.push(key);
+            tabsToClose.push(key);
             delete updatedFiles[key];
           }
         }
         return { ...document, files: updatedFiles };
       });
-      multiCloseTab(tabsToDelete);
+      closeTabs(tabsToClose);
     },
-    [submitOperation, multiCloseTab],
+    [submitOperation, closeTabs],
   );
 
   const handleDeleteClick = useCallback(
     (key: string) => {
-      //Regex to identify if the key is a file path or a file id.
+      // Regex to identify if the key is a file path or a file id.
+      // TODO consider if there is a cleaner way to do this
+      //  - Ideally we would have a separate function for deleting files and directories
+      //  - When we click the delete button, we should be able to tell if it is a file or directory
       if (/^[0-9]*$/.test(key)) {
         if (key.length == 8) {
           deleteFile(key);
@@ -336,7 +327,7 @@ function App() {
 
   const handleSettingsClose = useCallback(() => {
     setIsSettingsOpen(false);
-  }, []);
+  }, [setIsSettingsOpen]);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
@@ -394,7 +385,7 @@ function App() {
             tabList={tabList}
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
-            closeTab={closeTab}
+            closeTabs={closeTabs}
           />
           {content && activeFileId ? (
             <CodeEditor
