@@ -35,6 +35,8 @@ import { PresenceNotifications } from './PresenceNotifications';
 import { reducer } from './reducer';
 import './style.scss';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
+import { useFileCRUD } from './useFileCRUD';
+import { useActions } from './useActions';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -61,7 +63,6 @@ function App() {
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
   // A helper function to submit operations to the ShareDB document
-
   const submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void = useCallback(
@@ -123,6 +124,12 @@ function App() {
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
       shareDBDoc.on('op', () => {
+        // TODO consider excluding file contents from this,
+        // because currently we are re-rendering the entire
+        // document on each file change (each keystroke while editing).
+        // This is not required, because no part of the app outside
+        // of the CodeMirror integration uses those file contents.
+        // The Sidebar only needs to know file names, not contents.
         setContent(shareDBDoc.data);
       });
 
@@ -161,74 +168,18 @@ function App() {
     isSettingsOpen: false,
   });
 
-  //Reducer states
-  const tabList = state.tabList;
-  const activeFileId = state.activeFileId;
-  const theme = state.theme;
-  const isSettingsOpen = state.isSettingsOpen;
-  // TODO phase this out as we complete the refactoring
-  // It's here now for backwards compatibility
+  // Unpack state.
+  const { tabList, activeFileId, theme, isSettingsOpen } =
+    state;
 
-  // const setTabList = useCallback(
-  //   (tabList) => {
-  //     dispatch({
-  //       type: 'set_tab_list',
-  //       tabList,
-  //     });
-  //   },
-  //   [dispatch],
-  // );
-
-  const setActiveFileId = useCallback(
-    (activeFileId: FileId) => {
-      dispatch({
-        type: 'set_active_file_id',
-        activeFileId,
-      });
-    },
-    [dispatch],
-  );
-
-  const openTab = useCallback(
-    (fileId: FileId) => {
-      dispatch({
-        type: 'open_tab',
-        fileId,
-      });
-    },
-    [dispatch],
-  );
-
-  const closeTabs = useCallback(
-    (idsToDelete: Array<FileId>) => {
-      dispatch({
-        type: 'close_tabs',
-        idsToDelete,
-      });
-    },
-    [dispatch],
-  );
-
-  const setTheme = useCallback(
-    (themeLabel: ThemeLabel) => {
-      dispatch({
-        type: 'set_theme',
-        themeLabel: themeLabel,
-      });
-    },
-    [dispatch],
-  );
-
-  // True to show the settings modal.
-  const setIsSettingsOpen = useCallback(
-    (value: boolean) => {
-      dispatch({
-        type: 'set_is_settings_open',
-        value: value,
-      });
-    },
-    [dispatch],
-  );
+  // Functions for dispatching actions to the reducer.
+  const {
+    setActiveFileId,
+    openTab,
+    closeTabs,
+    setTheme,
+    setIsSettingsOpen,
+  } = useActions(dispatch);
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
@@ -240,90 +191,12 @@ function App() {
   const { isDirectoryOpen, toggleDirectory } =
     useOpenDirectories();
 
-  // TODO move this logic to a hook called `useFileCRUD`
-  // Include
-  //  - `createFile`
-  //  - `handleRenameFileClick`
-  //  - `deleteFile`
-  //  - `handleDeleteFileClick`
-  const createFile = useCallback(() => {
-    const name = prompt('Enter new file name');
-    if (name) {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [randomId()]: { name, text: '' },
-        },
-      }));
-    }
-  }, [submitOperation]);
-
-  // Called when a file in the sidebar is renamed.
-  const handleRenameFileClick = useCallback(
-    (fileId: FileId, newName: string) => {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [fileId]: {
-            ...document.files[fileId],
-            name: newName,
-          },
-        },
-      }));
-    },
-    [submitOperation],
-  );
-
-  const deleteFile = useCallback(
-    (fileId: FileId) => {
-      closeTabs([fileId]);
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        delete updatedFiles[fileId];
-        return { ...document, files: updatedFiles };
-      });
-    },
-    [submitOperation, closeTabs],
-  );
-
-  const deleteDirectory = useCallback(
-    (path: FileId) => {
-      const tabsToClose: Array<FileId> = [];
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        for (const key in updatedFiles) {
-          if (updatedFiles[key].name.includes(path)) {
-            tabsToClose.push(key);
-            delete updatedFiles[key];
-          }
-        }
-        return { ...document, files: updatedFiles };
-      });
-      closeTabs(tabsToClose);
-    },
-    [submitOperation, closeTabs],
-  );
-
-  const handleDeleteClick = useCallback(
-    (key: string) => {
-      // Regex to identify if the key is a file path or a file id.
-      // TODO consider if there is a cleaner way to do this
-      //  - Ideally we would have a separate function for deleting files and directories
-      //  - When we click the delete button, we should be able to tell if it is a file or directory
-      if (/^[0-9]*$/.test(key)) {
-        if (key.length == 8) {
-          deleteFile(key);
-        } else {
-          deleteDirectory(key);
-        }
-      } else {
-        deleteDirectory(key);
-      }
-    },
-    [deleteFile, deleteDirectory],
-  );
+  // Handle file CRUD operations.
+  const {
+    createFile,
+    handleRenameFileClick,
+    handleDeleteClick,
+  } = useFileCRUD({ submitOperation, closeTabs });
 
   const handleSettingsClose = useCallback(() => {
     setIsSettingsOpen(false);
