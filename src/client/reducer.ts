@@ -1,6 +1,25 @@
 import { FileId } from '../types';
+import { ThemeLabel } from './themes';
 
-export const reducer = (state, action) => {
+export type VZState = {
+  tabList: Array<FileId>;
+  activeFileId: FileId | null;
+  theme: ThemeLabel;
+  isSettingsOpen: boolean;
+};
+
+export type VZAction =
+  | { type: 'set_active_file_id'; activeFileId: FileId }
+  | { type: 'open_tab'; fileId: FileId }
+  | { type: 'close_tab'; fileIdToRemove: FileId }
+  | { type: 'close_tabs'; idsToDelete: Array<FileId> }
+  | { type: 'set_theme'; themeLabel: ThemeLabel }
+  | { type: 'set_is_settings_open'; value: boolean };
+
+export const reducer = (
+  state: VZState,
+  action: VZAction,
+) => {
   switch (action.type) {
     case 'set_active_file_id': {
       return {
@@ -82,37 +101,6 @@ export const reducer = (state, action) => {
         tabList: newTabList,
         activeFileId: newActiveFileId,
       };
-
-      // let newTabList = [...state.tabList]; // Create a copy of the tabList array.
-      // let newActiveFileId: FileId = state.activeFileId;
-      // action.idsToDelete.forEach((id) => {
-      //   const i = newTabList.findIndex(
-      //     (fileId) => fileId === id,
-      //   );
-      //   if (i !== -1) {
-      //     // Remove the tab from the tab list.
-      //     newTabList = [
-      //       ...newTabList.slice(0, i),
-      //       ...newTabList.slice(i + 1),
-      //     ];
-      //     // If we are closing the active file,
-      //     if (newActiveFileId === id) {
-      //       // set the new active file to the next tab over,
-      //       if (newTabList.length > 0) {
-      //         newActiveFileId =
-      //           i === 0 ? newTabList[i] : newTabList[i - 1];
-      //       } else {
-      //         // or clear out the active file if we've closed the last tab.
-      //         newActiveFileId = null;
-      //       }
-      //     }
-      //   }
-      // });
-      // return {
-      //   ...state,
-      //   tabList: newTabList,
-      //   activeFileId: newActiveFileId,
-      // };
     }
     case 'set_theme': {
       return {
@@ -127,5 +115,4 @@ export const reducer = (state, action) => {
       };
     }
   }
-  throw Error('Unknown action: ' + action.type);
 };
