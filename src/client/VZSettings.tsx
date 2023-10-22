@@ -11,7 +11,7 @@ import { ThemeLabel, themes } from './themes';
 
 export let username = 'Anonymous';
 
-export const Settings = ({
+export const VZSettings = ({
   show,
   onClose,
   setTheme,

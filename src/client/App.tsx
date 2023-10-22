@@ -9,22 +9,12 @@ import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
-import { diff } from './diff';
-import { Settings } from './Settings';
-import { Sidebar } from './Sidebar';
-import {
-  FileId,
-  Files,
-  ShareDBDoc,
-  VZCodeContent,
-} from '../types';
+import { VZSettings } from './VZSettings';
+import { VZSidebar } from './VZSidebar';
+import { Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import {
-  ThemeLabel,
-  defaultTheme,
-  useDynamicTheme,
-} from './themes';
+import { defaultTheme, useDynamicTheme } from './themes';
 import { useEditorCache } from './useEditorCache';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
@@ -32,11 +22,12 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
-import { reducer } from './reducer';
-import './style.scss';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import { useFileCRUD } from './useFileCRUD';
+import { vzReducer } from './vzReducer';
 import { useActions } from './useActions';
+import { useFileCRUD } from './useFileCRUD';
+import './style.scss';
+import { useSubmitOperation } from './useSubmitOperation';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -62,19 +53,7 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  // A helper function to submit operations to the ShareDB document
-  const submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useCallback(
-    (next) => {
-      const content: VZCodeContent = shareDBDoc.data;
-      const op = diff(content, next(content));
-      if (op && shareDBDoc) {
-        shareDBDoc.submitOp(op);
-      }
-    },
-    [shareDBDoc],
-  );
+  const submitOperation = useSubmitOperation(shareDBDoc);
 
   // Auto-run Pretter after local changes.
   const { prettierError } = usePrettier(
@@ -161,7 +140,7 @@ function App() {
   }, []);
 
   // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(vzReducer, {
     tabList: [],
     activeFileId: null,
     theme: defaultTheme,
@@ -235,7 +214,7 @@ function App() {
     <SplitPaneResizeProvider>
       <div className="app">
         <div className="left">
-          <Sidebar
+          <VZSidebar
             createFile={createFile}
             files={files}
             handleRenameFileClick={handleRenameFileClick}
@@ -245,7 +224,7 @@ function App() {
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
           />
-          <Settings
+          <VZSettings
             show={isSettingsOpen}
             onClose={handleSettingsClose}
             theme={theme}
