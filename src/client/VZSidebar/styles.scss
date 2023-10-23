@@ -7,7 +7,7 @@
   justify-content: space-between;
 
   .full-box {
-    padding: 7px;
+    padding: 3px 6px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -43,9 +43,11 @@
 
   .utils {
     display: flex;
+    gap: 8px;
   }
   .utilities {
-    margin-right: 3px;
+    // margin-right: 3px;
+    transform: scale(1.2);
   }
 
   .file-or-directory:hover,

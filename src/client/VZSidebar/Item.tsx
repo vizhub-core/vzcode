@@ -108,7 +108,7 @@ export const Item = ({
         <div className="utils">
           <i
             className="bx bxs-edit utilities"
-            style={{ color: '#abdafb' }}
+            style={{ color: '#9edcff' }}
             onClick={(event: React.MouseEvent) => {
               event.stopPropagation();
               setIsRenaming(!isRenaming);
@@ -116,8 +116,8 @@ export const Item = ({
             }}
           ></i>
           <i
-            className="bx bx-trash"
-            style={{ color: '#eb336c' }}
+            className="bx bx-trash utilities"
+            style={{ color: '#ff006b' }}
             onClick={handleModalOpen}
           ></i>
         </div>
