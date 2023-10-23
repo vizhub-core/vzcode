@@ -6,13 +6,6 @@ import {
   useEffect,
 } from 'react';
 
-export const SplitPaneResizeContext = createContext<{
-  codeEditorWidth: number;
-  moveSplitPane: (a: number) => void;
-  isDragging: boolean;
-  setIsDragging: (a: boolean) => void;
-}>(null);
-
 // The amount of time to wait idle before writing to localStorage.
 // This is to avoid writing to localStorage on every resize event.
 // MS = milliseconds
@@ -37,6 +30,18 @@ if (typeof window !== 'undefined') {
 } else {
   // If we're not in the browser, use the default initial width.
 }
+
+export const SplitPaneResizeContext = createContext<{
+  codeEditorWidth: number;
+  moveSplitPane: (a: number) => void;
+  isDragging: boolean;
+  setIsDragging: (a: boolean) => void;
+}>({
+  codeEditorWidth: initialWidth,
+  moveSplitPane: () => {},
+  isDragging: false,
+  setIsDragging: () => {},
+});
 
 const add = (a: number, b: number) => a + b;
 
