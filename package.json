@@ -75,7 +75,7 @@
     "open": "^9.1.0",
     "ot-json1": "^1.0.2",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.9.0",
+    "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
     "sharedb": "^4.1.1",
     "sharedb-client-browser": "^4.3.1",
@@ -83,7 +83,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@types/react": "^18.2.29",
+    "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "@vitejs/plugin-react": "^4.1.0",
     "prettier": "^3.0.3",
