@@ -1,20 +1,20 @@
 .vz-tab-list {
   display: flex;
-  background-color: rgb(37, 37, 38);
+  background-color: #33415b;
   // When the tab list becomes too large, a horizontal scroll bar appears.
   overflow-x: auto;
 
   .tab {
-    background: rgb(45, 45, 45);
+    // background: #47546b;
     color: #fff;
     font-family: var(--vzcode-font-family);
     align-items: center;
     display: flex;
     padding-top: 2px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    padding-left: 8px;
+    padding-right: 5px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     margin-top: 5px;
     margin-left: 2px;
     margin-right: 2px;
@@ -24,13 +24,25 @@
 
     .tab-close {
       margin-left: 5px;
+      margin-bottom: 2px;
     }
     .tab-close:hover {
-      border-radius: 30%;
-      background-color: rgb(37, 37, 38);
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    // No left margin for first child
+    &:first-child {
+      margin-left: 0;
+    }
+
+    // on hover
+    &:hover {
+      background-color: #47546b;
     }
   }
+
   .tab.active {
-    background-color: rgb(41, 44, 52);
+    background-color: #202e46;
   }
 }
