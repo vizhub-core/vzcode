@@ -59,11 +59,16 @@ export const useActions = (
     [dispatch],
   );
 
+  const closeSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+  }, [setIsSettingsOpen]);
+
   return {
     setActiveFileId,
     openTab,
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    closeSettings,
   };
 };

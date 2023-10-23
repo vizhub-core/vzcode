@@ -17,6 +17,7 @@ import { useState, useCallback } from 'react';
 
 // Inspired by
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/useOpenDirectories.js
+// TODO move this into reducer
 export const useOpenDirectories = () => {
   // The set of open directories by path/
   const [openDirectories, setOpenDirectories] = useState<
@@ -30,14 +31,31 @@ export const useOpenDirectories = () => {
       [openDirectories],
     );
 
-  // Toggle whether a directory is open.
+  /**
+   * Toggles the state of a directory (open/close).
+   * If the directory is currently open, it will close it.
+   * If it's closed, it will open it.
+   */
   const toggleDirectory = useCallback(
-    (path) => {
-      const newOpenDirectories = new Set(openDirectories);
-      newOpenDirectories[
-        isDirectoryOpen(path) ? 'delete' : 'add'
-      ](path);
-      setOpenDirectories(newOpenDirectories);
+    (directoryPath: string) => {
+      // Create a copy of the currently open directories
+      const updatedOpenDirectories = new Set(
+        openDirectories,
+      );
+
+      // Check if the directory is currently open
+      const directoryIsOpen =
+        isDirectoryOpen(directoryPath);
+
+      // Toggle the directory's state
+      if (directoryIsOpen) {
+        updatedOpenDirectories.delete(directoryPath);
+      } else {
+        updatedOpenDirectories.add(directoryPath);
+      }
+
+      // Update the state with the modified set of open directories
+      setOpenDirectories(updatedOpenDirectories);
     },
     [openDirectories, isDirectoryOpen],
   );

@@ -53,7 +53,9 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  const submitOperation = useSubmitOperation(shareDBDoc);
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useSubmitOperation(shareDBDoc);
 
   // Auto-run Pretter after local changes.
   const { prettierError } = usePrettier(
@@ -158,7 +160,13 @@ function App() {
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    closeSettings,
   } = useActions(dispatch);
+
+  // The set of open directories.
+  // TODO move this into reducer/useActions
+  const { isDirectoryOpen, toggleDirectory } =
+    useOpenDirectories();
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
@@ -166,44 +174,12 @@ function App() {
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
-  // The set of open directories.
-  const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories();
-
   // Handle file CRUD operations.
   const {
     createFile,
     handleRenameFileClick,
     handleDeleteClick,
   } = useFileCRUD({ submitOperation, closeTabs });
-
-  const handleSettingsClose = useCallback(() => {
-    setIsSettingsOpen(false);
-  }, [setIsSettingsOpen]);
-
-  // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
-  const interactTimeoutRef = useRef(null);
-  const handleInteract = useCallback(() => {
-    // Set `isInteracting: true` if not already set.
-    if (!interactTimeoutRef.current) {
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: true,
-      }));
-    } else {
-      clearTimeout(interactTimeoutRef.current);
-    }
-
-    // Set `isInteracting: false` after a delay.
-    interactTimeoutRef.current = setTimeout(() => {
-      interactTimeoutRef.current = null;
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: false,
-      }));
-    }, 800);
-  }, [submitOperation]);
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -226,7 +202,7 @@ function App() {
           />
           <VZSettings
             show={isSettingsOpen}
-            onClose={handleSettingsClose}
+            onClose={closeSettings}
             theme={theme}
             setTheme={setTheme}
           />
@@ -242,11 +218,11 @@ function App() {
           {content && activeFileId ? (
             <CodeEditor
               shareDBDoc={shareDBDoc}
+              submitOperation={submitOperation}
               localPresence={localPresence}
               docPresence={docPresence}
               activeFileId={activeFileId}
               theme={theme}
-              onInteract={handleInteract}
               editorCache={editorCache}
             />
           ) : null}
