@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import { FileId } from '../types';
-import { VZAction } from './reducer';
+import { VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
 // that can be used to dispatch actions to the reducer.
@@ -59,11 +59,16 @@ export const useActions = (
     [dispatch],
   );
 
+  const closeSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+  }, [setIsSettingsOpen]);
+
   return {
     setActiveFileId,
     openTab,
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    closeSettings,
   };
 };

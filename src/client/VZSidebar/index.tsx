@@ -12,7 +12,7 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import './styles.scss';
 
-export const Sidebar = ({
+export const VZSidebar = ({
   createFile,
   files,
   handleRenameFileClick,

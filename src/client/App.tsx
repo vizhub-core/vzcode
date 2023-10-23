@@ -9,22 +9,12 @@ import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
-import { diff } from './diff';
-import { Settings } from './Settings';
-import { Sidebar } from './Sidebar';
-import {
-  FileId,
-  Files,
-  ShareDBDoc,
-  VZCodeContent,
-} from '../types';
+import { VZSettings } from './VZSettings';
+import { VZSidebar } from './VZSidebar';
+import { Files, ShareDBDoc, VZCodeContent } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import {
-  ThemeLabel,
-  defaultTheme,
-  useDynamicTheme,
-} from './themes';
+import { defaultTheme, useDynamicTheme } from './themes';
 import { useEditorCache } from './useEditorCache';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
@@ -32,11 +22,12 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
-import { reducer } from './reducer';
-import './style.scss';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import { useFileCRUD } from './useFileCRUD';
+import { vzReducer } from './vzReducer';
 import { useActions } from './useActions';
+import { useFileCRUD } from './useFileCRUD';
+import './style.scss';
+import { useSubmitOperation } from './useSubmitOperation';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -62,19 +53,9 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  // A helper function to submit operations to the ShareDB document
   const submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useCallback(
-    (next) => {
-      const content: VZCodeContent = shareDBDoc.data;
-      const op = diff(content, next(content));
-      if (op && shareDBDoc) {
-        shareDBDoc.submitOp(op);
-      }
-    },
-    [shareDBDoc],
-  );
+  ) => void = useSubmitOperation(shareDBDoc);
 
   // Auto-run Pretter after local changes.
   const { prettierError } = usePrettier(
@@ -161,7 +142,7 @@ function App() {
   }, []);
 
   // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(vzReducer, {
     tabList: [],
     activeFileId: null,
     theme: defaultTheme,
@@ -179,7 +160,13 @@ function App() {
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    closeSettings,
   } = useActions(dispatch);
+
+  // The set of open directories.
+  // TODO move this into reducer/useActions
+  const { isDirectoryOpen, toggleDirectory } =
+    useOpenDirectories();
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
@@ -187,44 +174,12 @@ function App() {
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
-  // The set of open directories.
-  const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories();
-
   // Handle file CRUD operations.
   const {
     createFile,
     handleRenameFileClick,
     handleDeleteClick,
   } = useFileCRUD({ submitOperation, closeTabs });
-
-  const handleSettingsClose = useCallback(() => {
-    setIsSettingsOpen(false);
-  }, [setIsSettingsOpen]);
-
-  // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
-  const interactTimeoutRef = useRef(null);
-  const handleInteract = useCallback(() => {
-    // Set `isInteracting: true` if not already set.
-    if (!interactTimeoutRef.current) {
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: true,
-      }));
-    } else {
-      clearTimeout(interactTimeoutRef.current);
-    }
-
-    // Set `isInteracting: false` after a delay.
-    interactTimeoutRef.current = setTimeout(() => {
-      interactTimeoutRef.current = null;
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: false,
-      }));
-    }, 800);
-  }, [submitOperation]);
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -235,7 +190,7 @@ function App() {
     <SplitPaneResizeProvider>
       <div className="app">
         <div className="left">
-          <Sidebar
+          <VZSidebar
             createFile={createFile}
             files={files}
             handleRenameFileClick={handleRenameFileClick}
@@ -245,9 +200,9 @@ function App() {
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
           />
-          <Settings
+          <VZSettings
             show={isSettingsOpen}
-            onClose={handleSettingsClose}
+            onClose={closeSettings}
             theme={theme}
             setTheme={setTheme}
           />
@@ -263,11 +218,11 @@ function App() {
           {content && activeFileId ? (
             <CodeEditor
               shareDBDoc={shareDBDoc}
+              submitOperation={submitOperation}
               localPresence={localPresence}
               docPresence={docPresence}
               activeFileId={activeFileId}
               theme={theme}
-              onInteract={handleInteract}
               editorCache={editorCache}
             />
           ) : null}

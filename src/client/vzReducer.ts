@@ -16,7 +16,7 @@ export type VZAction =
   | { type: 'set_theme'; themeLabel: ThemeLabel }
   | { type: 'set_is_settings_open'; value: boolean };
 
-export const reducer = (
+export const vzReducer = (
   state: VZState,
   action: VZAction,
 ) => {
