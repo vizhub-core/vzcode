@@ -8,6 +8,7 @@ export const Item = ({
   handleRenameClick,
   handleDeleteClick,
   isDir,
+  isActive = false,
 }) => {
   // Tracks whether the mouse is hovering over the file or directory
   const [isHovered, setIsHovered] = useState(false);
@@ -82,7 +83,9 @@ export const Item = ({
 
   return (
     <div
-      className="full-box file-or-directory"
+      className={`full-box file-or-directory ${
+        isActive ? 'active-file' : ''
+      }`}
       onClick={isRenaming ? null : handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

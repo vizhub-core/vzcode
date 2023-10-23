@@ -1,6 +1,7 @@
 .vz-sidebar {
   height: 100%;
-  background: rgb(54, 65, 89);
+  color: #d6d9de;
+  background: #33415b;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -24,16 +25,14 @@
     justify-content: space-between;
     cursor: pointer;
     margin: 0 10px;
-    color: rgb(219, 221, 225);
-    border-radius: 5px;
+    border-radius: 4px;
   }
 
-  .link-name {
-    margin-top: 30px;
+  .sidebar-section-hint {
+    // margin-top: 30px;
     margin-left: 10px;
-    color: rgb(154, 160, 172);
     font-size: 12px;
-    text-decoration: none;
+    color: #99a0ad;
   }
 
   .new-btn {
@@ -51,7 +50,12 @@
 
   .file-or-directory:hover,
   .settings:hover {
-    background-color: rgb(74, 84, 105);
+    background-color: #47546b;
+  }
+
+  .active-file,
+  .active-file:hover {
+    background-color: #526e8b;
   }
 
   .name {
@@ -71,13 +75,12 @@
 
   .settings {
     height: 30px;
-    color: rgb(219, 221, 225);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 14px 0;
     margin: 10px;
-    border-radius: 5px;
+    border-radius: 4px;
   }
 }

@@ -15,6 +15,7 @@ export const Listing = ({
   handleFileClick,
   isDirectoryOpen,
   toggleDirectory,
+  activeFileId,
 }: {
   entity: FileTree | FileTreeFile;
   handleRenameFileClick: (
@@ -28,6 +29,7 @@ export const Listing = ({
   handleFileClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
+  activeFileId: FileId;
 }) => {
   const { name, file, fileId } = entity as FileTreeFile;
   const { path, children } = entity as FileTree;
@@ -38,6 +40,7 @@ export const Listing = ({
       handleRenameFileClick={handleRenameFileClick}
       handleDeleteFileClick={handleDeleteFileClick}
       handleFileClick={handleFileClick}
+      isActive={fileId === activeFileId}
     />
   ) : (
     <DirectoryListing
