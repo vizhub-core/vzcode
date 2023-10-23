@@ -8,6 +8,7 @@ export const FileListing = ({
   handleRenameFileClick,
   handleDeleteFileClick,
   handleFileClick,
+  isActive,
 }: {
   name: string;
   fileId: FileId;
@@ -20,6 +21,7 @@ export const FileListing = ({
     event: React.MouseEvent,
   ) => void;
   handleFileClick: (fileId: FileId) => void;
+  isActive: boolean;
 }) => {
   const handleClick = useCallback(() => {
     handleFileClick(fileId);
@@ -46,6 +48,7 @@ export const FileListing = ({
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
       isDir={false}
+      isActive={isActive}
     >
       {name}
     </Item>

@@ -199,6 +199,7 @@ function App() {
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
+            activeFileId={activeFileId}
           />
           <VZSettings
             show={isSettingsOpen}

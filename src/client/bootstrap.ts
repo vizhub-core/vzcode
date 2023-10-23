@@ -5,4 +5,7 @@ import Form from 'react-bootstrap/cjs/Form.js';
 import Button from 'react-bootstrap/cjs/Button.js';
 import Modal from 'react-bootstrap/cjs/Modal.js';
 
+// Pull in custom CSS from vizhub-ui.
+import 'vizhub-ui/dist/vizhub-ui.css';
+
 export { Form, Button, Modal };

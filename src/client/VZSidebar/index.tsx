@@ -21,6 +21,7 @@ export const VZSidebar = ({
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
+  activeFileId,
 }: {
   files: Files;
   createFile?: () => void;
@@ -36,6 +37,7 @@ export const VZSidebar = ({
   setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
   isDirectoryOpen?: (path: string) => boolean;
   toggleDirectory?: (path: string) => void;
+  activeFileId?: FileId;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
@@ -57,11 +59,7 @@ export const VZSidebar = ({
     >
       <div className="files">
         <div className="full-box">
-          <div>
-            <a className="link-name" href="#">
-              Files
-            </a>
-          </div>
+          <div className="sidebar-section-hint">Files</div>
           <div>
             <i
               className="bx bxs-file-plus new-btn"
@@ -88,6 +86,7 @@ export const VZSidebar = ({
                   handleFileClick={handleFileClick}
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
+                  activeFileId={activeFileId}
                 />
               );
             })
