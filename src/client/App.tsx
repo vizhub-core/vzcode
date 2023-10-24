@@ -179,7 +179,7 @@ function App() {
     createFile,
     handleRenameFileClick,
     handleDeleteClick,
-  } = useFileCRUD({ submitOperation, closeTabs });
+  } = useFileCRUD({ submitOperation, closeTabs, openTab });
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -215,6 +215,7 @@ function App() {
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
             closeTabs={closeTabs}
+            createFile={createFile}
           />
           {content && activeFileId ? (
             <CodeEditor
