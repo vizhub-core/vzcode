@@ -3,6 +3,7 @@ import {
   FileId,
   FileTree,
   FileTreeFile,
+  FileTreePath,
   Files,
 } from '../../types';
 import { getFileTree } from '../getFileTree';
@@ -13,10 +14,11 @@ import { Listing } from './Listing';
 import './styles.scss';
 
 export const VZSidebar = ({
-  createFile,
   files,
-  handleRenameFileClick,
-  handleDeleteFileClick,
+  createFile,
+  renameFile,
+  deleteFile,
+  deleteDirectory,
   handleFileClick,
   setIsSettingsOpen,
   isDirectoryOpen,
@@ -24,19 +26,14 @@ export const VZSidebar = ({
   activeFileId,
 }: {
   files: Files;
-  createFile?: () => void;
-  handleRenameFileClick?: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick?: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
-  handleFileClick?: (fileId: FileId) => void;
-  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen?: (path: string) => boolean;
-  toggleDirectory?: (path: string) => void;
+  createFile: () => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
+  deleteDirectory: (path: FileTreePath) => void;
+  handleFileClick: (fileId: FileId) => void;
+  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
+  isDirectoryOpen: (path: string) => boolean;
+  toggleDirectory: (path: string) => void;
   activeFileId?: FileId;
 }) => {
   const fileTree = useMemo(
@@ -75,14 +72,11 @@ export const VZSidebar = ({
               const key = fileId ? fileId : path;
               return (
                 <Listing
-                  entity={entity}
                   key={key}
-                  handleRenameFileClick={
-                    handleRenameFileClick
-                  }
-                  handleDeleteFileClick={
-                    handleDeleteFileClick
-                  }
+                  entity={entity}
+                  renameFile={renameFile}
+                  deleteFile={deleteFile}
+                  deleteDirectory={deleteDirectory}
                   handleFileClick={handleFileClick}
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}

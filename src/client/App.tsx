@@ -177,8 +177,9 @@ function App() {
   // Handle file CRUD operations.
   const {
     createFile,
-    handleRenameFileClick,
-    handleDeleteClick,
+    renameFile,
+    deleteFile,
+    deleteDirectory,
   } = useFileCRUD({ submitOperation, closeTabs });
 
   // Isolate the files object from the document.
@@ -191,10 +192,11 @@ function App() {
       <div className="app">
         <div className="left">
           <VZSidebar
-            createFile={createFile}
             files={files}
-            handleRenameFileClick={handleRenameFileClick}
-            handleDeleteFileClick={handleDeleteClick}
+            createFile={createFile}
+            renameFile={renameFile}
+            deleteFile={deleteFile}
+            deleteDirectory={deleteDirectory}
             handleFileClick={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
