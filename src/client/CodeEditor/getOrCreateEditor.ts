@@ -27,6 +27,7 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
+import { AIAssist } from '../AIAssist';
 
 // Language extensions for CodeMirror.
 // Keys are file extensions.
@@ -194,6 +195,8 @@ export const getOrCreateEditor = ({
   extensions.push(highlightWidgets);
 
   extensions.push(rotationIndicator);
+
+  extensions.push(AIAssist);
 
   const editor = new EditorView({
     state: EditorState.create({
