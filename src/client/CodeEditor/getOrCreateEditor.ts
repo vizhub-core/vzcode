@@ -27,6 +27,9 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
+import * as tsvfs from '@typescript/vfs';
+import ts from 'typescript';
+import { autocompletion } from '@codemirror/autocomplete';
 
 // Language extensions for CodeMirror.
 // Keys are file extensions.
@@ -56,15 +59,15 @@ const getAtPath = (obj, path) => {
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
-  fileId,
-  shareDBDoc,
-  filesPath,
-  localPresence,
-  docPresence,
-  theme,
-  onInteract,
-  editorCache,
-}: {
+                                          fileId,
+                                          shareDBDoc,
+                                          filesPath,
+                                          localPresence,
+                                          docPresence,
+                                          theme,
+                                          onInteract,
+                                          editorCache,
+                                        }: {
   fileId: FileId;
 
   // The ShareDB document that contains the file.
@@ -194,6 +197,69 @@ export const getOrCreateEditor = ({
   extensions.push(highlightWidgets);
 
   extensions.push(rotationIndicator);
+
+/*
+  extensions.push(autocompletion({
+    override: [tsComplete]
+  }))*/
+
+  // displays autocompletes
+  async function tsComplete(ctx) {
+
+    const compilerOptions = {};
+    const fsMap = await tsvfs.createDefaultMapFromCDN(
+      compilerOptions,
+      ts.version,
+      true,
+      ts
+    );
+    fsMap.set(name, text);
+    const system = tsvfs.createSystem(fsMap);
+    const env = tsvfs.createVirtualTypeScriptEnvironment(
+      system,
+      [name],
+      ts,
+      {
+      }
+    );
+
+    let tsCompletions = env.languageService.getCompletionsAtPosition(
+      name,
+      ctx.pos,
+      {}
+    );
+
+    if (!tsCompletions) return { from: ctx.pos, options: [] };
+
+    const Text = ctx.state.doc.toString();
+
+    let lastWord, from;
+    for (let i = ctx.pos - 1; i >= 0; i--) {
+      if ([' ', '.', '\n', ':', '{'].includes(Text[i]) || i === 0) {
+        from = i === 0 ? i : i + 1;
+        lastWord = Text.slice(from, ctx.pos).trim();
+        break;
+      }
+    }
+
+    if (lastWord) {
+      tsCompletions.entries = tsCompletions.entries.filter((completion) =>
+        completion.name.startsWith(lastWord)
+      );
+    }
+
+    return {
+      from: ctx.pos, // Autocomplete position
+      options: tsCompletions.entries.map((completion) => ({
+        label: completion.name,
+        apply: (view) => {
+          view.dispatch({
+            changes: { from, to: ctx.pos, insert: completion.name },
+          });
+        },
+      })),
+    };
+  }
 
   const editor = new EditorView({
     state: EditorState.create({
