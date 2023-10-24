@@ -7,6 +7,7 @@ import { randomId } from '../randomId';
 export const useFileCRUD = ({
   submitOperation,
   closeTabs,
+  openTab,
 }) => {
   // Create a new file
   const createFile = useCallback(() => {
@@ -14,13 +15,15 @@ export const useFileCRUD = ({
     // See https://github.com/vizhub-core/vzcode/issues/252
     const name = prompt('Enter new file name');
     if (name) {
+      let idn = randomId()
       submitOperation((document: VZCodeContent) => ({
         ...document,
         files: {
           ...document.files,
-          [randomId()]: { name, text: '' },
+          [idn]: { name, text: '' },
         },
       }));
+      openTab(idn)
     }
   }, [submitOperation]);
 
