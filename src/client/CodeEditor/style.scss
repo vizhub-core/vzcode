@@ -4,8 +4,12 @@
   font-family: var(--vzcode-font-family);
   overflow-x: auto;
 
-  /* TODO QA this */
   .cm-editor {
     flex: 1;
+  }
+
+  .cm-scroller {
+    font-family: var(--vzcode-font-family);
+    font-size: var(--vzcode-font-size);
   }
 }
