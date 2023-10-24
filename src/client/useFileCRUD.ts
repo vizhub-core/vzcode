@@ -1,5 +1,9 @@
 import { useCallback } from 'react';
-import { FileId, VZCodeContent } from '../types';
+import {
+  FileId,
+  FileTreePath,
+  VZCodeContent,
+} from '../types';
 import { randomId } from '../randomId';
 
 // CRUD operations for files and directories
@@ -25,9 +29,9 @@ export const useFileCRUD = ({
   }, [submitOperation]);
 
   // Called when a file in the sidebar is renamed.
-  const handleRenameFileClick = useCallback(
+  const renameFile = useCallback(
     (fileId: FileId, newName: string) => {
-      submitOperation((document) => ({
+      submitOperation((document: VZCodeContent) => ({
         ...document,
         files: {
           ...document.files,
@@ -56,7 +60,7 @@ export const useFileCRUD = ({
 
   // Deletes a directory and all files within it
   const deleteDirectory = useCallback(
-    (path: FileId) => {
+    (path: FileTreePath) => {
       const tabsToClose: Array<FileId> = [];
       submitOperation((document: VZCodeContent) => {
         const updatedFiles = { ...document.files };
@@ -73,29 +77,10 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
-  // Generic delete function that calls either deleteFile or deleteDirectory
-  // TODO consider if there is a cleaner way to do this
-  //  - Ideally we would have a separate function for deleting files and directories
-  //  - When we click the delete button, we should be able to tell if it is a file or directory
-  const handleDeleteClick = useCallback(
-    (key: string) => {
-      // Regex to identify if the key is a file path or a file id.
-      if (/^[0-9]*$/.test(key)) {
-        if (key.length == 8) {
-          deleteFile(key);
-        } else {
-          deleteDirectory(key);
-        }
-      } else {
-        deleteDirectory(key);
-      }
-    },
-    [deleteFile, deleteDirectory],
-  );
-
   return {
     createFile,
-    handleRenameFileClick,
-    handleDeleteClick,
+    renameFile,
+    deleteFile,
+    deleteDirectory,
   };
 };
