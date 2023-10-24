@@ -8,6 +8,7 @@ export const useFileCRUD = ({
   submitOperation,
   closeTabs,
   openTab,
+  focusEditor,
 }) => {
   // Create a new file
   const createFile = useCallback(() => {
@@ -15,15 +16,17 @@ export const useFileCRUD = ({
     // See https://github.com/vizhub-core/vzcode/issues/252
     const name = prompt('Enter new file name');
     if (name) {
-      let idn = randomId()
+      const newFileId: FileId = randomId();
       submitOperation((document: VZCodeContent) => ({
         ...document,
         files: {
           ...document.files,
-          [idn]: { name, text: '' },
+          [newFileId]: { name, text: '' },
         },
       }));
-      openTab(idn)
+      openTab(newFileId);
+
+      focusEditor(newFileId);
     }
   }, [submitOperation]);
 
