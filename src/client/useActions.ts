@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import { FileId } from '../types';
-import { VZAction } from './vzReducer';
+import { TabState, VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
 // that can be used to dispatch actions to the reducer.
@@ -19,17 +19,11 @@ export const useActions = (
   );
 
   const openTab = useCallback(
-    ({
-      fileId,
-      isTransient,
-    }: {
-      fileId: FileId;
-      isTransient: boolean;
-    }): void => {
+    (tabState: TabState): void => {
       dispatch({
         type: 'open_tab',
-        fileId,
-        isTransient,
+        fileId: tabState.fileId,
+        isTransient: tabState.isTransient,
       });
     },
     [dispatch],

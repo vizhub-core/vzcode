@@ -23,15 +23,9 @@ export const FileListing = ({
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
 
-  const handleDoubleClick = useCallback(
-    (event: React.MouseEvent) => {
-      // Disable text selection by preventing default on double-click
-      event.preventDefault();
-
-      handleFileDoubleClick(fileId);
-    },
-    [fileId, handleFileDoubleClick],
-  );
+  const handleDoubleClick = useCallback(() => {
+    handleFileDoubleClick(fileId);
+  }, [fileId, handleFileDoubleClick]);
 
   const handleDeleteClick = useCallback(() => {
     deleteFile(fileId);

@@ -231,6 +231,7 @@ function App() {
             tabList={tabList}
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
+            openTab={openTab}
             closeTabs={closeTabs}
             createFile={createFile}
           />

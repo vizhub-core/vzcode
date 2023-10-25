@@ -122,7 +122,7 @@ export const Item = ({
 
   return (
     <div
-      className={`full-box file-or-directory ${
+      className={`full-box file-or-directory user-select-none ${
         isActive ? 'active-file' : ''
       }`}
       onClick={isRenaming ? null : handleClick}

@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { FileId } from '../../types';
+import type { FileId } from '../../types';
+import type { TabState } from '../vzReducer';
 
 // Supports adding the file's containing folder to the tab name
 const fileNameSplit = (fileName: string) => {
@@ -15,6 +16,7 @@ export const Tab = ({
   isTransient,
   isActive,
   setActiveFileId,
+  openTab,
   closeTabs,
   fileName,
 }: {
@@ -22,6 +24,7 @@ export const Tab = ({
   isTransient: boolean;
   isActive: boolean;
   setActiveFileId: (fileId: FileId) => void;
+  openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: FileId[]) => void;
   fileName: string;
 }) => {
@@ -40,14 +43,22 @@ export const Tab = ({
     [fileName],
   );
 
+  const handleClick = useCallback(() => {
+    setActiveFileId(fileId);
+  }, [fileId, setActiveFileId]);
+
+  // Double-clicking a transient tab makes it a persistent tab.
+  const handleDoubleClick = useCallback(() => {
+    openTab({ fileId, isTransient: false });
+  }, [fileId, openTab]);
+
   return (
     <div
-      className={`tab ${isActive ? 'active' : ''} ${
-        isTransient ? 'transient' : ''
-      }`}
-      onClick={() => {
-        setActiveFileId(fileId);
-      }}
+      className={`tab user-select-none ${
+        isActive ? 'active' : ''
+      } ${isTransient ? 'transient' : ''}`}
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
       {tabName}
       <div

@@ -10,6 +10,7 @@ export const TabList = ({
   tabList,
   activeFileId,
   setActiveFileId,
+  openTab,
   closeTabs,
   createFile,
 }: {
@@ -17,6 +18,7 @@ export const TabList = ({
   tabList: Array<TabState>;
   activeFileId: FileId;
   setActiveFileId: (fileId: FileId) => void;
+  openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: FileId[]) => void;
   createFile: () => void;
 }) => {
@@ -56,6 +58,7 @@ export const TabList = ({
             isTransient={tabState.isTransient}
             isActive={tabState.fileId === activeFileId}
             setActiveFileId={setActiveFileId}
+            openTab={openTab}
             closeTabs={closeTabs}
             fileName={files[tabState.fileId].name}
           />
