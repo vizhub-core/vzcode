@@ -100,6 +100,9 @@ export const VZSidebar = ({
                   deleteFile={deleteFile}
                   deleteDirectory={deleteDirectory}
                   handleFileClick={handleFileClick}
+                  handleFileDoubleClick={
+                    handleFileDoubleClick
+                  }
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
                   activeFileId={activeFileId}

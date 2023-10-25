@@ -15,6 +15,7 @@ export const Listing = ({
   deleteFile,
   deleteDirectory,
   handleFileClick,
+  handleFileDoubleClick,
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
@@ -24,6 +25,7 @@ export const Listing = ({
   deleteFile: (fileId: FileId) => void;
   deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: FileId) => void;
+  handleFileDoubleClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
   activeFileId: FileId;
@@ -37,6 +39,7 @@ export const Listing = ({
       renameFile={renameFile}
       deleteFile={deleteFile}
       handleFileClick={handleFileClick}
+      handleFileDoubleClick={handleFileDoubleClick}
       isActive={fileId === activeFileId}
     />
   ) : (
@@ -48,6 +51,7 @@ export const Listing = ({
       deleteFile={deleteFile}
       deleteDirectory={deleteDirectory}
       handleFileClick={handleFileClick}
+      handleFileDoubleClick={handleFileDoubleClick}
       isDirectoryOpen={isDirectoryOpen}
       toggleDirectory={toggleDirectory}
       activeFileId={activeFileId}
