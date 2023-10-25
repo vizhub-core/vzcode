@@ -35,16 +35,12 @@ import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import {
-  TabState,
-  VZAction,
-  VZState,
-  vzReducer,
-} from './vzReducer';
+import { VZAction, VZState, vzReducer } from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
-import './style.scss';
 import { useSubmitOperation } from './useSubmitOperation';
+import './style.scss';
+import { createInitialState } from './vzReducer';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -158,16 +154,11 @@ function App() {
     };
   }, []);
 
-  // https://react.dev/reference/react/useReducer
-  const [state, dispatch]: [
-    state: VZState,
-    dispatch: React.Dispatch<VZAction>,
-  ] = useReducer(vzReducer, {
-    tabList: [],
-    activeFileId: null,
-    theme: defaultTheme,
-    isSettingsOpen: false,
-  });
+  const [state, dispatch] = useReducer(
+    vzReducer,
+    defaultTheme,
+    createInitialState,
+  );
 
   // Unpack state.
   const { tabList, activeFileId, theme, isSettingsOpen } =

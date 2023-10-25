@@ -6,6 +6,8 @@ import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 
+export { createInitialState } from './createInitialState';
+
 export type VZState = {
   tabList: Array<TabState>;
   activeFileId: FileId | null;

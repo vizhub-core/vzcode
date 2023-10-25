@@ -47,7 +47,7 @@ describe('Listing files', () => {
     ]);
   });
 
-  it.only('should list files, empty directory', () => {
+  it('should list files, empty directory', () => {
     // Git does not track empty directories,
     // so we need to create the empty directory
     // if it doesn't exist (e.g. in a fresh clone).
