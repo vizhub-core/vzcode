@@ -2,6 +2,7 @@ import {
   useRef,
   useLayoutEffect,
   useCallback,
+  useEffect,
 } from 'react';
 import {
   FileId,
@@ -98,6 +99,12 @@ export const CodeEditor = ({
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, activeFileId, onInteract]);
+
+  // Focus the editor
+  // useEffect(() => {
+  //   if (editorWantsFocus) {
+  //     editorCacheValue.editor.focus();
+  //   }
 
   return <div className="vz-code-editor" ref={ref}></div>;
 };

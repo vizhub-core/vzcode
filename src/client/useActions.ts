@@ -36,10 +36,10 @@ export const useActions = (
   );
 
   const closeTabs = useCallback(
-    (idsToDelete: Array<FileId>) => {
+    (fileIdsToClose: Array<FileId>) => {
       dispatch({
         type: 'close_tabs',
-        idsToDelete,
+        fileIdsToClose,
       });
     },
     [dispatch],

@@ -191,20 +191,6 @@ function App() {
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
 
-  // A function that will focus the editor.
-  const focusEditor = useCallback(
-    (fileId: FileId) => {
-      // TODO figure out a way to do this without the timeout
-      setTimeout(() => {
-        const editorCacheValue = editorCache.get(fileId);
-        if (editorCacheValue) {
-          editorCacheValue.editor.focus();
-        }
-      }, 100);
-    },
-    [editorCache],
-  );
-
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
