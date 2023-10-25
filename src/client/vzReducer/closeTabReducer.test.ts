@@ -98,4 +98,79 @@ describe('closeTabsReducer', () => {
 
     expect(newState).toEqual(stateWithTabs);
   });
+
+  it('Closes a tab that is not currently active', () => {
+    const stateWithMultipleTabs = {
+      ...initialState,
+      tabList: [
+        { fileId: 'file1', isTransient: false },
+        { fileId: 'file2', isTransient: false },
+        { fileId: 'file3', isTransient: false },
+      ],
+      activeFileId: 'file3',
+    };
+
+    const action: VZAction = {
+      type: 'close_tabs',
+      fileIdsToClose: ['file2'],
+    };
+
+    const newState = closeTabsReducer(
+      stateWithMultipleTabs,
+      action,
+    );
+
+    expect(newState.tabList.length).toBe(2);
+    expect(newState.activeFileId).toBe('file3'); // remains unchanged
+  });
+
+  it('Closes the first tab out of many, when it is active', () => {
+    const stateWithMultipleTabs = {
+      ...initialState,
+      tabList: [
+        { fileId: 'file1', isTransient: false },
+        { fileId: 'file2', isTransient: false },
+        { fileId: 'file3', isTransient: false },
+      ],
+      activeFileId: 'file1',
+    };
+
+    const action: VZAction = {
+      type: 'close_tabs',
+      fileIdsToClose: ['file1'],
+    };
+
+    const newState = closeTabsReducer(
+      stateWithMultipleTabs,
+      action,
+    );
+
+    expect(newState.tabList.length).toBe(2);
+    expect(newState.activeFileId).toBe('file2'); // switches to the next available tab
+  });
+
+  it('Closes multiple tabs at once', () => {
+    const stateWithMultipleTabs = {
+      ...initialState,
+      tabList: [
+        { fileId: 'file1', isTransient: false },
+        { fileId: 'file2', isTransient: false },
+        { fileId: 'file3', isTransient: false },
+      ],
+      activeFileId: 'file2',
+    };
+
+    const action: VZAction = {
+      type: 'close_tabs',
+      fileIdsToClose: ['file1', 'file2'],
+    };
+
+    const newState = closeTabsReducer(
+      stateWithMultipleTabs,
+      action,
+    );
+
+    expect(newState.tabList.length).toBe(1);
+    expect(newState.activeFileId).toBe('file3'); // switches to the next available tab
+  });
 });

@@ -8,24 +8,56 @@ export const closeTabsReducer = (
   if (action.type !== 'close_tabs') {
     return state;
   }
+
   const newTabList: Array<TabState> = state.tabList.filter(
     (tabState) =>
       !action.fileIdsToClose.includes(tabState.fileId),
   );
 
-  let newActiveFileId: FileId | null = state.activeFileId;
+  // If the active tab wasn't closed, keep it active.
+  if (
+    !action.fileIdsToClose.includes(state.activeFileId!)
+  ) {
+    return {
+      ...state,
+      tabList: newTabList,
+    };
+  }
 
-  if (action.fileIdsToClose.includes(newActiveFileId)) {
-    const originalIndex = state.tabList.findIndex(
-      (tabState) => tabState.fileId === newActiveFileId,
-    );
+  const originalIndex = state.tabList.findIndex(
+    (tabState) => tabState.fileId === state.activeFileId,
+  );
 
-    newActiveFileId =
-      originalIndex > 0
-        ? state.tabList[originalIndex - 1].fileId
-        : newTabList[0]
-        ? newTabList[0].fileId
-        : null;
+  let newActiveFileId: FileId | null = null;
+
+  // Try getting the previous available tab first.
+  for (let i = originalIndex - 1; i >= 0; i--) {
+    if (
+      !action.fileIdsToClose.includes(
+        state.tabList[i].fileId,
+      )
+    ) {
+      newActiveFileId = state.tabList[i].fileId;
+      break;
+    }
+  }
+
+  // If no previous tab available, get the next available one.
+  if (!newActiveFileId) {
+    for (
+      let i = originalIndex + 1;
+      i < state.tabList.length;
+      i++
+    ) {
+      if (
+        !action.fileIdsToClose.includes(
+          state.tabList[i].fileId,
+        )
+      ) {
+        newActiveFileId = state.tabList[i].fileId;
+        break;
+      }
+    }
   }
 
   return {
