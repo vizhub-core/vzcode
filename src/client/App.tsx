@@ -11,11 +11,19 @@ import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
-import { Files, ShareDBDoc, VZCodeContent } from '../types';
+import {
+  FileId,
+  Files,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
 import { defaultTheme, useDynamicTheme } from './themes';
-import { useEditorCache } from './useEditorCache';
+import {
+  EditorCache,
+  useEditorCache,
+} from './useEditorCache';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';
@@ -169,7 +177,21 @@ function App() {
     useOpenDirectories();
 
   // Cache of CodeMirror editors by file id.
-  const editorCache = useEditorCache();
+  const editorCache: EditorCache = useEditorCache();
+
+  // A function that will focus the editor.
+  const focusEditor = useCallback(
+    (fileId: FileId) => {
+      // TODO figure out a way to do this without the timeout
+      setTimeout(() => {
+        const editorCacheValue = editorCache.get(fileId);
+        if (editorCacheValue) {
+          editorCacheValue.editor.focus();
+        }
+      }, 100);
+    },
+    [editorCache],
+  );
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
@@ -180,7 +202,7 @@ function App() {
     renameFile,
     deleteFile,
     deleteDirectory,
-  } = useFileCRUD({ submitOperation, closeTabs });
+  } = useFileCRUD({ submitOperation, closeTabs, focusEditor });
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -217,6 +239,7 @@ function App() {
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
             closeTabs={closeTabs}
+            createFile={createFile}
           />
           {content && activeFileId ? (
             <CodeEditor

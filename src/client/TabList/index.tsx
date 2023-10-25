@@ -10,12 +10,14 @@ export const TabList = ({
   activeFileId,
   setActiveFileId,
   closeTabs,
+  createFile,
 }: {
   files: Files;
   tabList: FileId[];
   activeFileId: FileId;
   setActiveFileId: (fileId: FileId) => void;
   closeTabs: (fileIds: FileId[]) => void;
+  createFile: () => void;
 }) => {
   // Close the active tab on alt+w
   const handleKeyPress = useCallback(
@@ -24,9 +26,12 @@ export const TabList = ({
         if (event.key == 'w') {
           closeTabs([activeFileId]);
         }
+        if (event.key == 'n') {
+          createFile();
+        }
       }
     },
-    [closeTabs, activeFileId],
+    [createFile, closeTabs, activeFileId],
   );
 
   // Add the global keydown event listener
@@ -51,6 +56,7 @@ export const TabList = ({
             setActiveFileId={setActiveFileId}
             closeTabs={closeTabs}
             fileName={files[fileId].name}
+            createFile={createFile}
           />
         ))}
     </div>
