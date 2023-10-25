@@ -202,7 +202,12 @@ function App() {
     renameFile,
     deleteFile,
     deleteDirectory,
-  } = useFileCRUD({ submitOperation, closeTabs, focusEditor });
+  } = useFileCRUD({
+    submitOperation,
+    closeTabs,
+    openTab,
+    focusEditor,
+  });
 
   // Isolate the files object from the document.
   const files: Files | null = content
