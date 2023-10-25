@@ -1,81 +1,3 @@
-// // import { TabState, VZAction, VZState } from '.';
-
-// // export const openTabReducer = (
-// //   state: VZState,
-// //   action: VZAction,
-// // ): VZState => {
-// //   if (action.type !== 'open_tab') return state;
-
-// //   // Is the tab already open?
-// //   const tabIsOpen = state.tabList.some(
-// //     (tab) => tab.fileId === action.fileId,
-// //   );
-
-// //   // The new tab state.
-// //   const newTabState: TabState = {
-// //     fileId: action.fileId,
-// //     isTransient: action.isTransient,
-// //   };
-// // //
-// //   return {
-// //     ...state,
-// //     activeFileId: action.fileId,
-// //     tabList: !tabIsOpen
-// //       ? [...state.tabList, newTabState]
-// //       : state.tabList.map((tabState) =>
-// //           tabState.fileId === action.fileId
-// //             ? newTabState
-// //             : tabState,
-// //         ),
-// //   };
-// // };
-
-// import { TabState, VZAction, VZState } from '.';
-
-// export const openTabReducer = (
-//   state: VZState,
-//   action: VZAction,
-// ): VZState => {
-//   if (action.type !== 'open_tab') return state;
-
-//   // Is the tab already open?
-//   const tabIsOpen = state.tabList.some(
-//     (tab) => tab.fileId === action.fileId,
-//   );
-
-//   // Find if there's any transient tab
-//   const transientTabIndex = state.tabList.findIndex(
-//     (tab) => tab.isTransient,
-//   );
-
-//   // The new tab state.
-//   const newTabState: TabState = {
-//     fileId: action.fileId,
-//     isTransient: action.isTransient,
-//   };
-
-//   let newTabList: Array<TabState>;
-
-//   if (tabIsOpen) {
-//     newTabList = state.tabList.map((tabState) =>
-//       tabState.fileId === action.fileId
-//         ? newTabState
-//         : tabState,
-//     );
-//   } else if (transientTabIndex !== -1) {
-//     newTabList = [...state.tabList];
-//     newTabList[transientTabIndex] = newTabState;
-//   } else {
-//     newTabList = [...state.tabList, newTabState];
-//   }
-
-//   return {
-//     ...state,
-//     activeFileId: action.fileId,
-//     tabList: newTabList,
-//   };
-// };
-
 import { TabState, VZAction, VZState } from '.';
 
 export const openTabReducer = (
@@ -128,5 +50,8 @@ export const openTabReducer = (
     ...state,
     activeFileId: action.fileId,
     tabList: newTabList,
+
+    // If the tab is persistent, the editor should focus on the next render.
+    editorWantsFocus: !action.isTransient,
   };
 };

@@ -8,25 +8,53 @@ import { setThemeReducer } from './setThemeReducer';
 
 export { createInitialState } from './createInitialState';
 
+// The shape of the state managed by the reducer.
 export type VZState = {
+  // The list of open tabs.
   tabList: Array<TabState>;
+
+  // The ID of the file that is currently active.
+  // Invariant: `activeFileId` is always in `tabList`.
   activeFileId: FileId | null;
+
+  // The theme that is currently active.
   theme: ThemeLabel;
+
+  // True to show the settings modal.
   isSettingsOpen: boolean;
+
+  // True if the editor should focus on the next render.
+  editorWantsFocus: boolean;
 };
 
+// The shape of the actions that can be dispatched to the reducer.
 export type VZAction =
+  // `set_active_file_id`
+  //  * Sets the active file ID.
   | { type: 'set_active_file_id'; activeFileId: FileId }
+
+  // `open_tab`
+  //  * Opens a tab.
+  //  * Also serves to change an already open transient tab to persistent.
   | {
       type: 'open_tab';
       fileId: FileId;
       isTransient: boolean;
     }
+
+  // `close_tabs`
+  //  * Closes a set of tabs.
   | { type: 'close_tabs'; fileIdsToClose: Array<FileId> }
+
+  // `set_theme`
+  //  * Sets the theme.
   | { type: 'set_theme'; themeLabel: ThemeLabel }
+
+  // `set_is_settings_open`
+  //  * Sets whether the settings modal is open.
   | { type: 'set_is_settings_open'; value: boolean };
 
-// Representation of a tab.
+// Representation of an open tab.
 export type TabState = {
   // `fileId`
   // The ID of the file that the tab represents.

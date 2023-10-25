@@ -84,4 +84,26 @@ describe('openTabReducer', () => {
     expect(newState.tabList.length).toBe(2);
     expect(newState.activeFileId).toBe('file1');
   });
+
+  it('Sets editorWantsFocus to true for non-transient tabs', () => {
+    const action: VZAction = {
+      type: 'open_tab',
+      fileId: 'file3',
+      isTransient: false, // This tab is persistent
+    };
+    const newState = openTabReducer(initialState, action);
+
+    expect(newState.editorWantsFocus).toBe(true);
+  });
+
+  it('Sets editorWantsFocus to false for transient tabs', () => {
+    const action: VZAction = {
+      type: 'open_tab',
+      fileId: 'file4',
+      isTransient: true, // This tab is transient
+    };
+    const newState = openTabReducer(initialState, action);
+
+    expect(newState.editorWantsFocus).toBe(false);
+  });
 });

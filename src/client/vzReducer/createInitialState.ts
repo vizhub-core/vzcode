@@ -8,4 +8,5 @@ export const createInitialState = (
   activeFileId: null,
   theme: defaultTheme,
   isSettingsOpen: false,
+  editorWantsFocus: false,
 });
