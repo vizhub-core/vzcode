@@ -19,10 +19,17 @@ export const useActions = (
   );
 
   const openTab = useCallback(
-    (fileId: FileId) => {
+    ({
+      fileId,
+      isTransient,
+    }: {
+      fileId: FileId;
+      isTransient: boolean;
+    }): void => {
       dispatch({
         type: 'open_tab',
         fileId,
+        isTransient,
       });
     },
     [dispatch],

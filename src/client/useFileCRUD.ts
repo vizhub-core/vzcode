@@ -12,7 +12,18 @@ export const useFileCRUD = ({
   submitOperation,
   closeTabs,
   openTab,
-  focusEditor,
+}: {
+  submitOperation: (
+    operation: (document: VZCodeContent) => VZCodeContent,
+  ) => void;
+  closeTabs: (idsToDelete: Array<FileId>) => void;
+  openTab: ({
+    fileId,
+    isTransient,
+  }: {
+    fileId: FileId;
+    isTransient: boolean;
+  }) => void;
 }) => {
   // Create a new file
   const createFile = useCallback(() => {
@@ -20,17 +31,17 @@ export const useFileCRUD = ({
     // See https://github.com/vizhub-core/vzcode/issues/252
     const name = prompt('Enter new file name');
     if (name) {
-      const newFileId: FileId = randomId();
+      const fileId: FileId = randomId();
       submitOperation((document: VZCodeContent) => ({
         ...document,
         files: {
           ...document.files,
-          [newFileId]: { name, text: '' },
+          [fileId]: { name, text: '' },
         },
       }));
-      openTab(newFileId);
-
-      focusEditor(newFileId);
+      // When a new file is created, open it in a new tab
+      // and focus the editor on it.
+      openTab({ fileId, isTransient: false });
     }
   }, [submitOperation]);
 

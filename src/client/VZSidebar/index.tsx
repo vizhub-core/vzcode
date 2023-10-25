@@ -19,7 +19,7 @@ export const VZSidebar = ({
   renameFile,
   deleteFile,
   deleteDirectory,
-  handleFileClick,
+  openTab,
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
@@ -30,7 +30,13 @@ export const VZSidebar = ({
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
   deleteDirectory: (path: FileTreePath) => void;
-  handleFileClick: (fileId: FileId) => void;
+  openTab: ({
+    fileId,
+    isTransient,
+  }: {
+    fileId: FileId;
+    isTransient?: boolean;
+  }) => void;
   setIsSettingsOpen: (isSettingsOpen: boolean) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
@@ -47,6 +53,22 @@ export const VZSidebar = ({
 
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
+  );
+
+  // On single-click, open the file in a transient tab.
+  const handleFileClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: true });
+    },
+    [openTab],
+  );
+
+  // On double-click, open the file in a persistent tab.
+  const handleFileDoubleClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: false });
+    },
+    [openTab],
   );
 
   return (

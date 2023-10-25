@@ -12,12 +12,14 @@ const fileNameSplit = (fileName: string) => {
 
 export const Tab = ({
   fileId,
+  isTransient,
   isActive,
   setActiveFileId,
   closeTabs,
   fileName,
 }: {
   fileId: FileId;
+  isTransient: boolean;
   isActive: boolean;
   setActiveFileId: (fileId: FileId) => void;
   closeTabs: (fileIds: FileId[]) => void;
@@ -40,7 +42,9 @@ export const Tab = ({
 
   return (
     <div
-      className={isActive ? 'tab active' : 'tab'}
+      className={`tab ${isActive ? 'active' : ''} ${
+        isTransient ? 'transient' : ''
+      }`}
       onClick={() => {
         setActiveFileId(fileId);
       }}

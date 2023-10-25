@@ -19,7 +19,11 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { defaultTheme, useDynamicTheme } from './themes';
+import {
+  ThemeLabel,
+  defaultTheme,
+  useDynamicTheme,
+} from './themes';
 import {
   EditorCache,
   useEditorCache,
@@ -31,7 +35,12 @@ import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import { vzReducer } from './vzReducer';
+import {
+  TabState,
+  VZAction,
+  VZState,
+  vzReducer,
+} from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
 import './style.scss';
@@ -150,7 +159,10 @@ function App() {
   }, []);
 
   // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(vzReducer, {
+  const [state, dispatch]: [
+    state: VZState,
+    dispatch: React.Dispatch<VZAction>,
+  ] = useReducer(vzReducer, {
     tabList: [],
     activeFileId: null,
     theme: defaultTheme,
@@ -206,7 +218,6 @@ function App() {
     submitOperation,
     closeTabs,
     openTab,
-    focusEditor,
   });
 
   // Isolate the files object from the document.
@@ -224,7 +235,7 @@ function App() {
             renameFile={renameFile}
             deleteFile={deleteFile}
             deleteDirectory={deleteDirectory}
-            handleFileClick={openTab}
+            openTab={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
