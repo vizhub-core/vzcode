@@ -30,6 +30,11 @@ export interface File {
   text: string;
 }
 
+// FileTreePath
+//  * The path to the directory, e.g. "src/components", OR
+//  * The path to the file e.g. "src/components/HelloWorld.js".
+export type FileTreePath = string;
+
 // FileTree
 //  * A tree of files.
 //  * Each node in the tree is either a directory or a file.
@@ -38,13 +43,9 @@ export interface File {
 //  * Each file has a `fileId` string.
 //  * Each directory has a `name` string.
 //  * Each directory has a `path` string.
-//  * The `path` string is the path to the directory.
-//    e.g. "src/components".
-//  * The `path` string is the path to the file.
-//    e.g. "src/components/HelloWorld.js".
 export interface FileTree {
   name: string;
-  path?: string;
+  path?: FileTreePath;
   children?: Array<FileTree | FileTreeFile>;
 }
 

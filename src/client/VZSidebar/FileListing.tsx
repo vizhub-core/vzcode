@@ -5,21 +5,15 @@ import { FileId } from '../../types';
 export const FileListing = ({
   name,
   fileId,
-  handleRenameFileClick,
-  handleDeleteFileClick,
+  renameFile,
+  deleteFile,
   handleFileClick,
   isActive,
 }: {
   name: string;
   fileId: FileId;
-  handleRenameFileClick: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
   isActive: boolean;
 }) => {
@@ -27,18 +21,15 @@ export const FileListing = ({
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
 
-  const handleDeleteClick = useCallback(
-    (event: React.MouseEvent) => {
-      handleDeleteFileClick(fileId, event);
-    },
-    [fileId, handleDeleteFileClick],
-  );
+  const handleDeleteClick = useCallback(() => {
+    deleteFile(fileId);
+  }, [fileId, deleteFile]);
 
   const handleRenameClick = useCallback(
     (newName: string) => {
-      handleRenameFileClick(fileId, newName);
+      renameFile(fileId, newName);
     },
-    [fileId, handleRenameFileClick],
+    [fileId, renameFile],
   );
 
   return (
@@ -47,7 +38,6 @@ export const FileListing = ({
       handleClick={handleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
-      isDir={false}
       isActive={isActive}
     >
       {name}

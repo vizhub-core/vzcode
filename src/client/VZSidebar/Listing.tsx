@@ -3,6 +3,7 @@ import {
   FileId,
   FileTree,
   FileTreeFile,
+  FileTreePath,
 } from '../../types';
 import { FileListing } from './FileListing';
 
@@ -10,22 +11,18 @@ import { FileListing } from './FileListing';
 // that appears in the Sidebar.
 export const Listing = ({
   entity,
-  handleRenameFileClick,
-  handleDeleteFileClick,
+  renameFile,
+  deleteFile,
+  deleteDirectory,
   handleFileClick,
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
 }: {
   entity: FileTree | FileTreeFile;
-  handleRenameFileClick: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
+  deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: FileId) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
@@ -37,8 +34,8 @@ export const Listing = ({
     <FileListing
       fileId={fileId}
       name={name}
-      handleRenameFileClick={handleRenameFileClick}
-      handleDeleteFileClick={handleDeleteFileClick}
+      renameFile={renameFile}
+      deleteFile={deleteFile}
       handleFileClick={handleFileClick}
       isActive={fileId === activeFileId}
     />
@@ -47,11 +44,13 @@ export const Listing = ({
       name={name}
       path={path}
       children={children}
-      handleRenameFileClick={handleRenameFileClick}
-      handleDeleteFileClick={handleDeleteFileClick}
+      renameFile={renameFile}
+      deleteFile={deleteFile}
+      deleteDirectory={deleteDirectory}
       handleFileClick={handleFileClick}
       isDirectoryOpen={isDirectoryOpen}
       toggleDirectory={toggleDirectory}
+      activeFileId={activeFileId}
     />
   );
 };
