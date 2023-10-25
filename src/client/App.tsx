@@ -161,8 +161,13 @@ function App() {
   );
 
   // Unpack state.
-  const { tabList, activeFileId, theme, isSettingsOpen } =
-    state;
+  const {
+    tabList,
+    activeFileId,
+    theme,
+    isSettingsOpen,
+    editorWantsFocus,
+  } = state;
 
   // Functions for dispatching actions to the reducer.
   const {
@@ -172,6 +177,7 @@ function App() {
     setTheme,
     setIsSettingsOpen,
     closeSettings,
+    editorNoLongerWantsFocus,
   } = useActions(dispatch);
 
   // The set of open directories.
@@ -244,6 +250,10 @@ function App() {
               activeFileId={activeFileId}
               theme={theme}
               editorCache={editorCache}
+              editorWantsFocus={editorWantsFocus}
+              editorNoLongerWantsFocus={
+                editorNoLongerWantsFocus
+              }
             />
           ) : null}
           <PrettierErrorOverlay

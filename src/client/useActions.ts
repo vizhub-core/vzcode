@@ -64,6 +64,12 @@ export const useActions = (
     setIsSettingsOpen(false);
   }, [setIsSettingsOpen]);
 
+  const editorNoLongerWantsFocus = useCallback(() => {
+    dispatch({
+      type: 'editor_no_longer_wants_focus',
+    });
+  }, [dispatch]);
+
   return {
     setActiveFileId,
     openTab,
@@ -71,5 +77,6 @@ export const useActions = (
     setTheme,
     setIsSettingsOpen,
     closeSettings,
+    editorNoLongerWantsFocus,
   };
 };

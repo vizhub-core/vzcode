@@ -5,6 +5,7 @@ import { openTabReducer } from './openTabReducer';
 import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
+import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 
 export { createInitialState } from './createInitialState';
 
@@ -52,7 +53,11 @@ export type VZAction =
 
   // `set_is_settings_open`
   //  * Sets whether the settings modal is open.
-  | { type: 'set_is_settings_open'; value: boolean };
+  | { type: 'set_is_settings_open'; value: boolean }
+
+  // `editor_no_longer_wants_focus`
+  //  * Sets `editorWantsFocus` to `false`.
+  | { type: 'editor_no_longer_wants_focus' };
 
 // Representation of an open tab.
 export type TabState = {
@@ -79,6 +84,7 @@ const reducers = [
   closeTabsReducer,
   setThemeReducer,
   setIsSettingsOpenReducer,
+  editorNoLongerWantsFocusReducer,
 ];
 
 export const vzReducer = (
