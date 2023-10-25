@@ -14,15 +14,18 @@ export const closeTabsReducer = (
   );
 
   let newActiveFileId: FileId | null = state.activeFileId;
+
   if (action.fileIdsToClose.includes(newActiveFileId)) {
-    const index = newTabList.findIndex(
+    const originalIndex = state.tabList.findIndex(
       (tabState) => tabState.fileId === newActiveFileId,
     );
-    newActiveFileId = newTabList[index]
-      ? newTabList[index].fileId
-      : newTabList[index - 1]
-      ? newTabList[index - 1].fileId
-      : null;
+
+    newActiveFileId =
+      originalIndex > 0
+        ? state.tabList[originalIndex - 1].fileId
+        : newTabList[0]
+        ? newTabList[0].fileId
+        : null;
   }
 
   return {
