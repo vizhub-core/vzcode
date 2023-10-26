@@ -7,6 +7,7 @@ import {
 import {
   FileId,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
@@ -49,7 +50,7 @@ export const CodeEditor = ({
 
   // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
-  username: string;
+  username: Username;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -80,7 +81,7 @@ export const CodeEditor = ({
 
   // Track username on a ref, so that we can use it in the
   // presence object's `username` property.
-  const usernameRef = useRef(username);
+  const usernameRef = useRef<Username>(username);
   usernameRef.current = username;
 
   // Get the editor corresponding to the active file.

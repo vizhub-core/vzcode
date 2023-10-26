@@ -3,11 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { Username } from '../types';
 
-// Gets the username from local storage.
-export const useInitialUsername = () => {
-  const localStoragePropertyName = 'vzCodeUsername';
+const localStoragePropertyName = 'vzCodeUsername';
 
-  const initialUsernameDefault = 'Anonymous';
+const initialUsernameDefault = 'Anonymous';
+
+// Gets the username from local storage.
+export const useInitialUsername = (): Username => {
   let initialUsername: Username = initialUsernameDefault;
 
   // If we're in the browser,
@@ -29,9 +30,7 @@ export const useInitialUsername = () => {
 
 // Stores the username to local storage.
 export const usePersistUsername = (username: Username) => {
-  const previousUsername = useRef<Username | null>(
-    username,
-  );
+  const previousUsername = useRef<Username>(username);
   useEffect(() => {
     if (previousUsername.current !== username) {
       previousUsername.current = username;

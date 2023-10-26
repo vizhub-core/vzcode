@@ -25,9 +25,6 @@ export const PresenceNotifications = ({
   const [presenceNotifications, setPresenceNotifications] =
     useState<Array<PresenceNotification>>([]);
 
-  // Previous implementation of presence notifications without usernames:
-  // const alreadyJoinedPresenceIds = useRef<Set<PresenceId>>(new Set());
-
   // Keep track of the presence IDs and its respective username that have already joined the session
   // - Switched from Set to Map to keep track of usernames
   //   - PresenceId is the key
@@ -71,15 +68,6 @@ export const PresenceNotifications = ({
 
           if (join) {
             // Figure out if we have ever seen this user before.
-            // if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
-            //   alreadyJoinedPresenceIds.current.add(presenceId);
-            //   setPresenceNotifications((prev) => [
-            //     ...prev,
-            //     { user, join, presenceId },
-            //   ]);
-            // }
-
-            // Figure out if we have ever seen this user before.
             const user =
               docPresence.remotePresences[presenceId]
                 .username;
@@ -94,12 +82,6 @@ export const PresenceNotifications = ({
               alreadyJoined.current.set(presenceId, user);
             }
           } else if (!join) {
-            // alreadyJoinedPresenceIds.current.delete(presenceId);
-            // setPresenceNotifications((prev) => [
-            //   ...prev,
-            //   { user, join, presenceId },
-            // ]);
-            // user = alreadyJoined.current.get(presenceId);
             const user =
               alreadyJoined.current.get(presenceId);
             alreadyJoined.current.delete(presenceId);

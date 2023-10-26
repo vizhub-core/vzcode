@@ -15,6 +15,7 @@ import {
   FileId,
   Files,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../types';
 import { TabList } from './TabList';
@@ -165,7 +166,7 @@ function App() {
   }, []);
 
   // Get the initial username from localStorage.
-  const initialUsername = useInitialUsername();
+  const initialUsername: Username = useInitialUsername();
 
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(

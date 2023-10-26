@@ -25,6 +25,10 @@ export const json1PresenceBroadcast = ({
       const presence = {
         start: [...path, from],
         end: [...path, to],
+
+        // We use a ref here so that the presence always broadcasts
+        // the latest username, in the case that it has been changed
+        // in the Settings mid-session.
         username: usernameRef.current,
       };
 
