@@ -140,7 +140,14 @@ function App() {
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      setLocalPresence(docPresence.create(randomId()));
+      const generateTimestampedId = () => {
+        const timestamp = Date.now().toString(36);
+        const randomPart = randomId();
+        return `${timestamp}-${randomPart}`;
+      };
+      setLocalPresence(
+        docPresence.create(generateTimestampedId()),
+      );
 
       // Store docPresence so child components can listen for changes.
       setDocPresence(docPresence);
@@ -154,9 +161,38 @@ function App() {
     };
   }, []);
 
+  const localStoragePropertyName = 'vzCodeUsername';
+
+  const initialUsernameDefault = 'Anonymous';
+  let initialUsername: string = initialUsernameDefault;
+
+  // If we're in the browser,
+  if (typeof window !== 'undefined') {
+    //check localStorage for a previously stored width.
+    const initialUsernameFromLocalStorage: string | null =
+      window.localStorage.getItem(localStoragePropertyName);
+
+    // If there is a previously stored width,
+    if (initialUsernameFromLocalStorage !== null) {
+      // use it as the initial width.
+      initialUsername = initialUsernameFromLocalStorage;
+    }
+  } else {
+    // If we're not in the browser, use the default initial width.
+  }
+
+  // TODO phase this out as we complete the refactoring
+  // It's here now for backwards compatibility
+
+  // The amount of time to wait idle before writing to localStorage.
+  // This is to avoid writing to localStorage on every resize event.
+  // MS = milliseconds
+  const localStorageWriteDebounceMS = 800;
+
+  // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
-    defaultTheme,
+    { defaultTheme, initialUsername },
     createInitialState,
   );
 
@@ -167,6 +203,7 @@ function App() {
     theme,
     isSettingsOpen,
     editorWantsFocus,
+    username,
   } = state;
 
   // Functions for dispatching actions to the reducer.
@@ -178,12 +215,37 @@ function App() {
     setIsSettingsOpen,
     closeSettings,
     editorNoLongerWantsFocus,
+    setUsername,
   } = useActions(dispatch);
 
   // The set of open directories.
   // TODO move this into reducer/useActions
   const { isDirectoryOpen, toggleDirectory } =
     useOpenDirectories();
+
+  useEffect(() => {
+    if (username !== initialUsername) {
+      const timeout = setTimeout(() => {
+        window.localStorage.setItem(
+          localStoragePropertyName,
+          username,
+        );
+      }, localStorageWriteDebounceMS);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [username]);
+
+  // Add the username to the local presence object.
+  // TODO refactor this to useRef
+  if (
+    localPresence &&
+    localPresence.username !== username
+  ) {
+    localPresence.username = username;
+  }
 
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
@@ -229,6 +291,8 @@ function App() {
             onClose={closeSettings}
             theme={theme}
             setTheme={setTheme}
+            username={username}
+            setUsername={setUsername}
           />
         </div>
         <div className="right">
@@ -261,6 +325,7 @@ function App() {
           />
           <PresenceNotifications
             docPresence={docPresence}
+            localPresence={localPresence}
           />
         </div>
         <Resizer />

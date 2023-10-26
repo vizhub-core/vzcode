@@ -70,6 +70,16 @@ export const useActions = (
     });
   }, [dispatch]);
 
+  const setUsername = useCallback(
+    (username: string) => {
+      dispatch({
+        type: 'set_username',
+        username,
+      });
+    },
+    [dispatch],
+  );
+
   return {
     setActiveFileId,
     openTab,
@@ -78,5 +88,6 @@ export const useActions = (
     setIsSettingsOpen,
     closeSettings,
     editorNoLongerWantsFocus,
+    setUsername,
   };
 };

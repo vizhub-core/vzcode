@@ -9,18 +9,20 @@ import { ThemeLabel, themes } from './themes';
 //   { value: 30, label: '30 seconds' },
 // ];
 
-export let username = 'Anonymous';
-
 export const VZSettings = ({
   show,
   onClose,
-  setTheme,
   theme,
+  setTheme,
+  username,
+  setUsername,
 }: {
   show: boolean;
   onClose: () => void;
-  setTheme: (theme: ThemeLabel) => void;
   theme: ThemeLabel;
+  setTheme: (theme: ThemeLabel) => void;
+  username: string;
+  setUsername: (username: string) => void;
 }) => {
   const handleThemeChange = useCallback((event) => {
     const selectedValue = event.target.value;
@@ -44,10 +46,10 @@ export const VZSettings = ({
   // );
 
   const usernameRef = useRef<HTMLInputElement>(null);
-  const handleUsernameChange = () => {
-    const usernameValue = usernameRef.current?.value;
-    username = usernameValue;
-  };
+
+  const handleUsernameChange = useCallback(() => {
+    setUsername(usernameRef.current?.value || '');
+  }, [setUsername]);
 
   return show ? (
     <Modal
@@ -67,6 +69,7 @@ export const VZSettings = ({
             ref={usernameRef}
             onChange={handleUsernameChange}
             placeholder="Enter username"
+            value={username}
           />
           <Form.Text className="text-muted">
             Enter a username to be displayed on your cursor

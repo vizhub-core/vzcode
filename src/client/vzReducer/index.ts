@@ -26,6 +26,9 @@ export type VZState = {
 
   // True if the editor should focus on the next render.
   editorWantsFocus: boolean;
+
+  // The username of the current user.
+  username: string;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
@@ -57,7 +60,11 @@ export type VZAction =
 
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
-  | { type: 'editor_no_longer_wants_focus' };
+  | { type: 'editor_no_longer_wants_focus' }
+
+  // `set_username`
+  //  * Sets the username.
+  | { type: 'set_username'; username: string };
 
 // Representation of an open tab.
 export type TabState = {

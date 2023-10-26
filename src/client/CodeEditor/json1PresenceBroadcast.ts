@@ -6,10 +6,12 @@ export const json1PresenceBroadcast = ({
   path,
   localPresence,
 }) =>
+
   // See https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/10
   EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
     // If this update modified the cursor / selection,
     // we broadcast the selection update via ShareDB presence.
+
     if (viewUpdate.selectionSet) {
       // Isolate the single selection to use for presence.
       // Unfortunately JSON1 with presence does not yet
@@ -23,9 +25,7 @@ export const json1PresenceBroadcast = ({
       const presence = {
         start: [...path, from],
         end: [...path, to],
-
-        // TODO fill this in with the user's actual username.
-        username: 'anonymous',
+        username: localPresence.username,
       };
 
       // Broadcast presence to remote clients!
