@@ -153,12 +153,15 @@ function App() {
     };
   }, []);
 
+  console.log('localPresence', localPresence);
+
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(reducer, {
     tabList: [],
     activeFileId: null,
     theme: defaultTheme,
     isSettingsOpen: false,
+    username: 'Anonymous',
   });
 
   //Reducer states
@@ -166,6 +169,7 @@ function App() {
   const activeFileId = state.activeFileId;
   const theme = state.theme;
   const isSettingsOpen = state.isSettingsOpen;
+  const username = state.username;
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
 
@@ -239,6 +243,21 @@ function App() {
     },
     [dispatch],
   );
+
+  // Set the username.
+  const setUsername = useCallback(
+    (username: string) => {
+      dispatch({
+        type: 'set_username',
+        username: username,
+      });
+    },
+    [dispatch],
+  );
+  // Add the username to the local presence object.
+  if (localPresence && localPresence.username !== username) {
+    localPresence.username = username;
+  }
 
   // Cache of CodeMirror editors by file id.
   const editorCache = useEditorCache();
@@ -384,6 +403,7 @@ function App() {
             onClose={handleSettingsClose}
             theme={theme}
             setTheme={setTheme}
+            setUsername={setUsername}
           />
         </div>
         <div className="right">

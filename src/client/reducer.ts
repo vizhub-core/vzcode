@@ -114,6 +114,12 @@ export const reducer = (state, action) => {
         isSettingsOpen: action.value,
       };
     }
+    case 'set_username': {
+      return {
+        ...state,
+        username: action.username,
+      };
+    }
   }
   throw Error('Unknown action: ' + action.type);
 };

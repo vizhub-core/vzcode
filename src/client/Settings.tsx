@@ -9,18 +9,19 @@ import { ThemeLabel, themes } from './themes';
 //   { value: 30, label: '30 seconds' },
 // ];
 
-export let username = 'Anonymous';
 
 export const Settings = ({
   show,
   onClose,
-  setTheme,
   theme,
+  setTheme,
+  setUsername,
 }: {
   show: boolean;
   onClose: () => void;
-  setTheme: (theme: ThemeLabel) => void;
   theme: ThemeLabel;
+  setTheme: (theme: ThemeLabel) => void;
+  setUsername: (username: string) => void;
 }) => {
   const handleThemeChange = useCallback((event) => {
     const selectedValue = event.target.value;
@@ -45,8 +46,7 @@ export const Settings = ({
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const handleUsernameChange = () => {
-    const usernameValue = usernameRef.current?.value;
-    username = usernameValue;
+    setUsername(usernameRef.current?.value);
   };
 
   return show ? (

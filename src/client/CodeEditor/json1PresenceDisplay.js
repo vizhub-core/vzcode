@@ -32,10 +32,6 @@ export const json1PresenceDisplay = ({
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
           // If presence === null, the user has disconnected / exited
-          // notification(presence);
-          // console.log('docPresence in presenceDisplay:',docPresence);
-          // console.log('presence in presenceDisplay:', presence);
-
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
             presenceState[id] = presence;
@@ -101,47 +97,6 @@ export const json1PresenceDisplay = ({
   ),
   presenceTheme,
 ];
-
-// const notification = (presence) => {
-//   const notif = document.createElement('div');
-//   notif.className = 'notification-presence';
-//   if (presence === null){
-//     notif.textContent = 'User asdfgasdfgasdfg left the collaboration session.';
-//     notif.style.display = 'block';
-//   }
-//   // The following causes the popup to show every time the remote cursor moves
-//   // to a different location on the file and not when the user first joins
-//   // else {
-//   //   notif.textContent = presence + 'joined the collaboration session.';
-//   //   notif.style.display = 'block';
-//   // }
-//   document.body.appendChild(notif);
-
-//   const notifStyle = document.createElement('style');
-//   notifStyle.innerText = `
-//     .notification-presence {
-//       position: fixed;
-//       display: none;
-//       bottom: 20px;
-//       right: 20px;
-//       max-width: 300px;
-//       overflow-x: hidden;
-//       white-space: nowrap;
-//       background-color: rgb(54, 65, 89);
-//       color: rgb(154, 160, 172);
-//       padding: 15px;
-//     }
-//     .notification-presence:hover {
-//       overflow-x: auto;
-//     }`;
-//   document.head.appendChild(notifStyle);
-
-//   setTimeout(() => {
-//     notif.style.display = 'none';
-//   }, 10000);
-
-//   return notif;
-// };
 
 const presenceAnnotation = Annotation.define();
 

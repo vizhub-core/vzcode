@@ -83,6 +83,7 @@ export const getOrCreateEditor = ({
   onInteract?: () => void;
   editorCache: EditorCache;
 }): EditorCacheValue => {
+
   // Cache hit
   if (editorCache.has(fileId)) {
     return editorCache.get(fileId);
@@ -118,13 +119,14 @@ export const getOrCreateEditor = ({
   );
 
   // Deals with broadcasting changes in cursor location and selection.
-  if (localPresence)
+  if (localPresence){
     extensions.push(
       json1PresenceBroadcast({
         path: textPath,
         localPresence,
       }),
     );
+  }
 
   // Deals with receiving the broadcas from other clients and displaying them.
   if (docPresence)
