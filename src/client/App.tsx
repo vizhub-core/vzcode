@@ -300,6 +300,7 @@ function App() {
     [dispatch],
   );
   // Add the username to the local presence object.
+  // TODO refactor this to useRef
   if (
     localPresence &&
     localPresence.username !== username
