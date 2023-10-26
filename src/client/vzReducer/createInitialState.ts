@@ -13,5 +13,7 @@ export const createInitialState = ({
   theme: defaultTheme,
   isSettingsOpen: false,
   editorWantsFocus: false,
-  username: initialUsername || '',
+
+  // TODO unify this with App.tsx
+  username: initialUsername || 'Anonymous',
 });

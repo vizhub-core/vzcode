@@ -51,7 +51,7 @@
     "@codemirror/lang-markdown": "^6.2.2",
     "@codemirror/state": "^6.3.1",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.21.3",
+    "@codemirror/view": "^6.21.4",
     "@lezer/highlight": "^1.1.6",
     "@replit/codemirror-interact": "^6.3.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
@@ -83,11 +83,11 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@types/react": "^18.2.31",
+    "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
     "@vitejs/plugin-react": "^4.1.0",
     "prettier": "^3.0.3",
-    "sass": "^1.69.4",
+    "sass": "^1.69.5",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
     "vitest": "^0.34.6"

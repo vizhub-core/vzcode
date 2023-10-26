@@ -6,7 +6,6 @@ export const json1PresenceBroadcast = ({
   path,
   localPresence,
 }) =>
-
   // See https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/10
   EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
     // If this update modified the cursor / selection,

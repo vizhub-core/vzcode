@@ -3,8 +3,9 @@ import { openTabReducer } from './openTabReducer';
 import { VZAction, VZState, createInitialState } from '.';
 import { defaultTheme } from '../themes';
 
-const initialState: VZState =
-  createInitialState(defaultTheme);
+const initialState: VZState = createInitialState({
+  defaultTheme,
+});
 
 describe('openTabReducer', () => {
   it('Opens a new tab', () => {
