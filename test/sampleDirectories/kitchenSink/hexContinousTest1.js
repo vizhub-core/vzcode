@@ -1,6 +1,6 @@
 let a = 5;
 
-let color = "#1068F4";
+let color = "#405F91";
 
 let rgbColour = rgb(178, 52, 52);
 

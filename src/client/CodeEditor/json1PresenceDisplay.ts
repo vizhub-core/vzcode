@@ -20,7 +20,12 @@ export const json1PresenceDisplay = ({
 }) => [
   ViewPlugin.fromClass(
     class {
-      constructor(view) {
+      // The decorations to display.
+      // This is a RangeSet of Decoration objects.
+      // See https://codemirror.net/6/docs/ref/#view.Decoration
+      decorations: RangeSet<Decoration>;
+
+      constructor(view: EditorView) {
         // Initialize decorations to empty array so CodeMirror doesn't crash.
         this.decorations = RangeSet.of([]);
 
@@ -116,12 +121,13 @@ const pathMatches = (path, presence) => {
 
 // Displays a single remote presence cursor.
 class PresenceWidget extends WidgetType {
-  constructor(id) {
+  id: string;
+  constructor(id: string) {
     super();
     this.id = id;
   }
 
-  eq(other) {
+  eq(other: PresenceWidget) {
     return other.id === this.id;
   }
 

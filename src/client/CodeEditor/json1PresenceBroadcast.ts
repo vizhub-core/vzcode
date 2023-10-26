@@ -1,3 +1,4 @@
+import { ViewUpdate } from '@codemirror/view';
 import { EditorView } from 'codemirror';
 
 // Deals with broadcasting changes in cursor location and selection.
@@ -7,7 +8,7 @@ export const json1PresenceBroadcast = ({
 }) =>
 
   // See https://discuss.codemirror.net/t/codemirror-6-proper-way-to-listen-for-changes/2395/10
-  EditorView.updateListener.of((viewUpdate) => {
+  EditorView.updateListener.of((viewUpdate: ViewUpdate) => {
     // If this update modified the cursor / selection,
     // we broadcast the selection update via ShareDB presence.
 

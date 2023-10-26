@@ -3,6 +3,7 @@ import {
   FileId,
   FileTree,
   FileTreeFile,
+  FileTreePath,
   Files,
 } from '../../types';
 import { getFileTree } from '../getFileTree';
@@ -12,30 +13,34 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import './styles.scss';
 
-export const Sidebar = ({
-  createFile,
+export const VZSidebar = ({
   files,
-  handleRenameFileClick,
-  handleDeleteFileClick,
-  handleFileClick,
+  createFile,
+  renameFile,
+  deleteFile,
+  deleteDirectory,
+  openTab,
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
+  activeFileId,
 }: {
   files: Files;
-  createFile?: () => void;
-  handleRenameFileClick?: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick?: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
-  handleFileClick?: (fileId: FileId) => void;
-  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen?: (path: string) => boolean;
-  toggleDirectory?: (path: string) => void;
+  createFile: () => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
+  deleteDirectory: (path: FileTreePath) => void;
+  openTab: ({
+    fileId,
+    isTransient,
+  }: {
+    fileId: FileId;
+    isTransient?: boolean;
+  }) => void;
+  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
+  isDirectoryOpen: (path: string) => boolean;
+  toggleDirectory: (path: string) => void;
+  activeFileId?: FileId;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
@@ -50,6 +55,22 @@ export const Sidebar = ({
     SplitPaneResizeContext,
   );
 
+  // On single-click, open the file in a transient tab.
+  const handleFileClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: true });
+    },
+    [openTab],
+  );
+
+  // On double-click, open the file in a persistent tab.
+  const handleFileDoubleClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: false });
+    },
+    [openTab],
+  );
+
   return (
     <div
       className="vz-sidebar"
@@ -57,11 +78,7 @@ export const Sidebar = ({
     >
       <div className="files">
         <div className="full-box">
-          <div>
-            <a className="link-name" href="#">
-              Files
-            </a>
-          </div>
+          <div className="sidebar-section-hint">Files</div>
           <div>
             <i
               className="bx bxs-file-plus new-btn"
@@ -77,17 +94,18 @@ export const Sidebar = ({
               const key = fileId ? fileId : path;
               return (
                 <Listing
-                  entity={entity}
                   key={key}
-                  handleRenameFileClick={
-                    handleRenameFileClick
-                  }
-                  handleDeleteFileClick={
-                    handleDeleteFileClick
-                  }
+                  entity={entity}
+                  renameFile={renameFile}
+                  deleteFile={deleteFile}
+                  deleteDirectory={deleteDirectory}
                   handleFileClick={handleFileClick}
+                  handleFileDoubleClick={
+                    handleFileDoubleClick
+                  }
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
+                  activeFileId={activeFileId}
                 />
               );
             })

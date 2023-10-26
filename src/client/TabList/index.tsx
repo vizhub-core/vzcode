@@ -1,59 +1,8 @@
-import { useCallback, useMemo, useEffect } from 'react';
-import { FileId, Files } from '../../types';
+import { useCallback, useEffect } from 'react';
+import type { TabState } from '../vzReducer';
+import type { FileId, Files } from '../../types';
+import { Tab } from './Tab';
 import './style.scss';
-
-// Supports adding the file's containing folder to the tab name
-const fileNameSplit = (fileName) => {
-  const split = fileName.split('/');
-  if (split.length === 1) return split[split.length - 1];
-  return (
-    split[split.length - 2] + '/' + split[split.length - 1]
-  );
-};
-
-const Tab = ({
-  fileId,
-  isActive,
-  setActiveFileId,
-  closeTab,
-  fileName,
-}: {
-  fileId: FileId;
-  isActive: boolean;
-  setActiveFileId: (fileId: FileId) => void;
-  closeTab: (fileId: FileId) => void;
-  fileName: string;
-}) => {
-  const handleCloseClick = useCallback(
-    (event: React.MouseEvent) => {
-      // Stop propagation so that the outer listener doesn't fire.
-      event.stopPropagation();
-
-      closeTab(fileId);
-    },
-    [closeTab, fileId],
-  );
-
-  const tabName = useMemo(
-    () => fileNameSplit(fileName),
-    [fileName],
-  );
-
-  return (
-    <div
-      className={isActive ? 'tab active' : 'tab'}
-      onClick={() => {
-        setActiveFileId(fileId);
-      }}
-    >
-      {tabName}
-      <div
-        className={isActive ? 'bx bx-x tab-close' : ''}
-        onClick={handleCloseClick}
-      ></div>
-    </div>
-  );
-};
 
 // Displays the list of tabs above the code editor.
 export const TabList = ({
@@ -61,29 +10,36 @@ export const TabList = ({
   tabList,
   activeFileId,
   setActiveFileId,
-  closeTab,
+  openTab,
+  closeTabs,
+  createFile,
 }: {
   files: Files;
-  tabList: FileId[];
+  tabList: Array<TabState>;
   activeFileId: FileId;
   setActiveFileId: (fileId: FileId) => void;
-  closeTab: (fileId: FileId) => void;
+  openTab: (tabState: TabState) => void;
+  closeTabs: (fileIds: FileId[]) => void;
+  createFile: () => void;
 }) => {
-  //Create a function to perform the logic to delete the current tab
+  // Close the active tab on alt+w
   const handleKeyPress = useCallback(
     (event: { altKey: boolean; key: string }) => {
       if (event.altKey == true) {
         if (event.key == 'w') {
-          closeTab(activeFileId);
+          closeTabs([activeFileId]);
+        }
+        if (event.key == 'n') {
+          createFile();
         }
       }
     },
-    [closeTab, activeFileId],
+    [createFile, closeTabs, activeFileId],
   );
+
+  // Add the global keydown event listener
   useEffect(() => {
-    // attach the event listener
     document.addEventListener('keydown', handleKeyPress);
-    // remove the event listener
     return () => {
       document.removeEventListener(
         'keydown',
@@ -91,17 +47,20 @@ export const TabList = ({
       );
     };
   }, [handleKeyPress]);
+
   return (
     <div className="vz-tab-list">
       {files &&
-        tabList.map((fileId: FileId) => (
+        tabList.map((tabState: TabState) => (
           <Tab
-            key={fileId}
-            fileId={fileId}
-            isActive={fileId === activeFileId}
+            key={tabState.fileId}
+            fileId={tabState.fileId}
+            isTransient={tabState.isTransient}
+            isActive={tabState.fileId === activeFileId}
             setActiveFileId={setActiveFileId}
-            closeTab={closeTab}
-            fileName={files[fileId].name}
+            openTab={openTab}
+            closeTabs={closeTabs}
+            fileName={files[tabState.fileId].name}
           />
         ))}
     </div>

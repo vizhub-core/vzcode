@@ -22,8 +22,19 @@ const autoSaveDebounceTimeMS = 800;
 // when the user is interacting with the widgets in the editor.
 const throttleTimeMS = 100;
 
+// Helper function to get the port from command line arguments or use default.
+function getPortFromArgs(defaultPort = 3030) {
+  const portArg = process.argv.find((arg) =>
+    arg.startsWith('--port='),
+  );
+  if (portArg) {
+    return parseInt(portArg.split('=')[1], 10);
+  }
+  return defaultPort;
+}
+
 // Server port.
-const port = 3030;
+const port = getPortFromArgs();
 
 const initialDocument = computeInitialDocument({
   // Use the current working directory to look for files.
@@ -109,7 +120,7 @@ const save = () => {
 
       // Handle renaming files.
       if (previous.name !== current.name) {
-        fs.renamesync(previous.name, current.name);
+        fs.renameSync(previous.name, current.name);
       }
     }
 

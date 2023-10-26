@@ -2,44 +2,44 @@ import { useCallback, useMemo } from 'react';
 import { Item } from './Item';
 import { Listing } from './Listing';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
-import { FileTree, FileTreeFile } from '../../types';
+import type {
+  FileTree,
+  FileTreeFile,
+  FileTreePath,
+} from '../../types';
 
 export const DirectoryListing = ({
   name,
   path,
   children,
-  handleRenameFileClick,
-  handleDeleteFileClick,
+  renameFile,
+  deleteFile,
+  deleteDirectory,
   handleFileClick,
+  handleFileDoubleClick,
   isDirectoryOpen,
   toggleDirectory,
+  activeFileId,
 }: {
   name: string;
   path: string;
   children: Array<FileTree | FileTreeFile>;
-  handleRenameFileClick: (
-    fileId: string,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick: (
-    fileId: string,
-    event: React.MouseEvent,
-  ) => void;
+  renameFile: (fileId: string, newName: string) => void;
+  deleteFile: (fileId: string) => void;
+  deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: string) => void;
+  handleFileDoubleClick: (fileId: string) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
+  activeFileId: string;
 }) => {
   const handleClick = useCallback(() => {
     toggleDirectory(path);
-  }, [toggleDirectory]);
+  }, [toggleDirectory, path]);
 
-  const handleDeleteClick = useCallback(
-    (event) => {
-      // https://github.com/vizhub-core/vzcode/issues/102
-      handleDeleteFileClick(path, event);
-    },
-    [handleDeleteFileClick, path],
-  );
+  const handleDeleteClick = useCallback(() => {
+    deleteDirectory(path);
+  }, [deleteDirectory, path]);
 
   const handleRenameClick = useCallback(() => {
     // https://github.com/vizhub-core/vzcode/issues/103
@@ -58,7 +58,7 @@ export const DirectoryListing = ({
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
-        isDir={true}
+        isDirectory={true}
       >
         <div
           className="arrow-wrapper"
@@ -79,15 +79,16 @@ export const DirectoryListing = ({
               <Listing
                 entity={entity}
                 key={fileId || path}
-                handleRenameFileClick={
-                  handleRenameFileClick
-                }
-                handleDeleteFileClick={
-                  handleDeleteFileClick
-                }
+                renameFile={renameFile}
+                deleteFile={deleteFile}
+                deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
+                handleFileDoubleClick={
+                  handleFileDoubleClick
+                }
                 isDirectoryOpen={isDirectoryOpen}
                 toggleDirectory={toggleDirectory}
+                activeFileId={activeFileId}
               />
             );
           })}

@@ -1,8 +1,9 @@
 import { useRef } from 'react';
 import { FileId } from '../types';
+import { EditorView } from 'codemirror';
 
 export type EditorCacheValue = {
-  editor: any;
+  editor: EditorView;
   themeCompartment: any;
 };
 

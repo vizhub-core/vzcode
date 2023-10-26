@@ -7,7 +7,7 @@ import { githubDark } from '@uiw/codemirror-theme-github';
 import { material } from '@uiw/codemirror-theme-material';
 import { nord } from '@uiw/codemirror-theme-nord';
 import { xcodeLight } from '@uiw/codemirror-theme-xcode';
-// import { vizhub } from './vizhub-theme';
+import { vizhubTheme } from './vizhubTheme';
 
 // CodeMirror themes
 export type ThemeLabel =
@@ -19,8 +19,8 @@ export type ThemeLabel =
   | 'oneDark'
   | 'okaidia'
   | 'github'
-  | 'xcode';
-// | 'vizhub'
+  | 'xcode'
+  | 'vizhub';
 
 export type ThemeOption = {
   value: any;
@@ -37,7 +37,7 @@ export const themes: Array<ThemeOption> = [
   { value: okaidia, label: 'okaidia' },
   { value: githubDark, label: 'github' },
   { value: xcodeLight, label: 'xcode' },
-  // { value: vizhub, label: 'vizhub' },
+  { value: vizhubTheme, label: 'vizhub' },
 ];
 
 // Map theme labels to theme values
@@ -53,4 +53,4 @@ export const themeOptionsByLabel: Record<
 );
 
 // The default theme
-export const defaultTheme: ThemeLabel = 'oneDark';
+export const defaultTheme: ThemeLabel = 'vizhub';

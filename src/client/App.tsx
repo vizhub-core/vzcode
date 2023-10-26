@@ -9,9 +9,8 @@ import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
 import { CodeEditor } from './CodeEditor';
-import { diff } from './diff';
-import { Settings } from './Settings';
-import { Sidebar } from './Sidebar';
+import { VZSettings } from './VZSettings';
+import { VZSidebar } from './VZSidebar';
 import {
   FileId,
   Files,
@@ -20,19 +19,28 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { useTabsState } from './useTabsState';
-import { ThemeLabel, defaultTheme } from './themes';
-import { useEditorCache } from './useEditorCache';
-import { useDynamicTheme } from './useDynamicTheme';
+import {
+  ThemeLabel,
+  defaultTheme,
+  useDynamicTheme,
+} from './themes';
+import {
+  EditorCache,
+  useEditorCache,
+} from './useEditorCache';
 import { usePrettier } from './usePrettier';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
-import { reducer } from './reducer';
-import './style.scss';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
+import { VZAction, VZState, vzReducer } from './vzReducer';
+import { useActions } from './useActions';
+import { useFileCRUD } from './useFileCRUD';
+import { useSubmitOperation } from './useSubmitOperation';
+import './style.scss';
+import { createInitialState } from './vzReducer';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -58,20 +66,9 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  // A helper function to submit operations to the ShareDB document
-
   const submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useCallback(
-    (next) => {
-      const content: VZCodeContent = shareDBDoc.data;
-      const op = diff(content, next(content));
-      if (op && shareDBDoc) {
-        shareDBDoc.submitOp(op);
-      }
-    },
-    [shareDBDoc],
-  );
+  ) => void = useSubmitOperation(shareDBDoc);
 
   // Auto-run Pretter after local changes.
   const { prettierError } = usePrettier(
@@ -79,8 +76,6 @@ function App() {
     submitOperation,
     prettierWorker,
   );
-
-  console.log('prettierError', prettierError);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -123,6 +118,12 @@ function App() {
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
       shareDBDoc.on('op', () => {
+        // TODO consider excluding file contents from this,
+        // because currently we are re-rendering the entire
+        // document on each file change (each keystroke while editing).
+        // This is not required, because no part of the app outside
+        // of the CodeMirror integration uses those file contents.
+        // The Sidebar only needs to know file names, not contents.
         setContent(shareDBDoc.data);
       });
 
@@ -180,21 +181,6 @@ function App() {
     // If we're not in the browser, use the default initial width.
   }
 
-  // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(reducer, {
-    tabList: [],
-    activeFileId: null,
-    theme: defaultTheme,
-    isSettingsOpen: false,
-    username: initialUsername,
-  });
-
-  //Reducer states
-  const tabList = state.tabList;
-  const activeFileId = state.activeFileId;
-  const theme = state.theme;
-  const isSettingsOpen = state.isSettingsOpen;
-  const username = state.username;
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
 
@@ -202,6 +188,40 @@ function App() {
   // This is to avoid writing to localStorage on every resize event.
   // MS = milliseconds
   const localStorageWriteDebounceMS = 800;
+
+  // https://react.dev/reference/react/useReducer
+  const [state, dispatch] = useReducer(
+    vzReducer,
+    { defaultTheme, initialUsername },
+    createInitialState,
+  );
+
+  // Unpack state.
+  const {
+    tabList,
+    activeFileId,
+    theme,
+    isSettingsOpen,
+    editorWantsFocus,
+    username,
+  } = state;
+
+  // Functions for dispatching actions to the reducer.
+  const {
+    setActiveFileId,
+    openTab,
+    closeTabs,
+    setTheme,
+    setIsSettingsOpen,
+    closeSettings,
+    editorNoLongerWantsFocus,
+    setUsername,
+  } = useActions(dispatch);
+
+  // The set of open directories.
+  // TODO move this into reducer/useActions
+  const { isDirectoryOpen, toggleDirectory } =
+    useOpenDirectories();
 
   useEffect(() => {
     if (username !== initialUsername) {
@@ -218,87 +238,6 @@ function App() {
     }
   }, [username]);
 
-  const setTabList = useCallback(
-    (tabList) => {
-      dispatch({
-        type: 'set_tab_list',
-        tabList,
-      });
-    },
-    [dispatch],
-  );
-
-  const setActiveFileId = useCallback(
-    (activeFileId) => {
-      dispatch({
-        type: 'set_active_fileId',
-        activeFileId,
-      });
-    },
-    [dispatch],
-  );
-
-  const openTab = useCallback(
-    (fileId: FileId) => {
-      dispatch({
-        type: 'open_tab',
-        fileId,
-      });
-    },
-    [dispatch],
-  );
-
-  const closeTab = useCallback(
-    (fileIdToRemove: FileId) => {
-      dispatch({
-        type: 'close_tab',
-        fileIdToRemove,
-      });
-    },
-    [dispatch],
-  );
-
-  const multiCloseTab = useCallback(
-    (idsToDelete: Array<FileId>) => {
-      dispatch({
-        type: 'multi_close_tab',
-        idsToDelete,
-      });
-    },
-    [dispatch],
-  );
-
-  const setTheme = useCallback(
-    (themeLabel: ThemeLabel) => {
-      dispatch({
-        type: 'set_Theme',
-        themeLabel: themeLabel,
-      });
-    },
-    [dispatch],
-  );
-
-  // True to show the settings modal.
-  const setIsSettingsOpen = useCallback(
-    (value: boolean) => {
-      dispatch({
-        type: 'set_Is_Settings_Open',
-        value: value,
-      });
-    },
-    [dispatch],
-  );
-
-  // Set the username.
-  const setUsername = useCallback(
-    (username: string) => {
-      dispatch({
-        type: 'set_username',
-        username: username,
-      });
-    },
-    [dispatch],
-  );
   // Add the username to the local presence object.
   // TODO refactor this to useRef
   if (
@@ -309,124 +248,22 @@ function App() {
   }
 
   // Cache of CodeMirror editors by file id.
-  const editorCache = useEditorCache();
+  const editorCache: EditorCache = useEditorCache();
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
-  // The set of open directories.
-  const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories();
-
-  // TODO move this logic to a hook called `useFileCRUD`
-  // Include
-  //  - `createFile`
-  //  - `handleRenameFileClick`
-  //  - `deleteFile`
-  //  - `handleDeleteFileClick`
-  const createFile = useCallback(() => {
-    const name = prompt('Enter new file name');
-    if (name) {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [randomId()]: { name, text: '' },
-        },
-      }));
-    }
-  }, [submitOperation]);
-
-  // Called when a file in the sidebar is renamed.
-  const handleRenameFileClick = useCallback(
-    (fileId: FileId, newName: string) => {
-      submitOperation((document) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [fileId]: {
-            ...document.files[fileId],
-            name: newName,
-          },
-        },
-      }));
-    },
-    [submitOperation],
-  );
-
-  const deleteFile = useCallback(
-    (fileId: FileId) => {
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        delete updatedFiles[fileId];
-        return { ...document, files: updatedFiles };
-      });
-      closeTab(fileId);
-    },
-    [submitOperation, closeTab],
-  );
-
-  const deleteDirectory = useCallback(
-    (path: FileId) => {
-      let tabsToDelete: Array<FileId> = [];
-      submitOperation((document) => {
-        const updatedFiles = { ...document.files };
-        for (const key in updatedFiles) {
-          if (updatedFiles[key].name.includes(path)) {
-            tabsToDelete.push(key);
-            delete updatedFiles[key];
-          }
-        }
-        return { ...document, files: updatedFiles };
-      });
-      multiCloseTab(tabsToDelete);
-    },
-    [submitOperation, multiCloseTab],
-  );
-
-  const handleDeleteClick = useCallback(
-    (key: string) => {
-      //Regex to identify if the key is a file path or a file id.
-      if (/^[0-9]*$/.test(key)) {
-        if (key.length == 8) {
-          deleteFile(key);
-        } else {
-          deleteDirectory(key);
-        }
-      } else {
-        deleteDirectory(key);
-      }
-    },
-    [deleteFile, deleteDirectory],
-  );
-
-  const handleSettingsClose = useCallback(() => {
-    setIsSettingsOpen(false);
-  }, []);
-
-  // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
-  const interactTimeoutRef = useRef(null);
-  const handleInteract = useCallback(() => {
-    // Set `isInteracting: true` if not already set.
-    if (!interactTimeoutRef.current) {
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: true,
-      }));
-    } else {
-      clearTimeout(interactTimeoutRef.current);
-    }
-
-    // Set `isInteracting: false` after a delay.
-    interactTimeoutRef.current = setTimeout(() => {
-      interactTimeoutRef.current = null;
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: false,
-      }));
-    }, 800);
-  }, [submitOperation]);
+  // Handle file CRUD operations.
+  const {
+    createFile,
+    renameFile,
+    deleteFile,
+    deleteDirectory,
+  } = useFileCRUD({
+    submitOperation,
+    closeTabs,
+    openTab,
+  });
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -437,19 +274,21 @@ function App() {
     <SplitPaneResizeProvider>
       <div className="app">
         <div className="left">
-          <Sidebar
-            createFile={createFile}
+          <VZSidebar
             files={files}
-            handleRenameFileClick={handleRenameFileClick}
-            handleDeleteFileClick={handleDeleteClick}
-            handleFileClick={openTab}
+            createFile={createFile}
+            renameFile={renameFile}
+            deleteFile={deleteFile}
+            deleteDirectory={deleteDirectory}
+            openTab={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
+            activeFileId={activeFileId}
           />
-          <Settings
+          <VZSettings
             show={isSettingsOpen}
-            onClose={handleSettingsClose}
+            onClose={closeSettings}
             theme={theme}
             setTheme={setTheme}
             username={username}
@@ -462,17 +301,23 @@ function App() {
             tabList={tabList}
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
-            closeTab={closeTab}
+            openTab={openTab}
+            closeTabs={closeTabs}
+            createFile={createFile}
           />
           {content && activeFileId ? (
             <CodeEditor
               shareDBDoc={shareDBDoc}
+              submitOperation={submitOperation}
               localPresence={localPresence}
               docPresence={docPresence}
               activeFileId={activeFileId}
               theme={theme}
-              onInteract={handleInteract}
               editorCache={editorCache}
+              editorWantsFocus={editorWantsFocus}
+              editorNoLongerWantsFocus={
+                editorNoLongerWantsFocus
+              }
             />
           ) : null}
           <PrettierErrorOverlay

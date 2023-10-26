@@ -9,7 +9,7 @@ import { ThemeLabel, themes } from './themes';
 //   { value: 30, label: '30 seconds' },
 // ];
 
-export const Settings = ({
+export const VZSettings = ({
   show,
   onClose,
   theme,
