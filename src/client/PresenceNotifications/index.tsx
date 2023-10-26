@@ -57,7 +57,10 @@ export const PresenceNotifications = ({
         const remotePresenceTimestamp = extractTimestampFromId(presenceId);
         const localPresenceTimestamp = extractTimestampFromId(localPresence.presenceId);
 
-        if (remotePresenceTimestamp > localPresenceTimestamp && join) {
+        // If the remote presence joined before the local presence, then we don't need to show a notification.
+        if (remotePresenceTimestamp <= localPresenceTimestamp) return;
+
+        if (join) {
           // Figure out if we have ever seen this user before.
           // if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
           //   alreadyJoinedPresenceIds.current.add(presenceId);
@@ -69,7 +72,6 @@ export const PresenceNotifications = ({
 
           // Figure out if we have ever seen this user before.
           const user = docPresence.remotePresences[presenceId].username;
-
           if (!alreadyJoined.current.has(presenceId)) {
             alreadyJoined.current.set(presenceId, user);
             setPresenceNotifications((prev) => [
