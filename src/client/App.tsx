@@ -160,13 +160,33 @@ function App() {
     };
   }, []);
 
+  const localStoragePropertyName = 'vzCodeUsername';
+
+  const initialUsernameDefault = 'Anonymous';
+  let initialUsername: string = initialUsernameDefault;
+
+  // If we're in the browser,
+  if (typeof window !== 'undefined') {
+    //check localStorage for a previously stored width.
+    const initialUsernameFromLocalStorage: string | null =
+      window.localStorage.getItem(localStoragePropertyName);
+
+    // If there is a previously stored width,
+    if (initialUsernameFromLocalStorage !== null) {
+      // use it as the initial width.
+      initialUsername = initialUsernameFromLocalStorage;
+    }
+  } else {
+    // If we're not in the browser, use the default initial width.
+  }
+
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(reducer, {
     tabList: [],
     activeFileId: null,
     theme: defaultTheme,
     isSettingsOpen: false,
-    username: 'Anonymous',
+    username: initialUsername,
   });
 
   //Reducer states
@@ -177,6 +197,26 @@ function App() {
   const username = state.username;
   // TODO phase this out as we complete the refactoring
   // It's here now for backwards compatibility
+
+  // The amount of time to wait idle before writing to localStorage.
+  // This is to avoid writing to localStorage on every resize event.
+  // MS = milliseconds
+  const localStorageWriteDebounceMS = 800;
+
+  useEffect(() => {
+    if (username !== initialUsername) {
+      const timeout = setTimeout(() => {
+        window.localStorage.setItem(
+          localStoragePropertyName,
+          username,
+        );
+      }, localStorageWriteDebounceMS);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [username]);
 
   const setTabList = useCallback(
     (tabList) => {
