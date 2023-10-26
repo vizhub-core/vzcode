@@ -139,7 +139,12 @@ function App() {
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      setLocalPresence(docPresence.create(randomId()));
+      const generateTimestampedId = () => {
+        const timestamp = Date.now().toString(36);
+        const randomPart = randomId();
+        return `${timestamp}-${randomPart}`;
+      };
+      setLocalPresence(docPresence.create(generateTimestampedId()));
 
       // Store docPresence so child components can listen for changes.
       setDocPresence(docPresence);
@@ -152,8 +157,6 @@ function App() {
       // docPresence.destroy();
     };
   }, []);
-
-  console.log('localPresence', localPresence);
 
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(reducer, {
@@ -430,6 +433,7 @@ function App() {
           />
           <PresenceNotifications
             docPresence={docPresence}
+            localPresence={localPresence}
           />
         </div>
         <Resizer />

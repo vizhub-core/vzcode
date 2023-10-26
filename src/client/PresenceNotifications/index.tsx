@@ -18,8 +18,10 @@ type PresenceNotification = {
 
 export const PresenceNotifications = ({
   docPresence,
+  localPresence,
 }: {
   docPresence?: any;
+  localPresence?: any;
 }) => {
   // Keep track of the presence notifications that are displayed
   const [presenceNotifications, setPresenceNotifications] = useState<Array<PresenceNotification>>([]);
@@ -35,17 +37,27 @@ export const PresenceNotifications = ({
   //     to get the username for when the user leaves the session because the remote presence would have already been removed
   const alreadyJoined = useRef<Map<PresenceId, Username>>(new Map());
 
+  const extractTimestampFromId = (id) => {
+    const [timestampPart] = id.split('-');
+    return parseInt(timestampPart, 36);
+  };
 
   useEffect(() => {
     if (docPresence) {
       // See https://share.github.io/sharedb/presence
       docPresence.on('receive', (presenceId, update) => {
+        console.log('docPresence', docPresence);
 
         // `true` means user has joined the session.
         // `false` means user has left the session.
         const join = update !== null;
 
-        if (join) {
+        // Get the timestamps from the presence IDs to see whether the remote presence
+        // joined before or after the local presence.
+        const remotePresenceTimestamp = extractTimestampFromId(presenceId);
+        const localPresenceTimestamp = extractTimestampFromId(localPresence.presenceId);
+
+        if (remotePresenceTimestamp > localPresenceTimestamp && join) {
           // Figure out if we have ever seen this user before.
           // if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
           //   alreadyJoinedPresenceIds.current.add(presenceId);
@@ -57,6 +69,7 @@ export const PresenceNotifications = ({
 
           // Figure out if we have ever seen this user before.
           const user = docPresence.remotePresences[presenceId].username;
+
           if (!alreadyJoined.current.has(presenceId)) {
             alreadyJoined.current.set(presenceId, user);
             setPresenceNotifications((prev) => [
