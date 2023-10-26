@@ -94,3 +94,9 @@ export type VZCodeContent = {
   //     * Hot reloading is debounced when this is `false`.
   isInteracting?: boolean;
 };
+
+// An id used for presence.
+export type PresenceId = string;
+
+// A user name for display in presence.
+export type Username = string;

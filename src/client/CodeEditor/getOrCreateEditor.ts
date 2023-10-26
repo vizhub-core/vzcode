@@ -64,6 +64,7 @@ export const getOrCreateEditor = ({
   theme,
   onInteract,
   editorCache,
+  usernameRef,
 }: {
   fileId: FileId;
 
@@ -82,6 +83,7 @@ export const getOrCreateEditor = ({
   theme: ThemeLabel;
   onInteract?: () => void;
   editorCache: EditorCache;
+  usernameRef: React.MutableRefObject<string>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -123,6 +125,7 @@ export const getOrCreateEditor = ({
       json1PresenceBroadcast({
         path: textPath,
         localPresence,
+        usernameRef,
       }),
     );
   }

@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { PresenceId, Username } from '../../types';
 import './style.scss';
-
-type PresenceId = string;
-type Username = string;
 
 // A presence notification is a message that is displayed when a user joins or leaves a session.
 // It has the following properties:
@@ -48,75 +46,79 @@ export const PresenceNotifications = ({
   useEffect(() => {
     if (docPresence) {
       // See https://share.github.io/sharedb/presence
-      docPresence.on('receive', (presenceId, update) => {
-        console.log('docPresence', docPresence);
+      docPresence.on(
+        'receive',
+        (presenceId: PresenceId, update) => {
+          // `true` means user has joined the session.
+          // `false` means user has left the session.
+          const join = update !== null;
 
-        // `true` means user has joined the session.
-        // `false` means user has left the session.
-        const join = update !== null;
+          // Get the timestamps from the presence IDs to see whether the remote presence
+          // joined before or after the local presence.
+          const remotePresenceTimestamp =
+            extractTimestampFromId(presenceId);
+          const localPresenceTimestamp =
+            extractTimestampFromId(
+              localPresence.presenceId,
+            );
 
-        // Get the timestamps from the presence IDs to see whether the remote presence
-        // joined before or after the local presence.
-        const remotePresenceTimestamp =
-          extractTimestampFromId(presenceId);
-        const localPresenceTimestamp =
-          extractTimestampFromId(localPresence.presenceId);
+          // If the remote presence joined before the local presence, then we don't need to show a notification.
+          if (
+            remotePresenceTimestamp <=
+            localPresenceTimestamp
+          )
+            return;
 
-        // If the remote presence joined before the local presence, then we don't need to show a notification.
-        if (
-          remotePresenceTimestamp <= localPresenceTimestamp
-        )
-          return;
+          if (join) {
+            // Figure out if we have ever seen this user before.
+            // if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
+            //   alreadyJoinedPresenceIds.current.add(presenceId);
+            //   setPresenceNotifications((prev) => [
+            //     ...prev,
+            //     { user, join, presenceId },
+            //   ]);
+            // }
 
-        if (join) {
-          // Figure out if we have ever seen this user before.
-          // if (!alreadyJoinedPresenceIds.current.has(presenceId)) {
-          //   alreadyJoinedPresenceIds.current.add(presenceId);
-          //   setPresenceNotifications((prev) => [
-          //     ...prev,
-          //     { user, join, presenceId },
-          //   ]);
-          // }
-
-          // Figure out if we have ever seen this user before.
-          const user =
-            docPresence.remotePresences[presenceId]
-              .username;
-          if (!alreadyJoined.current.has(presenceId)) {
-            alreadyJoined.current.set(presenceId, user);
+            // Figure out if we have ever seen this user before.
+            const user =
+              docPresence.remotePresences[presenceId]
+                .username;
+            if (!alreadyJoined.current.has(presenceId)) {
+              alreadyJoined.current.set(presenceId, user);
+              setPresenceNotifications((prev) => [
+                ...prev,
+                { user, join, presenceId },
+              ]);
+            } else {
+              // Update the username in case it changed
+              alreadyJoined.current.set(presenceId, user);
+            }
+          } else if (!join) {
+            // alreadyJoinedPresenceIds.current.delete(presenceId);
+            // setPresenceNotifications((prev) => [
+            //   ...prev,
+            //   { user, join, presenceId },
+            // ]);
+            // user = alreadyJoined.current.get(presenceId);
+            const user =
+              alreadyJoined.current.get(presenceId);
+            alreadyJoined.current.delete(presenceId);
             setPresenceNotifications((prev) => [
               ...prev,
               { user, join, presenceId },
             ]);
-          } else {
-            // Update the username in case it changed
-            alreadyJoined.current.set(presenceId, user);
           }
-        } else if (!join) {
-          // alreadyJoinedPresenceIds.current.delete(presenceId);
-          // setPresenceNotifications((prev) => [
-          //   ...prev,
-          //   { user, join, presenceId },
-          // ]);
-          // user = alreadyJoined.current.get(presenceId);
-          const user =
-            alreadyJoined.current.get(presenceId);
-          alreadyJoined.current.delete(presenceId);
-          setPresenceNotifications((prev) => [
-            ...prev,
-            { user, join, presenceId },
-          ]);
-        }
 
-        // Remove the notification after 5 seconds.
-        setTimeout(() => {
-          setPresenceNotifications((prev) =>
-            prev.filter(function (_, i) {
-              return i !== 0;
-            }),
-          );
-        }, 5000);
-      });
+          // Remove the notification after 5 seconds.
+          setTimeout(() => {
+            setPresenceNotifications((prev) =>
+              prev.filter(function (_, i) {
+                return i !== 0;
+              }),
+            );
+          }, 5000);
+        },
+      );
     }
   }, [docPresence]);
 

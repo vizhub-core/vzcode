@@ -6,6 +6,7 @@ import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
+import { setUsernameReducer } from './setUsernameReducer';
 
 export { createInitialState } from './createInitialState';
 
@@ -92,6 +93,7 @@ const reducers = [
   setThemeReducer,
   setIsSettingsOpenReducer,
   editorNoLongerWantsFocusReducer,
+  setUsernameReducer,
 ];
 
 export const vzReducer = (
