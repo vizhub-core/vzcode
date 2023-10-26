@@ -144,7 +144,9 @@ function App() {
         const randomPart = randomId();
         return `${timestamp}-${randomPart}`;
       };
-      setLocalPresence(docPresence.create(generateTimestampedId()));
+      setLocalPresence(
+        docPresence.create(generateTimestampedId()),
+      );
 
       // Store docPresence so child components can listen for changes.
       setDocPresence(docPresence);
@@ -258,7 +260,10 @@ function App() {
     [dispatch],
   );
   // Add the username to the local presence object.
-  if (localPresence && localPresence.username !== username) {
+  if (
+    localPresence &&
+    localPresence.username !== username
+  ) {
     localPresence.username = username;
   }
 
@@ -406,6 +411,7 @@ function App() {
             onClose={handleSettingsClose}
             theme={theme}
             setTheme={setTheme}
+            username={username}
             setUsername={setUsername}
           />
         </div>

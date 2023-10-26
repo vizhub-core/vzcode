@@ -9,18 +9,19 @@ import { ThemeLabel, themes } from './themes';
 //   { value: 30, label: '30 seconds' },
 // ];
 
-
 export const Settings = ({
   show,
   onClose,
   theme,
   setTheme,
+  username,
   setUsername,
 }: {
   show: boolean;
   onClose: () => void;
   theme: ThemeLabel;
   setTheme: (theme: ThemeLabel) => void;
+  username: string;
   setUsername: (username: string) => void;
 }) => {
   const handleThemeChange = useCallback((event) => {
@@ -45,9 +46,10 @@ export const Settings = ({
   // );
 
   const usernameRef = useRef<HTMLInputElement>(null);
-  const handleUsernameChange = () => {
-    setUsername(usernameRef.current?.value);
-  };
+
+  const handleUsernameChange = useCallback(() => {
+    setUsername(usernameRef.current?.value || '');
+  }, [setUsername]);
 
   return show ? (
     <Modal
@@ -67,6 +69,7 @@ export const Settings = ({
             ref={usernameRef}
             onChange={handleUsernameChange}
             placeholder="Enter username"
+            value={username}
           />
           <Form.Text className="text-muted">
             Enter a username to be displayed on your cursor
