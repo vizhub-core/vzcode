@@ -3,8 +3,9 @@ import { closeTabsReducer } from './closeTabsReducer';
 import { VZAction, VZState, createInitialState } from '.';
 import { defaultTheme } from '../themes';
 
-const initialState: VZState =
-  createInitialState(defaultTheme);
+const initialState: VZState = createInitialState({
+  defaultTheme,
+});
 
 describe('closeTabsReducer', () => {
   it('Closes an existing tab', () => {
