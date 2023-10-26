@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react';
-import { FileId, Files } from '../../types';
+import type { TabState } from '../vzReducer';
+import type { FileId, Files } from '../../types';
 import { Tab } from './Tab';
 import './style.scss';
 
@@ -9,13 +10,15 @@ export const TabList = ({
   tabList,
   activeFileId,
   setActiveFileId,
+  openTab,
   closeTabs,
   createFile,
 }: {
   files: Files;
-  tabList: FileId[];
+  tabList: Array<TabState>;
   activeFileId: FileId;
   setActiveFileId: (fileId: FileId) => void;
+  openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: FileId[]) => void;
   createFile: () => void;
 }) => {
@@ -48,15 +51,16 @@ export const TabList = ({
   return (
     <div className="vz-tab-list">
       {files &&
-        tabList.map((fileId: FileId) => (
+        tabList.map((tabState: TabState) => (
           <Tab
-            key={fileId}
-            fileId={fileId}
-            isActive={fileId === activeFileId}
+            key={tabState.fileId}
+            fileId={tabState.fileId}
+            isTransient={tabState.isTransient}
+            isActive={tabState.fileId === activeFileId}
             setActiveFileId={setActiveFileId}
+            openTab={openTab}
             closeTabs={closeTabs}
-            fileName={files[fileId].name}
-            createFile={createFile}
+            fileName={files[tabState.fileId].name}
           />
         ))}
     </div>

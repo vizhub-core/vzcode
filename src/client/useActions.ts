@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import { FileId } from '../types';
-import { VZAction } from './vzReducer';
+import { TabState, VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
 // that can be used to dispatch actions to the reducer.
@@ -19,20 +19,21 @@ export const useActions = (
   );
 
   const openTab = useCallback(
-    (fileId: FileId) => {
+    (tabState: TabState): void => {
       dispatch({
         type: 'open_tab',
-        fileId,
+        fileId: tabState.fileId,
+        isTransient: tabState.isTransient,
       });
     },
     [dispatch],
   );
 
   const closeTabs = useCallback(
-    (idsToDelete: Array<FileId>) => {
+    (fileIdsToClose: Array<FileId>) => {
       dispatch({
         type: 'close_tabs',
-        idsToDelete,
+        fileIdsToClose,
       });
     },
     [dispatch],
@@ -63,6 +64,12 @@ export const useActions = (
     setIsSettingsOpen(false);
   }, [setIsSettingsOpen]);
 
+  const editorNoLongerWantsFocus = useCallback(() => {
+    dispatch({
+      type: 'editor_no_longer_wants_focus',
+    });
+  }, [dispatch]);
+
   return {
     setActiveFileId,
     openTab,
@@ -70,5 +77,6 @@ export const useActions = (
     setTheme,
     setIsSettingsOpen,
     closeSettings,
+    editorNoLongerWantsFocus,
   };
 };

@@ -19,7 +19,11 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { defaultTheme, useDynamicTheme } from './themes';
+import {
+  ThemeLabel,
+  defaultTheme,
+  useDynamicTheme,
+} from './themes';
 import {
   EditorCache,
   useEditorCache,
@@ -31,11 +35,12 @@ import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import { vzReducer } from './vzReducer';
+import { VZAction, VZState, vzReducer } from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
-import './style.scss';
 import { useSubmitOperation } from './useSubmitOperation';
+import './style.scss';
+import { createInitialState } from './vzReducer';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -149,17 +154,20 @@ function App() {
     };
   }, []);
 
-  // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(vzReducer, {
-    tabList: [],
-    activeFileId: null,
-    theme: defaultTheme,
-    isSettingsOpen: false,
-  });
+  const [state, dispatch] = useReducer(
+    vzReducer,
+    defaultTheme,
+    createInitialState,
+  );
 
   // Unpack state.
-  const { tabList, activeFileId, theme, isSettingsOpen } =
-    state;
+  const {
+    tabList,
+    activeFileId,
+    theme,
+    isSettingsOpen,
+    editorWantsFocus,
+  } = state;
 
   // Functions for dispatching actions to the reducer.
   const {
@@ -169,6 +177,7 @@ function App() {
     setTheme,
     setIsSettingsOpen,
     closeSettings,
+    editorNoLongerWantsFocus,
   } = useActions(dispatch);
 
   // The set of open directories.
@@ -179,20 +188,6 @@ function App() {
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
 
-  // A function that will focus the editor.
-  const focusEditor = useCallback(
-    (fileId: FileId) => {
-      // TODO figure out a way to do this without the timeout
-      setTimeout(() => {
-        const editorCacheValue = editorCache.get(fileId);
-        if (editorCacheValue) {
-          editorCacheValue.editor.focus();
-        }
-      }, 100);
-    },
-    [editorCache],
-  );
-
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
@@ -202,7 +197,11 @@ function App() {
     renameFile,
     deleteFile,
     deleteDirectory,
-  } = useFileCRUD({ submitOperation, closeTabs, focusEditor });
+  } = useFileCRUD({
+    submitOperation,
+    closeTabs,
+    openTab,
+  });
 
   // Isolate the files object from the document.
   const files: Files | null = content
@@ -219,7 +218,7 @@ function App() {
             renameFile={renameFile}
             deleteFile={deleteFile}
             deleteDirectory={deleteDirectory}
-            handleFileClick={openTab}
+            openTab={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
@@ -238,6 +237,7 @@ function App() {
             tabList={tabList}
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
+            openTab={openTab}
             closeTabs={closeTabs}
             createFile={createFile}
           />
@@ -250,6 +250,10 @@ function App() {
               activeFileId={activeFileId}
               theme={theme}
               editorCache={editorCache}
+              editorWantsFocus={editorWantsFocus}
+              editorNoLongerWantsFocus={
+                editorNoLongerWantsFocus
+              }
             />
           ) : null}
           <PrettierErrorOverlay

@@ -17,6 +17,7 @@ export const Item = ({
   name,
   children,
   handleClick,
+  handleDoubleClick,
   handleRenameClick,
   handleDeleteClick,
   isDirectory = false,
@@ -24,7 +25,8 @@ export const Item = ({
 }: {
   name: string;
   children: React.ReactNode;
-  handleClick: () => void;
+  handleClick: (event: React.MouseEvent) => void;
+  handleDoubleClick?: (event: React.MouseEvent) => void;
   handleRenameClick: (newName: string) => void;
   handleDeleteClick: () => void;
   isDirectory?: boolean;
@@ -120,10 +122,15 @@ export const Item = ({
 
   return (
     <div
-      className={`full-box file-or-directory ${
+      className={`full-box file-or-directory user-select-none ${
         isActive ? 'active-file' : ''
       }`}
       onClick={isRenaming ? null : handleClick}
+      onDoubleClick={
+        isRenaming || !handleDoubleClick
+          ? null
+          : handleDoubleClick
+      }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

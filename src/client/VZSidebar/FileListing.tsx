@@ -8,6 +8,7 @@ export const FileListing = ({
   renameFile,
   deleteFile,
   handleFileClick,
+  handleFileDoubleClick,
   isActive,
 }: {
   name: string;
@@ -15,11 +16,16 @@ export const FileListing = ({
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
+  handleFileDoubleClick: (fileId: FileId) => void;
   isActive: boolean;
 }) => {
   const handleClick = useCallback(() => {
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
+
+  const handleDoubleClick = useCallback(() => {
+    handleFileDoubleClick(fileId);
+  }, [fileId, handleFileDoubleClick]);
 
   const handleDeleteClick = useCallback(() => {
     deleteFile(fileId);
@@ -36,6 +42,7 @@ export const FileListing = ({
     <Item
       name={name}
       handleClick={handleClick}
+      handleDoubleClick={handleDoubleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
       isActive={isActive}
