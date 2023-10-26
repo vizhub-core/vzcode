@@ -24,7 +24,8 @@ export const PresenceNotifications = ({
   localPresence?: any;
 }) => {
   // Keep track of the presence notifications that are displayed
-  const [presenceNotifications, setPresenceNotifications] = useState<Array<PresenceNotification>>([]);
+  const [presenceNotifications, setPresenceNotifications] =
+    useState<Array<PresenceNotification>>([]);
 
   // Previous implementation of presence notifications without usernames:
   // const alreadyJoinedPresenceIds = useRef<Set<PresenceId>>(new Set());
@@ -35,7 +36,9 @@ export const PresenceNotifications = ({
   //   - Username is the value
   //   - Username is stored in each remote presence, so we can't use docPresence.remotePresences[presenceId].username
   //     to get the username for when the user leaves the session because the remote presence would have already been removed
-  const alreadyJoined = useRef<Map<PresenceId, Username>>(new Map());
+  const alreadyJoined = useRef<Map<PresenceId, Username>>(
+    new Map(),
+  );
 
   const extractTimestampFromId = (id) => {
     const [timestampPart] = id.split('-');
@@ -54,11 +57,16 @@ export const PresenceNotifications = ({
 
         // Get the timestamps from the presence IDs to see whether the remote presence
         // joined before or after the local presence.
-        const remotePresenceTimestamp = extractTimestampFromId(presenceId);
-        const localPresenceTimestamp = extractTimestampFromId(localPresence.presenceId);
+        const remotePresenceTimestamp =
+          extractTimestampFromId(presenceId);
+        const localPresenceTimestamp =
+          extractTimestampFromId(localPresence.presenceId);
 
         // If the remote presence joined before the local presence, then we don't need to show a notification.
-        if (remotePresenceTimestamp <= localPresenceTimestamp) return;
+        if (
+          remotePresenceTimestamp <= localPresenceTimestamp
+        )
+          return;
 
         if (join) {
           // Figure out if we have ever seen this user before.
@@ -71,15 +79,16 @@ export const PresenceNotifications = ({
           // }
 
           // Figure out if we have ever seen this user before.
-          const user = docPresence.remotePresences[presenceId].username;
+          const user =
+            docPresence.remotePresences[presenceId]
+              .username;
           if (!alreadyJoined.current.has(presenceId)) {
             alreadyJoined.current.set(presenceId, user);
             setPresenceNotifications((prev) => [
               ...prev,
               { user, join, presenceId },
             ]);
-          }
-          else {
+          } else {
             // Update the username in case it changed
             alreadyJoined.current.set(presenceId, user);
           }
@@ -90,14 +99,15 @@ export const PresenceNotifications = ({
           //   { user, join, presenceId },
           // ]);
           // user = alreadyJoined.current.get(presenceId);
-          const user = alreadyJoined.current.get(presenceId);
+          const user =
+            alreadyJoined.current.get(presenceId);
           alreadyJoined.current.delete(presenceId);
           setPresenceNotifications((prev) => [
             ...prev,
-            { user, join, presenceId }, 
+            { user, join, presenceId },
           ]);
         }
-        
+
         // Remove the notification after 5 seconds.
         setTimeout(() => {
           setPresenceNotifications((prev) =>
