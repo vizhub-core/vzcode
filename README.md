@@ -2,7 +2,7 @@
 
 VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience.
 
-![VZCode Interface](https://user-images.githubusercontent.com/68416/224690259-293c75c5-5970-4066-80e4-b9dee568e10d.png)
+![VZCode Interface](https://github.com/vizhub-core/vzcode/assets/68416/9ad56113-2992-49ff-b050-f5622fa5944c)
 
 ## Table of Contents
 
