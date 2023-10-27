@@ -13,6 +13,17 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import './styles.scss';
 
+const CreateFileButton = ({ createFile }) => {
+  return (
+    <i
+      className="bx bxs-file-plus new-btn"
+      style={{ color: '#dbdde1' }}
+      onClick={createFile}
+      // TODO better tooltip
+      title="Create file"
+    ></i>
+  );
+};
 export const VZSidebar = ({
   files,
   createFile,
@@ -71,6 +82,12 @@ export const VZSidebar = ({
     [openTab],
   );
 
+  // True if files exist.
+  const filesExist =
+    fileTree &&
+    fileTree.children &&
+    fileTree.children.length > 0;
+
   return (
     <div
       className="vz-sidebar"
@@ -80,36 +97,42 @@ export const VZSidebar = ({
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div>
-            <i
-              className="bx bxs-file-plus new-btn"
-              style={{ color: '#dbdde1' }}
-              onClick={createFile}
-            ></i>
+            <CreateFileButton createFile={createFile} />
           </div>
         </div>
-        {fileTree
-          ? fileTree.children.map((entity) => {
-              const { fileId } = entity as FileTreeFile;
-              const { path } = entity as FileTree;
-              const key = fileId ? fileId : path;
-              return (
-                <Listing
-                  key={key}
-                  entity={entity}
-                  renameFile={renameFile}
-                  deleteFile={deleteFile}
-                  deleteDirectory={deleteDirectory}
-                  handleFileClick={handleFileClick}
-                  handleFileDoubleClick={
-                    handleFileDoubleClick
-                  }
-                  isDirectoryOpen={isDirectoryOpen}
-                  toggleDirectory={toggleDirectory}
-                  activeFileId={activeFileId}
-                />
-              );
-            })
-          : null}
+        {filesExist ? (
+          fileTree.children.map((entity) => {
+            const { fileId } = entity as FileTreeFile;
+            const { path } = entity as FileTree;
+            const key = fileId ? fileId : path;
+            return (
+              <Listing
+                key={key}
+                entity={entity}
+                renameFile={renameFile}
+                deleteFile={deleteFile}
+                deleteDirectory={deleteDirectory}
+                handleFileClick={handleFileClick}
+                handleFileDoubleClick={
+                  handleFileDoubleClick
+                }
+                isDirectoryOpen={isDirectoryOpen}
+                toggleDirectory={toggleDirectory}
+                activeFileId={activeFileId}
+              />
+            );
+          })
+        ) : (
+          <div className="empty">
+            <div className="empty-text">
+              It looks like you don't have any files yet!
+              Click the "Create file" button below to create
+              your first file.
+            </div>
+
+            <CreateFileButton createFile={createFile} />
+          </div>
+        )}
       </div>
       {disableSettings ? null : (
         <div
