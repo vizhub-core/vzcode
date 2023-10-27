@@ -14,6 +14,7 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { json1Presence } from '../ot.js';
 import OpenAI from 'openai';
 import bodyParser from 'body-parser';
+import { editOp } from 'ot-json1';
 
 dotenv.config({ path: '../../.env' });
 
@@ -62,8 +63,6 @@ app.post(
   '/AIAssist',
   bodyParser.json(),
   async (req, res) => {
-    console.log('Starting AI Assist');
-
     const stream = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo', //was gpt-4
       messages: [
@@ -76,10 +75,27 @@ app.post(
       ],
       stream: true,
     });
+
+    let insertionCursor = req.body.cursorLocation;
+
     for await (const part of stream) {
       process.stdout.write(
         part.choices[0]?.delta?.content || '',
       );
+      // shareDBDoc.submitOp([req.body.fileId,["text",{"es":[insertionCursor,part.choices[0]?.delta?.content || '']}]],{source:"AIAssist"});
+      const op = editOp(
+        ['files', req.body.fileId, 'text'],
+        'text-unicode',
+        [
+          insertionCursor,
+          part.choices[0]?.delta?.content || '',
+        ],
+      );
+
+      shareDBDoc.submitOp(op);
+      insertionCursor += (
+        part.choices[0]?.delta?.content || ''
+      ).length;
     }
   },
 );

@@ -196,7 +196,7 @@ export const getOrCreateEditor = ({
 
   extensions.push(rotationIndicator);
 
-  extensions.push(AIAssist);
+  extensions.push(AIAssist(fileId));
 
   const editor = new EditorView({
     state: EditorState.create({
