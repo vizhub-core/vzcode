@@ -12,6 +12,7 @@ import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
@@ -64,6 +65,7 @@ export const getOrCreateEditor = ({
   theme,
   onInteract,
   editorCache,
+  usernameRef,
 }: {
   fileId: FileId;
 
@@ -82,6 +84,7 @@ export const getOrCreateEditor = ({
   theme: ThemeLabel;
   onInteract?: () => void;
   editorCache: EditorCache;
+  usernameRef: React.MutableRefObject<Username>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -123,6 +126,7 @@ export const getOrCreateEditor = ({
       json1PresenceBroadcast({
         path: textPath,
         localPresence,
+        usernameRef,
       }),
     );
   }

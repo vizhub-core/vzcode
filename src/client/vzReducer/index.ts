@@ -1,4 +1,4 @@
-import { FileId } from '../../types';
+import { FileId, Username } from '../../types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
 import { openTabReducer } from './openTabReducer';
@@ -6,6 +6,7 @@ import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
+import { setUsernameReducer } from './setUsernameReducer';
 
 export { createInitialState } from './createInitialState';
 
@@ -28,7 +29,7 @@ export type VZState = {
   editorWantsFocus: boolean;
 
   // The username of the current user.
-  username: string;
+  username: Username;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
@@ -64,7 +65,7 @@ export type VZAction =
 
   // `set_username`
   //  * Sets the username.
-  | { type: 'set_username'; username: string };
+  | { type: 'set_username'; username: Username };
 
 // Representation of an open tab.
 export type TabState = {
@@ -92,6 +93,7 @@ const reducers = [
   setThemeReducer,
   setIsSettingsOpenReducer,
   editorNoLongerWantsFocusReducer,
+  setUsernameReducer,
 ];
 
 export const vzReducer = (

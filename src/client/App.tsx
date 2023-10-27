@@ -15,6 +15,7 @@ import {
   FileId,
   Files,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../types';
 import { TabList } from './TabList';
@@ -35,12 +36,15 @@ import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { PrettierErrorOverlay } from './PrettierErrorOverlay';
-import { VZAction, VZState, vzReducer } from './vzReducer';
+import { vzReducer, createInitialState } from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
 import { useSubmitOperation } from './useSubmitOperation';
+import {
+  useInitialUsername,
+  usePersistUsername,
+} from './usernameLocalStorage';
 import './style.scss';
-import { createInitialState } from './vzReducer';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -161,33 +165,8 @@ function App() {
     };
   }, []);
 
-  const localStoragePropertyName = 'vzCodeUsername';
-
-  const initialUsernameDefault = 'Anonymous';
-  let initialUsername: string = initialUsernameDefault;
-
-  // If we're in the browser,
-  if (typeof window !== 'undefined') {
-    //check localStorage for a previously stored width.
-    const initialUsernameFromLocalStorage: string | null =
-      window.localStorage.getItem(localStoragePropertyName);
-
-    // If there is a previously stored width,
-    if (initialUsernameFromLocalStorage !== null) {
-      // use it as the initial width.
-      initialUsername = initialUsernameFromLocalStorage;
-    }
-  } else {
-    // If we're not in the browser, use the default initial width.
-  }
-
-  // TODO phase this out as we complete the refactoring
-  // It's here now for backwards compatibility
-
-  // The amount of time to wait idle before writing to localStorage.
-  // This is to avoid writing to localStorage on every resize event.
-  // MS = milliseconds
-  const localStorageWriteDebounceMS = 800;
+  // Get the initial username from localStorage.
+  const initialUsername: Username = useInitialUsername();
 
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
@@ -223,29 +202,7 @@ function App() {
   const { isDirectoryOpen, toggleDirectory } =
     useOpenDirectories();
 
-  useEffect(() => {
-    if (username !== initialUsername) {
-      const timeout = setTimeout(() => {
-        window.localStorage.setItem(
-          localStoragePropertyName,
-          username,
-        );
-      }, localStorageWriteDebounceMS);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [username]);
-
-  // Add the username to the local presence object.
-  // TODO refactor this to useRef
-  if (
-    localPresence &&
-    localPresence.username !== username
-  ) {
-    localPresence.username = username;
-  }
+  usePersistUsername(username);
 
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
@@ -318,6 +275,7 @@ function App() {
               editorNoLongerWantsFocus={
                 editorNoLongerWantsFocus
               }
+              username={username}
             />
           ) : null}
           <PrettierErrorOverlay

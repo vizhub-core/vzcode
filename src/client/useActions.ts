@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
-import { FileId } from '../types';
+import { FileId, Username } from '../types';
 import { TabState, VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
@@ -71,7 +71,7 @@ export const useActions = (
   }, [dispatch]);
 
   const setUsername = useCallback(
-    (username: string) => {
+    (username: Username) => {
       dispatch({
         type: 'set_username',
         username,

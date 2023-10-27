@@ -7,6 +7,7 @@ import {
 import {
   FileId,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
@@ -28,6 +29,7 @@ export const CodeEditor = ({
   editorCache,
   editorWantsFocus,
   editorNoLongerWantsFocus,
+  username,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -48,6 +50,7 @@ export const CodeEditor = ({
 
   // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
+  username: Username;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -76,6 +79,11 @@ export const CodeEditor = ({
     }, 800);
   }, [submitOperation]);
 
+  // Track username on a ref, so that we can use it in the
+  // presence object's `username` property.
+  const usernameRef = useRef<Username>(username);
+  usernameRef.current = username;
+
   // Get the editor corresponding to the active file.
   // Looks in `editorCache` first, and if not found, creates a new editor.
   const editorCacheValue: EditorCacheValue = useMemo(
@@ -89,6 +97,7 @@ export const CodeEditor = ({
         theme,
         onInteract,
         editorCache,
+        usernameRef,
       }),
     [
       activeFileId,
@@ -99,6 +108,7 @@ export const CodeEditor = ({
       theme,
       onInteract,
       editorCache,
+      usernameRef,
     ],
   );
 
