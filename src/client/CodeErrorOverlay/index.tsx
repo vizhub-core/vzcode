@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import './style.scss';
 
 const enableErrorDismiss = true;
@@ -8,16 +8,20 @@ export const CodeErrorOverlay = ({
 }: {
   errorMessage: string | null;
 }) => {
+  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+
   const handleCloseClick = useCallback(() => {
-    // Select the overlay container by its ID and hide it
-    const overlay = document.getElementById('overlay-container');
-    if (overlay) {
-      overlay.style.display = 'none';
-    }
+    // Set the visibility state to false when the button is clicked
+    setIsOverlayVisible(false);
   }, []);
 
-  return errorMessage !== null ? (
-    <div id="overlay-container" className="vz-code-error-overlay">
+  const resetOverlayVisibility = () => {
+    // Function to reset the visibility to true
+    setIsOverlayVisible(true);
+  };
+
+  return isOverlayVisible && errorMessage !== null ? (
+    <div className="vz-code-error-overlay">
       {errorMessage}
       {enableErrorDismiss ? (
         <div
@@ -26,5 +30,8 @@ export const CodeErrorOverlay = ({
         ></div>
       ) : null}
     </div>
-  ) : null;
+  ) : (
+    // You can add a button or any other trigger to reset visibility
+    <button onClick={resetOverlayVisibility}>Reset Error Visibility</button>
+  );
 };
