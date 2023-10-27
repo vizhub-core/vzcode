@@ -16,6 +16,9 @@
 
   .files {
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .file-or-directory {
@@ -46,7 +49,6 @@
     gap: 8px;
   }
   .utilities {
-    // margin-right: 3px;
     transform: scale(1.2);
   }
 
@@ -84,5 +86,23 @@
     padding: 14px 0;
     margin: 10px;
     border-radius: 4px;
+  }
+
+  /* Empty state for when there are no files */
+  .empty {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 10px;
+    padding: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.5); /* White dashed outline */
+    border-radius: 10px;
+  }
+
+  .empty-text {
+    margin-bottom: 10px;
+    font-size: 14px;
   }
 }
