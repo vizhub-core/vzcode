@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import './style.scss';
 
-// Feature flag for the button that dismisses the error.
-const enableErrorDismiss = false;
+const enableErrorDismiss = true;
 
 export const CodeErrorOverlay = ({
   errorMessage,
@@ -10,11 +9,15 @@ export const CodeErrorOverlay = ({
   errorMessage: string | null;
 }) => {
   const handleCloseClick = useCallback(() => {
-    console.log('TODO dismiss the error');
+    // Select the overlay container by its ID and hide it
+    const overlay = document.getElementById('overlay-container');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
   }, []);
 
   return errorMessage !== null ? (
-    <pre className="vz-code-error-overlay">
+    <div id="overlay-container" className="vz-code-error-overlay">
       {errorMessage}
       {enableErrorDismiss ? (
         <div
@@ -22,6 +25,6 @@ export const CodeErrorOverlay = ({
           onClick={handleCloseClick}
         ></div>
       ) : null}
-    </pre>
+    </div>
   ) : null;
 };
