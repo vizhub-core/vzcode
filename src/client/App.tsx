@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useReducer,
-} from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -12,7 +6,6 @@ import { CodeEditor } from './CodeEditor';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
 import {
-  FileId,
   Files,
   ShareDBDoc,
   Username,
@@ -20,11 +13,7 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import {
-  ThemeLabel,
-  defaultTheme,
-  useDynamicTheme,
-} from './themes';
+import { defaultTheme, useDynamicTheme } from './themes';
 import {
   EditorCache,
   useEditorCache,
@@ -35,7 +24,7 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
-import { PrettierErrorOverlay } from './PrettierErrorOverlay';
+import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { vzReducer, createInitialState } from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
@@ -75,7 +64,11 @@ function App() {
   ) => void = useSubmitOperation(shareDBDoc);
 
   // Auto-run Pretter after local changes.
-  const { prettierError } = usePrettier(
+  const {
+    prettierError,
+  }: {
+    prettierError: string | null;
+  } = usePrettier(
     shareDBDoc,
     submitOperation,
     prettierWorker,
@@ -278,9 +271,7 @@ function App() {
               username={username}
             />
           ) : null}
-          <PrettierErrorOverlay
-            prettierError={prettierError}
-          />
+          <CodeErrorOverlay errorMessage={prettierError} />
           <PresenceNotifications
             docPresence={docPresence}
             localPresence={localPresence}

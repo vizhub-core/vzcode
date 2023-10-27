@@ -62,7 +62,6 @@ export const Tab = ({
     >
       {tabName}
       <div
-        // className={isActive ? 'bx bx-x tab-close' : ''}
         className={'bx bx-x tab-close'}
         onClick={handleCloseClick}
       ></div>
