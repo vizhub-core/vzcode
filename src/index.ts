@@ -20,7 +20,7 @@ export { Resizer } from './client/Resizer';
 export { TabList } from './client/TabList';
 export { CodeEditor } from './client/CodeEditor';
 export { usePrettier } from './client/usePrettier';
-export { PrettierErrorOverlay } from './client/PrettierErrorOverlay';
+export { PrettierErrorOverlay } from './client/CodeErrorOverlay';
 export { PresenceNotifications } from './client/PresenceNotifications';
 export { useFileCRUD } from './client/useFileCRUD';
 export { useSubmitOperation } from './client/useSubmitOperation';
