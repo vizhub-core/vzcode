@@ -12,6 +12,7 @@ import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
@@ -65,6 +66,7 @@ export const getOrCreateEditor = ({
   theme,
   onInteract,
   editorCache,
+  usernameRef,
 }: {
   fileId: FileId;
 
@@ -83,6 +85,7 @@ export const getOrCreateEditor = ({
   theme: ThemeLabel;
   onInteract?: () => void;
   editorCache: EditorCache;
+  usernameRef: React.MutableRefObject<Username>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -119,13 +122,15 @@ export const getOrCreateEditor = ({
   );
 
   // Deals with broadcasting changes in cursor location and selection.
-  if (localPresence)
+  if (localPresence) {
     extensions.push(
       json1PresenceBroadcast({
         path: textPath,
         localPresence,
+        usernameRef,
       }),
     );
+  }
 
   // Deals with receiving the broadcas from other clients and displaying them.
   if (docPresence)

@@ -1,0 +1,30 @@
+.vz-code-error-overlay {
+  color: rgb(255, 35, 35);
+  font-family: var(--vzcode-font-family);
+  font-size: var(--vzcode-font-size);
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  // pointer-events: none;
+  margin: 0;
+  padding: 8px;
+
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+
+  // TODO unify with styles in tab close button
+  .error-dismiss-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
+    cursor: pointer;
+    color: white;
+  }
+  .error-dismiss-button:hover {
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}

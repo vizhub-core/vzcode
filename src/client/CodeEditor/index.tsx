@@ -2,10 +2,12 @@ import {
   useRef,
   useLayoutEffect,
   useCallback,
+  useMemo,
 } from 'react';
 import {
   FileId,
   ShareDBDoc,
+  Username,
   VZCodeContent,
 } from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
@@ -25,6 +27,9 @@ export const CodeEditor = ({
   theme = defaultTheme,
   filesPath = ['files'],
   editorCache,
+  editorWantsFocus,
+  editorNoLongerWantsFocus,
+  username,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -39,6 +44,13 @@ export const CodeEditor = ({
   // Defaults to `files` if not provided.
   filesPath?: string[];
   editorCache: EditorCache;
+
+  // Whether the editor should be focused.
+  editorWantsFocus: boolean;
+
+  // Signals that the editor no longer wants focus.
+  editorNoLongerWantsFocus: () => void;
+  username: Username;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -67,17 +79,15 @@ export const CodeEditor = ({
     }, 800);
   }, [submitOperation]);
 
-  // Every time the active file switches from one file to another,
-  // the editor corresponding to the old file is removed from the DOM,
-  // and the editor corresponding to the new file is added to the DOM.
-  useLayoutEffect(() => {
-    // Guard against cases where page is still loading.
-    if (!ref.current) return;
-    if (!shareDBDoc) return;
+  // Track username on a ref, so that we can use it in the
+  // presence object's `username` property.
+  const usernameRef = useRef<Username>(username);
+  usernameRef.current = username;
 
-    // Get the editor corresponding to the active file.
-    // Looks in `editorCache` first, and if not found, creates a new editor.
-    const editorCacheValue: EditorCacheValue =
+  // Get the editor corresponding to the active file.
+  // Looks in `editorCache` first, and if not found, creates a new editor.
+  const editorCacheValue: EditorCacheValue = useMemo(
+    () =>
       getOrCreateEditor({
         fileId: activeFileId,
         shareDBDoc,
@@ -87,7 +97,28 @@ export const CodeEditor = ({
         theme,
         onInteract,
         editorCache,
-      });
+        usernameRef,
+      }),
+    [
+      activeFileId,
+      shareDBDoc,
+      filesPath,
+      localPresence,
+      docPresence,
+      theme,
+      onInteract,
+      editorCache,
+      usernameRef,
+    ],
+  );
+
+  // Every time the active file switches from one file to another,
+  // the editor corresponding to the old file is removed from the DOM,
+  // and the editor corresponding to the new file is added to the DOM.
+  useLayoutEffect(() => {
+    // Guard against cases where page is still loading.
+    if (!ref.current) return;
+    if (!shareDBDoc) return;
 
     // Add the editor to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);
@@ -97,7 +128,24 @@ export const CodeEditor = ({
       // This happens every time `activeFileId` changes.
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
-  }, [shareDBDoc, activeFileId, onInteract]);
+  }, [shareDBDoc, editorCacheValue]);
+
+  // useEffect(() => {
+  //   if (editorWantsFocus) {
+  //     editorCacheValue.editor.focus();
+  //   }
+
+  // Focus the editor
+  useLayoutEffect(() => {
+    if (editorWantsFocus) {
+      editorCacheValue.editor.focus();
+      editorNoLongerWantsFocus();
+    }
+  }, [
+    editorWantsFocus,
+    editorCacheValue,
+    editorNoLongerWantsFocus,
+  ]);
 
   return <div className="vz-code-editor" ref={ref}></div>;
 };

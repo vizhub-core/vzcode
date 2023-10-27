@@ -3,6 +3,7 @@ import {
   FileId,
   FileTree,
   FileTreeFile,
+  FileTreePath,
   Files,
 } from '../../types';
 import { getFileTree } from '../getFileTree';
@@ -13,30 +14,32 @@ import { Listing } from './Listing';
 import './styles.scss';
 
 export const VZSidebar = ({
-  createFile,
   files,
-  handleRenameFileClick,
-  handleDeleteFileClick,
-  handleFileClick,
+  createFile,
+  renameFile,
+  deleteFile,
+  deleteDirectory,
+  openTab,
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
 }: {
   files: Files;
-  createFile?: () => void;
-  handleRenameFileClick?: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick?: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
-  handleFileClick?: (fileId: FileId) => void;
-  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen?: (path: string) => boolean;
-  toggleDirectory?: (path: string) => void;
+  createFile: () => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
+  deleteDirectory: (path: FileTreePath) => void;
+  openTab: ({
+    fileId,
+    isTransient,
+  }: {
+    fileId: FileId;
+    isTransient?: boolean;
+  }) => void;
+  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
+  isDirectoryOpen: (path: string) => boolean;
+  toggleDirectory: (path: string) => void;
   activeFileId?: FileId;
 }) => {
   const fileTree = useMemo(
@@ -50,6 +53,22 @@ export const VZSidebar = ({
 
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
+  );
+
+  // On single-click, open the file in a transient tab.
+  const handleFileClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: true });
+    },
+    [openTab],
+  );
+
+  // On double-click, open the file in a persistent tab.
+  const handleFileDoubleClick = useCallback(
+    (fileId: FileId) => {
+      openTab({ fileId, isTransient: false });
+    },
+    [openTab],
   );
 
   return (
@@ -75,15 +94,15 @@ export const VZSidebar = ({
               const key = fileId ? fileId : path;
               return (
                 <Listing
-                  entity={entity}
                   key={key}
-                  handleRenameFileClick={
-                    handleRenameFileClick
-                  }
-                  handleDeleteFileClick={
-                    handleDeleteFileClick
-                  }
+                  entity={entity}
+                  renameFile={renameFile}
+                  deleteFile={deleteFile}
+                  deleteDirectory={deleteDirectory}
                   handleFileClick={handleFileClick}
+                  handleFileDoubleClick={
+                    handleFileDoubleClick
+                  }
                   isDirectoryOpen={isDirectoryOpen}
                   toggleDirectory={toggleDirectory}
                   activeFileId={activeFileId}

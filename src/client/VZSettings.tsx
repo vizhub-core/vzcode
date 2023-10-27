@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
+import { Username } from '../types';
 
 // const saveTimes = [
 //   { value: 1, label: '1 second' },
@@ -9,18 +10,25 @@ import { ThemeLabel, themes } from './themes';
 //   { value: 30, label: '30 seconds' },
 // ];
 
-export let username = 'Anonymous';
-
 export const VZSettings = ({
   show,
   onClose,
-  setTheme,
   theme,
+  setTheme,
+  username,
+  setUsername,
+
+  enableUsernameField = true,
 }: {
   show: boolean;
   onClose: () => void;
-  setTheme: (theme: ThemeLabel) => void;
   theme: ThemeLabel;
+  setTheme: (theme: ThemeLabel) => void;
+  username: Username;
+  setUsername: (username: Username) => void;
+
+  // Feature flag to enable/disable username field
+  enableUsernameField?: boolean;
 }) => {
   const handleThemeChange = useCallback((event) => {
     const selectedValue = event.target.value;
@@ -44,10 +52,10 @@ export const VZSettings = ({
   // );
 
   const usernameRef = useRef<HTMLInputElement>(null);
-  const handleUsernameChange = () => {
-    const usernameValue = usernameRef.current?.value;
-    username = usernameValue;
-  };
+
+  const handleUsernameChange = useCallback(() => {
+    setUsername(usernameRef.current?.value || '');
+  }, [setUsername]);
 
   return show ? (
     <Modal
@@ -60,18 +68,23 @@ export const VZSettings = ({
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form.Group className="mb-3" controlId="formFork">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="text"
-            ref={usernameRef}
-            onChange={handleUsernameChange}
-            placeholder="Enter username"
-          />
-          <Form.Text className="text-muted">
-            Enter a username to be displayed on your cursor
-          </Form.Text>
-        </Form.Group>
+        {enableUsernameField ? (
+          <Form.Group className="mb-3" controlId="formFork">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              type="text"
+              ref={usernameRef}
+              onChange={handleUsernameChange}
+              placeholder="Enter username"
+              value={username}
+            />
+            <Form.Text className="text-muted">
+              Enter a username to be displayed on your
+              cursor
+            </Form.Text>
+          </Form.Group>
+        ) : null}
+
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
 

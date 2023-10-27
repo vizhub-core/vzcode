@@ -15,16 +15,22 @@ export type {
 
 export { VZSidebar } from './client/VZSidebar';
 export { VZSettings } from './client/VZSettings';
-export { SplitPaneResizeContext } from './client/SplitPaneResizeContext';
+export {
+  SplitPaneResizeProvider,
+  SplitPaneResizeContext,
+} from './client/SplitPaneResizeContext';
 export { Resizer } from './client/Resizer';
 export { TabList } from './client/TabList';
 export { CodeEditor } from './client/CodeEditor';
 export { usePrettier } from './client/usePrettier';
-export { PrettierErrorOverlay } from './client/PrettierErrorOverlay';
+export { CodeErrorOverlay } from './client/CodeErrorOverlay';
 export { PresenceNotifications } from './client/PresenceNotifications';
 export { useFileCRUD } from './client/useFileCRUD';
 export { useSubmitOperation } from './client/useSubmitOperation';
-export { vzReducer } from './client/vzReducer';
+export {
+  vzReducer,
+  createInitialState,
+} from './client/vzReducer';
 export { useActions } from './client/useActions';
 export { useOpenDirectories } from './client/useOpenDirectories';
 export {

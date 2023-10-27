@@ -1,14 +1,36 @@
-import { useState, useCallback, useMemo } from 'react';
-import { ConfirmationBox } from './ConfirmationBox';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 
+// TODO consider moving this up to a higher level of the component tree
+import { DeleteConfirmationModal } from './DeleteConfirmationModal';
+
+// TODO support renaming directories
+// See https://github.com/vizhub-core/vzcode/issues/103
+const enableRenameDirectory = false;
+
+// A file or directory in the sidebar.
 export const Item = ({
   name,
   children,
   handleClick,
+  handleDoubleClick,
   handleRenameClick,
   handleDeleteClick,
-  isDir,
+  isDirectory = false,
   isActive = false,
+}: {
+  name: string;
+  children: React.ReactNode;
+  handleClick: (event: React.MouseEvent) => void;
+  handleDoubleClick?: (event: React.MouseEvent) => void;
+  handleRenameClick: (newName: string) => void;
+  handleDeleteClick: () => void;
+  isDirectory?: boolean;
+  isActive?: boolean;
 }) => {
   // Tracks whether the mouse is hovering over the file or directory
   const [isHovered, setIsHovered] = useState(false);
@@ -19,28 +41,48 @@ export const Item = ({
   // Tracks the value of the input field when renaming
   const [renameValue, setRenameValue] = useState('');
 
-  const onKeyDown = useCallback((event) => {
-    if (event.key === 'Escape') {
-      setIsRenaming(false);
-    } else if (event.key === 'Enter') {
-      event.target.blur();
-    }
-  }, []);
+  // Tracks whether the delete confirmation modal is open
+  const [showModal, setShowModal] = useState(false);
 
-  const onBlur = useCallback(
-    (event: React.FocusEvent<HTMLInputElement>) => {
-      if (event.target.value.trim() === '') {
-        // setEditingValue(value);
-        console.log('TODO: handle empty rename');
-      } else {
+  // Ref to track the input DOM, so that we can focus and blur it
+  const renameInputRef = useRef(null);
+
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Escape') {
         setIsRenaming(false);
-        handleRenameClick(event.target.value);
+      } else if (event.key === 'Enter') {
+        renameInputRef.current.blur();
       }
     },
-    [handleRenameClick],
+    [],
   );
 
-  const [showModal, setShowModal] = useState(false);
+  const onBlur = useCallback(() => {
+    setIsRenaming(false);
+    if (renameInputRef.current.value.trim() === '') {
+      // Renaming to empty signals deletion
+      setShowModal(true);
+    } else {
+      handleRenameClick(renameInputRef.current.value);
+    }
+  }, [handleRenameClick]);
+
+  const handleRenameIconClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setIsRenaming(!isRenaming);
+      setRenameValue(name);
+    },
+    [name, isRenaming],
+  );
+
+  // Focus the input field when renaming
+  useEffect(() => {
+    if (isRenaming) {
+      renameInputRef.current.focus();
+    }
+  }, [isRenaming]);
 
   // Function to open the delete file confirmation modal
   const handleModalOpen = useCallback(
@@ -74,25 +116,28 @@ export const Item = ({
     setIsHovered(false);
   }, []);
 
-  const onChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setRenameValue(event.target.value);
-    },
-    [],
-  );
+  const onChange = useCallback(() => {
+    setRenameValue(renameInputRef.current.value);
+  }, []);
 
   return (
     <div
-      className={`full-box file-or-directory ${
+      className={`full-box file-or-directory user-select-none ${
         isActive ? 'active-file' : ''
       }`}
       onClick={isRenaming ? null : handleClick}
+      onDoubleClick={
+        isRenaming || !handleDoubleClick
+          ? null
+          : handleDoubleClick
+      }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <div className="name">
         {isRenaming ? (
           <input
+            ref={renameInputRef}
             type="text"
             aria-label="Field name"
             value={renameValue}
@@ -104,17 +149,16 @@ export const Item = ({
           children
         )}
       </div>
-      {isHovered ? (
+      {isHovered && !isRenaming ? (
         <div className="utils">
-          <i
-            className="bx bxs-edit utilities"
-            style={{ color: '#9edcff' }}
-            onClick={(event: React.MouseEvent) => {
-              event.stopPropagation();
-              setIsRenaming(!isRenaming);
-              setRenameValue(isDir ? name : children);
-            }}
-          ></i>
+          {(isDirectory ? enableRenameDirectory : true) ? (
+            <i
+              className="bx bxs-edit utilities"
+              style={{ color: '#9edcff' }}
+              onClick={handleRenameIconClick}
+            ></i>
+          ) : null}
+
           <i
             className="bx bx-trash utilities"
             style={{ color: '#ff006b' }}
@@ -123,10 +167,12 @@ export const Item = ({
         </div>
       ) : null}
 
-      <ConfirmationBox
+      <DeleteConfirmationModal
         show={showModal}
         onClose={handleModalClose}
         onConfirm={handleConfirmModal}
+        isDirectory={isDirectory}
+        name={name}
       />
     </div>
   );

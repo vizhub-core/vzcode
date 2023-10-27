@@ -5,49 +5,46 @@ import { FileId } from '../../types';
 export const FileListing = ({
   name,
   fileId,
-  handleRenameFileClick,
-  handleDeleteFileClick,
+  renameFile,
+  deleteFile,
   handleFileClick,
+  handleFileDoubleClick,
   isActive,
 }: {
   name: string;
   fileId: FileId;
-  handleRenameFileClick: (
-    fileId: FileId,
-    newName: string,
-  ) => void;
-  handleDeleteFileClick: (
-    fileId: FileId,
-    event: React.MouseEvent,
-  ) => void;
+  renameFile: (fileId: FileId, newName: string) => void;
+  deleteFile: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
+  handleFileDoubleClick: (fileId: FileId) => void;
   isActive: boolean;
 }) => {
   const handleClick = useCallback(() => {
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
 
-  const handleDeleteClick = useCallback(
-    (event: React.MouseEvent) => {
-      handleDeleteFileClick(fileId, event);
-    },
-    [fileId, handleDeleteFileClick],
-  );
+  const handleDoubleClick = useCallback(() => {
+    handleFileDoubleClick(fileId);
+  }, [fileId, handleFileDoubleClick]);
+
+  const handleDeleteClick = useCallback(() => {
+    deleteFile(fileId);
+  }, [fileId, deleteFile]);
 
   const handleRenameClick = useCallback(
     (newName: string) => {
-      handleRenameFileClick(fileId, newName);
+      renameFile(fileId, newName);
     },
-    [fileId, handleRenameFileClick],
+    [fileId, renameFile],
   );
 
   return (
     <Item
       name={name}
       handleClick={handleClick}
+      handleDoubleClick={handleDoubleClick}
       handleDeleteClick={handleDeleteClick}
       handleRenameClick={handleRenameClick}
-      isDir={false}
       isActive={isActive}
     >
       {name}
