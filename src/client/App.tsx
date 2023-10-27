@@ -59,21 +59,6 @@ function App() {
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
 
-  const submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useSubmitOperation(shareDBDoc);
-
-  // Auto-run Pretter after local changes.
-  const {
-    prettierError,
-  }: {
-    prettierError: string | null;
-  } = usePrettier(
-    shareDBDoc,
-    submitOperation,
-    prettierWorker,
-  );
-
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
   // See https://share.github.io/sharedb/api/local-presence
@@ -160,6 +145,21 @@ function App() {
 
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
+
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useSubmitOperation(shareDBDoc);
+
+  // Auto-run Pretter after local changes.
+  const {
+    prettierError,
+  }: {
+    prettierError: string | null;
+  } = usePrettier(
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
 
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
