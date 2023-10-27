@@ -79,7 +79,6 @@ app.post(
     let insertionCursor = req.body.cursorLocation;
 
     for await (const part of stream) {
-      
       // shareDBDoc.submitOp([req.body.fileId,["text",{"es":[insertionCursor,part.choices[0]?.delta?.content || '']}]],{source:"AIAssist"});
       const op = editOp(
         ['files', req.body.fileId, 'text'],
