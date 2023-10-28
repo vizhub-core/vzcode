@@ -1,6 +1,9 @@
 import { EditorView, keymap } from '@codemirror/view';
 
-export const AIAssist = (activeFileId: string) =>
+export const AIAssist = (
+  activeFileId: string,
+  endpoint = '/AIAssist',
+) =>
   keymap.of([
     {
       key: 'control-m',
@@ -10,7 +13,7 @@ export const AIAssist = (activeFileId: string) =>
           view.state.selection.main.to,
         );
 
-        fetch('/AIAssist', {
+        fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
