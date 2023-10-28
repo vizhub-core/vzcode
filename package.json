@@ -74,7 +74,7 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^9.1.0",
-    "openai": "^4.13.0",
+    "openai": "^4.14.1",
     "ot-json1": "^1.0.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
