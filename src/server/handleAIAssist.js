@@ -42,12 +42,18 @@ export async function generateAIResponse({
 
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
+    const {
+      text: inputText,
+      cursorLocation: insertionCursor,
+      fileId,
+    } = req.body;
+
     try {
       await generateAIResponse({
-        inputText: req.body.text,
-        insertionCursor: req.body.cursorLocation,
-        fileId: req.body.fileId,
-        shareDBDoc: shareDBDoc,
+        inputText,
+        insertionCursor,
+        fileId,
+        shareDBDoc,
       });
 
       res
