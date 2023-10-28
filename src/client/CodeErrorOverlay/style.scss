@@ -10,21 +10,32 @@
   // pointer-events: none;
   margin: 0;
   padding: 8px;
-
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 
-  // TODO unify with styles in tab close button
+  /* Define your custom styles here */
+  /* For example, change the font size and color */
+  font-size: 16px;
+  color: #FF5733;
+
+  /* Add a box shadow for a subtle effect */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+  /* Customize the dismiss button style */
   .error-dismiss-button {
     position: absolute;
-    top: 0;
-    right: 0;
-    margin: 5px;
+    top: 5px; /* Adjust the top position */
+    right: 5px; /* Adjust the right position */
+    margin: 0;
+    padding: 5px; /* Adjust padding for the button */
     cursor: pointer;
     color: white;
+    background-color: #FF5733; /* Change the button's background color */
+    border-radius: 50%; /* Make it circular */
   }
+
+  /* Style the button on hover */
   .error-dismiss-button:hover {
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: #FF826D; /* Change the background color on hover */
   }
 }

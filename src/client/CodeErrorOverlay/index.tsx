@@ -1,20 +1,30 @@
-import { useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import './style.scss';
 
-// Feature flag for the button that dismisses the error.
-const enableErrorDismiss = false;
+const enableErrorDismiss = true;
 
 export const CodeErrorOverlay = ({
   errorMessage,
 }: {
   errorMessage: string | null;
 }) => {
+  const [isOverlayVisible, setIsOverlayVisible] =
+    useState(true);
+
+  // If errorMessage changes, set the overlay to be visible
+  useEffect(() => {
+    if (errorMessage !== null) {
+      setIsOverlayVisible(true);
+    }
+  }, [errorMessage]);
+
   const handleCloseClick = useCallback(() => {
-    console.log('TODO dismiss the error');
+    // Set the visibility state to false when the button is clicked
+    setIsOverlayVisible(false);
   }, []);
 
-  return errorMessage !== null ? (
-    <pre className="vz-code-error-overlay">
+  return isOverlayVisible && errorMessage !== null ? (
+    <div className="vz-code-error-overlay">
       {errorMessage}
       {enableErrorDismiss ? (
         <div
@@ -22,6 +32,6 @@ export const CodeErrorOverlay = ({
           onClick={handleCloseClick}
         ></div>
       ) : null}
-    </pre>
+    </div>
   ) : null;
 };
