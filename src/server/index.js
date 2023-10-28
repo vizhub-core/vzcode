@@ -12,9 +12,8 @@ import ngrok from 'ngrok';
 import dotenv from 'dotenv';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { json1Presence } from '../ot.js';
-import OpenAI from 'openai';
 import bodyParser from 'body-parser';
-import { editOp } from 'ot-json1';
+import { handleAIAssist } from './handleAIAssist.js';
 
 dotenv.config({ path: '../../.env' });
 
@@ -57,46 +56,6 @@ app.post('/saveTime', (req, res) => {
   console.log('autoSaveDebounceTimeMS', req.body);
 });
 
-const openai = new OpenAI();
-
-app.post(
-  '/AIAssist',
-  bodyParser.json(),
-  async (req, res) => {
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', //was gpt-4
-      messages: [
-        {
-          role: 'system',
-          content:
-            'Write typescript or javascript code that would follow the prompt',
-        },
-        { role: 'user', content: req.body.text },
-      ],
-      stream: true,
-    });
-
-    let insertionCursor = req.body.cursorLocation;
-
-    for await (const part of stream) {
-      // shareDBDoc.submitOp([req.body.fileId,["text",{"es":[insertionCursor,part.choices[0]?.delta?.content || '']}]],{source:"AIAssist"});
-      const op = editOp(
-        ['files', req.body.fileId, 'text'],
-        'text-unicode',
-        [
-          insertionCursor,
-          part.choices[0]?.delta?.content || '',
-        ],
-      );
-
-      shareDBDoc.submitOp(op);
-      insertionCursor += (
-        part.choices[0]?.delta?.content || ''
-      ).length;
-    }
-  },
-);
-
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
   // Enable presence
@@ -137,6 +96,13 @@ app.use(express.static(dir));
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
+
+// Handle AI Assist requests.
+app.post(
+  '/AIAssist',
+  bodyParser.json(),
+  handleAIAssist(shareDBDoc),
+);
 
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
