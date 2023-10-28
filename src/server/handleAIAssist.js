@@ -3,6 +3,10 @@ import { editOp } from 'ot-json1';
 
 const openai = new OpenAI();
 
+// Feature flag to slow down AI for development/testing
+// See https://github.com/vizhub-core/vzcode/issues/290
+const slowdown = true;
+
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
     // Generate a response asynchronously,
@@ -38,6 +42,13 @@ export const handleAIAssist =
         insertionCursor += (
           part.choices[0]?.delta?.content || ''
         ).length;
+
+        // Wait for 500ms
+        if (slowdown) {
+          await new Promise((resolve) => {
+            setTimeout(resolve, 500);
+          });
+        }
       }
 
       res
