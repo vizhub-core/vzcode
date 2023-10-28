@@ -3,7 +3,7 @@ import { editOp } from 'ot-json1';
 
 const openai = new OpenAI();
 
-async function generateAIResponse({
+export async function generateAIResponse({
   inputText,
   insertionCursor,
   fileId,

@@ -68,6 +68,7 @@ export const getOrCreateEditor = ({
   editorCache,
   usernameRef,
   aiAssistEndpoint,
+  aiAssistOptions,
 }: {
   fileId: FileId;
 
@@ -88,6 +89,9 @@ export const getOrCreateEditor = ({
   editorCache: EditorCache;
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
+  aiAssistOptions?: {
+    [key: string]: any;
+  };
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -203,7 +207,13 @@ export const getOrCreateEditor = ({
 
   extensions.push(rotationIndicator);
 
-  extensions.push(AIAssist(fileId, aiAssistEndpoint));
+  extensions.push(
+    AIAssist({
+      fileId,
+      aiAssistEndpoint,
+      aiAssistOptions,
+    }),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({

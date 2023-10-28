@@ -1,9 +1,21 @@
 import { EditorView, keymap } from '@codemirror/view';
 
-export const AIAssist = (
-  activeFileId: string,
-  endpoint = '/AIAssist',
-) =>
+export const AIAssist = ({
+  // The file id of the file the AI should assist with.
+  fileId,
+
+  // Optional endpoint override.
+  aiAssistEndpoint = '/AIAssist',
+
+  // Optional additional options to pass to the endpoint.
+  aiAssistOptions = {},
+}: {
+  fileId: string;
+  aiAssistEndpoint: string;
+  aiAssistOptions?: {
+    [key: string]: any;
+  };
+}) =>
   keymap.of([
     {
       key: 'control-m',
@@ -13,14 +25,17 @@ export const AIAssist = (
           view.state.selection.main.to,
         );
 
-        fetch(endpoint, {
+        fetch(aiAssistEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            // Pass additional options to the AI Assist endpoint.
+            ...aiAssistOptions,
+
             text: textToSend,
-            fileId: activeFileId,
+            fileId,
             cursorLocation: view.state.selection.main.to,
           }),
         });
