@@ -9,6 +9,13 @@ export const CodeErrorOverlay = ({
   errorMessage: string | null;
 }) => {
   const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+  
+  // If errorMessage changes, set the overlay to be visible
+  useEffect(() => {
+    if (errorMessage !== null) {
+      setIsOverlayVisible(true);
+    }
+  }, [errorMessage]);
 
   const handleCloseClick = useCallback(() => {
     // Set the visibility state to false when the button is clicked
