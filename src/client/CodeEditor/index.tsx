@@ -30,6 +30,8 @@ export const CodeEditor = ({
   editorWantsFocus,
   editorNoLongerWantsFocus,
   username,
+  aiAssistEndpoint,
+  aiAssistOptions,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -51,6 +53,15 @@ export const CodeEditor = ({
   // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
   username: Username;
+
+  // The server endpoint for the AI Assist service.
+  aiAssistEndpoint?: string;
+
+  // Additional options to pass to the AI Assist service,
+  // an object with string values.
+  aiAssistOptions?: {
+    [key: string]: string;
+  };
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -98,6 +109,8 @@ export const CodeEditor = ({
         onInteract,
         editorCache,
         usernameRef,
+        aiAssistEndpoint,
+        aiAssistOptions,
       }),
     [
       activeFileId,
@@ -109,6 +122,8 @@ export const CodeEditor = ({
       onInteract,
       editorCache,
       usernameRef,
+      aiAssistEndpoint,
+      aiAssistOptions,
     ],
   );
 

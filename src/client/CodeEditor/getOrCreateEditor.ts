@@ -67,6 +67,8 @@ export const getOrCreateEditor = ({
   onInteract,
   editorCache,
   usernameRef,
+  aiAssistEndpoint,
+  aiAssistOptions,
 }: {
   fileId: FileId;
 
@@ -86,6 +88,10 @@ export const getOrCreateEditor = ({
   onInteract?: () => void;
   editorCache: EditorCache;
   usernameRef: React.MutableRefObject<Username>;
+  aiAssistEndpoint?: string;
+  aiAssistOptions?: {
+    [key: string]: any;
+  };
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -158,7 +164,7 @@ export const getOrCreateEditor = ({
   // using a Compartment.
   const languageCompartment = new Compartment();
   // See https://github.com/vizhub-core/vzcode/issues/55
-  const getLanguageExtension = (fileExtension) => {
+  const getLanguageExtension = (fileExtension: string) => {
     const languageFunc = languageExtensions[fileExtension];
     return languageFunc ? languageFunc() : undefined;
   };
@@ -201,7 +207,13 @@ export const getOrCreateEditor = ({
 
   extensions.push(rotationIndicator);
 
-  extensions.push(AIAssist(fileId));
+  extensions.push(
+    AIAssist({
+      fileId,
+      aiAssistEndpoint,
+      aiAssistOptions,
+    }),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({
