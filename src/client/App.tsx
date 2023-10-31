@@ -74,7 +74,7 @@ function App() {
   const [content, setContent] =
     useState<VZCodeContent | null>(null);
 
-  let tsServer = new SharedWorker(
+  const tsServer = new SharedWorker(
     new URL('src/worker.js', window.location.origin),
     {
       name: 'worker',
