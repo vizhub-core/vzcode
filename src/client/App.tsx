@@ -1,4 +1,10 @@
-import { useState, useEffect, useReducer } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useReducer,
+} from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -6,9 +12,9 @@ import { CodeEditor } from './CodeEditor';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
 import {
+  FileId,
   Files,
   ShareDBDoc,
-  Username,
   VZCodeContent,
 } from '../types';
 import { TabList } from './TabList';
@@ -24,16 +30,12 @@ import PrettierWorker from './usePrettier/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
-import { CodeErrorOverlay } from './CodeErrorOverlay';
-import { vzReducer, createInitialState } from './vzReducer';
+import { PrettierErrorOverlay } from './PrettierErrorOverlay';
+import { vzReducer } from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
-import { useSubmitOperation } from './useSubmitOperation';
-import {
-  useInitialUsername,
-  usePersistUsername,
-} from './usernameLocalStorage';
 import './style.scss';
+import { useSubmitOperation } from './useSubmitOperation';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -58,6 +60,17 @@ function App() {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
+
+  const submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void = useSubmitOperation(shareDBDoc);
+
+  // Auto-run Pretter after local changes.
+  const { prettierError } = usePrettier(
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  );
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -122,14 +135,7 @@ function App() {
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      const generateTimestampedId = () => {
-        const timestamp = Date.now().toString(36);
-        const randomPart = randomId();
-        return `${timestamp}-${randomPart}`;
-      };
-      setLocalPresence(
-        docPresence.create(generateTimestampedId()),
-      );
+      setLocalPresence(docPresence.create(randomId()));
 
       // Store docPresence so child components can listen for changes.
       setDocPresence(docPresence);
@@ -143,40 +149,17 @@ function App() {
     };
   }, []);
 
-  // Get the initial username from localStorage.
-  const initialUsername: Username = useInitialUsername();
-
-  const submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useSubmitOperation(shareDBDoc);
-
-  // Auto-run Pretter after local changes.
-  const {
-    prettierError,
-  }: {
-    prettierError: string | null;
-  } = usePrettier(
-    shareDBDoc,
-    submitOperation,
-    prettierWorker,
-  );
-
   // https://react.dev/reference/react/useReducer
-  const [state, dispatch] = useReducer(
-    vzReducer,
-    { defaultTheme, initialUsername },
-    createInitialState,
-  );
+  const [state, dispatch] = useReducer(vzReducer, {
+    tabList: [],
+    activeFileId: null,
+    theme: defaultTheme,
+    isSettingsOpen: false,
+  });
 
   // Unpack state.
-  const {
-    tabList,
-    activeFileId,
-    theme,
-    isSettingsOpen,
-    editorWantsFocus,
-    username,
-  } = state;
+  const { tabList, activeFileId, theme, isSettingsOpen } =
+    state;
 
   // Functions for dispatching actions to the reducer.
   const {
@@ -186,8 +169,6 @@ function App() {
     setTheme,
     setIsSettingsOpen,
     closeSettings,
-    editorNoLongerWantsFocus,
-    setUsername,
   } = useActions(dispatch);
 
   // The set of open directories.
@@ -195,10 +176,22 @@ function App() {
   const { isDirectoryOpen, toggleDirectory } =
     useOpenDirectories();
 
-  usePersistUsername(username);
-
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
+
+  // A function that will focus the editor.
+  const focusEditor = useCallback(
+    (fileId: FileId) => {
+      // TODO figure out a way to do this without the timeout
+      setTimeout(() => {
+        const editorCacheValue = editorCache.get(fileId);
+        if (editorCacheValue) {
+          editorCacheValue.editor.focus();
+        }
+      }, 100);
+    },
+    [editorCache],
+  );
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
@@ -206,13 +199,13 @@ function App() {
   // Handle file CRUD operations.
   const {
     createFile,
-    renameFile,
-    deleteFile,
-    deleteDirectory,
+    handleRenameFileClick,
+    handleDeleteClick,
   } = useFileCRUD({
     submitOperation,
     closeTabs,
     openTab,
+    focusEditor,
   });
 
   // Isolate the files object from the document.
@@ -225,12 +218,11 @@ function App() {
       <div className="app">
         <div className="left">
           <VZSidebar
-            files={files}
             createFile={createFile}
-            renameFile={renameFile}
-            deleteFile={deleteFile}
-            deleteDirectory={deleteDirectory}
-            openTab={openTab}
+            files={files}
+            handleRenameFileClick={handleRenameFileClick}
+            handleDeleteFileClick={handleDeleteClick}
+            handleFileClick={openTab}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
@@ -241,8 +233,6 @@ function App() {
             onClose={closeSettings}
             theme={theme}
             setTheme={setTheme}
-            username={username}
-            setUsername={setUsername}
           />
         </div>
         <div className="right">
@@ -251,9 +241,8 @@ function App() {
             tabList={tabList}
             activeFileId={activeFileId}
             setActiveFileId={setActiveFileId}
-            openTab={openTab}
             closeTabs={closeTabs}
-            createFile={createFile}
+            createFile={createFile} 
           />
           {content && activeFileId ? (
             <CodeEditor
@@ -264,17 +253,13 @@ function App() {
               activeFileId={activeFileId}
               theme={theme}
               editorCache={editorCache}
-              editorWantsFocus={editorWantsFocus}
-              editorNoLongerWantsFocus={
-                editorNoLongerWantsFocus
-              }
-              username={username}
             />
           ) : null}
-          <CodeErrorOverlay errorMessage={prettierError} />
+          <PrettierErrorOverlay
+            prettierError={prettierError}
+          />
           <PresenceNotifications
             docPresence={docPresence}
-            localPresence={localPresence}
           />
         </div>
         <Resizer />
