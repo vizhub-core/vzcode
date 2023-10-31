@@ -261,7 +261,7 @@ export const getOrCreateEditor = ({
 
     //Logic to get the text and cursor location in between punctuation.
     //Taken from https://codemirror.net/examples/autocompletion/
-    let from = ctx.matchBefore(/\w*/).from;
+    const from = ctx.matchBefore(/\w*/).from;
     let lastWord = ctx.matchBefore(/\w*/).text;
     if (lastWord) {
       // @ts-ignore
