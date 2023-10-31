@@ -98,11 +98,12 @@ const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // Handle AI Assist requests.
+/*
 app.post(
   '/AIAssist',
   bodyParser.json(),
   handleAIAssist(shareDBDoc),
-);
+);*/
 
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;

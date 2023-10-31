@@ -29,7 +29,9 @@ import {
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
+import { autocompletion } from '@codemirror/autocomplete';
 
+let useAutoComplete = true;
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -207,13 +209,86 @@ export const getOrCreateEditor = ({
 
   extensions.push(rotationIndicator);
 
+  /*
   extensions.push(
     AIAssist({
       fileId,
       aiAssistEndpoint,
       aiAssistOptions,
     }),
+  );*/
+
+  if (useAutoComplete) {
+    extensions.push(
+      autocompletion({
+        override: [tsComplete],
+      }),
+    );
+  }
+
+  //Creating SharedWorker. Used in autocompletions
+  let tsServer = new SharedWorker(
+    new URL('src/worker.js', window.location.origin),
+    {
+      name: 'worker',
+      type: 'module',
+    },
   );
+
+  // displays autocompletes
+  async function tsComplete(ctx) {
+    //Post message to our sharedWorker to get completions.
+    tsServer.port.postMessage({
+      event: 'autocomplete-request',
+      pos: ctx.pos,
+      location: name.toString(),
+      text: text,
+    });
+
+    //An async promise to ensure that we are getting our completion entries
+    const completionsPromise = new Promise((resolve) => {
+      tsServer.port.onmessage = (e) => {
+        const tsCompletions = e.data.detail;
+        resolve(tsCompletions);
+      };
+    });
+
+    const tsCompletions = await completionsPromise;
+    if (!tsCompletions) {
+      console.log('Unable to get completions');
+      return { from: ctx.pos, options: [] };
+    }
+
+    //Logic to get the text and cursor location in between punctuation.
+    //Taken from https://codemirror.net/examples/autocompletion/
+    let from = ctx.matchBefore(/\w*/).from;
+    let lastWord = ctx.matchBefore(/\w*/).text;
+    if (lastWord) {
+      // @ts-ignore
+      tsCompletions.entries = tsCompletions.entries.filter(
+        (completion) =>
+          completion.name.startsWith(lastWord),
+      );
+    }
+
+    return {
+      from: ctx.pos,
+      // @ts-ignore
+      options: tsCompletions.entries.map((completion) => ({
+        label: completion.name,
+        //Applies autocorrections to be seen in the code Editor
+        apply: (view) => {
+          view.dispatch({
+            changes: {
+              from,
+              to: ctx.pos,
+              insert: completion.name,
+            },
+          });
+        },
+      })),
+    };
+  }
 
   const editor = new EditorView({
     state: EditorState.create({

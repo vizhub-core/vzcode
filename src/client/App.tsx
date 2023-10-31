@@ -19,8 +19,12 @@ import {
   useEditorCache,
 } from './useEditorCache';
 import { usePrettier } from './usePrettier';
+import { useTypeScript } from './useTypeScript';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';
+// @ts-ignore
+import TypeScriptWorker from './useTypeScript/worker?worker';
+
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
@@ -37,6 +41,9 @@ import './style.scss';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
+
+// Instantiate the TypeScript worker.
+const typeScriptWorker = new TypeScriptWorker();
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -55,6 +62,8 @@ const socket = new WebSocket(
 const connection = new Connection(socket);
 
 function App() {
+  console.log('Rendering App');
+
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] =
     useState<ShareDBDoc<VZCodeContent> | null>(null);
@@ -73,6 +82,13 @@ function App() {
   // Starts out as `null` until the document is loaded.
   const [content, setContent] =
     useState<VZCodeContent | null>(null);
+
+  //TODO: Make this only happen on file changes
+  tsServer.port.start();
+  tsServer.port.postMessage({
+    event: 'update-content',
+    details: content,
+  });
 
   // Set up the connection to ShareDB.
   // TODO move this logic to a hook called `useShareDB`
@@ -160,6 +176,9 @@ function App() {
     submitOperation,
     prettierWorker,
   );
+
+  // Set up the TypeScript worker.
+  useTypeScript(shareDBDoc, typeScriptWorker);
 
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(

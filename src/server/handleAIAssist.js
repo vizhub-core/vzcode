@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { editOp } from 'ot-json1';
 
-const openai = new OpenAI();
+//const openai = new OpenAI();
 
 export async function generateAIResponse({
   inputText,
