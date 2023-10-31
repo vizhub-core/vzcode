@@ -1,9 +1,8 @@
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo, useState, useRef, useEffect } from 'react';
 import {
   FileId,
   FileTree,
   FileTreeFile,
-  FileTreePath,
   Files,
 } from '../../types';
 import { getFileTree } from '../getFileTree';
@@ -12,45 +11,35 @@ import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import './styles.scss';
+import { CreateFileModal } from './CreateFileModal';
 
-const CreateFileButton = ({ createFile }) => {
-  return (
-    <i
-      className="bx bxs-file-plus new-btn"
-      style={{ color: '#dbdde1' }}
-      onClick={createFile}
-      // TODO better tooltip
-      title="Create file"
-    ></i>
-  );
-};
 export const VZSidebar = ({
-  files,
   createFile,
-  renameFile,
-  deleteFile,
-  deleteDirectory,
-  openTab,
+  files,
+  handleRenameFileClick,
+  handleDeleteFileClick,
+  handleFileClick,
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
 }: {
   files: Files;
-  createFile: () => void;
-  renameFile: (fileId: FileId, newName: string) => void;
-  deleteFile: (fileId: FileId) => void;
-  deleteDirectory: (path: FileTreePath) => void;
-  openTab: ({
-    fileId,
-    isTransient,
-  }: {
-    fileId: FileId;
-    isTransient?: boolean;
-  }) => void;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
+  createFile?: (
+    fileName : string,
+  ) => void;
+  handleRenameFileClick?: (
+    fileId: FileId,
+    newName: string,
+  ) => void;
+  handleDeleteFileClick?: (
+    fileId: FileId,
+    event: React.MouseEvent,
+  ) => void;
+  handleFileClick?: (fileId: FileId) => void;
+  setIsSettingsOpen?: (isSettingsOpen: boolean) => void;
+  isDirectoryOpen?: (path: string) => boolean;
+  toggleDirectory?: (path: string) => void;
   activeFileId?: FileId;
 }) => {
   const fileTree = useMemo(
@@ -66,27 +55,24 @@ export const VZSidebar = ({
     SplitPaneResizeContext,
   );
 
-  // On single-click, open the file in a transient tab.
-  const handleFileClick = useCallback(
-    (fileId: FileId) => {
-      openTab({ fileId, isTransient: true });
-    },
-    [openTab],
-  );
 
-  // On double-click, open the file in a persistent tab.
-  const handleFileDoubleClick = useCallback(
-    (fileId: FileId) => {
-      openTab({ fileId, isTransient: false });
-    },
-    [openTab],
-  );
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal's visibility
+  const [initialFileName, setInitialFileName] = useState('Initial File Name');
 
-  // True if files exist.
-  const filesExist =
-    fileTree &&
-    fileTree.children &&
-    fileTree.children.length > 0;
+  const handleCreateFile = () => {
+    setIsModalOpen(true); 
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); 
+  };
+
+  const handleRename = (newFileName) => {
+    createFile(newFileName)
+
+    setIsModalOpen(false); 
+  };
+
 
   return (
     <div
@@ -97,42 +83,36 @@ export const VZSidebar = ({
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div>
-            <CreateFileButton createFile={createFile} />
+            <i
+              className="bx bxs-file-plus new-btn"
+              style={{ color: '#dbdde1' }}
+              onClick={handleCreateFile}
+            ></i>
           </div>
         </div>
-        {filesExist ? (
-          fileTree.children.map((entity) => {
-            const { fileId } = entity as FileTreeFile;
-            const { path } = entity as FileTree;
-            const key = fileId ? fileId : path;
-            return (
-              <Listing
-                key={key}
-                entity={entity}
-                renameFile={renameFile}
-                deleteFile={deleteFile}
-                deleteDirectory={deleteDirectory}
-                handleFileClick={handleFileClick}
-                handleFileDoubleClick={
-                  handleFileDoubleClick
-                }
-                isDirectoryOpen={isDirectoryOpen}
-                toggleDirectory={toggleDirectory}
-                activeFileId={activeFileId}
-              />
-            );
-          })
-        ) : (
-          <div className="empty">
-            <div className="empty-text">
-              It looks like you don't have any files yet!
-              Click the "Create file" button below to create
-              your first file.
-            </div>
-
-            <CreateFileButton createFile={createFile} />
-          </div>
-        )}
+        {fileTree
+          ? fileTree.children.map((entity) => {
+              const { fileId } = entity as FileTreeFile;
+              const { path } = entity as FileTree;
+              const key = fileId ? fileId : path;
+              return (
+                <Listing
+                  entity={entity}
+                  key={key}
+                  handleRenameFileClick={
+                    handleRenameFileClick
+                  }
+                  handleDeleteFileClick={
+                    handleDeleteFileClick
+                  }
+                  handleFileClick={handleFileClick}
+                  isDirectoryOpen={isDirectoryOpen}
+                  toggleDirectory={toggleDirectory}
+                  activeFileId={activeFileId}
+                />
+              );
+            })
+          : null}
       </div>
       {disableSettings ? null : (
         <div
@@ -142,6 +122,13 @@ export const VZSidebar = ({
           Settings
         </div>
       )}
+      <CreateFileModal
+      show={isModalOpen}
+      onClose={handleCloseModal}
+      onRename={handleRename}
+      initialFileName={initialFileName}
+      />
+
     </div>
   );
 };
