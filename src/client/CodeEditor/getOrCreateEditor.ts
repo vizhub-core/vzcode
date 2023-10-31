@@ -227,7 +227,7 @@ export const getOrCreateEditor = ({
   }
 
   //Creating SharedWorker. Used in autocompletions
-  let tsServer = new SharedWorker(
+  const tsServer = new SharedWorker(
     new URL('src/worker.js', window.location.origin),
     {
       name: 'worker',
