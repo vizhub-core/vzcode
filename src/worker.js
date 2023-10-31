@@ -4,7 +4,7 @@ import ts from 'typescript';
 let previousDocument = null;
 let currentDocument = null;
 
-let compilerOptions = {};
+const compilerOptions = {};
 const fsMap = await tsvfs.createDefaultMapFromCDN(
   compilerOptions,
   ts.version,
