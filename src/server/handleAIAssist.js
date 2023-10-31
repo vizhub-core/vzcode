@@ -1,7 +1,9 @@
 import OpenAI from 'openai';
 import { editOp } from 'ot-json1';
-
-const openai = new OpenAI();
+let openai;
+if (process.env.OPENAI_API_KEY !== undefined) {
+  openai = new OpenAI();
+}
 
 export async function generateAIResponse({
   inputText,
