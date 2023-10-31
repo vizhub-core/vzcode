@@ -253,8 +253,6 @@ export const getOrCreateEditor = ({
       };
     });
 
-
-    console.log("reach");
     const tsCompletions = await completionsPromise;
     if (!tsCompletions) {
       console.log('Unable to get completions');
