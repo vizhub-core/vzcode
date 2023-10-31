@@ -5,7 +5,7 @@ const openai = new OpenAI();
 
 // Feature flag to slow down AI for development/testing
 // See https://github.com/vizhub-core/vzcode/issues/290
-const slowdown = true;
+const slowdown = false;
 
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
