@@ -1,11 +1,17 @@
 import OpenAI from 'openai';
 import { editOp } from 'ot-json1';
 
+
 //ot-text-unicode  and unicount are dependencies of ot-json1
 import { type } from 'ot-text-unicode';
 import { strPosToUni, uniToStrPos } from 'unicount';
 
-const openai = new OpenAI();
+
+let openai;
+if (process.env.OPENAI_API_KEY !== undefined) {
+  openai = new OpenAI();
+}
+
 
 export async function generateAIResponse({
   inputText,
