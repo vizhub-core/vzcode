@@ -31,7 +31,7 @@ import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 import { autocompletion } from '@codemirror/autocomplete';
 
-let useAutoComplete = false;
+const useAutoComplete = false;
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
