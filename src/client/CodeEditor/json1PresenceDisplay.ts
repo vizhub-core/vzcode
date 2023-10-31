@@ -72,7 +72,6 @@ export const json1PresenceDisplay = ({
                     attributes: {
                       style: `
                         background-color: rgba(255, 255, 0, 0.3);
-                        box-shadow: 1px 0 0 clear;
                         `,
                     },
                   }),
