@@ -74,6 +74,21 @@ function App() {
   const [content, setContent] =
     useState<VZCodeContent | null>(null);
 
+  let tsServer = new SharedWorker(
+    new URL('src/worker.js', window.location.origin),
+    {
+      name: 'worker',
+      type: 'module',
+    },
+  );
+
+  //TODO: Make this only happen on file changes
+  tsServer.port.start();
+  tsServer.port.postMessage({
+    event: 'update-content',
+    details: content,
+  });
+
   // Set up the connection to ShareDB.
   // TODO move this logic to a hook called `useShareDB`
   useEffect(() => {
