@@ -1,6 +1,8 @@
 import OpenAI from 'openai';
 import { editOp, type } from 'ot-json1';
 
+// Feature flag to slow down AI for development/testing
+const slowdown = false;
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
@@ -53,7 +55,13 @@ export async function generateAIResponse({
 
     shareDBDoc.submitOp(op, { source: AISourceName });
 
-    //Consider using the accomodateDocChanges function to handle all cursor changes.
+    // Wait for 500ms
+    if (slowdown) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+    }
+
     insertionCursor += (
       part.choices[0]?.delta?.content || ''
     ).length;
@@ -64,7 +72,6 @@ export async function generateAIResponse({
 const AISourceName = 'AIAssist';
 
 function opComesFromAIAssist(ops, source) {
-  
   return source === AISourceName;
 }
 
@@ -75,7 +82,6 @@ export const handleAIAssist =
       cursorLocation: insertionCursor,
       fileId,
     } = req.body;
-
 
     try {
       await generateAIResponse({
