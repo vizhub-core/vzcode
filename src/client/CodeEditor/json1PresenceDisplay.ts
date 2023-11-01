@@ -52,6 +52,7 @@ export const json1PresenceDisplay = ({
               const from = start[start.length - 1];
               // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
+              
               if (from === to) {
                 return {
                   from,
@@ -70,8 +71,7 @@ export const json1PresenceDisplay = ({
                     class: 'cm-json1-presence',
                     attributes: {
                       style: `
-                        background-color: rgba(255, 255, 0, 0.5);
-                        box-shadow: 1px 0 0 yellow;
+                        background-color: rgba(255, 255, 0, 0.3);
                         `,
                     },
                   }),
