@@ -65,7 +65,7 @@ export const VZSettings = ({
       animation={false}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Settings</Modal.Title>
+        <Modal.Title>Editor Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {enableUsernameField ? (
