@@ -25,7 +25,7 @@ export const CodeErrorOverlay = ({
 
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">
-      {errorMessage}
+      <pre>{errorMessage}</pre>
       {enableErrorDismiss ? (
         <div
           className={'bx bx-x error-dismiss-button'}
