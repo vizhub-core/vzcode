@@ -34,6 +34,7 @@ import {
   usePersistUsername,
 } from './usernameLocalStorage';
 import './style.scss';
+import { AIAssistWidget } from './AIAssistWidget';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -276,6 +277,7 @@ function App() {
             docPresence={docPresence}
             localPresence={localPresence}
           />
+          <AIAssistWidget />
         </div>
         <Resizer />
       </div>
