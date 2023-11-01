@@ -2,8 +2,6 @@ import OpenAI from 'openai';
 import { editOp, type } from 'ot-json1';
 
 
-import { Mutex } from 'async-mutex';
-
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
   openai = new OpenAI();
@@ -15,21 +13,16 @@ export async function generateAIResponse({
   fileId,
   shareDBDoc,
 }) {
-  //The AI Assist should pause outputing while the insertion cursor is being moved.
-  const generationLock = new Mutex();
-
   function accomodateDocChanges(op, source) {
     if (!opComesFromAIAssist(op, source)) {
-      generationLock.runExclusive(async () => {
-        if (op !== null) {
-          insertionCursor = type
-            .transformPosition(
-              ['files', fileId, 'text', insertionCursor],
-              op,
-            )
-            .slice(-1)[0];
-        }
-      });
+      if (op !== null) {
+        insertionCursor = type
+          .transformPosition(
+            ['files', fileId, 'text', insertionCursor],
+            op,
+          )
+          .slice(-1)[0];
+      }
     }
   }
 
@@ -49,23 +42,21 @@ export async function generateAIResponse({
   });
 
   for await (const part of stream) {
-    await generationLock.runExclusive(async () => {
-      const op = editOp(
-        ['files', fileId, 'text'],
-        'text-unicode',
-        [
-          insertionCursor,
-          part.choices[0]?.delta?.content || '',
-        ],
-      );
+    const op = editOp(
+      ['files', fileId, 'text'],
+      'text-unicode',
+      [
+        insertionCursor,
+        part.choices[0]?.delta?.content || '',
+      ],
+    );
 
-      shareDBDoc.submitOp(op, { source: AISourceName });
+    shareDBDoc.submitOp(op, { source: AISourceName });
 
-      //Consider using the accomodateDocChanges function to handle all cursor changes.
-      insertionCursor += (
-        part.choices[0]?.delta?.content || ''
-      ).length;
-    });
+    //Consider using the accomodateDocChanges function to handle all cursor changes.
+    insertionCursor += (
+      part.choices[0]?.delta?.content || ''
+    ).length;
   }
   shareDBDoc.off('op', accomodateDocChanges);
 }
@@ -73,7 +64,7 @@ export async function generateAIResponse({
 const AISourceName = 'AIAssist';
 
 function opComesFromAIAssist(ops, source) {
-  // console.log(source);
+  
   return source === AISourceName;
 }
 
@@ -85,7 +76,6 @@ export const handleAIAssist =
       fileId,
     } = req.body;
 
-    // await shareDBDoc.fetch();
 
     try {
       await generateAIResponse({
