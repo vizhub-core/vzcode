@@ -4,6 +4,7 @@ import {
   EditorState,
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
@@ -30,17 +31,22 @@ import {
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 
+// Enables TypeScript +JSX support in CodeMirror.
+const tsx = () =>
+  javascript({ jsx: true, typescript: true });
+
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
 // TODO consider moving this to a separate file.
 const languageExtensions = {
-  js: javascript,
-  json: javascript,
-  jsx: javascript,
-  ts: javascript,
-  html: html,
-  css: css,
+  json,
+  tsx,
+  js: tsx,
+  jsx: tsx,
+  ts: tsx,
+  html,
+  css,
   md: markdown,
 };
 
