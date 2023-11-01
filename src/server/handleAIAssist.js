@@ -1,17 +1,13 @@
 import OpenAI from 'openai';
-import { editOp } from 'ot-json1';
+import { editOp, type } from 'ot-json1';
 
 
-//ot-text-unicode  and unicount are dependencies of ot-json1
-import { type } from 'ot-text-unicode';
-import { strPosToUni, uniToStrPos } from 'unicount';
-
+import { Mutex } from 'async-mutex';
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
   openai = new OpenAI();
 }
-
 
 export async function generateAIResponse({
   inputText,
@@ -19,24 +15,19 @@ export async function generateAIResponse({
   fileId,
   shareDBDoc,
 }) {
-  function accomodateDocChanges(ops, source) {
-    if (!opComesFromAIAssist(ops, source)) {
-      console.log(source);
-      console.log(ops);
+  //The AI Assist should pause outputing while the insertion cursor is being moved.
+  const generationLock = new Mutex();
 
-      ops?.forEach((op) => {
-        console.log(op);
-        console.log(shareDBDoc.data.files[fileId].text);
+  function accomodateDocChanges(op, source) {
+    if (!opComesFromAIAssist(op, source)) {
+      generationLock.runExclusive(async () => {
         if (op !== null) {
-          const unicodeCursor = type.transformPosition(
-            strPosToUni(
-              //The text of the file is needed.
-              shareDBDoc.data.files[fileId].text,
-              insertionCursor,
-            ),
-            op,
-          );
-          insertionCursor = uniToStrPos(unicodeCursor);
+          insertionCursor = type
+            .transformPosition(
+              ['files', fileId, 'text', insertionCursor],
+              op,
+            )
+            .slice(-1)[0];
         }
       });
     }
@@ -58,20 +49,23 @@ export async function generateAIResponse({
   });
 
   for await (const part of stream) {
-    const op = editOp(
-      ['files', fileId, 'text'],
-      'text-unicode',
-      [
-        insertionCursor,
-        part.choices[0]?.delta?.content || '',
-      ],
-    );
+    await generationLock.runExclusive(async () => {
+      const op = editOp(
+        ['files', fileId, 'text'],
+        'text-unicode',
+        [
+          insertionCursor,
+          part.choices[0]?.delta?.content || '',
+        ],
+      );
 
-    console.log(insertionCursor);
-    shareDBDoc.submitOp(op, { source: AISourceName });
-    insertionCursor += (
-      part.choices[0]?.delta?.content || ''
-    ).length;
+      shareDBDoc.submitOp(op, { source: AISourceName });
+
+      //Consider using the accomodateDocChanges function to handle all cursor changes.
+      insertionCursor += (
+        part.choices[0]?.delta?.content || ''
+      ).length;
+    });
   }
   shareDBDoc.off('op', accomodateDocChanges);
 }
@@ -79,7 +73,7 @@ export async function generateAIResponse({
 const AISourceName = 'AIAssist';
 
 function opComesFromAIAssist(ops, source) {
-  console.log(source);
+  // console.log(source);
   return source === AISourceName;
 }
 
