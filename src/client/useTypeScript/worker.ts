@@ -87,13 +87,13 @@ onmessage = async ({ data }) => {
       {},
     );
 
-    console.log('Wrote FS');
+    // console.log('Wrote FS');
 
     // env.createFile;
   }
 
   if (data.event === 'autocomplete-request') {
-    console.log('Autocomplete request');
+    // console.log('Autocomplete request');
 
     // Should not happen.
     if (env === null) {
@@ -109,10 +109,13 @@ onmessage = async ({ data }) => {
       );
 
     console.log(completions);
-    //   port.postMessage({
-    //     event: 'Post-completions',
-    //     detail: completions,
-    //   });
+    postMessage({
+      event: 'post-completions',
+      detail: {
+        completions,
+        requestId: data.requestId,
+      },
+    });
   }
 };
 
