@@ -45,6 +45,7 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
+    "@codemirror/autocomplete": "^6.10.2",
     "@codemirror/lang-css": "^6.2.1",
     "@codemirror/lang-html": "^6.4.6",
     "@codemirror/lang-javascript": "^6.2.1",

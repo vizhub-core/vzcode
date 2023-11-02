@@ -9,7 +9,9 @@ import {
 
 let ifFileSystemInitialized = false;
 let fileSystem: ts.System = null;
+let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
+// This is a place for things we only do _once_.
 const initializeFileSystem = async () => {
   const compilerOptions = {};
   const fsMap = await tsvfs.createDefaultMapFromCDN(
@@ -22,6 +24,16 @@ const initializeFileSystem = async () => {
 };
 
 onmessage = async ({ data }) => {
+  // Initialize the file system.
+  if (!ifFileSystemInitialized) {
+    await initializeFileSystem();
+  }
+
+  // Sanity check.
+  if (fileSystem === null) {
+    throw new Error('File system not initialized');
+  }
+
   //   console.log('Received message in TypeScript worker');
 
   // Example of `data`:
@@ -37,33 +49,71 @@ onmessage = async ({ data }) => {
   //       "isInteracting": false
   //     }
   //   }
-  // Unpack the files
 
-  const content: VZCodeContent = data.details;
-  const files: Files = content.files;
+  // Handle the update-content event, which
+  // updates the files as they change.
+  if (data.event === 'update-content') {
+    // Unpack the files
+    const content: VZCodeContent = data.details;
+    const files: Files = content.files;
 
-  //   console.log(JSON.stringify(files, null, 2));
+    //   console.log(JSON.stringify(files, null, 2));
 
-  // Initialize the file system.
-  if (!ifFileSystemInitialized) {
-    await initializeFileSystem();
+    // Iterate over the files
+    const root = [];
+    for (const fileId of Object.keys(files)) {
+      const file: File = files[fileId];
+
+      // Ignore non-TypeScript files.
+      // TODO rename .js to .tsx
+      if (!file.name.endsWith('.ts')) {
+        continue;
+      }
+
+      fileSystem.writeFile(file.name, file.text);
+      root.push(file.name);
+
+      // TODO - Handle renaming files.
+      // TODO - Handle deleting files.
+      // TODO - Handle directories.
+    }
+
+    // TODO make sure this is right
+
+    env = tsvfs.createVirtualTypeScriptEnvironment(
+      fileSystem,
+      root,
+      ts,
+      {},
+    );
+
+    console.log('Wrote FS');
+
+    // env.createFile;
   }
 
-  // Sanity check.
-  if (fileSystem === null) {
-    throw new Error('File system not initialized');
-  }
+  if (data.event === 'autocomplete-request') {
+    console.log('Autocomplete request');
 
-  // Iterate over the files
-  for (const fileId of Object.keys(files)) {
-    const file: File = files[fileId];
-    fileSystem.writeFile(file.name, file.text);
+    // Should not happen.
+    if (env === null) {
+      console.log('env is null');
+      return;
+    }
 
-    // TODO - Handle renaming files.
-    // TODO - Handle deleting files.
-    // TODO - Handle directories.
+    const completions =
+      env.languageService.getCompletionsAtPosition(
+        data.location,
+        data.pos,
+        {},
+      );
+
+    console.log(completions);
+    //   port.postMessage({
+    //     event: 'Post-completions',
+    //     detail: completions,
+    //   });
   }
-  console.log('Wrote FS');
 };
 
 // let previousDocument = null;

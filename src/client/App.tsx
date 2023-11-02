@@ -281,6 +281,7 @@ function App() {
                 editorNoLongerWantsFocus
               }
               username={username}
+              typeScriptWorker={typeScriptWorker}
             />
           ) : null}
           <CodeErrorOverlay errorMessage={prettierError} />
