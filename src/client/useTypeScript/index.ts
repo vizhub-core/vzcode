@@ -6,11 +6,19 @@
 // } from '../../types';
 // import { useEffect, useRef, useState,useCallback } from 'react';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { VZCodeContent } from '../../types';
+import { autoPrettierDebounceTimeMS } from '../usePrettier';
 
-// // The time in milliseconds by which auto-saving is debounced.
-// const autoSaveDebounceTimeMS = 1200;
+// We don't want to send the message _before_ Prettier runs,
+// so we need to wait at least as long as Prettier takes to run,
+// plus some "wiggle room" which is amount of time it may take
+// to aactually run Prettier and update the document.
+const wiggleRoom = 500;
+
+// The time in milliseconds by which auto-saving is debounced.
+const sendMessageDebounceTimeMS =
+  autoPrettierDebounceTimeMS + wiggleRoom;
 
 export const useTypeScript = ({
   content,
@@ -23,22 +31,31 @@ export const useTypeScript = ({
   // with the new content, but debounced.
 
   // This keeps track of the setTimeout ID across renders.
-  const debounceTimeoutIdRef = useRef<number | null>(null);
+  const debounceTimeoutId = useRef<number | null>(null);
+
+  const debounceUpdateContent = useCallback(
+    (content: VZCodeContent) => {
+      clearTimeout(debounceTimeoutId.current);
+      //   // TODO fix TypeScript error
+      debounceTimeoutId.current = window.setTimeout(() => {
+        console.log('Should post message now');
+        // console.log(
+        //   'new content: ',
+        //   JSON.stringify(content),
+        // );
+        // // Updates the TypeScript worker with the current content
+        // // of the files.
+        // typeScriptWorker.postMessage({
+        //   event: 'update-content',
+        //   details: content,
+        // });
+      }, sendMessageDebounceTimeMS);
+    },
+    [],
+  );
 
   useEffect(() => {
-    console.log('Content changed');
-    // debounceUpdateContent(content);
-    // return () => {
-    //   //   // Remove the event listener
-    //   //   prettierWorker.removeEventListener(
-    //   //     'message',
-    //   //     handleMessage,
-    //   //   );
-
-    //   // Clear the timeout
-    //   //   clearTimeout(debounceTimeout);
-    //   clearTimeout(debounceTimeoutId.current);
-    // };
+    debounceUpdateContent(content);
   }, [content]);
 
   //   function debounceUpdateContent() {
@@ -49,24 +66,6 @@ export const useTypeScript = ({
   //     );
   //   }
 };
-
-//    const debounceUpdateContent = useCallback((content) => {
-//     clearTimeout(debounceTimeoutId.current);
-//     // TODO fix TypeScript error
-//     debounceTimeoutId.current = setTimeout(
-//       () => {
-//         console.log("Should post message now")
-//         console.log("new content: ",JSON.stringify(content))
-//         // // Updates the TypeScript worker with the current content
-//         // // of the files.
-//         // typeScriptWorker.postMessage({
-//         //   event: 'update-content',
-//         //   details: content,
-//         // });
-//       },
-//       autoSaveDebounceTimeMS,
-//     );
-//    },[])
 
 //    useEffect(() => {
 //     debounceUpdateContent(content);
