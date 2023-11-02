@@ -230,12 +230,6 @@ export const getOrCreateEditor = ({
 
   // Add the extension that provides TypeScript completions.
   if (enableTypeScriptCompletions) {
-    // extensions.push(typeScriptCompletions({
-    //   typeScriptWorker,
-    //   // fileId,
-    //   // shareDBDoc,
-    //   // filesPath,
-    // });
     extensions.push(
       autocompletion({
         override: [
