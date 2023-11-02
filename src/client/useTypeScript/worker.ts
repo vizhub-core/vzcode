@@ -1,5 +1,32 @@
+import * as tsvfs from '@typescript/vfs';
+import ts from 'typescript';
+
+let ifFileSystemInitialized = false;
+let fsMap = null;
+
+const initializeFileSystem = async () => {
+  let compilerOptions = {};
+  fsMap = await tsvfs.createDefaultMapFromCDN(
+    compilerOptions,
+    ts.version,
+    false,
+    ts,
+  );
+};
+
 onmessage = async ({ data }) => {
   console.log('Received message in TypeScript worker');
+
+  if (!ifFileSystemInitialized) {
+    await initializeFileSystem();
+  }
+
+  // Sanity check
+  if (fsMap === null) {
+    throw new Error('File system not initialized');
+  }
+
+  console.log(fsMap);
 
   // Example of `data`:
   //   {
@@ -20,19 +47,8 @@ onmessage = async ({ data }) => {
   console.log(JSON.stringify(files, null, 2));
 };
 
-// import * as tsvfs from '@typescript/vfs';
-// import ts from 'typescript';
-
 // let previousDocument = null;
 // let currentDocument = null;
-
-// let compilerOptions = {};
-// const fsMap = await tsvfs.createDefaultMapFromCDN(
-//   compilerOptions,
-//   ts.version,
-//   false,
-//   ts,
-// );
 
 // let system = tsvfs.createSystem(fsMap);
 
