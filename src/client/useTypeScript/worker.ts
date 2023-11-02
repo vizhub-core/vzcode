@@ -1,6 +1,23 @@
 onmessage = async ({ data }) => {
-  console.log('Received messag in TypeScript worker');
-  console.log(data);
+  console.log('Received message in TypeScript worker');
+
+  // Example of `data`:
+  //   {
+  //     "event": "update-content",
+  //     "details": {
+  //       "files": {
+  //         "11313733": {
+  //           "text": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta namde=\"viewport\" content=\"width=device-width\" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n",
+  //           "name": "fullDir/index.html"
+  //         },
+  //       },
+  //       "isInteracting": false
+  //     }
+  //   }
+
+  const files = data.details.files;
+
+  console.log(JSON.stringify(files, null, 2));
 };
 
 // import * as tsvfs from '@typescript/vfs';

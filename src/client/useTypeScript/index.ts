@@ -36,22 +36,16 @@ export const useTypeScript = ({
   const debounceUpdateContent = useCallback(
     (content: VZCodeContent) => {
       clearTimeout(debounceTimeoutId.current);
-      //   // TODO fix TypeScript error
       debounceTimeoutId.current = window.setTimeout(() => {
-        console.log('Should post message now');
-        // console.log(
-        //   'new content: ',
-        //   JSON.stringify(content),
-        // );
-        // // Updates the TypeScript worker with the current content
-        // // of the files.
-        // typeScriptWorker.postMessage({
-        //   event: 'update-content',
-        //   details: content,
-        // });
+        // Updates the TypeScript worker with the current content
+        // of the files.
+        typeScriptWorker.postMessage({
+          event: 'update-content',
+          details: content,
+        });
       }, sendMessageDebounceTimeMS);
     },
-    [],
+    [typeScriptWorker],
   );
 
   useEffect(() => {
