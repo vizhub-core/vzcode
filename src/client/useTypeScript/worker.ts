@@ -108,7 +108,7 @@ onmessage = async ({ data }) => {
         {},
       );
 
-    console.log(completions);
+    // console.log(completions);
     postMessage({
       event: 'post-completions',
       detail: {
