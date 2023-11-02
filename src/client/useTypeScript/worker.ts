@@ -1,32 +1,28 @@
 import * as tsvfs from '@typescript/vfs';
 import ts from 'typescript';
+import {
+  File,
+  FileId,
+  Files,
+  VZCodeContent,
+} from '../../types';
 
 let ifFileSystemInitialized = false;
-let fsMap = null;
+let fileSystem: ts.System = null;
 
 const initializeFileSystem = async () => {
-  let compilerOptions = {};
-  fsMap = await tsvfs.createDefaultMapFromCDN(
+  const compilerOptions = {};
+  const fsMap = await tsvfs.createDefaultMapFromCDN(
     compilerOptions,
     ts.version,
     false,
     ts,
   );
+  fileSystem = tsvfs.createSystem(fsMap);
 };
 
 onmessage = async ({ data }) => {
-  console.log('Received message in TypeScript worker');
-
-  if (!ifFileSystemInitialized) {
-    await initializeFileSystem();
-  }
-
-  // Sanity check
-  if (fsMap === null) {
-    throw new Error('File system not initialized');
-  }
-
-  console.log(fsMap);
+  //   console.log('Received message in TypeScript worker');
 
   // Example of `data`:
   //   {
@@ -41,16 +37,39 @@ onmessage = async ({ data }) => {
   //       "isInteracting": false
   //     }
   //   }
+  // Unpack the files
 
-  const files = data.details.files;
+  const content: VZCodeContent = data.details;
+  const files: Files = content.files;
 
-  console.log(JSON.stringify(files, null, 2));
+  //   console.log(JSON.stringify(files, null, 2));
+
+  // Initialize the file system.
+  if (!ifFileSystemInitialized) {
+    await initializeFileSystem();
+  }
+
+  // Sanity check.
+  if (fileSystem === null) {
+    throw new Error('File system not initialized');
+  }
+
+  // Iterate over the files
+  for (const fileId of Object.keys(files)) {
+    const file: File = files[fileId];
+    fileSystem.writeFile(file.name, file.text);
+
+    // TODO - Handle renaming files.
+    // TODO - Handle deleting files.
+    // TODO - Handle directories.
+  }
+  console.log('Wrote FS');
 };
 
 // let previousDocument = null;
 // let currentDocument = null;
 
-// let system = tsvfs.createSystem(fsMap);
+//
 
 // self.onconnect = (e) => {
 //   const port = e.ports[0];
