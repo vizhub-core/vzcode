@@ -2,48 +2,49 @@ import * as tsvfs from '@typescript/vfs';
 import ts from 'typescript';
 import { File, Files, VZCodeContent } from '../../types';
 
-let ifFileSystemInitialized = false;
-let fileSystem: ts.System = null;
+let isFileSystemInitialized = false;
+
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
 // This is a place for things we only do _once_.
 const initializeFileSystem = async () => {
-  const compilerOptions = {};
+  const compilerOptions: ts.CompilerOptions = {};
+
+  // `true` breaks in a Web Worker because
+  // this uses `localStorage` under the hood,
+  // which is not available in a Web Worker.
+  const cache = false;
+
   const fsMap = await tsvfs.createDefaultMapFromCDN(
     compilerOptions,
     ts.version,
-    false,
+    cache,
     ts,
   );
-  fileSystem = tsvfs.createSystem(fsMap);
+  const sys: ts.System = tsvfs.createSystem(fsMap);
+
+  // We'll add files to this later.
+  const rootFiles = [];
+
+  env = tsvfs.createVirtualTypeScriptEnvironment(
+    sys,
+    rootFiles,
+    ts,
+    compilerOptions,
+  );
 };
 
 onmessage = async ({ data }) => {
   // Initialize the file system.
-  if (!ifFileSystemInitialized) {
+  if (!isFileSystemInitialized) {
+    isFileSystemInitialized = true;
     await initializeFileSystem();
   }
 
   // Sanity check.
-  if (fileSystem === null) {
+  if (env === null) {
     throw new Error('File system not initialized');
   }
-
-  //   console.log('Received message in TypeScript worker');
-
-  // Example of `data`:
-  //   {
-  //     "event": "update-content",
-  //     "details": {
-  //       "files": {
-  //         "11313733": {
-  //           "text": "<!doctype html>\n<html>\n  <head>\n    <meta charset=\"utf-8\" />\n    <meta namde=\"viewport\" content=\"width=device-width\" />\n    <title>Test Page</title>\n  </head>\n  <body></body>\n</html>\n",
-  //           "name": "fullDir/index.html"
-  //         },
-  //       },
-  //       "isInteracting": false
-  //     }
-  //   }
 
   // Handle the update-content event, which
   // updates the files as they change.
@@ -52,33 +53,32 @@ onmessage = async ({ data }) => {
     const content: VZCodeContent = data.details;
     const files: Files = content.files;
 
-    //   console.log(JSON.stringify(files, null, 2));
-
     // Iterate over the files
-    const root = [];
+
     for (const fileId of Object.keys(files)) {
       const file: File = files[fileId];
 
-      // Ignore non-TypeScript files.
-      // TODO rename .js to .tsx
-      if (!file.name.endsWith('.ts')) {
+      if (
+        // !file.name.endsWith('.js') &&
+        // !file.name.endsWith('.jsx') &&
+        !file.name.endsWith('.ts') &&
+        !file.name.endsWith('.tsx')
+      ) {
         continue;
       }
 
-      fileSystem.writeFile(file.name, file.text);
-      root.push(file.name);
+      const existingFile = env.getSourceFile(file.name);
 
+      console.log('existingFile', existingFile);
+      if (existingFile === undefined) {
+        env.createFile(file.name, file.text);
+      } else {
+        env.updateFile(file.name, file.text);
+      }
       // TODO - Handle renaming files.
       // TODO - Handle deleting files.
       // TODO - Handle directories.
     }
-
-    env = tsvfs.createVirtualTypeScriptEnvironment(
-      fileSystem,
-      root,
-      ts,
-      {},
-    );
   }
 
   if (data.event === 'autocomplete-request') {
@@ -88,10 +88,20 @@ onmessage = async ({ data }) => {
       return;
     }
 
+    // Example of `data`:
+    // {
+    //   "event": "autocomplete-request",
+    //   "pos": 8,
+    //   "location": "index.js",
+    //   "requestId": "0.9090605799171392"
+    // }
+
+    const { fileName, position, requestId } = data;
+
     const completions =
       env.languageService.getCompletionsAtPosition(
-        data.location,
-        data.pos,
+        fileName,
+        position,
         {},
       );
 
@@ -99,7 +109,7 @@ onmessage = async ({ data }) => {
       event: 'post-completions',
       detail: {
         completions,
-        requestId: data.requestId,
+        requestId,
       },
     });
   }

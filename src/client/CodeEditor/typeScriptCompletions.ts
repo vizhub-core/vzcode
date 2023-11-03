@@ -1,23 +1,30 @@
-import { CompletionSource } from '@codemirror/autocomplete';
+import {
+  CompletionContext,
+  CompletionSource,
+} from '@codemirror/autocomplete';
 
 export const typeScriptCompletions = ({
   typeScriptWorker,
   fileName,
 }): CompletionSource => {
-  const tsComplete: CompletionSource = async (ctx) => {
-    // A unique ID for this request.
-    const requestId = Math.random() + '';
+  const tsComplete: CompletionSource = async (
+    completionContext: CompletionContext,
+  ) => {
+    // A random unique ID for this request.
+    const requestId = (Math.random() + '').slice(2);
 
     //Post message to our sharedWorker to get completions.
     typeScriptWorker.postMessage({
       event: 'autocomplete-request',
-      // Cursor position (integer, like index in a string)
-      pos: ctx.pos,
 
       // Location is the file path (string)
-      location: fileName,
+      fileName,
+
+      // Cursor position (integer, like index in a string)
+      position: completionContext.pos,
+
+      // Unique ID for this request
       requestId,
-      //   text: text,
     });
 
     //An async promise to ensure that we are getting our completion entries
@@ -32,15 +39,16 @@ export const typeScriptCompletions = ({
 
     if (!tsCompletions) {
       console.log('Unable to get completions');
-      return { from: ctx.pos, options: [] };
+      return { from: completionContext.pos, options: [] };
     }
 
     // Logic to get the text and cursor location in between punctuation.
     // Taken from https://codemirror.net/examples/autocompletion/
     // Also inspired by
     // https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL86
-    const from = ctx.matchBefore(/\w*/).from;
-    const lastWord = ctx.matchBefore(/\w*/).text;
+    const from = completionContext.matchBefore(/\w*/).from;
+    const lastWord =
+      completionContext.matchBefore(/\w*/).text;
     if (lastWord) {
       // @ts-ignore
       tsCompletions.entries = tsCompletions.entries.filter(
@@ -50,7 +58,7 @@ export const typeScriptCompletions = ({
     }
 
     return {
-      from: ctx.pos,
+      from: completionContext.pos,
       // @ts-ignore
       options: tsCompletions.entries.map((completion) => ({
         label: completion.name,
@@ -59,7 +67,7 @@ export const typeScriptCompletions = ({
           view.dispatch({
             changes: {
               from,
-              to: ctx.pos,
+              to: completionContext.pos,
               insert: completion.name,
             },
           });
