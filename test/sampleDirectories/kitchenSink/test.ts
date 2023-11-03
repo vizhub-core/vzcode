@@ -8,4 +8,4 @@ type Sticker = {
 
 const sticker: Sticker = {};
 
-sticker.;
+sticker.id;
