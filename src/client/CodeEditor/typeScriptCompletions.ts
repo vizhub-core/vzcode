@@ -13,12 +13,18 @@ export const typeScriptCompletions = ({
     // A random unique ID for this request.
     const requestId = (Math.random() + '').slice(2);
 
+    const fileContent =
+      completionContext.state.doc.toString();
+
     //Post message to our sharedWorker to get completions.
     typeScriptWorker.postMessage({
       event: 'autocomplete-request',
 
       // Location is the file path (string)
       fileName,
+
+      // Latest file content (string)
+      fileContent,
 
       // Cursor position (integer, like index in a string)
       position: completionContext.pos,
