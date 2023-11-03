@@ -30,15 +30,17 @@ export const typeScriptCompletions = ({
     //An async promise to ensure that we are getting our completion entries
     const tsCompletions = await new Promise((resolve) => {
       typeScriptWorker.onmessage = ({ data }) => {
-        if (data.detail.requestId === requestId) {
-          const tsCompletions = data.detail.completions;
-          resolve(tsCompletions);
+        if (
+          data.event === 'post-completions' &&
+          data.requestId === requestId
+        ) {
+          resolve(data.completions);
         }
       };
     });
 
     if (!tsCompletions) {
-      console.log('Unable to get completions');
+      // console.log('Unable to get completions');
       return { from: completionContext.pos, options: [] };
     }
 
@@ -47,6 +49,10 @@ export const typeScriptCompletions = ({
     // Also inspired by
     // https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL86
     const from = completionContext.matchBefore(/\w*/).from;
+
+    // `lastWord` represents the word that the user has partially typed
+    // and is currently at the end of the text, immediately before
+    // the cursor position.
     const lastWord =
       completionContext.matchBefore(/\w*/).text;
     if (lastWord) {

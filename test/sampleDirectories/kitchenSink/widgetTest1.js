@@ -17,7 +17,7 @@ var group = svg.append("g").attr("transform", my_transfornm);
 let a = rgb(236, 24, 24);
 
 let c = false;
-
+c.
 let someHTML = (
   <div id="svgcontainer">
     <svg width="300" height="300">

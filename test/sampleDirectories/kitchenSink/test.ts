@@ -1,11 +1,11 @@
-type Sticker {
+type Sticker = {
   id: number;
   name: string;
   createdAt: string;
   updatedAt: string;
   submitter: undefined | string;
-}
+};
 
-const sticker: Sticker;
+const sticker: Sticker = {};
 
-sticker.
+sticker.;

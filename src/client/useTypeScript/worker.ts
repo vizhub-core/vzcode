@@ -6,8 +6,32 @@ let isFileSystemInitialized = false;
 
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
+const debug = true;
+
+// replace .js or .jsx with .ts or .tsx,
+// to support TypeScript completions on non-TS files.
+const getTSFileName = (fileName: string) => {
+  if (fileName.endsWith('.js')) {
+    return fileName.replace('.js', '.ts');
+  }
+  if (fileName.endsWith('.jsx')) {
+    return fileName.replace('.jsx', '.tsx');
+  }
+  return fileName;
+};
+
+// Returns true if the file name ends with `.ts` or `.tsx`.
+const isTS = (fileName: string) => {
+  return (
+    fileName.endsWith('.ts') || fileName.endsWith('.tsx')
+  );
+};
+
 // This is a place for things we only do _once_.
 const initializeFileSystem = async () => {
+  if (debug) {
+    console.log('initializeFileSystem');
+  }
   const compilerOptions: ts.CompilerOptions = {};
 
   // `true` breaks in a Web Worker because
@@ -32,9 +56,16 @@ const initializeFileSystem = async () => {
     ts,
     compilerOptions,
   );
+
+  if (debug) {
+    console.log('initializeFileSystem done');
+  }
 };
 
 onmessage = async ({ data }) => {
+  if (debug) {
+    console.log('message received');
+  }
   // Initialize the file system.
   if (!isFileSystemInitialized) {
     isFileSystemInitialized = true;
@@ -49,6 +80,9 @@ onmessage = async ({ data }) => {
   // Handle the update-content event, which
   // updates the files as they change.
   if (data.event === 'update-content') {
+    if (debug) {
+      console.log('update-content message received');
+    }
     // Unpack the files
     const content: VZCodeContent = data.details;
     const files: Files = content.files;
@@ -57,23 +91,19 @@ onmessage = async ({ data }) => {
 
     for (const fileId of Object.keys(files)) {
       const file: File = files[fileId];
+      const { name, text } = file;
 
-      if (
-        // !file.name.endsWith('.js') &&
-        // !file.name.endsWith('.jsx') &&
-        !file.name.endsWith('.ts') &&
-        !file.name.endsWith('.tsx')
-      ) {
+      const tsFileName = getTSFileName(name);
+
+      if (!isTS(tsFileName)) {
         continue;
       }
 
-      const existingFile = env.getSourceFile(file.name);
-
-      console.log('existingFile', existingFile);
+      const existingFile = env.getSourceFile(tsFileName);
       if (existingFile === undefined) {
-        env.createFile(file.name, file.text);
+        env.createFile(tsFileName, text);
       } else {
-        env.updateFile(file.name, file.text);
+        env.updateFile(tsFileName, text);
       }
       // TODO - Handle renaming files.
       // TODO - Handle deleting files.
@@ -82,6 +112,9 @@ onmessage = async ({ data }) => {
   }
 
   if (data.event === 'autocomplete-request') {
+    if (debug) {
+      console.log('autocomplete-request message received');
+    }
     // Should not happen.
     if (env === null) {
       console.log('env is null');
@@ -98,19 +131,20 @@ onmessage = async ({ data }) => {
 
     const { fileName, position, requestId } = data;
 
-    const completions =
-      env.languageService.getCompletionsAtPosition(
-        fileName,
-        position,
-        {},
-      );
+    const tsFileName = getTSFileName(fileName);
+
+    const completions = isTS(tsFileName)
+      ? env.languageService.getCompletionsAtPosition(
+          tsFileName,
+          position,
+          {},
+        )
+      : null;
 
     postMessage({
       event: 'post-completions',
-      detail: {
-        completions,
-        requestId,
-      },
+      completions,
+      requestId,
     });
   }
 };
