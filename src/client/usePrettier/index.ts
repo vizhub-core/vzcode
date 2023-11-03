@@ -128,6 +128,10 @@ export const usePrettier = (
       );
     }
 
+    //Stops prettier from running when you perform a mouse move or a keydown
+    window.addEventListener('mousemove', debouncePrettier);
+    window.addEventListener('keydown', debouncePrettier);
+
     // Listen for changes
     shareDBDoc.on(
       'op batch',
@@ -185,6 +189,14 @@ export const usePrettier = (
       prettierWorker.removeEventListener(
         'message',
         handleMessage,
+      );
+      window.removeEventListener(
+        'keydown',
+        debouncePrettier,
+      );
+      window.removeEventListener(
+        'mousemove',
+        debouncePrettier,
       );
 
       // Clear the timeout
