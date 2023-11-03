@@ -20,7 +20,7 @@ export const TabList = ({
   setActiveFileId: (fileId: FileId) => void;
   openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: FileId[]) => void;
-  createFile: () => void;
+  createFile: (fileName: string) => void;
 }) => {
   // Close the active tab on alt+w
   const handleKeyPress = useCallback(
@@ -30,7 +30,7 @@ export const TabList = ({
           closeTabs([activeFileId]);
         }
         if (event.key == 'n') {
-          createFile();
+          createFile('UnnamedFile');
         }
       }
     },
