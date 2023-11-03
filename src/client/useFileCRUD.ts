@@ -29,8 +29,6 @@ export const useFileCRUD = ({
   const createFile = useCallback(
     (name: string) => {
 
-      console.log('Filename in createFile -', name);
-
       if (name) {
         const fileId: FileId = randomId();
         submitOperation((document: VZCodeContent) => ({
