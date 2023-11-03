@@ -7,6 +7,11 @@ import {
   AutocompleteResponse,
 } from '../useTypeScript/requestTypes';
 
+type RequestId = string;
+
+const generateRequestId = (): RequestId =>
+  (Math.random() + '').slice(2);
+
 export const typeScriptCompletions = ({
   typeScriptWorker,
   fileName,
@@ -15,7 +20,7 @@ export const typeScriptCompletions = ({
     completionContext: CompletionContext,
   ) => {
     // A random unique ID for this request.
-    const requestId = (Math.random() + '').slice(2);
+    const requestId = generateRequestId();
 
     const fileContent =
       completionContext.state.doc.toString();

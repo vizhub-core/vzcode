@@ -80,6 +80,11 @@ export type ShareDBDoc<T> = {
   ) => void;
 };
 
+export type AIStreamId = string;
+
+// TODO define this interface.
+export type AIStream = any;
+
 // The ShareDB document type for VZCode.
 export type VZCodeContent = {
   // `files`
@@ -93,6 +98,20 @@ export type VZCodeContent = {
   //   * `false` or `undefined` when they are not (e.g. normal typing)
   //     * Hot reloading is debounced when this is `false`.
   isInteracting?: boolean;
+
+  // `aiStreams`
+  //  * The AI streams in the VZCode instance.
+  //  * Keys are AI stream IDs.
+  //  * Values are AI streams.
+  // What is this for?
+  //  * Synchronize the status of streams between the
+  //    client and server.
+  aiStreams: {
+    [aiStreamId: AIStreamId]: AIStream;
+  };
+
+  // TODO consider is there a way to replace the HTTP request to
+  // the AIAssist endpoint with a manipulation of the ShareDB document?
 };
 
 // An id used for presence.
