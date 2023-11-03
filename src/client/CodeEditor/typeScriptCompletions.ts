@@ -2,6 +2,10 @@ import {
   CompletionContext,
   CompletionSource,
 } from '@codemirror/autocomplete';
+import {
+  AutocompleteRequest,
+  AutocompleteResponse,
+} from '../useTypeScript/requestTypes';
 
 export const typeScriptCompletions = ({
   typeScriptWorker,
@@ -13,28 +17,42 @@ export const typeScriptCompletions = ({
     // A random unique ID for this request.
     const requestId = (Math.random() + '').slice(2);
 
-    //Post message to our sharedWorker to get completions.
-    typeScriptWorker.postMessage({
+    const fileContent =
+      completionContext.state.doc.toString();
+
+    const autocompleteRequest: AutocompleteRequest = {
       event: 'autocomplete-request',
 
       // Location is the file path (string)
       fileName,
+
+      // Latest file content (string)
+      fileContent,
 
       // Cursor position (integer, like index in a string)
       position: completionContext.pos,
 
       // Unique ID for this request
       requestId,
-    });
+    };
+
+    //Post message to our sharedWorker to get completions.
+    typeScriptWorker.postMessage(autocompleteRequest);
 
     //An async promise to ensure that we are getting our completion entries
     const tsCompletions = await new Promise((resolve) => {
-      typeScriptWorker.onmessage = ({ data }) => {
+      typeScriptWorker.onmessage = (message: {
+        data: AutocompleteResponse;
+      }) => {
+        const autocompleteResponse: AutocompleteResponse =
+          message.data;
+        const { event, requestId, completions } =
+          autocompleteResponse;
         if (
-          data.event === 'post-completions' &&
-          data.requestId === requestId
+          event === 'post-completions' &&
+          requestId === requestId
         ) {
-          resolve(data.completions);
+          resolve(completions);
         }
       };
     });

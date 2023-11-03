@@ -1,6 +1,10 @@
 import * as tsvfs from '@typescript/vfs';
 import ts from 'typescript';
 import { File, Files, VZCodeContent } from '../../types';
+import {
+  AutocompleteRequest,
+  AutocompleteResponse,
+} from './requestTypes';
 
 let isFileSystemInitialized = false;
 
@@ -79,6 +83,9 @@ onmessage = async ({ data }) => {
 
   // Handle the update-content event, which
   // updates the files as they change.
+  // This handles the cases where:
+  //  * The file system is populated for the first time.
+  //  * Files are edited by remote users.
   if (data.event === 'update-content') {
     if (debug) {
       console.log('update-content message received');
@@ -129,22 +136,33 @@ onmessage = async ({ data }) => {
     //   "requestId": "0.9090605799171392"
     // }
 
-    const { fileName, position, requestId } = data;
+    const autocompleteRequest: AutocompleteRequest = data;
+    const { fileName, fileContent, position, requestId } =
+      autocompleteRequest;
 
     const tsFileName = getTSFileName(fileName);
 
-    const completions = isTS(tsFileName)
-      ? env.languageService.getCompletionsAtPosition(
+    let completions = null;
+    if (isTS(tsFileName)) {
+      // Update the file in the file system to the
+      // absolute latest version. This is critical
+      // for correct completions.
+      env.updateFile(tsFileName, fileContent);
+
+      completions =
+        env.languageService.getCompletionsAtPosition(
           tsFileName,
           position,
           {},
-        )
-      : null;
+        );
+    }
 
-    postMessage({
+    const autocompleteResponse: AutocompleteResponse = {
       event: 'post-completions',
       completions,
       requestId,
-    });
+    };
+
+    postMessage(autocompleteResponse);
   }
 };
