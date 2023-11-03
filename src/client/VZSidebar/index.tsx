@@ -1,4 +1,9 @@
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import {
   FileId,
   FileTree,
@@ -11,14 +16,15 @@ import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
+import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
 
-const CreateFileButton = ({ createFile }) => {
+const CreateFileButton = ({ handleCreateFile }) => {
   return (
     <i
       className="bx bxs-file-plus new-btn"
       style={{ color: '#dbdde1' }}
-      onClick={createFile}
+      onClick={handleCreateFile}
       // TODO better tooltip
       title="Create file"
     ></i>
@@ -37,7 +43,7 @@ export const VZSidebar = ({
   activeFileId,
 }: {
   files: Files;
-  createFile: () => void;
+  createFile: (fileName) => void;
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
   deleteDirectory: (path: FileTreePath) => void;
@@ -57,6 +63,23 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal's visibility
+  const [initialFileName, setInitialFileName] = useState('');
+
+  const handleCreateFile = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleRename = (newFileName) => {
+    createFile(newFileName);
+
+    setIsModalOpen(false);
+  };
 
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
@@ -97,7 +120,9 @@ export const VZSidebar = ({
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div>
-            <CreateFileButton createFile={createFile} />
+            <CreateFileButton
+              handleCreateFile={handleCreateFile}
+            />
           </div>
         </div>
         {filesExist ? (
@@ -130,7 +155,9 @@ export const VZSidebar = ({
               your first file.
             </div>
 
-            <CreateFileButton createFile={createFile} />
+            <CreateFileButton
+              handleCreateFile={handleCreateFile}
+            />
           </div>
         )}
       </div>
@@ -142,6 +169,12 @@ export const VZSidebar = ({
           Editor Settings
         </div>
       )}
+      <CreateFileModal
+        show={isModalOpen}
+        onClose={handleCloseModal}
+        onRename={handleRename}
+        initialFileName={initialFileName}
+      />
     </div>
   );
 };
