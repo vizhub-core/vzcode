@@ -75,6 +75,7 @@ export const json1PresenceDisplay = ({
                     attributes: {
                       style: `
                         background-color: rgba(${userColor}, 0.75);
+                        mix-blend-mode: luminosity;
                         `,
                     },
                   }),
@@ -157,7 +158,6 @@ class PresenceWidget extends WidgetType {
     return false;
   }
 }
-
 const presenceTheme = EditorView.baseTheme({
   '.cm-json1-presence': {
     position: 'relative',
@@ -168,6 +168,6 @@ const presenceTheme = EditorView.baseTheme({
     bottom: '0',
     left: '0',
     right: '0',
-    borderLeft: '1px solid rgba(${widget.color})',
+    filter: 'brightness(1.75)',
   },
 });
