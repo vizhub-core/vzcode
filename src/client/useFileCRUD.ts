@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   FileId,
   FileTreePath,
@@ -26,24 +26,27 @@ export const useFileCRUD = ({
   }) => void;
 }) => {
   // Create a new file
-  const createFile = useCallback(() => {
-    // TODO use Bootstrap modals not native prompts
-    // See https://github.com/vizhub-core/vzcode/issues/252
-    const name = prompt('Enter new file name');
-    if (name) {
-      const fileId: FileId = randomId();
-      submitOperation((document: VZCodeContent) => ({
-        ...document,
-        files: {
-          ...document.files,
-          [fileId]: { name, text: '' },
-        },
-      }));
-      // When a new file is created, open it in a new tab
-      // and focus the editor on it.
-      openTab({ fileId, isTransient: false });
-    }
-  }, [submitOperation]);
+  const createFile = useCallback(
+    (name: string) => {
+
+      console.log('Filename in createFile -', name);
+
+      if (name) {
+        const fileId: FileId = randomId();
+        submitOperation((document: VZCodeContent) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name, text: '' },
+          },
+        }));
+        // When a new file is created, open it in a new tab
+        // and focus the editor on it.
+        openTab({ fileId, isTransient: false });
+      }
+    },
+    [submitOperation],
+  );
 
   // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
