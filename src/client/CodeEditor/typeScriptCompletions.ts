@@ -9,7 +9,7 @@ import {
 
 type RequestId = string;
 
-const generateRequestId = (): RequestId =>
+export const generateRequestId = (): RequestId =>
   (Math.random() + '').slice(2);
 
 export const typeScriptCompletions = ({

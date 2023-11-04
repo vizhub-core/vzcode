@@ -14,6 +14,7 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { json1Presence } from '../ot.js';
 import bodyParser from 'body-parser';
 import { handleAIAssist } from './handleAIAssist.js';
+import { replaceOp } from 'ot-json1';
 
 dotenv.config({ path: '../../.env' });
 
@@ -208,7 +209,18 @@ function debounceSave() {
 
 // Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
-  shareDBDoc.on('op', (op) => {
+  shareDBDoc.on('op', (op, source) => {
+
+
+    if(op[0]=="aiStreams"&&source!="AIServer")
+    {
+      
+      const confirmStartOperation = replaceOp([...op.filter((value)=>typeof(value)==="string"),"AIStreamStatus","serverIsRunning"],true,true);
+      
+      shareDBDoc.submitOp(confirmStartOperation, {source:"AIServer"});
+
+    }
+
     if (shareDBDoc.data.isInteracting) {
       throttleSave();
     } else {

@@ -1,6 +1,10 @@
 import { EditorView, keymap } from '@codemirror/view';
+import { ShareDBDoc, VZCodeContent } from '../types';
+import { generateRequestId } from './CodeEditor/typeScriptCompletions';
+import { insertOp } from 'ot-json1';
 
 export const AIAssist = ({
+  shareDBDoc,
   // The file id of the file the AI should assist with.
   fileId,
 
@@ -10,6 +14,7 @@ export const AIAssist = ({
   // Optional additional options to pass to the endpoint.
   aiAssistOptions = {},
 }: {
+  shareDBDoc: ShareDBDoc<VZCodeContent>;
   fileId: string;
   aiAssistEndpoint: string;
   aiAssistOptions?: {
@@ -25,20 +30,41 @@ export const AIAssist = ({
           view.state.selection.main.to,
         );
 
-        fetch(aiAssistEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            // Pass additional options to the AI Assist endpoint.
-            ...aiAssistOptions,
+        const id = generateRequestId();
 
-            text: textToSend,
-            fileId,
-            cursorLocation: view.state.selection.main.to,
+        console.log(shareDBDoc);
+
+        if (shareDBDoc.data['aiStreams'] === undefined) {
+          shareDBDoc.submitOp(insertOp(['aiStreams'], {}));
+          console.log('not present');
+        }
+        console.log(shareDBDoc);
+
+        shareDBDoc.submitOp(
+          insertOp(['aiStreams', id], {
+            AIStreamStatus: {
+              clientWantsToStart: true,
+              serverIsRunning: false,
+              text: textToSend,
+              insertionCursor: view.state.selection.main.to,
+            },
           }),
-        });
+        );
+
+        // fetch(aiAssistEndpoint, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({
+        //     // Pass additional options to the AI Assist endpoint.
+        //     ...aiAssistOptions,
+
+        //     text: textToSend,
+        //     fileId,
+        //     cursorLocation: view.state.selection.main.to,
+        //   }),
+        // });
 
         return true;
       },

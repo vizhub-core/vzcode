@@ -95,6 +95,10 @@ export type AIStreamStatus = {
   //  * `true` if the server is running the generation.
   //  * `false` if the server is not running the generation.
   serverIsRunning: boolean;
+
+  text:string;
+
+  startingInsertionCursor:number;
 };
 
 /// Alternative universe
