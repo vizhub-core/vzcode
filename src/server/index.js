@@ -13,7 +13,7 @@ import dotenv from 'dotenv';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { json1Presence } from '../ot.js';
 import bodyParser from 'body-parser';
-import { handleAIAssist } from './handleAIAssist.js';
+import { generateAIResponse, handleAIAssist } from './handleAIAssist.js';
 import { replaceOp } from 'ot-json1';
 
 dotenv.config({ path: '../../.env' });
@@ -212,8 +212,12 @@ shareDBDoc.subscribe(() => {
   shareDBDoc.on('op', (op, source) => {
 
 
-    if(op[0]=="aiStreams"&&source!="AIServer")
+    if(op!==null&&op[0]=="aiStreams"&&source!="AIServer"&&source!="AIAssist")
     {
+
+      const input = op[op.length-1]["i"]["AIStreamStatus"];
+      
+      generateAIResponse({inputText:input.text, insertionCursor:input.insertionCursor, shareDBDoc:shareDBDoc, fileId:input.fileId})
       
       const confirmStartOperation = replaceOp([...op.filter((value)=>typeof(value)==="string"),"AIStreamStatus","serverIsRunning"],true,true);
       

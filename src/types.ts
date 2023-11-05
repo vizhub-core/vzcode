@@ -99,6 +99,7 @@ export type AIStreamStatus = {
   text:string;
 
   startingInsertionCursor:number;
+  fileId: FileId;
 };
 
 /// Alternative universe
