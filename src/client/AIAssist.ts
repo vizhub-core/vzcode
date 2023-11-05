@@ -47,7 +47,7 @@ export const AIAssist = ({
               serverIsRunning: false,
               text: textToSend,
               insertionCursor: view.state.selection.main.to,
-              fileId:fileId
+              fileId: fileId,
             },
           }),
         );

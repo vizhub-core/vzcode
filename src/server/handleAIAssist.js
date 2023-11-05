@@ -36,7 +36,7 @@ export async function generateAIResponse({
       {
         role: 'system',
         content:
-          'Write typescript or javascript code that would follow the prompt',
+          'Write typescript or javascript code that would follow the prompt. Use // for comments.',
       },
       { role: 'user', content: inputText },
     ],

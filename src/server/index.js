@@ -13,7 +13,10 @@ import dotenv from 'dotenv';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { json1Presence } from '../ot.js';
 import bodyParser from 'body-parser';
-import { generateAIResponse, handleAIAssist } from './handleAIAssist.js';
+import {
+  generateAIResponse,
+  handleAIAssist,
+} from './handleAIAssist.js';
 import { replaceOp } from 'ot-json1';
 
 dotenv.config({ path: '../../.env' });
@@ -210,19 +213,37 @@ function debounceSave() {
 // Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
   shareDBDoc.on('op', (op, source) => {
+    if (
+      op !== null &&
+      op[0] == 'aiStreams' &&
+      source != 'AIServer' &&
+      source != 'AIAssist'
+    ) {
+      const input =
+        op[op.length - 1]['i']['AIStreamStatus'];
 
+      generateAIResponse({
+        inputText: input.text,
+        insertionCursor: input.insertionCursor,
+        shareDBDoc: shareDBDoc,
+        fileId: input.fileId,
+      });
 
-    if(op!==null&&op[0]=="aiStreams"&&source!="AIServer"&&source!="AIAssist")
-    {
+      const confirmStartOperation = replaceOp(
+        [
+          ...op.filter(
+            (value) => typeof value === 'string',
+          ),
+          'AIStreamStatus',
+          'serverIsRunning',
+        ],
+        true,
+        true,
+      );
 
-      const input = op[op.length-1]["i"]["AIStreamStatus"];
-      
-      generateAIResponse({inputText:input.text, insertionCursor:input.insertionCursor, shareDBDoc:shareDBDoc, fileId:input.fileId})
-      
-      const confirmStartOperation = replaceOp([...op.filter((value)=>typeof(value)==="string"),"AIStreamStatus","serverIsRunning"],true,true);
-      
-      shareDBDoc.submitOp(confirmStartOperation, {source:"AIServer"});
-
+      shareDBDoc.submitOp(confirmStartOperation, {
+        source: 'AIServer',
+      });
     }
 
     if (shareDBDoc.data.isInteracting) {
