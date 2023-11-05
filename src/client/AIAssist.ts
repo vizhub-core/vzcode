@@ -1,7 +1,7 @@
 import { EditorView, keymap } from '@codemirror/view';
 import { ShareDBDoc, VZCodeContent } from '../types';
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
-import { insertOp } from 'ot-json1';
+import { insertOp, replaceOp } from 'ot-json1';
 
 export const AIAssist = ({
   shareDBDoc,
@@ -30,18 +30,19 @@ export const AIAssist = ({
           view.state.selection.main.to,
         );
 
-        const id = generateRequestId();
+        currentStreamId = generateRequestId();
 
         console.log(shareDBDoc);
 
         if (shareDBDoc.data['aiStreams'] === undefined) {
-          shareDBDoc.submitOp(insertOp(['aiStreams'], {}));
-          console.log('not present');
+          shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
+            source: 'AIClient',
+          });
         }
         console.log(shareDBDoc);
 
         shareDBDoc.submitOp(
-          insertOp(['aiStreams', id], {
+          insertOp(['aiStreams', currentStreamId], {
             AIStreamStatus: {
               clientWantsToStart: true,
               serverIsRunning: false,
@@ -50,6 +51,7 @@ export const AIAssist = ({
               fileId: fileId,
             },
           }),
+          { source: 'AIClient' },
         );
 
         // fetch(aiAssistEndpoint, {
@@ -70,4 +72,27 @@ export const AIAssist = ({
         return true;
       },
     },
+
+    {
+      key: 'control-M',
+      run: (view: EditorView) => {
+        const haltGenerationOp = replaceOp(
+          [
+            'aiStreams',
+            currentStreamId,
+            'AIStreamStatus',
+            'clientWantsToStart',
+          ],
+          true,
+          false,
+        );
+
+        shareDBDoc.submitOp(haltGenerationOp, {
+          source: 'AIClient',
+        });
+        return true;
+      },
+    },
   ]);
+
+let currentStreamId = null;

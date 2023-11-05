@@ -15,6 +15,7 @@ import { json1Presence } from '../ot.js';
 import bodyParser from 'body-parser';
 import {
   generateAIResponse,
+  haltGeneration,
   handleAIAssist,
 } from './handleAIAssist.js';
 import { replaceOp } from 'ot-json1';
@@ -213,43 +214,58 @@ function debounceSave() {
 // Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
   shareDBDoc.on('op', (op, source) => {
-    if (
-      op !== null &&
-      op[0] == 'aiStreams' &&
-      source != 'AIServer' &&
-      source != 'AIAssist'
-    ) {
-      const input =
-        op[op.length - 1]['i']['AIStreamStatus'];
-
-      generateAIResponse({
-        inputText: input.text,
-        insertionCursor: input.insertionCursor,
-        shareDBDoc: shareDBDoc,
-        fileId: input.fileId,
-      });
-
-      const confirmStartOperation = replaceOp(
-        [
-          ...op.filter(
-            (value) => typeof value === 'string',
-          ),
-          'AIStreamStatus',
-          'serverIsRunning',
-        ],
-        true,
-        true,
-      );
-
-      shareDBDoc.submitOp(confirmStartOperation, {
-        source: 'AIServer',
-      });
-    }
-
     if (shareDBDoc.data.isInteracting) {
       throttleSave();
     } else {
       debounceSave();
+    }
+
+    if (
+      op !== null &&
+      op[0] == 'aiStreams' &&
+      source !== 'AIServer' &&
+      source !== 'AIAssist'
+    ) {
+      //This is an insert operation (a new request)
+      if (
+        op[op.length - 1]['i'] !== undefined &&
+        op[op.length - 1]['i']['AIStreamStatus'] !==
+          undefined
+      ) {
+        const input =
+          op[op.length - 1]['i']['AIStreamStatus'];
+
+        generateAIResponse({
+          inputText: input.text,
+          insertionCursor: input.insertionCursor,
+          shareDBDoc: shareDBDoc,
+          streamId: op[op.length - 2],
+          fileId: input.fileId,
+        });
+
+        const confirmStartOperation = replaceOp(
+          [
+            ...op.filter(
+              (value) => typeof value === 'string',
+            ),
+            'AIStreamStatus',
+            'serverIsRunning',
+          ],
+          true,
+          true,
+        );
+
+        shareDBDoc.submitOp(confirmStartOperation, {
+          source: 'AIServer',
+        });
+      }
+      if (
+        op[op.length - 1]['r'] !== null &&
+        op[op.length - 2] == 'clientWantsToStart'
+      ) {
+        //client wants to halt generation
+        haltGeneration(op[1]);
+      }
     }
   });
 });
