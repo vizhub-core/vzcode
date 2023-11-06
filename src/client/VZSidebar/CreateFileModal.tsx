@@ -10,7 +10,7 @@ export const CreateFileModal = ({
   show,
   onClose,
   onRename,
-  initialFileName,
+  initialFileName = '',
 }) => {
   const [newName, setNewName] = useState(initialFileName);
   const inputRef = useRef(null);

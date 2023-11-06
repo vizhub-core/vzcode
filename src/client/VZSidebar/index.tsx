@@ -65,15 +65,14 @@ export const VZSidebar = ({
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal's visibility
-  const [initialFileName, setInitialFileName] = useState('');
 
-  const handleCreateFile = () => {
+  const handleCreateFile = useCallback(() => {
     setIsModalOpen(true);
-  };
+  }, [setIsModalOpen]);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, [setIsModalOpen]);
 
   const handleRename = (newFileName) => {
     createFile(newFileName);
@@ -173,7 +172,6 @@ export const VZSidebar = ({
         show={isModalOpen}
         onClose={handleCloseModal}
         onRename={handleRename}
-        initialFileName={initialFileName}
       />
     </div>
   );
