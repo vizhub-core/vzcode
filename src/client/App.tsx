@@ -290,7 +290,13 @@ function App() {
             docPresence={docPresence}
             localPresence={localPresence}
           />
-          <AIAssistWidget />
+          {content && activeFileId ? (
+            <AIAssistWidget
+              activeFileId={activeFileId}
+              shareDBDoc={shareDBDoc}
+              editorCache={editorCache}
+            />
+          ) : null}
         </div>
         <Resizer />
       </div>

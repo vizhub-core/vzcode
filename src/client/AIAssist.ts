@@ -1,5 +1,9 @@
 import { EditorView, keymap } from '@codemirror/view';
-import { ShareDBDoc, VZCodeContent } from '../types';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../types';
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
 import { insertOp, replaceOp } from 'ot-json1';
 
@@ -25,35 +29,7 @@ export const AIAssist = ({
     {
       key: 'control-m',
       run: (view: EditorView) => {
-        const textToSend = view.state.sliceDoc(
-          0,
-          view.state.selection.main.to,
-        );
-
-        currentStreamId = generateRequestId();
-
-        console.log(shareDBDoc);
-
-        if (shareDBDoc.data['aiStreams'] === undefined) {
-          shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
-            source: 'AIClient',
-          });
-        }
-        console.log(shareDBDoc);
-
-        shareDBDoc.submitOp(
-          insertOp(['aiStreams', currentStreamId], {
-            AIStreamStatus: {
-              clientWantsToStart: true,
-              serverIsRunning: false,
-              text: textToSend,
-              insertionCursor: view.state.selection.main.to,
-              fileId: fileId,
-            },
-          }),
-          { source: 'AIClient' },
-        );
-
+        startAIAssist(view, shareDBDoc, fileId);
         // fetch(aiAssistEndpoint, {
         //   method: 'POST',
         //   headers: {
@@ -96,3 +72,38 @@ export const AIAssist = ({
   ]);
 
 let currentStreamId = null;
+
+export const startAIAssist = (
+  view: EditorView,
+  shareDBDoc: ShareDBDoc<VZCodeContent>,
+  fileId: FileId,
+) => {
+  const textToSend = view.state.sliceDoc(
+    0,
+    view.state.selection.main.to,
+  );
+
+  currentStreamId = generateRequestId();
+
+  console.log(shareDBDoc);
+
+  if (shareDBDoc.data['aiStreams'] === undefined) {
+    shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
+      source: 'AIClient',
+    });
+  }
+  console.log(shareDBDoc);
+
+  shareDBDoc.submitOp(
+    insertOp(['aiStreams', currentStreamId], {
+      AIStreamStatus: {
+        clientWantsToStart: true,
+        serverIsRunning: false,
+        text: textToSend,
+        insertionCursor: view.state.selection.main.to,
+        fileId: fileId,
+      },
+    }),
+    { source: 'AIClient' },
+  );
+};

@@ -1,6 +1,13 @@
 import { useCallback } from 'react';
 import { Button } from '../bootstrap';
 import './style.scss';
+import { startAIAssist } from '../AIAssist';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../types';
+import { EditorCache } from '../useEditorCache';
 
 // From
 // https://primer.style/foundations/icons/zap-24
@@ -15,12 +22,26 @@ const ZapSVG = () => (
   </svg>
 );
 
-export const AIAssistWidget = () => {
+export const AIAssistWidget = ({
+  activeFileId,
+  shareDBDoc,
+  editorCache,
+}: {
+  activeFileId: FileId;
+  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  editorCache: EditorCache;
+}) => {
   const handleClick = useCallback(() => {
     // TODO make this happen
     // See src/client/AIAssist.ts
+
     console.log('AI Assist clicked');
-  }, []);
+    startAIAssist(
+      editorCache.get(activeFileId).editor,
+      shareDBDoc,
+      activeFileId,
+    );
+  }, [activeFileId]);
   return (
     <div className="vz-code-ai-assist-widget">
       <Button
