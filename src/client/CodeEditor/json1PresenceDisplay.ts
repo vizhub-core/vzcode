@@ -5,6 +5,8 @@ import {
   Decoration,
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
+import ColorHash from 'color-hash';
+
 
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
@@ -50,9 +52,8 @@ export const json1PresenceDisplay = ({
               const presence = presenceState[id];
               const { start, end } = presence;
               const from = start[start.length - 1];
-              // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
-              
+              const userColor = new ColorHash().rgb(id);
               if (from === to) {
                 return {
                   from,
@@ -60,7 +61,7 @@ export const json1PresenceDisplay = ({
                   value: Decoration.widget({
                     side: -1,
                     block: false,
-                    widget: new PresenceWidget(id),
+                    widget: new PresenceWidget(id, userColor),
                   }),
                 };
               } else {
@@ -71,7 +72,8 @@ export const json1PresenceDisplay = ({
                     class: 'cm-json1-presence',
                     attributes: {
                       style: `
-                        background-color: rgba(255, 255, 0, 0.3);
+                        background-color: rgba(${userColor}, 0.75);
+                        mix-blend-mode: luminosity;
                         `,
                     },
                   }),
@@ -122,9 +124,11 @@ const pathMatches = (path, presence) => {
 // Displays a single remote presence cursor.
 class PresenceWidget extends WidgetType {
   id: string;
-  constructor(id: string) {
+  color: string;
+  constructor(id: string, color: string) {
     super();
     this.id = id;
+    this.color = color;
   }
 
   eq(other: PresenceWidget) {
@@ -135,14 +139,16 @@ class PresenceWidget extends WidgetType {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
-
+    console.log('span', span);
     // This child is what actually displays the presence.
     // Nested so that the layout is not impacted.
     //
     // The initial attempt using the top level span to render
     // the cursor caused a wonky layout with adjacent characters shifting
     // left and right by 1 pixel or so.
-    span.appendChild(document.createElement('div'));
+    const div = document.createElement('div');
+    span.appendChild(div);
+    div.style.borderLeft = `1px solid rgba(${this.color})`;
     return span;
   }
 
@@ -150,7 +156,6 @@ class PresenceWidget extends WidgetType {
     return false;
   }
 }
-
 const presenceTheme = EditorView.baseTheme({
   '.cm-json1-presence': {
     position: 'relative',
@@ -161,6 +166,6 @@ const presenceTheme = EditorView.baseTheme({
     bottom: '0',
     left: '0',
     right: '0',
-    borderLeft: '1px solid yellow',
+    filter: 'brightness(1.75)',
   },
 });
