@@ -4,10 +4,12 @@ import {
   EditorState,
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
+import { autocompletion } from '@codemirror/autocomplete';
 import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
@@ -29,18 +31,27 @@ import {
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
+import { typeScriptCompletions } from './typeScriptCompletions';
+
+// Feature flag to enable TypeScript completions.
+const enableTypeScriptCompletions = true;
+
+// Enables TypeScript +JSX support in CodeMirror.
+const tsx = () =>
+  javascript({ jsx: true, typescript: true });
 
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
 // TODO consider moving this to a separate file.
 const languageExtensions = {
-  js: javascript,
-  json: javascript,
-  jsx: javascript,
-  ts: javascript,
-  html: html,
-  css: css,
+  json,
+  tsx,
+  js: tsx,
+  jsx: tsx,
+  ts: tsx,
+  html,
+  css,
   md: markdown,
 };
 
@@ -69,6 +80,7 @@ export const getOrCreateEditor = ({
   usernameRef,
   aiAssistEndpoint,
   aiAssistOptions,
+  typeScriptWorker,
 }: {
   fileId: FileId;
 
@@ -92,6 +104,7 @@ export const getOrCreateEditor = ({
   aiAssistOptions?: {
     [key: string]: any;
   };
+  typeScriptWorker: Worker;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -214,6 +227,20 @@ export const getOrCreateEditor = ({
       aiAssistOptions,
     }),
   );
+
+  // Add the extension that provides TypeScript completions.
+  if (enableTypeScriptCompletions) {
+    extensions.push(
+      autocompletion({
+        override: [
+          typeScriptCompletions({
+            typeScriptWorker,
+            fileName: name,
+          }),
+        ],
+      }),
+    );
+  }
 
   const editor = new EditorView({
     state: EditorState.create({

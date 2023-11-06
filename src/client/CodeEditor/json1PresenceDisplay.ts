@@ -52,10 +52,8 @@ export const json1PresenceDisplay = ({
               const presence = presenceState[id];
               const { start, end } = presence;
               const from = start[start.length - 1];
-              // TODO support selection ranges (first attempt introduced layout errors)
               const to = end[end.length - 1];
               const userColor = new ColorHash().rgb(id);
-
               if (from === to) {
                 return {
                   from,

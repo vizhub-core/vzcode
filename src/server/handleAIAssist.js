@@ -1,7 +1,13 @@
 import OpenAI from 'openai';
-import { editOp } from 'ot-json1';
+import { editOp, type } from 'ot-json1';
 
-const openai = new OpenAI();
+// Feature flag to slow down AI for development/testing
+const slowdown = false;
+
+let openai;
+if (process.env.OPENAI_API_KEY !== undefined) {
+  openai = new OpenAI();
+}
 
 export async function generateAIResponse({
   inputText,
@@ -9,6 +15,21 @@ export async function generateAIResponse({
   fileId,
   shareDBDoc,
 }) {
+  function accomodateDocChanges(op, source) {
+    if (!opComesFromAIAssist(op, source)) {
+      if (op !== null) {
+        insertionCursor = type
+          .transformPosition(
+            ['files', fileId, 'text', insertionCursor],
+            op,
+          )
+          .slice(-1)[0];
+      }
+    }
+  }
+
+  shareDBDoc.on('op', accomodateDocChanges);
+
   const stream = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [
@@ -22,22 +43,36 @@ export async function generateAIResponse({
     stream: true,
   });
 
-  let currentCursor = insertionCursor;
-
   for await (const part of stream) {
     const op = editOp(
       ['files', fileId, 'text'],
       'text-unicode',
       [
-        currentCursor,
+        insertionCursor,
         part.choices[0]?.delta?.content || '',
       ],
     );
 
-    shareDBDoc.submitOp(op);
-    currentCursor += (part.choices[0]?.delta?.content || '')
-      .length;
+    shareDBDoc.submitOp(op, { source: AISourceName });
+
+    // Wait for 500ms
+    if (slowdown) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+    }
+
+    insertionCursor += (
+      part.choices[0]?.delta?.content || ''
+    ).length;
   }
+  shareDBDoc.off('op', accomodateDocChanges);
+}
+
+const AISourceName = 'AIAssist';
+
+function opComesFromAIAssist(ops, source) {
+  return source === AISourceName;
 }
 
 export const handleAIAssist =

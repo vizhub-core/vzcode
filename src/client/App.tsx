@@ -21,6 +21,8 @@ import {
 import { usePrettier } from './usePrettier';
 // @ts-ignore
 import PrettierWorker from './usePrettier/worker?worker';
+// @ts-ignore
+import TypeScriptWorker from './useTypeScript/worker?worker';
 import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
@@ -33,10 +35,14 @@ import {
   useInitialUsername,
   usePersistUsername,
 } from './usernameLocalStorage';
+import { useTypeScript } from './useTypeScript';
 import './style.scss';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
+
+// Instantiate the TypeScript worker.
+const typeScriptWorker = new TypeScriptWorker();
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -161,6 +167,12 @@ function App() {
     prettierWorker,
   );
 
+  // Set up the TypeScript worker.
+  useTypeScript({
+    content,
+    typeScriptWorker,
+  });
+
   // https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
@@ -269,6 +281,7 @@ function App() {
                 editorNoLongerWantsFocus
               }
               username={username}
+              typeScriptWorker={typeScriptWorker}
             />
           ) : null}
           <CodeErrorOverlay errorMessage={prettierError} />

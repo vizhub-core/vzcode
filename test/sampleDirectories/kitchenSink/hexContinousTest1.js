@@ -2,6 +2,8 @@ let a = 5;
 
 let color = "#405F91";
 
+const foo = { bar: 5 };
+
 let rgbColour = rgb(178, 52, 52);
 
 let aString = "make sure this stays";

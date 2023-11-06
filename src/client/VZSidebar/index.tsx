@@ -139,7 +139,7 @@ export const VZSidebar = ({
           className="settings"
           onClick={handleSettingsClick}
         >
-          Settings
+          Editor Settings
         </div>
       )}
     </div>

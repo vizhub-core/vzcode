@@ -7,7 +7,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.
-const autoPrettierDebounceTimeMS = 1200;
+export const autoPrettierDebounceTimeMS = 1200;
 
 // Computes a file extension from a file name.
 // Example: 'foo.js' => '.js'

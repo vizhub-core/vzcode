@@ -32,6 +32,7 @@ export const CodeEditor = ({
   username,
   aiAssistEndpoint,
   aiAssistOptions,
+  typeScriptWorker,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -62,6 +63,7 @@ export const CodeEditor = ({
   aiAssistOptions?: {
     [key: string]: string;
   };
+  typeScriptWorker: Worker;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -111,6 +113,7 @@ export const CodeEditor = ({
         usernameRef,
         aiAssistEndpoint,
         aiAssistOptions,
+        typeScriptWorker,
       }),
     [
       activeFileId,
@@ -124,6 +127,7 @@ export const CodeEditor = ({
       usernameRef,
       aiAssistEndpoint,
       aiAssistOptions,
+      typeScriptWorker,
     ],
   );
 
