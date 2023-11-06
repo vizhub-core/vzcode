@@ -74,11 +74,13 @@ export const VZSidebar = ({
     setIsModalOpen(false);
   }, [setIsModalOpen]);
 
-  const handleRename = (newFileName) => {
-    createFile(newFileName);
-
-    setIsModalOpen(false);
-  };
+  const handleRename = useCallback(
+    (newFileName: string) => {
+      createFile(newFileName);
+      setIsModalOpen(false);
+    },
+    [createFile, setIsModalOpen],
+  );
 
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
