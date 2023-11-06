@@ -73,7 +73,7 @@ export const CreateFileModal = ({
           variant="primary"
           onClick={handleRenameClick}
         >
-          Rename
+          Create File
         </Button>
       </Modal.Footer>
     </Modal>
