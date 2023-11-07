@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import './style.scss';
 
 const enableErrorDismiss = true;
@@ -8,8 +8,7 @@ export const CodeErrorOverlay = ({
 }: {
   errorMessage: string | null;
 }) => {
-  const [isOverlayVisible, setIsOverlayVisible] =
-    useState(true);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
 
   // If errorMessage changes, set the overlay to be visible
   useEffect(() => {
@@ -17,6 +16,21 @@ export const CodeErrorOverlay = ({
       setIsOverlayVisible(true);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", detectKeyDown, true);
+
+    return () => {
+      // Remove the event listener when the component unmounts
+      document.removeEventListener("keydown", detectKeyDown, true);
+    };
+  }, []);
+
+  const detectKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      handleCloseClick();
+    }
+  }
 
   const handleCloseClick = useCallback(() => {
     // Set the visibility state to false when the button is clicked
