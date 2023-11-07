@@ -35,7 +35,6 @@ export const AIAssistWidget = ({
     // TODO make this happen
     // See src/client/AIAssist.ts
 
-    console.log('AI Assist clicked');
     startAIAssist(
       editorCache.get(activeFileId).editor,
       shareDBDoc,
