@@ -32,6 +32,7 @@ import {
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
+import { TabState } from '../vzReducer';
 
 // Feature flag to enable TypeScript completions.
 const enableTypeScriptCompletions = true;
@@ -81,6 +82,7 @@ export const getOrCreateEditor = ({
   aiAssistEndpoint,
   aiAssistOptions,
   typeScriptWorker,
+  tabList,
 }: {
   fileId: FileId;
 
@@ -105,6 +107,7 @@ export const getOrCreateEditor = ({
     [key: string]: any;
   };
   typeScriptWorker: Worker;
+  tabList: Array<TabState>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -221,8 +224,10 @@ export const getOrCreateEditor = ({
   extensions.push(rotationIndicator);
 
   extensions.push(
-    AIAssist({shareDBDoc,
+    AIAssist({
+      shareDBDoc,
       fileId,
+      tabList,
       aiAssistEndpoint,
       aiAssistOptions,
     }),

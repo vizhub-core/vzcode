@@ -283,6 +283,7 @@ function App() {
               }
               username={username}
               typeScriptWorker={typeScriptWorker}
+              tabList={tabList}
             />
           ) : null}
           <CodeErrorOverlay errorMessage={prettierError} />
@@ -295,6 +296,7 @@ function App() {
               activeFileId={activeFileId}
               shareDBDoc={shareDBDoc}
               editorCache={editorCache}
+              tabList={tabList}
             />
           ) : null}
         </div>

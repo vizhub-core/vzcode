@@ -12,6 +12,7 @@ import {
   VZCodeContent,
 } from '../../types';
 import { EditorCache } from '../useEditorCache';
+import { TabState } from '../vzReducer';
 
 // From
 // https://primer.style/foundations/icons/zap-24
@@ -45,10 +46,12 @@ export const AIAssistWidget = ({
   activeFileId,
   shareDBDoc,
   editorCache,
+  tabList,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
   editorCache: EditorCache;
+  tabList: Array<TabState>;
 }) => {
   const [AIAssistRunning, setAIAssistRunning] =
     useState(false);
@@ -72,6 +75,7 @@ export const AIAssistWidget = ({
         editorCache.get(activeFileId).editor,
         shareDBDoc,
         activeFileId,
+        tabList,
       );
     } else {
       haltAIAssist(shareDBDoc);

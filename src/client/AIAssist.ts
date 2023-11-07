@@ -1,16 +1,21 @@
 import { EditorView, keymap } from '@codemirror/view';
 import {
   FileId,
+  File,
   ShareDBDoc,
   VZCodeContent,
 } from '../types';
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
 import { insertOp, replaceOp } from 'ot-json1';
+import { TabState } from './vzReducer';
+import { TabList } from './TabList';
 
 export const AIAssist = ({
   shareDBDoc,
   // The file id of the file the AI should assist with.
   fileId,
+
+  tabList,
 
   // Optional endpoint override.
   aiAssistEndpoint = '/AIAssist',
@@ -24,11 +29,13 @@ export const AIAssist = ({
   aiAssistOptions?: {
     [key: string]: any;
   };
+  tabList: Array<TabState>;
 }) =>
   keymap.of([
     {
       key: 'control-m',
       run: (view: EditorView) => {
+        console.log('keypress m');
         if (
           shareDBDoc.data.aiStreams == null ||
           shareDBDoc.data.aiStreams[mostRecentStreamId] ==
@@ -36,9 +43,14 @@ export const AIAssist = ({
           shareDBDoc.data.aiStreams[mostRecentStreamId]
             ?.AIStreamStatus.serverIsRunning !== true
         ) {
-          startAIAssist(view, shareDBDoc, fileId);
+          startAIAssist(view, shareDBDoc, fileId, tabList);
         } else {
-          haltAIAssist(shareDBDoc);
+          if (
+            shareDBDoc.data.aiStreams[mostRecentStreamId]
+              ?.AIStreamStatus.serverIsRunning === true
+          ) {
+            haltAIAssist(shareDBDoc);
+          }
         }
 
         return true;
@@ -48,15 +60,23 @@ export const AIAssist = ({
 
 export let mostRecentStreamId = null;
 
-export const startAIAssist = (
+export const startAIAssist = async (
   view: EditorView,
   shareDBDoc: ShareDBDoc<VZCodeContent>,
   fileId: FileId,
+  tabList: Array<TabState>,
 ) => {
-  const textToSend = view.state.sliceDoc(
-    0,
-    view.state.selection.main.to,
-  );
+  const textToSend =
+    (await generateFilesContext(
+      tabList.map(
+        (tabState) =>
+          shareDBDoc.data.files[tabState.fileId],
+      ),
+    )) +
+    'Current File:\n' +
+    view.state.sliceDoc(0, view.state.selection.main.to);
+
+  console.log(textToSend);
 
   mostRecentStreamId = generateRequestId();
 
@@ -95,4 +115,25 @@ export const haltAIAssist = (shareDBDoc) => {
   shareDBDoc.submitOp(haltGenerationOp, {
     source: 'AIClient',
   });
+};
+
+export const generateFilesContext = async (
+  goodFiles: File[],
+): Promise<string> => {
+  const input = goodFiles
+    .map((file) => {
+      const nameSubstring = file.name
+        // ?.substring(0, maxFileNameLength)
+        .trim();
+
+      const textSubstring = file.text
+        // ?.substring(0, maxFileTextLength)
+        .trim();
+
+      // Generate Markdown that AI will understand.
+      return `File \`${nameSubstring}\`:\n\`\`\`${textSubstring}\`\`\``;
+    })
+    .join('\n\n');
+
+  return input;
 };
