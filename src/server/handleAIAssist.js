@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { editOp, type } from 'ot-json1';
+import { editOp, type, replaceOp } from 'ot-json1';
 
 // Feature flag to slow down AI for development/testing
 const slowdown = false;
@@ -13,6 +13,7 @@ export async function generateAIResponse({
   inputText,
   insertionCursor,
   fileId,
+  streamId,
   shareDBDoc,
 }) {
   function accomodateDocChanges(op, source) {
@@ -30,20 +31,20 @@ export async function generateAIResponse({
 
   shareDBDoc.on('op', accomodateDocChanges);
 
-  const stream = await openai.chat.completions.create({
+  streams[streamId] = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages: [
       {
         role: 'system',
         content:
-          'Write typescript or javascript code that would follow the prompt',
+          'Write typescript or javascript code that would follow the prompt. Use // for comments.',
       },
       { role: 'user', content: inputText },
     ],
     stream: true,
   });
 
-  for await (const part of stream) {
+  for await (const part of streams[streamId]) {
     const op = editOp(
       ['files', fileId, 'text'],
       'text-unicode',
@@ -67,6 +68,20 @@ export async function generateAIResponse({
     ).length;
   }
   shareDBDoc.off('op', accomodateDocChanges);
+
+  const confirmCompletedOperation = replaceOp(
+    [
+      'aiStreams',
+      streamId,
+      'AIStreamStatus',
+      'serverIsRunning',
+    ],
+    true,
+    false,
+  );
+  shareDBDoc.submitOp(confirmCompletedOperation, {
+    source: 'AIServer',
+  });
 }
 
 const AISourceName = 'AIAssist';
@@ -74,6 +89,8 @@ const AISourceName = 'AIAssist';
 function opComesFromAIAssist(ops, source) {
   return source === AISourceName;
 }
+
+const streams = {};
 
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
@@ -102,3 +119,7 @@ export const handleAIAssist =
       });
     }
   };
+
+export function haltGeneration(streamId) {
+  streams[streamId].controller.abort();
+}

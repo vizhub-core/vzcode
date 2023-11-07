@@ -221,7 +221,7 @@ export const getOrCreateEditor = ({
   extensions.push(rotationIndicator);
 
   extensions.push(
-    AIAssist({
+    AIAssist({shareDBDoc,
       fileId,
       aiAssistEndpoint,
       aiAssistOptions,
