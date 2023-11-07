@@ -91,7 +91,6 @@ export const startAIAssist = (
       source: 'AIClient',
     });
   }
-  console.log(shareDBDoc);
 
   shareDBDoc.submitOp(
     insertOp(['aiStreams', currentStreamId], {
