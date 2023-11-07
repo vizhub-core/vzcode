@@ -33,7 +33,6 @@ export const AIAssistWidget = ({
 }) => {
   const handleClick = useCallback(() => {
     // TODO make this happen
-    // See src/client/AIAssist.ts
 
     startAIAssist(
       editorCache.get(activeFileId).editor,
