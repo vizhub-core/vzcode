@@ -32,7 +32,6 @@ export const AIAssistWidget = ({
   editorCache: EditorCache;
 }) => {
   const handleClick = useCallback(() => {
-    // TODO make this happen
 
     startAIAssist(
       editorCache.get(activeFileId).editor,
