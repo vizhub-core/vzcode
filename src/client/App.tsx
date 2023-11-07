@@ -244,6 +244,7 @@ function App() {
             deleteFile={deleteFile}
             deleteDirectory={deleteDirectory}
             openTab={openTab}
+            closeTabs={closeTabs}
             setIsSettingsOpen={setIsSettingsOpen}
             isDirectoryOpen={isDirectoryOpen}
             toggleDirectory={toggleDirectory}
