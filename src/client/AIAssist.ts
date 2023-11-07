@@ -85,7 +85,6 @@ export const startAIAssist = (
 
   currentStreamId = generateRequestId();
 
-  console.log(shareDBDoc);
 
   if (shareDBDoc.data['aiStreams'] === undefined) {
     shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
