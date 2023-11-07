@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../bootstrap';
 import './style.scss';
 import {
-  currentStreamId,
+  mostRecentStreamId,
   haltAIAssist,
   startAIAssist,
 } from '../AIAssist';
@@ -56,10 +56,9 @@ export const AIAssistWidget = ({
   useEffect(() => {
     shareDBDoc.on('op', (op, source) => {
       if (op !== null && op[0] == 'aiStreams') {
-        console.log(source);
         //The check if the value is true is required because the value could be null rather than false.
         setAIAssistRunning(
-          shareDBDoc.data.aiStreams[currentStreamId]
+          shareDBDoc.data.aiStreams[mostRecentStreamId]
             ?.AIStreamStatus.serverIsRunning === true,
         );
       }
