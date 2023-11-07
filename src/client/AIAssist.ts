@@ -52,26 +52,13 @@ export const AIAssist = ({
     {
       key: 'control-M',
       run: (view: EditorView) => {
-        const haltGenerationOp = replaceOp(
-          [
-            'aiStreams',
-            currentStreamId,
-            'AIStreamStatus',
-            'clientWantsToStart',
-          ],
-          true,
-          false,
-        );
-
-        shareDBDoc.submitOp(haltGenerationOp, {
-          source: 'AIClient',
-        });
+        haltAIAssist(shareDBDoc);
         return true;
       },
     },
   ]);
 
-let currentStreamId = null;
+export let currentStreamId = null;
 
 export const startAIAssist = (
   view: EditorView,
@@ -84,7 +71,6 @@ export const startAIAssist = (
   );
 
   currentStreamId = generateRequestId();
-
 
   if (shareDBDoc.data['aiStreams'] === undefined) {
     shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
@@ -104,4 +90,21 @@ export const startAIAssist = (
     }),
     { source: 'AIClient' },
   );
+};
+
+export const haltAIAssist = (shareDBDoc) => {
+  const haltGenerationOp = replaceOp(
+    [
+      'aiStreams',
+      currentStreamId,
+      'AIStreamStatus',
+      'clientWantsToStart',
+    ],
+    true,
+    false,
+  );
+
+  shareDBDoc.submitOp(haltGenerationOp, {
+    source: 'AIClient',
+  });
 };
