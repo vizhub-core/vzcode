@@ -67,7 +67,6 @@ export const AIAssistWidget = ({
   });
 
   const handleClick = useCallback(() => {
-    console.log('AI Assist clicked');
     if (!AIAssistRunning) {
       startAIAssist(
         editorCache.get(activeFileId).editor,
