@@ -31,7 +31,7 @@ export const AIAssist = ({
       run: (view: EditorView) => {
         if (
           shareDBDoc.data.aiStreams === null ||
-          shareDBDoc.data.aiStreams[mostRecentStreamId] ==
+          shareDBDoc.data.aiStreams[mostRecentStreamId] ===
             null ||
           shareDBDoc.data.aiStreams[mostRecentStreamId]
             ?.AIStreamStatus.serverIsRunning !== true
