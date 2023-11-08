@@ -56,7 +56,7 @@ export const AIAssistWidget = ({
 
   useEffect(() => {
     shareDBDoc.on('op', (op, source) => {
-      if (op !== null && op[0] == 'aiStreams') {
+      if (op !== null && op[0] === 'aiStreams') {
         //The check if the value is true is required because the value could be null rather than false.
         setAIAssistRunning(
           shareDBDoc.data.aiStreams[mostRecentStreamId]
