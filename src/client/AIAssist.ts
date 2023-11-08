@@ -30,7 +30,7 @@ export const AIAssist = ({
       key: 'control-m',
       run: (view: EditorView) => {
         if (
-          shareDBDoc.data.aiStreams == null ||
+          shareDBDoc.data.aiStreams === null ||
           shareDBDoc.data.aiStreams[mostRecentStreamId] ==
             null ||
           shareDBDoc.data.aiStreams[mostRecentStreamId]
