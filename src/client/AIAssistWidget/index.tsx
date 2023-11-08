@@ -26,7 +26,8 @@ const ZapSVG = () => (
   </svg>
 );
 
-//From wikimedia
+// From Wikimedia
+// https://commons.wikimedia.org/wiki/File:Stopsign.svg
 const StopSVG = () => (
   <svg
     width="15pt"
