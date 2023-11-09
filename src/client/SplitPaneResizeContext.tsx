@@ -24,8 +24,11 @@ const initialCodeEditorWidthDefault = 500;
 let initialCodeEditorWidth: number =
   initialCodeEditorWidthDefault;
 
+// Feature flag
+const enableLocalStorage = false;
+
 // If we're in the browser,
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && enableLocalStorage) {
   //check localStorage for a previously stored width.
   const sidebarWidthLocal: string | null =
     window.localStorage.getItem(sidebarWidthProperty);
@@ -50,16 +53,24 @@ if (typeof window !== 'undefined') {
 type SplitPaneResizeContextValue = {
   codeEditorWidth: number;
   sidebarWidth: number;
-  moveSplitPane: (a: number) => void;
-  isDragging: boolean;
-  setIsDragging: (a: boolean) => void;
+  moveSplitPane: (
+    a: number,
+    side: 'left' | 'right',
+  ) => void;
+  isDraggingRight: boolean;
+  isDraggingLeft: boolean;
+  setIsDragging: (
+    a: boolean,
+    side: 'left' | 'right',
+  ) => void;
 };
 
 const initialValue: SplitPaneResizeContextValue = {
   codeEditorWidth: initialCodeEditorWidth,
   sidebarWidth: initialSidebarWidth,
   moveSplitPane: () => {},
-  isDragging: false,
+  isDraggingRight: false,
+  isDraggingLeft: false,
   setIsDragging: () => {},
 };
 
@@ -70,24 +81,26 @@ type SplitPaneState = {
   // The width of the sidebar, in pixels.
   sidebarWidth: number;
   codeEditorWidth: number;
-  isDragging: boolean;
+  isDraggingLeft: boolean;
+  isDraggingRight: boolean;
 };
-
-const add = (a: number, b: number) => a + b;
 
 const initialState: SplitPaneState = {
   sidebarWidth: initialSidebarWidth,
   codeEditorWidth: initialCodeEditorWidth,
-  isDragging: false,
+  isDraggingLeft: false,
+  isDraggingRight: false,
 };
 
 type SplitPaneAction =
   | {
       type: 'move';
+      side: 'left' | 'right';
       movementX: number;
     }
   | {
       type: 'setIsDragging';
+      side: 'left' | 'right';
       isDragging: boolean;
     };
 
@@ -97,16 +110,28 @@ const splitPaneReducer = (
 ) => {
   switch (action.type) {
     case 'move':
-      return {
-        ...state,
-        sidebarWidth: state.sidebarWidth + action.movementX,
-      };
+      return action.side === 'left'
+        ? {
+            ...state,
+            sidebarWidth:
+              state.sidebarWidth + action.movementX,
+          }
+        : {
+            ...state,
+            codeEditorWidth:
+              state.codeEditorWidth + action.movementX,
+          };
     // Handle setIsDragging
     case 'setIsDragging':
-      return {
-        ...state,
-        isDragging: action.isDragging,
-      };
+      return action.side === 'left'
+        ? {
+            ...state,
+            isDraggingLeft: action.isDragging,
+          }
+        : {
+            ...state,
+            isDraggingRight: action.isDragging,
+          };
     default:
       return state;
   }
@@ -117,41 +142,30 @@ export const SplitPaneResizeProvider = ({ children }) => {
     splitPaneReducer,
     initialState,
   );
-  // const [isDragging, setIsDragging] = useState(false);
 
   const setIsDragging = useCallback(
-    (isDragging: boolean) => {
-      dispatch({ type: 'setIsDragging', isDragging });
+    (isDragging: boolean, side: 'left' | 'right') => {
+      dispatch({ type: 'setIsDragging', isDragging, side });
     },
     [dispatch],
   );
 
   const moveSplitPane = useCallback(
-    (movementX: number) => {
-      dispatch({ type: 'move', movementX });
+    (movementX: number, side: 'left' | 'right') => {
+      dispatch({ type: 'move', movementX, side });
     },
     [dispatch],
   );
 
-  const { sidebarWidth, codeEditorWidth, isDragging } =
-    state;
+  const {
+    sidebarWidth,
+    codeEditorWidth,
+    isDraggingLeft,
+    isDraggingRight,
+  } = state;
 
   // Logic around storing the values in localStorage.
   useEffect(() => {
-    // TODO use this pattern
-    // if (codeEditorWidth !== initialWidth) {
-    //   const timeout = setTimeout(() => {
-    //     window.localStorage.setItem(
-    //       localStoragePropertyName,
-    //       '' + codeEditorWidth,
-    //     );
-    //   }, localStorageWriteDebounceMS);
-
-    //   return () => {
-    //     clearTimeout(timeout);
-    //   };
-    // }
-
     if (sidebarWidth !== initialSidebarWidth) {
       setTimeout(() => {
         window.localStorage.setItem(
@@ -171,11 +185,12 @@ export const SplitPaneResizeProvider = ({ children }) => {
     }
   }, [codeEditorWidth, sidebarWidth]);
 
-  const value = {
+  const value: SplitPaneResizeContextValue = {
     codeEditorWidth,
     sidebarWidth,
     moveSplitPane,
-    isDragging,
+    isDraggingLeft,
+    isDraggingRight,
     setIsDragging,
   };
 

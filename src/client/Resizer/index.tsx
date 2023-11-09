@@ -31,12 +31,10 @@ export const Resizer = ({
     sidebarWidth,
     codeEditorWidth,
     moveSplitPane,
-    isDragging,
+    isDraggingRight,
+    isDraggingLeft,
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
-
-  const width =
-    side === 'left' ? sidebarWidth : codeEditorWidth;
 
   const previousClientX = useRef<number>(0);
 
@@ -44,10 +42,10 @@ export const Resizer = ({
     (event: React.MouseEvent) => {
       event.preventDefault();
       previousClientX.current = event.clientX;
-      setIsDragging(true);
+      setIsDragging(true, side);
       document.body.style.cursor = 'col-resize';
     },
-    [setIsDragging],
+    [setIsDragging, side],
   );
 
   const onMouseMove = useCallback(
@@ -56,15 +54,20 @@ export const Resizer = ({
       const movementX =
         event.clientX - previousClientX.current;
       previousClientX.current = event.clientX;
-      moveSplitPane(movementX);
+      moveSplitPane(movementX, side);
     },
-    [moveSplitPane],
+    [moveSplitPane, side],
   );
 
   const onMouseUp = useCallback(() => {
-    setIsDragging(false);
+    setIsDragging(false, side);
     document.body.style.cursor = 'default';
-  }, [setIsDragging]);
+  }, [setIsDragging, side]);
+
+  // Is the resizer currently being dragged?
+  const isDragging =
+    (side === 'left' && isDraggingLeft) ||
+    (side === 'right' && isDraggingRight);
 
   useEffect(() => {
     if (isDragging) {
@@ -78,18 +81,29 @@ export const Resizer = ({
         document.removeEventListener('mouseup', onMouseUp);
       };
     }
-  }, [isDragging, onMouseMove, onMouseUp]);
+  }, [
+    isDraggingLeft,
+    isDraggingRight,
+    onMouseMove,
+    onMouseUp,
+  ]);
 
   const resizerWidth = isDragging
     ? resizerInteractionSurfaceWidthWhileDragging
     : resizerInteractionSurfaceWidth;
+
+  const left =
+    (side === 'left'
+      ? sidebarWidth
+      : sidebarWidth + codeEditorWidth) -
+    resizerWidth / 2;
 
   return (
     <div
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left: width - resizerWidth / 2,
+        left,
         width: resizerWidth,
       }}
     >
