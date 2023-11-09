@@ -66,6 +66,15 @@ const initializeFileSystem = async () => {
   }
 };
 
+const setFile = (tsFileName: string, text: string) => {
+  const existingFile = env.getSourceFile(tsFileName);
+  if (existingFile === undefined) {
+    env.createFile(tsFileName, text);
+  } else {
+    env.updateFile(tsFileName, text);
+  }
+};
+
 onmessage = async ({ data }) => {
   if (debug) {
     console.log('message received');
@@ -106,12 +115,7 @@ onmessage = async ({ data }) => {
         continue;
       }
 
-      const existingFile = env.getSourceFile(tsFileName);
-      if (existingFile === undefined) {
-        env.createFile(tsFileName, text);
-      } else {
-        env.updateFile(tsFileName, text);
-      }
+      setFile(tsFileName, text);
       // TODO - Handle renaming files.
       // TODO - Handle deleting files.
       // TODO - Handle directories.
@@ -147,7 +151,7 @@ onmessage = async ({ data }) => {
       // Update the file in the file system to the
       // absolute latest version. This is critical
       // for correct completions.
-      env.updateFile(tsFileName, fileContent);
+      setFile(tsFileName, fileContent);
 
       completions =
         env.languageService.getCompletionsAtPosition(
