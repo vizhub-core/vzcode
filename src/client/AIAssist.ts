@@ -29,49 +29,24 @@ export const AIAssist = ({
     {
       key: 'control-m',
       run: (view: EditorView) => {
-        startAIAssist(view, shareDBDoc, fileId);
-        // fetch(aiAssistEndpoint, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //     // Pass additional options to the AI Assist endpoint.
-        //     ...aiAssistOptions,
+        if (
+          shareDBDoc.data.aiStreams === null ||
+          shareDBDoc.data.aiStreams[mostRecentStreamId] ===
+            null ||
+          shareDBDoc.data.aiStreams[mostRecentStreamId]
+            ?.AIStreamStatus.serverIsRunning !== true
+        ) {
+          startAIAssist(view, shareDBDoc, fileId);
+        } else {
+          haltAIAssist(shareDBDoc);
+        }
 
-        //     text: textToSend,
-        //     fileId,
-        //     cursorLocation: view.state.selection.main.to,
-        //   }),
-        // });
-
-        return true;
-      },
-    },
-
-    {
-      key: 'control-M',
-      run: (view: EditorView) => {
-        const haltGenerationOp = replaceOp(
-          [
-            'aiStreams',
-            currentStreamId,
-            'AIStreamStatus',
-            'clientWantsToStart',
-          ],
-          true,
-          false,
-        );
-
-        shareDBDoc.submitOp(haltGenerationOp, {
-          source: 'AIClient',
-        });
         return true;
       },
     },
   ]);
 
-let currentStreamId = null;
+export let mostRecentStreamId = null;
 
 export const startAIAssist = (
   view: EditorView,
@@ -83,8 +58,7 @@ export const startAIAssist = (
     view.state.selection.main.to,
   );
 
-  currentStreamId = generateRequestId();
-
+  mostRecentStreamId = generateRequestId();
 
   if (shareDBDoc.data['aiStreams'] === undefined) {
     shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
@@ -93,7 +67,7 @@ export const startAIAssist = (
   }
 
   shareDBDoc.submitOp(
-    insertOp(['aiStreams', currentStreamId], {
+    insertOp(['aiStreams', mostRecentStreamId], {
       AIStreamStatus: {
         clientWantsToStart: true,
         serverIsRunning: false,
@@ -104,4 +78,21 @@ export const startAIAssist = (
     }),
     { source: 'AIClient' },
   );
+};
+
+export const haltAIAssist = (shareDBDoc) => {
+  const haltGenerationOp = replaceOp(
+    [
+      'aiStreams',
+      mostRecentStreamId,
+      'AIStreamStatus',
+      'clientWantsToStart',
+    ],
+    true,
+    false,
+  );
+
+  shareDBDoc.submitOp(haltGenerationOp, {
+    source: 'AIClient',
+  });
 };
