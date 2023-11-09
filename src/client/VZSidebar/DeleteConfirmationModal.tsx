@@ -1,4 +1,8 @@
 import { Button, Modal } from '../bootstrap';
+import { useCallback } from 'react';
+
+// Confirmation modal for deleting a file or directory.
+// Inspired by https://react-bootstrap.netlify.app/docs/components/modal/#live-demo
 
 export const DeleteConfirmationModal = ({
   show,
@@ -7,10 +11,13 @@ export const DeleteConfirmationModal = ({
   isDirectory,
   name,
 }) => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onConfirm();
-  };
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      onConfirm();
+    },
+    [onConfirm],
+  );
 
   return (
     <Modal show={show} onHide={onClose} centered>
