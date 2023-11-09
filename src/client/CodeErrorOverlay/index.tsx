@@ -26,7 +26,7 @@ export const CodeErrorOverlay = ({
     };
   }, []);
 
-  const detectKeyDown = (e) => {
+  const detectKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
       handleCloseClick();
     }
