@@ -1,11 +1,13 @@
 // From https://github.com/vizhub-core/vizhub/edit/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/SplitPaneResizeContext/index.js
 import {
-  useState,
   createContext,
   useReducer,
   useEffect,
   useCallback,
 } from 'react';
+
+// Feature flag for developers to use when testing.
+const enableLocalStorage = true;
 
 // The amount of time to wait idle before writing to localStorage.
 // This is to avoid writing to localStorage on every resize event.
@@ -23,9 +25,6 @@ let initialSidebarWidth: number =
 const initialCodeEditorWidthDefault = 500;
 let initialCodeEditorWidth: number =
   initialCodeEditorWidthDefault;
-
-// Feature flag
-const enableLocalStorage = false;
 
 // If we're in the browser,
 if (typeof window !== 'undefined' && enableLocalStorage) {
