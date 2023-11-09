@@ -30,7 +30,7 @@ export const CodeErrorOverlay = ({
     if (e.key === 'Escape') {
       handleCloseClick();
     }
-  }
+  }, [handleCloseClick]);
 
   const handleCloseClick = useCallback(() => {
     // Set the visibility state to false when the button is clicked
