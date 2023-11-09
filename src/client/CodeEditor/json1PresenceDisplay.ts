@@ -7,7 +7,6 @@ import {
 import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
 
-
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //
@@ -61,7 +60,10 @@ export const json1PresenceDisplay = ({
                   value: Decoration.widget({
                     side: -1,
                     block: false,
-                    widget: new PresenceWidget(id, userColor),
+                    widget: new PresenceWidget(
+                      id,
+                      userColor,
+                    ),
                   }),
                 };
               } else {
