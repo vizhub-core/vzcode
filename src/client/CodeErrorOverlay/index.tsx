@@ -35,19 +35,19 @@ export const CodeErrorOverlay = ({
     };
   }, []);
 
+  const handleCloseClick = useCallback(() => {
+    // Set the visibility state to false when the button is clicked
+    setIsOverlayVisible(false);
+  }, []);
+
   const detectKeyDown = useCallback(
-    (e) => {
-      if (e.key === 'Escape') {
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         handleCloseClick();
       }
     },
     [handleCloseClick],
   );
-
-  const handleCloseClick = useCallback(() => {
-    // Set the visibility state to false when the button is clicked
-    setIsOverlayVisible(false);
-  }, []);
 
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">
