@@ -72,7 +72,10 @@ export type ShareDBDoc<T> = {
     event: string,
     callback: (op: JSONOp, source: boolean) => void,
   ) => void;
-  off: (event: string, callback: () => void) => void;
+  off: (
+    event: string,
+    callback: (op: JSONOp, source: boolean) => void,
+  ) => void;
   submitOp: (
     op: JSONOp,
     options?: any,
@@ -96,9 +99,9 @@ export type AIStreamStatus = {
   //  * `false` if the server is not running the generation.
   serverIsRunning: boolean;
 
-  text:string;
+  text: string;
 
-  startingInsertionCursor:number;
+  startingInsertionCursor: number;
   fileId: FileId;
 };
 

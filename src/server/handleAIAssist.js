@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { editOp, type, replaceOp } from 'ot-json1';
 
 // Feature flag to slow down AI for development/testing
-const slowdown = false;
+const slowdown = true;
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
@@ -121,5 +121,11 @@ export const handleAIAssist =
   };
 
 export function haltGeneration(streamId) {
-  streams[streamId].controller.abort();
+  const stream = streams[streamId];
+
+  // Stream can be undefined here if the user
+  // clicks start and stop very quickly.
+  if (stream) {
+    stream.controller.abort();
+  }
 }
