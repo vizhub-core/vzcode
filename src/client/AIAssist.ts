@@ -46,18 +46,21 @@ export const AIAssist = ({
     },
   ]);
 
+// TODO use ref forwarding instead of `export let`
 export let mostRecentStreamId = null;
 
 export const startAIAssist = (
   view: EditorView,
   shareDBDoc: ShareDBDoc<VZCodeContent>,
   fileId: FileId,
+  // TODO mostRecentStreamIdRef: React.MutableRefObject<string>,
 ) => {
   const textToSend = view.state.sliceDoc(
     0,
     view.state.selection.main.to,
   );
 
+  // TODO mostRecentStreamIdRef.current = generateRequestId();
   mostRecentStreamId = generateRequestId();
 
   if (shareDBDoc.data['aiStreams'] === undefined) {
@@ -80,7 +83,9 @@ export const startAIAssist = (
   );
 };
 
-export const haltAIAssist = (shareDBDoc) => {
+export const haltAIAssist = (
+  shareDBDoc: ShareDBDoc<VZCodeContent>,
+) => {
   const haltGenerationOp = replaceOp(
     [
       'aiStreams',

@@ -55,7 +55,7 @@ export const AIAssistWidget = ({
     useState(false);
 
   useEffect(() => {
-    shareDBDoc.on('op', (op, source) => {
+    const handleOp = (op, source) => {
       if (op !== null && op[0] === 'aiStreams') {
         //The check if the value is true is required because the value could be null rather than false.
         setAIAssistRunning(
@@ -63,8 +63,13 @@ export const AIAssistWidget = ({
             ?.AIStreamStatus.serverIsRunning === true,
         );
       }
-    });
-  });
+    };
+    shareDBDoc.on('op', handleOp);
+
+    return () => {
+      shareDBDoc.off('op', handleOp);
+    };
+  }, [shareDBDoc]);
 
   const handleClick = useCallback(() => {
     if (!AIAssistRunning) {
@@ -77,6 +82,7 @@ export const AIAssistWidget = ({
       haltAIAssist(shareDBDoc);
     }
   }, [activeFileId, AIAssistRunning]);
+
   return (
     <div className="vz-code-ai-assist-widget">
       <Button
