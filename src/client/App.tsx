@@ -1,4 +1,9 @@
-import { useState, useEffect, useReducer } from 'react';
+import {
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+} from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../ot';
 import { randomId } from '../randomId';
@@ -13,7 +18,11 @@ import {
 } from '../types';
 import { TabList } from './TabList';
 import { useOpenDirectories } from './useOpenDirectories';
-import { defaultTheme, useDynamicTheme } from './themes';
+import {
+  ThemeLabel,
+  defaultTheme,
+  useDynamicTheme,
+} from './themes';
 import {
   EditorCache,
   useEditorCache,
@@ -23,11 +32,18 @@ import { usePrettier } from './usePrettier';
 import PrettierWorker from './usePrettier/worker?worker';
 // @ts-ignore
 import TypeScriptWorker from './useTypeScript/worker?worker';
-import { SplitPaneResizeProvider } from './SplitPaneResizeContext';
+import {
+  SplitPaneResizeContext,
+  SplitPaneResizeProvider,
+} from './SplitPaneResizeContext';
 import { Resizer } from './Resizer';
 import { PresenceNotifications } from './PresenceNotifications';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
-import { vzReducer, createInitialState } from './vzReducer';
+import {
+  vzReducer,
+  createInitialState,
+  TabState,
+} from './vzReducer';
 import { useActions } from './useActions';
 import { useFileCRUD } from './useFileCRUD';
 import { useSubmitOperation } from './useSubmitOperation';
@@ -60,6 +76,103 @@ const socket = new WebSocket(
   wsProtocol + window.location.host + '/ws',
 );
 const connection = new Connection(socket);
+
+const Middle = ({
+  files,
+  tabList,
+  activeFileId,
+  setActiveFileId,
+  openTab,
+  closeTabs,
+  createFile,
+  content,
+  shareDBDoc,
+  submitOperation,
+  localPresence,
+  docPresence,
+  theme,
+  editorCache,
+  editorWantsFocus,
+  editorNoLongerWantsFocus,
+  username,
+  prettierError,
+}: {
+  files: Files | null;
+  tabList: Array<TabState>;
+  activeFileId: string | null;
+  setActiveFileId: (fileId: string) => void;
+  openTab: ({
+    fileId,
+    isTransient,
+  }: {
+    fileId: string;
+    isTransient?: boolean;
+  }) => void;
+  closeTabs: (fileIds: string[]) => void;
+  createFile: (fileName: string) => void;
+  content: VZCodeContent | null;
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+  submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void;
+  localPresence: any;
+  docPresence: any;
+  theme: ThemeLabel;
+  editorCache: EditorCache;
+  editorWantsFocus: boolean;
+  editorNoLongerWantsFocus: () => void;
+  username: Username;
+  prettierError: string | null;
+}) => {
+  const { codeEditorWidth } = useContext(
+    SplitPaneResizeContext,
+  );
+  return (
+    <div
+      className="middle"
+      style={{ width: codeEditorWidth + 'px' }}
+    >
+      <TabList
+        files={files}
+        tabList={tabList}
+        activeFileId={activeFileId}
+        setActiveFileId={setActiveFileId}
+        openTab={openTab}
+        closeTabs={closeTabs}
+        createFile={createFile}
+      />
+      {content && activeFileId ? (
+        <CodeEditor
+          shareDBDoc={shareDBDoc}
+          submitOperation={submitOperation}
+          localPresence={localPresence}
+          docPresence={docPresence}
+          activeFileId={activeFileId}
+          theme={theme}
+          editorCache={editorCache}
+          editorWantsFocus={editorWantsFocus}
+          editorNoLongerWantsFocus={
+            editorNoLongerWantsFocus
+          }
+          username={username}
+          typeScriptWorker={typeScriptWorker}
+        />
+      ) : null}
+      <CodeErrorOverlay errorMessage={prettierError} />
+      <PresenceNotifications
+        docPresence={docPresence}
+        localPresence={localPresence}
+      />
+      {content && activeFileId ? (
+        <AIAssistWidget
+          activeFileId={activeFileId}
+          shareDBDoc={shareDBDoc}
+          editorCache={editorCache}
+        />
+      ) : null}
+    </div>
+  );
+};
 
 function App() {
   // The ShareDB document.
@@ -233,6 +346,10 @@ function App() {
     ? content.files
     : null;
 
+  const { codeEditorWidth } = useContext(
+    SplitPaneResizeContext,
+  );
+
   return (
     <SplitPaneResizeProvider>
       <div className="app">
@@ -259,47 +376,31 @@ function App() {
             setUsername={setUsername}
           />
         </div>
-        <div className="right">
-          <TabList
-            files={files}
-            tabList={tabList}
-            activeFileId={activeFileId}
-            setActiveFileId={setActiveFileId}
-            openTab={openTab}
-            closeTabs={closeTabs}
-            createFile={createFile}
-          />
-          {content && activeFileId ? (
-            <CodeEditor
-              shareDBDoc={shareDBDoc}
-              submitOperation={submitOperation}
-              localPresence={localPresence}
-              docPresence={docPresence}
-              activeFileId={activeFileId}
-              theme={theme}
-              editorCache={editorCache}
-              editorWantsFocus={editorWantsFocus}
-              editorNoLongerWantsFocus={
-                editorNoLongerWantsFocus
-              }
-              username={username}
-              typeScriptWorker={typeScriptWorker}
-            />
-          ) : null}
-          <CodeErrorOverlay errorMessage={prettierError} />
-          <PresenceNotifications
-            docPresence={docPresence}
-            localPresence={localPresence}
-          />
-          {content && activeFileId ? (
-            <AIAssistWidget
-              activeFileId={activeFileId}
-              shareDBDoc={shareDBDoc}
-              editorCache={editorCache}
-            />
-          ) : null}
-        </div>
-        <Resizer />
+        <Middle
+          files={files}
+          tabList={tabList}
+          activeFileId={activeFileId}
+          setActiveFileId={setActiveFileId}
+          openTab={openTab}
+          closeTabs={closeTabs}
+          createFile={createFile}
+          content={content}
+          shareDBDoc={shareDBDoc}
+          submitOperation={submitOperation}
+          localPresence={localPresence}
+          docPresence={docPresence}
+          theme={theme}
+          editorCache={editorCache}
+          editorWantsFocus={editorWantsFocus}
+          editorNoLongerWantsFocus={
+            editorNoLongerWantsFocus
+          }
+          username={username}
+          prettierError={prettierError}
+        />
+        <div className="right"></div>
+        <Resizer side="left" />
+        <Resizer side="right" />
       </div>
     </SplitPaneResizeProvider>
   );

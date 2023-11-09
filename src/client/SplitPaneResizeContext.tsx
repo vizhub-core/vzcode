@@ -1,81 +1,200 @@
 // From https://github.com/vizhub-core/vizhub/edit/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/SplitPaneResizeContext/index.js
 import {
-  useState,
   createContext,
   useReducer,
   useEffect,
+  useCallback,
 } from 'react';
+
+// Feature flag for developers to use when testing.
+const enableLocalStorage = true;
 
 // The amount of time to wait idle before writing to localStorage.
 // This is to avoid writing to localStorage on every resize event.
 // MS = milliseconds
 const localStorageWriteDebounceMS = 800;
 
-const localStoragePropertyName = 'vizHubCodeEditorWidth';
+// Properties in LocalStorage
+const sidebarWidthProperty = 'vzCodeSidebarWidth';
+const codeEditorWidthProperty = 'vzCodeCodeEditorWidth';
 
-const initialWidthDefault = 220;
-let initialWidth: number = initialWidthDefault;
+const initialSidebarWidthDefault = 220;
+let initialSidebarWidth: number =
+  initialSidebarWidthDefault;
+
+const initialCodeEditorWidthDefault = 500;
+let initialCodeEditorWidth: number =
+  initialCodeEditorWidthDefault;
 
 // If we're in the browser,
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && enableLocalStorage) {
   //check localStorage for a previously stored width.
-  const initialWidthFromLocalStorage: string | null =
-    window.localStorage.getItem(localStoragePropertyName);
+  const sidebarWidthLocal: string | null =
+    window.localStorage.getItem(sidebarWidthProperty);
+
+  const codeEditorWidthLocal: string | null =
+    window.localStorage.getItem(codeEditorWidthProperty);
 
   // If there is a previously stored width,
-  if (initialWidthFromLocalStorage !== null) {
+  if (sidebarWidthLocal !== null) {
     // use it as the initial width.
-    initialWidth = +initialWidthFromLocalStorage;
+    initialSidebarWidth = +sidebarWidthLocal;
+  }
+
+  if (codeEditorWidthLocal !== null) {
+    // use it as the initial width.
+    initialCodeEditorWidth = +codeEditorWidthLocal;
   }
 } else {
   // If we're not in the browser, use the default initial width.
 }
 
-export const SplitPaneResizeContext = createContext<{
+type SplitPaneResizeContextValue = {
   codeEditorWidth: number;
-  moveSplitPane: (a: number) => void;
-  isDragging: boolean;
-  setIsDragging: (a: boolean) => void;
-}>({
-  codeEditorWidth: initialWidth,
-  moveSplitPane: () => {},
-  isDragging: false,
-  setIsDragging: () => {},
-});
+  sidebarWidth: number;
+  moveSplitPane: (
+    a: number,
+    side: 'left' | 'right',
+  ) => void;
+  isDraggingRight: boolean;
+  isDraggingLeft: boolean;
+  setIsDragging: (
+    a: boolean,
+    side: 'left' | 'right',
+  ) => void;
+};
 
-const add = (a: number, b: number) => a + b;
+const initialValue: SplitPaneResizeContextValue = {
+  codeEditorWidth: initialCodeEditorWidth,
+  sidebarWidth: initialSidebarWidth,
+  moveSplitPane: () => {},
+  isDraggingRight: false,
+  isDraggingLeft: false,
+  setIsDragging: () => {},
+};
+
+export const SplitPaneResizeContext =
+  createContext<SplitPaneResizeContextValue>(initialValue);
+
+type SplitPaneState = {
+  // The width of the sidebar, in pixels.
+  sidebarWidth: number;
+  codeEditorWidth: number;
+  isDraggingLeft: boolean;
+  isDraggingRight: boolean;
+};
+
+const initialState: SplitPaneState = {
+  sidebarWidth: initialSidebarWidth,
+  codeEditorWidth: initialCodeEditorWidth,
+  isDraggingLeft: false,
+  isDraggingRight: false,
+};
+
+type SplitPaneAction =
+  | {
+      type: 'move';
+      side: 'left' | 'right';
+      movementX: number;
+    }
+  | {
+      type: 'setIsDragging';
+      side: 'left' | 'right';
+      isDragging: boolean;
+    };
+
+const splitPaneReducer = (
+  state: SplitPaneState,
+  action: SplitPaneAction,
+) => {
+  switch (action.type) {
+    case 'move':
+      return action.side === 'left'
+        ? {
+            ...state,
+            sidebarWidth:
+              state.sidebarWidth + action.movementX,
+          }
+        : {
+            ...state,
+            codeEditorWidth:
+              state.codeEditorWidth + action.movementX,
+          };
+    // Handle setIsDragging
+    case 'setIsDragging':
+      return action.side === 'left'
+        ? {
+            ...state,
+            isDraggingLeft: action.isDragging,
+          }
+        : {
+            ...state,
+            isDraggingRight: action.isDragging,
+          };
+    default:
+      return state;
+  }
+};
 
 export const SplitPaneResizeProvider = ({ children }) => {
-  const [codeEditorWidth, moveSplitPane] = useReducer(
-    add,
-    initialWidth,
+  const [state, dispatch] = useReducer(
+    splitPaneReducer,
+    initialState,
   );
-  const [isDragging, setIsDragging] = useState(false);
 
+  const setIsDragging = useCallback(
+    (isDragging: boolean, side: 'left' | 'right') => {
+      dispatch({ type: 'setIsDragging', isDragging, side });
+    },
+    [dispatch],
+  );
+
+  const moveSplitPane = useCallback(
+    (movementX: number, side: 'left' | 'right') => {
+      dispatch({ type: 'move', movementX, side });
+    },
+    [dispatch],
+  );
+
+  const {
+    sidebarWidth,
+    codeEditorWidth,
+    isDraggingLeft,
+    isDraggingRight,
+  } = state;
+
+  // Logic around storing the values in localStorage.
   useEffect(() => {
-    if (codeEditorWidth !== initialWidth) {
-      const timeout = setTimeout(() => {
+    if (sidebarWidth !== initialSidebarWidth) {
+      setTimeout(() => {
         window.localStorage.setItem(
-          localStoragePropertyName,
+          sidebarWidthProperty,
+          '' + sidebarWidth,
+        );
+      }, localStorageWriteDebounceMS);
+    }
+
+    if (codeEditorWidth !== initialCodeEditorWidth) {
+      setTimeout(() => {
+        window.localStorage.setItem(
+          codeEditorWidthProperty,
           '' + codeEditorWidth,
         );
       }, localStorageWriteDebounceMS);
-
-      return () => {
-        clearTimeout(timeout);
-      };
     }
-  }, [codeEditorWidth]);
+  }, [codeEditorWidth, sidebarWidth]);
+
+  const value: SplitPaneResizeContextValue = {
+    codeEditorWidth,
+    sidebarWidth,
+    moveSplitPane,
+    isDraggingLeft,
+    isDraggingRight,
+    setIsDragging,
+  };
 
   return (
-    <SplitPaneResizeContext.Provider
-      value={{
-        codeEditorWidth,
-        moveSplitPane,
-        isDragging,
-        setIsDragging,
-      }}
-    >
+    <SplitPaneResizeContext.Provider value={value}>
       {children}
     </SplitPaneResizeContext.Provider>
   );
