@@ -22,13 +22,22 @@ const resizerInteractionSurfaceWidthWhileDragging = 200;
 // This is the part of the resizer that is visible to the user.
 const resizerThumbWidth = 4;
 
-export const Resizer = () => {
+export const Resizer = ({
+  side,
+}: {
+  side: 'left' | 'right';
+}) => {
   const {
+    sidebarWidth,
     codeEditorWidth,
     moveSplitPane,
     isDragging,
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
+
+  const width =
+    side === 'left' ? sidebarWidth : codeEditorWidth;
+
   const previousClientX = useRef<number>(0);
 
   const onMouseDown = useCallback(
@@ -44,10 +53,10 @@ export const Resizer = () => {
   const onMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      const movementClientX =
+      const movementX =
         event.clientX - previousClientX.current;
       previousClientX.current = event.clientX;
-      moveSplitPane(movementClientX);
+      moveSplitPane(movementX);
     },
     [moveSplitPane],
   );
@@ -80,7 +89,7 @@ export const Resizer = () => {
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left: codeEditorWidth - resizerWidth / 2,
+        left: width - resizerWidth / 2,
         width: resizerWidth,
       }}
     >

@@ -113,7 +113,7 @@ export const VZSidebar = ({
     setIsSettingsOpen(true);
   }, []);
 
-  const { codeEditorWidth } = useContext(
+  const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
   );
 
@@ -142,7 +142,7 @@ export const VZSidebar = ({
   return (
     <div
       className="vz-sidebar"
-      style={{ width: codeEditorWidth + 'px' }}
+      style={{ width: sidebarWidth + 'px' }}
     >
       <div className="files">
         <div className="full-box">

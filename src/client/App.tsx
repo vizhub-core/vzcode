@@ -259,7 +259,7 @@ function App() {
             setUsername={setUsername}
           />
         </div>
-        <div className="right">
+        <div className="middle">
           <TabList
             files={files}
             tabList={tabList}
@@ -299,7 +299,9 @@ function App() {
             />
           ) : null}
         </div>
-        <Resizer />
+        <div className="right"></div>
+        <Resizer side="left" />
+        {/* <Resizer side="right" /> */}
       </div>
     </SplitPaneResizeProvider>
   );
