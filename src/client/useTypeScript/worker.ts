@@ -1,9 +1,10 @@
 import * as tsvfs from '@typescript/vfs';
 import ts from 'typescript';
+import Diagnostic from "@codemirror/lint"
 import { File, Files, VZCodeContent } from '../../types';
 import {
   AutocompleteRequest,
-  AutocompleteResponse,
+  AutocompleteResponse, LinterRequest, LinterResponse,
 } from './requestTypes';
 
 let isFileSystemInitialized = false;
@@ -168,5 +169,32 @@ onmessage = async ({ data }) => {
     };
 
     postMessage(autocompleteResponse);
+  }
+
+  if(data.event == 'lint-request'){
+    console.log("Lint Request");
+    const linterRequest: LinterRequest = data;
+    const { fileName,fileContent,requestId } =
+        linterRequest;
+
+    const tsFileName = getTSFileName(fileName);
+    let tsErrors = null;
+    if (isTS(tsFileName)){
+      //Update typescript server
+      setFile(tsFileName,fileContent);
+      //Creates an array of diagnostic objects containing
+      //both semantic and syntactic diagnostics
+      tsErrors = env.languageService
+          .getSemanticDiagnostics(fileName)
+          .concat(env.languageService.getSyntacticDiagnostics(fileName));
+    }
+
+    //tsErrors can not be properly posted currently
+    const linterResponse: LinterResponse = {
+      event: 'post-error-linter',
+      tsErrors,
+      requestId
+    };
+    postMessage(linterResponse);
   }
 };
