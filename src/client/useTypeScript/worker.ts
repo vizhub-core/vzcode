@@ -197,7 +197,7 @@ onmessage = async ({ data }) => {
     // Since we are also updating the server when we autocomplete we do not need to update
     if (isTS(tsFileName)) {
       // Creates an array of diagnostic objects containing
-      //both semantic and syntactic diagnostics
+      // both semantic and syntactic diagnostics.
       tsErrors = env.languageService
         .getSemanticDiagnostics(fileName)
         .concat(
