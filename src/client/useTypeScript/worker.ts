@@ -77,7 +77,7 @@ const setFile = (tsFileName: string, text: string) => {
   }
 };
 
-//Inspired by: https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL44-L44
+// Inspired by: https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL44-L44
 const convertToCodeMirrorDiagnostic = (
   tsErrors: ts.Diagnostic[],
 ) => {
