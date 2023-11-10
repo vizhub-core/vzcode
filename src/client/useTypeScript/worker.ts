@@ -190,14 +190,12 @@ onmessage = async ({ data }) => {
   if (data.event == 'lint-request') {
     console.log('Lint Request');
     const linterRequest: LinterRequest = data;
-    const { fileName, fileContent, requestId } =
-      linterRequest;
+    const { fileName, requestId } = linterRequest;
 
     const tsFileName = getTSFileName(fileName);
     let tsErrors = null;
+    //Since we are also updating the server when we autocomplete we do not need to update
     if (isTS(tsFileName)) {
-      //Update typescript server
-      setFile(tsFileName, fileContent);
       //Creates an array of diagnostic objects containing
       //both semantic and syntactic diagnostics
       tsErrors = env.languageService
@@ -209,7 +207,6 @@ onmessage = async ({ data }) => {
         );
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
     }
-
     //tsErrors can not be properly posted currently
     const linterResponse: LinterResponse = {
       event: 'post-error-linter',

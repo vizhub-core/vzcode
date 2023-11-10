@@ -17,7 +17,6 @@ export type AutocompleteResponse = {
 export type LinterRequest = {
   event: 'lint-request';
   fileName: string;
-  fileContent: string;
   requestId: string;
 };
 

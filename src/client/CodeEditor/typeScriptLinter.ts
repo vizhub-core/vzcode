@@ -8,14 +8,12 @@ import ts from 'typescript';
 export const typeScriptLinter = ({
   typeScriptWorker,
   fileName,
-  text,
 }) => {
   return async () => {
     const requestId = generateRequestId();
     const linterRequest: LinterRequest = {
       event: 'lint-request',
       fileName,
-      fileContent: text,
       requestId,
     };
     typeScriptWorker.postMessage(linterRequest);

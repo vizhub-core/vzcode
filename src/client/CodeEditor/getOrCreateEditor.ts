@@ -251,7 +251,6 @@ export const getOrCreateEditor = ({
         typeScriptLinter({
           typeScriptWorker,
           fileName: name,
-          text,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),
