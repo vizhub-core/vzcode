@@ -8,12 +8,17 @@ import ts from 'typescript';
 export const typeScriptLinter = ({
   typeScriptWorker,
   fileName,
+    shareDBDoc,
+    fileId
 }) => {
   return async () => {
     const requestId = generateRequestId();
+    //Get the fileContent from shareDB to pass to web worker
+    const fileContent = shareDBDoc.data.files[fileId].text;
     const linterRequest: LinterRequest = {
       event: 'lint-request',
       fileName,
+      fileContent,
       requestId,
     };
     typeScriptWorker.postMessage(linterRequest);
