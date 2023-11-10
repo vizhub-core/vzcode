@@ -194,7 +194,7 @@ onmessage = async ({ data }) => {
 
     const tsFileName = getTSFileName(fileName);
     let tsErrors = null;
-    //Since we are also updating the server when we autocomplete we do not need to update
+    // Since we are also updating the server when we autocomplete we do not need to update
     if (isTS(tsFileName)) {
       //Creates an array of diagnostic objects containing
       //both semantic and syntactic diagnostics
