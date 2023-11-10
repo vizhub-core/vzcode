@@ -188,7 +188,7 @@ onmessage = async ({ data }) => {
   }
 
   if (data.event == 'lint-request') {
-    console.log('Lint Request');
+    if (debug) { console.log('Lint Request'); }
     const linterRequest: LinterRequest = data;
     const { fileName, requestId } = linterRequest;
 
