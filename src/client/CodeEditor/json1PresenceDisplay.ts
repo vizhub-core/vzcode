@@ -151,24 +151,15 @@ class PresenceWidget extends WidgetType {
     const div = document.createElement('div');
     span.appendChild(div);
     div.style.borderLeft = `1px solid rgba(${this.color})`;
-  
-    // username is the same color as the remote cursor
-    // const userDiv = document.createElement('div');
-    // // userDiv.className = 'remote-cursor-username';
-    // userDiv.style.top = `-10px`;
-    // userDiv.style.left = `5px`;
-    // userDiv.style.color = `rgba(${this.color})`;
-    // userDiv.appendChild(document.createTextNode(this.username));
-    // span.appendChild(userDiv);
     
     // background color behind username
     const userDiv = document.createElement('div');
     userDiv.className = 'remote-cursor-username';
-    userDiv.style.top = `-10px`;
+    userDiv.style.top = `-20px`;
     userDiv.style.height = `20px`;
     userDiv.style.width = `${this.username.length * 11}px`;
     userDiv.style.backgroundColor = `rgba(${this.color})`;
-    userDiv.style.color = `white`;
+    userDiv.style.color = `black`;
     userDiv.style.textAlign = `center`;
     userDiv.appendChild(document.createTextNode(this.username));
     span.appendChild(userDiv);
@@ -190,6 +181,5 @@ const presenceTheme = EditorView.baseTheme({
     bottom: '0',
     left: '0',
     right: '0',
-    
   },
 });
