@@ -76,6 +76,18 @@ const setFile = (tsFileName: string, text: string) => {
   }
 };
 
+const convertToCodeMirrorDiagnostic = (tsErrors: ts.Diagnostic[]) => {
+  return tsErrors.map((tsError: ts.Diagnostic) => ({
+    from: tsError.start,
+    to: tsError.start + tsError.length,
+    severity: 'error',
+    message:
+        typeof tsError.messageText === 'string'
+            ? tsError.messageText
+            : tsError.messageText.messageText,
+  }));
+}
+
 onmessage = async ({ data }) => {
   if (debug) {
     console.log('message received');
@@ -187,6 +199,7 @@ onmessage = async ({ data }) => {
       tsErrors = env.languageService
           .getSemanticDiagnostics(fileName)
           .concat(env.languageService.getSyntacticDiagnostics(fileName));
+      tsErrors =  convertToCodeMirrorDiagnostic(tsErrors);
     }
 
     //tsErrors can not be properly posted currently
