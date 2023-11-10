@@ -207,7 +207,7 @@ onmessage = async ({ data }) => {
         );
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
     }
-    //tsErrors can not be properly posted currently
+    // tsErrors can not be properly posted currently
     const linterResponse: LinterResponse = {
       event: 'post-error-linter',
       tsErrors,
