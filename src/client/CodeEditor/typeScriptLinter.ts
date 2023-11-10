@@ -35,7 +35,6 @@ export const typeScriptLinter = ({
         };
       },
     );
-    console.log('Errors received!');
     return tsErrors;
   };
 };
