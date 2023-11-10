@@ -248,11 +248,12 @@ export const getOrCreateEditor = ({
   if (enableTypeScriptLinter) {
     extensions.push(
       linter(
-          typeScriptLinter({
-            typeScriptWorker,
-            fileName: name,
-            text,
-          }) as unknown as () => Diagnostic[],
+        typeScriptLinter({
+          typeScriptWorker,
+          fileName: name,
+          text,
+        }) as unknown as () => Diagnostic[],
+        //Needs the unknown because we are returning a Promise<Diagnostic>
       ),
     );
   }

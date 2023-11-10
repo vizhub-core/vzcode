@@ -1,5 +1,8 @@
 import { generateRequestId } from './typeScriptCompletions';
-import { LinterResponse } from '../useTypeScript/requestTypes';
+import {
+  LinterResponse,
+  LinterRequest,
+} from '../useTypeScript/requestTypes';
 import ts from 'typescript';
 
 export const typeScriptLinter = ({
@@ -9,13 +12,15 @@ export const typeScriptLinter = ({
 }) => {
   return async () => {
     const requestId = generateRequestId();
-    typeScriptWorker.postMessage({
+    const linterRequest: LinterRequest = {
       event: 'lint-request',
       fileName,
       fileContent: text,
       requestId,
-    });
-    //Make sure we are getting the correct postMessage from web worker
+    };
+    typeScriptWorker.postMessage(linterRequest);
+
+    //An array of diagnostic (CodeMirror) objects.
     const tsErrors: ts.Diagnostic[] = await new Promise(
       (resolve) => {
         typeScriptWorker.onmessage = (message: {
@@ -33,8 +38,6 @@ export const typeScriptLinter = ({
       },
     );
     console.log('Errors received!');
-    //Inspired by: https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL44-L44
     return tsErrors;
-
   };
 };
