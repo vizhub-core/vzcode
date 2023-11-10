@@ -6,6 +6,7 @@ import {
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
+import { Username } from '../../types';
 
 
 // Deals with receiving the broadcasted presence cursor locations
@@ -54,6 +55,7 @@ export const json1PresenceDisplay = ({
               const from = start[start.length - 1];
               const to = end[end.length - 1];
               const userColor = new ColorHash().rgb(id);
+              const { username } = presence;
               if (from === to) {
                 return {
                   from,
@@ -61,7 +63,7 @@ export const json1PresenceDisplay = ({
                   value: Decoration.widget({
                     side: -1,
                     block: false,
-                    widget: new PresenceWidget(id, userColor),
+                    widget: new PresenceWidget(id, userColor, username),
                   }),
                 };
               } else {
@@ -125,10 +127,12 @@ const pathMatches = (path, presence) => {
 class PresenceWidget extends WidgetType {
   id: string;
   color: string;
-  constructor(id: string, color: string) {
+  username: Username;
+  constructor(id: string, color: string, username: Username) {
     super();
     this.id = id;
     this.color = color;
+    this.username = username;
   }
 
   eq(other: PresenceWidget) {
@@ -139,7 +143,6 @@ class PresenceWidget extends WidgetType {
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
-    console.log('span', span);
     // This child is what actually displays the presence.
     // Nested so that the layout is not impacted.
     //
@@ -149,6 +152,28 @@ class PresenceWidget extends WidgetType {
     const div = document.createElement('div');
     span.appendChild(div);
     div.style.borderLeft = `1px solid rgba(${this.color})`;
+  
+  // username is the same color as the remote cursor
+    // const userDiv = document.createElement('div');
+    // // userDiv.className = 'remote-cursor-username';
+    // userDiv.style.top = `-10px`;
+    // userDiv.style.left = `5px`;
+    // userDiv.style.color = `rgba(${this.color})`;
+    // userDiv.appendChild(document.createTextNode(this.username));
+    // span.appendChild(userDiv);
+    
+    // background color behind username
+    const userDiv = document.createElement('div');
+    userDiv.className = 'remote-cursor-username';
+    userDiv.style.top = `-10px`;
+    userDiv.style.height = `20px`;
+    userDiv.style.width = `${this.username.length * 11}px`;
+    userDiv.style.backgroundColor = `rgba(${this.color})`;
+    userDiv.style.color = `white`;
+    userDiv.style.textAlign = `center`;
+    userDiv.appendChild(document.createTextNode(this.username));
+    span.appendChild(userDiv);
+
     return span;
   }
 
@@ -166,6 +191,6 @@ const presenceTheme = EditorView.baseTheme({
     bottom: '0',
     left: '0',
     right: '0',
-    filter: 'brightness(1.75)',
+    
   },
 });
