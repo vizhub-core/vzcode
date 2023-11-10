@@ -7,7 +7,10 @@ import {
   useRef,
 } from 'react';
 
-import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
+import {
+  Side,
+  SplitPaneResizeContext,
+} from '../SplitPaneResizeContext';
 import './styles.scss';
 
 // This is the width of the resizer interaction surface.
@@ -22,40 +25,48 @@ const resizerInteractionSurfaceWidthWhileDragging = 200;
 // This is the part of the resizer that is visible to the user.
 const resizerThumbWidth = 4;
 
-export const Resizer = () => {
+export const Resizer = ({ side }: { side: Side }) => {
   const {
+    sidebarWidth,
     codeEditorWidth,
     moveSplitPane,
-    isDragging,
+    isDraggingRight,
+    isDraggingLeft,
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
+
   const previousClientX = useRef<number>(0);
 
   const onMouseDown = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
       previousClientX.current = event.clientX;
-      setIsDragging(true);
+      setIsDragging(true, side);
       document.body.style.cursor = 'col-resize';
     },
-    [setIsDragging],
+    [setIsDragging, side],
   );
 
   const onMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      const movementClientX =
+      const movementX =
         event.clientX - previousClientX.current;
       previousClientX.current = event.clientX;
-      moveSplitPane(movementClientX);
+      moveSplitPane(movementX, side);
     },
-    [moveSplitPane],
+    [moveSplitPane, side],
   );
 
   const onMouseUp = useCallback(() => {
-    setIsDragging(false);
+    setIsDragging(false, side);
     document.body.style.cursor = 'default';
-  }, [setIsDragging]);
+  }, [setIsDragging, side]);
+
+  // Is the resizer currently being dragged?
+  const isDragging =
+    (side === 'left' && isDraggingLeft) ||
+    (side === 'right' && isDraggingRight);
 
   useEffect(() => {
     if (isDragging) {
@@ -75,12 +86,18 @@ export const Resizer = () => {
     ? resizerInteractionSurfaceWidthWhileDragging
     : resizerInteractionSurfaceWidth;
 
+  const left =
+    (side === 'left'
+      ? sidebarWidth
+      : sidebarWidth + codeEditorWidth) -
+    resizerWidth / 2;
+
   return (
     <div
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left: codeEditorWidth - resizerWidth / 2,
+        left,
         width: resizerWidth,
       }}
     >

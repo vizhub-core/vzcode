@@ -10,6 +10,7 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
+import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
@@ -32,9 +33,11 @@ import {
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
+import { typeScriptLinter } from './typeScriptLinter';
 
-// Feature flag to enable TypeScript completions.
+// Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
+const enableTypeScriptLinter = false;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -221,7 +224,8 @@ export const getOrCreateEditor = ({
   extensions.push(rotationIndicator);
 
   extensions.push(
-    AIAssist({shareDBDoc,
+    AIAssist({
+      shareDBDoc,
       fileId,
       aiAssistEndpoint,
       aiAssistOptions,
@@ -239,6 +243,17 @@ export const getOrCreateEditor = ({
           }),
         ],
       }),
+    );
+  }
+  if (enableTypeScriptLinter) {
+    extensions.push(
+      linter(
+        typeScriptLinter({
+          typeScriptWorker,
+          fileName: name,
+        }) as unknown as () => Diagnostic[],
+        //Needs the unknown because we are returning a Promise<Diagnostic>
+      ),
     );
   }
 

@@ -121,5 +121,11 @@ export const handleAIAssist =
   };
 
 export function haltGeneration(streamId) {
-  streams[streamId].controller.abort();
+  const stream = streams[streamId];
+
+  // Stream can be undefined here if the user
+  // clicks start and stop very quickly.
+  if (stream) {
+    stream.controller.abort();
+  }
 }

@@ -3,6 +3,7 @@ import {
   useContext,
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 import {
   FileId,
@@ -37,6 +38,7 @@ export const VZSidebar = ({
   deleteFile,
   deleteDirectory,
   openTab,
+  closeTabs,
   setIsSettingsOpen,
   isDirectoryOpen,
   toggleDirectory,
@@ -54,6 +56,7 @@ export const VZSidebar = ({
     fileId: FileId;
     isTransient?: boolean;
   }) => void;
+  closeTabs: (fileIds: FileId[]) => void;
   setIsSettingsOpen: (isSettingsOpen: boolean) => void;
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
@@ -82,11 +85,35 @@ export const VZSidebar = ({
     [createFile, setIsModalOpen],
   );
 
+  const handleKeyPress = useCallback(
+    (event: { altKey: boolean; key: string }) => {
+      if (event.altKey == true) {
+        if (event.key == 'w') {
+          closeTabs([activeFileId]);
+        }
+        if (event.key == 'n') {
+          handleCreateFile();
+        }
+      }
+    },
+    [createFile, closeTabs, activeFileId],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener(
+        'keydown',
+        handleKeyPress,
+      );
+    };
+  }, [handleKeyPress]);
+
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
 
-  const { codeEditorWidth } = useContext(
+  const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
   );
 
@@ -115,7 +142,7 @@ export const VZSidebar = ({
   return (
     <div
       className="vz-sidebar"
-      style={{ width: codeEditorWidth + 'px' }}
+      style={{ width: sidebarWidth + 'px' }}
     >
       <div className="files">
         <div className="full-box">

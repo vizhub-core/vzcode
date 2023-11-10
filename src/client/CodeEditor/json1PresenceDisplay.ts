@@ -8,7 +8,6 @@ import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
 import { Username } from '../../types';
 
-
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //
@@ -153,7 +152,7 @@ class PresenceWidget extends WidgetType {
     span.appendChild(div);
     div.style.borderLeft = `1px solid rgba(${this.color})`;
   
-  // username is the same color as the remote cursor
+    // username is the same color as the remote cursor
     // const userDiv = document.createElement('div');
     // // userDiv.className = 'remote-cursor-username';
     // userDiv.style.top = `-10px`;

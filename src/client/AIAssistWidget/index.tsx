@@ -1,7 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '../bootstrap';
 import './style.scss';
-import { startAIAssist } from '../AIAssist';
+import {
+  mostRecentStreamId,
+  haltAIAssist,
+  startAIAssist,
+} from '../AIAssist';
 import {
   FileId,
   ShareDBDoc,
@@ -22,6 +26,22 @@ const ZapSVG = () => (
   </svg>
 );
 
+// From Wikimedia
+// https://commons.wikimedia.org/wiki/File:Stopsign.svg
+const StopSVG = () => (
+  <svg
+    width="15pt"
+    height="15pt"
+    version="1.1"
+    viewBox="0 0 15 15"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g transform="scale(.75)" fill="#fff" stroke="#000">
+      <path d="m17.5 0.5c1.1055 0 2 0.89453 2 2v15c0 1.1055-0.89453 2-2 2h-15c-1.1055 0-2-0.89453-2-2v-15c0-1.1055 0.89453-2 2-2z" />
+    </g>
+  </svg>
+);
+
 export const AIAssistWidget = ({
   activeFileId,
   shareDBDoc,
@@ -31,14 +51,38 @@ export const AIAssistWidget = ({
   shareDBDoc: ShareDBDoc<VZCodeContent>;
   editorCache: EditorCache;
 }) => {
-  const handleClick = useCallback(() => {
+  const [AIAssistRunning, setAIAssistRunning] =
+    useState(false);
 
-    startAIAssist(
-      editorCache.get(activeFileId).editor,
-      shareDBDoc,
-      activeFileId,
-    );
-  }, [activeFileId]);
+  useEffect(() => {
+    const handleOp = (op, source) => {
+      if (op !== null && op[0] === 'aiStreams') {
+        //The check if the value is true is required because the value could be null rather than false.
+        setAIAssistRunning(
+          shareDBDoc.data.aiStreams[mostRecentStreamId]
+            ?.AIStreamStatus.serverIsRunning === true,
+        );
+      }
+    };
+    shareDBDoc.on('op', handleOp);
+
+    return () => {
+      shareDBDoc.off('op', handleOp);
+    };
+  }, [shareDBDoc]);
+
+  const handleClick = useCallback(() => {
+    if (!AIAssistRunning) {
+      startAIAssist(
+        editorCache.get(activeFileId).editor,
+        shareDBDoc,
+        activeFileId,
+      );
+    } else {
+      haltAIAssist(shareDBDoc);
+    }
+  }, [activeFileId, AIAssistRunning]);
+
   return (
     <div className="vz-code-ai-assist-widget">
       <Button
@@ -46,7 +90,7 @@ export const AIAssistWidget = ({
         title="Start AI Assist"
         onClick={handleClick}
       >
-        <ZapSVG />
+        {AIAssistRunning ? <StopSVG /> : <ZapSVG />}
       </Button>
     </div>
   );

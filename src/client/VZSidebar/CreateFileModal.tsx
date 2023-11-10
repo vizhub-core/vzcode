@@ -27,6 +27,7 @@ export const CreateFileModal = ({
 
   const handleRenameClick = useCallback(() => {
     onRename(newName);
+    setNewName('');
   }, [newName, onRename]);
 
   const handleKeyDown = useCallback(

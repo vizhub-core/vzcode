@@ -22,32 +22,6 @@ export const TabList = ({
   closeTabs: (fileIds: FileId[]) => void;
   createFile: (fileName: string) => void;
 }) => {
-  // Close the active tab on alt+w
-  const handleKeyPress = useCallback(
-    (event: { altKey: boolean; key: string }) => {
-      if (event.altKey == true) {
-        if (event.key == 'w') {
-          closeTabs([activeFileId]);
-        }
-        if (event.key == 'n') {
-          createFile('UnnamedFile');
-        }
-      }
-    },
-    [createFile, closeTabs, activeFileId],
-  );
-
-  // Add the global keydown event listener
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener(
-        'keydown',
-        handleKeyPress,
-      );
-    };
-  }, [handleKeyPress]);
-
   return (
     <div className="vz-tab-list">
       {files &&

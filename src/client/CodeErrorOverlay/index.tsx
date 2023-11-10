@@ -18,10 +18,36 @@ export const CodeErrorOverlay = ({
     }
   }, [errorMessage]);
 
+  useEffect(() => {
+    document.addEventListener(
+      'keydown',
+      detectKeyDown,
+      true,
+    );
+
+    return () => {
+      // Remove the event listener when the component unmounts
+      document.removeEventListener(
+        'keydown',
+        detectKeyDown,
+        true,
+      );
+    };
+  }, []);
+
   const handleCloseClick = useCallback(() => {
     // Set the visibility state to false when the button is clicked
     setIsOverlayVisible(false);
   }, []);
+
+  const detectKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseClick();
+      }
+    },
+    [handleCloseClick],
+  );
 
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">

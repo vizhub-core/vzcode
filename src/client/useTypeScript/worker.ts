@@ -4,13 +4,15 @@ import { File, Files, VZCodeContent } from '../../types';
 import {
   AutocompleteRequest,
   AutocompleteResponse,
+  LinterRequest,
+  LinterResponse,
 } from './requestTypes';
 
 let isFileSystemInitialized = false;
 
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
-const debug = true;
+const debug = false;
 
 // replace .js or .jsx with .ts or .tsx,
 // to support TypeScript completions on non-TS files.
@@ -66,6 +68,30 @@ const initializeFileSystem = async () => {
   }
 };
 
+const setFile = (tsFileName: string, text: string) => {
+  const existingFile = env.getSourceFile(tsFileName);
+  if (existingFile === undefined) {
+    env.createFile(tsFileName, text);
+  } else {
+    env.updateFile(tsFileName, text);
+  }
+};
+
+// Inspired by: https://stackblitz.com/edit/codemirror-6-typescript?file=client%2Findex.ts%3AL44-L44
+const convertToCodeMirrorDiagnostic = (
+  tsErrors: ts.Diagnostic[],
+) => {
+  return tsErrors.map((tsError: ts.Diagnostic) => ({
+    from: tsError.start,
+    to: tsError.start + tsError.length,
+    severity: 'error',
+    message:
+      typeof tsError.messageText === 'string'
+        ? tsError.messageText
+        : tsError.messageText.messageText,
+  }));
+};
+
 onmessage = async ({ data }) => {
   if (debug) {
     console.log('message received');
@@ -106,12 +132,7 @@ onmessage = async ({ data }) => {
         continue;
       }
 
-      const existingFile = env.getSourceFile(tsFileName);
-      if (existingFile === undefined) {
-        env.createFile(tsFileName, text);
-      } else {
-        env.updateFile(tsFileName, text);
-      }
+      setFile(tsFileName, text);
       // TODO - Handle renaming files.
       // TODO - Handle deleting files.
       // TODO - Handle directories.
@@ -147,7 +168,7 @@ onmessage = async ({ data }) => {
       // Update the file in the file system to the
       // absolute latest version. This is critical
       // for correct completions.
-      env.updateFile(tsFileName, fileContent);
+      setFile(tsFileName, fileContent);
 
       completions =
         env.languageService.getCompletionsAtPosition(
@@ -164,5 +185,36 @@ onmessage = async ({ data }) => {
     };
 
     postMessage(autocompleteResponse);
+  }
+
+  if (data.event == 'lint-request') {
+    if (debug) {
+      console.log('Lint Request');
+    }
+    const linterRequest: LinterRequest = data;
+    const { fileName, requestId } = linterRequest;
+
+    const tsFileName = getTSFileName(fileName);
+    let tsErrors = null;
+    // Since we are also updating the server when we autocomplete we do not need to update
+    if (isTS(tsFileName)) {
+      // Creates an array of diagnostic objects containing
+      // both semantic and syntactic diagnostics.
+      tsErrors = env.languageService
+        .getSemanticDiagnostics(fileName)
+        .concat(
+          env.languageService.getSyntacticDiagnostics(
+            fileName,
+          ),
+        );
+      tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
+    }
+    // tsErrors can not be properly posted currently
+    const linterResponse: LinterResponse = {
+      event: 'post-error-linter',
+      tsErrors,
+      requestId,
+    };
+    postMessage(linterResponse);
   }
 };
