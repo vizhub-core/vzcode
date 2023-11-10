@@ -7,7 +7,10 @@ import {
   useRef,
 } from 'react';
 
-import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
+import {
+  Side,
+  SplitPaneResizeContext,
+} from '../SplitPaneResizeContext';
 import './styles.scss';
 
 // This is the width of the resizer interaction surface.
@@ -22,11 +25,7 @@ const resizerInteractionSurfaceWidthWhileDragging = 200;
 // This is the part of the resizer that is visible to the user.
 const resizerThumbWidth = 4;
 
-export const Resizer = ({
-  side,
-}: {
-  side: 'left' | 'right';
-}) => {
+export const Resizer = ({ side }: { side: Side }) => {
   const {
     sidebarWidth,
     codeEditorWidth,
@@ -81,12 +80,7 @@ export const Resizer = ({
         document.removeEventListener('mouseup', onMouseUp);
       };
     }
-  }, [
-    isDraggingLeft,
-    isDraggingRight,
-    onMouseMove,
-    onMouseUp,
-  ]);
+  }, [isDragging, onMouseMove, onMouseUp]);
 
   const resizerWidth = isDragging
     ? resizerInteractionSurfaceWidthWhileDragging

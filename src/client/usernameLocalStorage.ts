@@ -1,5 +1,5 @@
 // This module deals with storing and accessing the
-
+// username in local storage.
 import { useEffect, useRef } from 'react';
 import { Username } from '../types';
 
