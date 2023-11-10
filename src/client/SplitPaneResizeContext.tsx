@@ -6,6 +6,17 @@ import {
   useCallback,
 } from 'react';
 
+export type Side = 'left' | 'right';
+
+export type SplitPaneResizeContextValue = {
+  codeEditorWidth: number;
+  sidebarWidth: number;
+  moveSplitPane: (a: number, side: Side) => void;
+  isDraggingRight: boolean;
+  isDraggingLeft: boolean;
+  setIsDragging: (a: boolean, side: Side) => void;
+};
+
 // Feature flag for developers to use when testing.
 const enableLocalStorage = true;
 
@@ -49,21 +60,6 @@ if (typeof window !== 'undefined' && enableLocalStorage) {
   // If we're not in the browser, use the default initial width.
 }
 
-type SplitPaneResizeContextValue = {
-  codeEditorWidth: number;
-  sidebarWidth: number;
-  moveSplitPane: (
-    a: number,
-    side: 'left' | 'right',
-  ) => void;
-  isDraggingRight: boolean;
-  isDraggingLeft: boolean;
-  setIsDragging: (
-    a: boolean,
-    side: 'left' | 'right',
-  ) => void;
-};
-
 const initialValue: SplitPaneResizeContextValue = {
   codeEditorWidth: initialCodeEditorWidth,
   sidebarWidth: initialSidebarWidth,
@@ -94,12 +90,12 @@ const initialState: SplitPaneState = {
 type SplitPaneAction =
   | {
       type: 'move';
-      side: 'left' | 'right';
+      side: Side;
       movementX: number;
     }
   | {
       type: 'setIsDragging';
-      side: 'left' | 'right';
+      side: Side;
       isDragging: boolean;
     };
 
@@ -143,14 +139,14 @@ export const SplitPaneResizeProvider = ({ children }) => {
   );
 
   const setIsDragging = useCallback(
-    (isDragging: boolean, side: 'left' | 'right') => {
+    (isDragging: boolean, side: Side) => {
       dispatch({ type: 'setIsDragging', isDragging, side });
     },
     [dispatch],
   );
 
   const moveSplitPane = useCallback(
-    (movementX: number, side: 'left' | 'right') => {
+    (movementX: number, side: Side) => {
       dispatch({ type: 'move', movementX, side });
     },
     [dispatch],

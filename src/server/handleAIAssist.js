@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import { editOp, type, replaceOp } from 'ot-json1';
 
 // Feature flag to slow down AI for development/testing
-const slowdown = true;
+const slowdown = false;
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
