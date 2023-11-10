@@ -1,3 +1,5 @@
+import ts from 'typescript';
+
 export type AutocompleteRequest = {
   event: 'autocomplete-request';
   fileName: string;
@@ -9,5 +11,17 @@ export type AutocompleteRequest = {
 export type AutocompleteResponse = {
   event: 'post-completions';
   completions: any;
+  requestId: string;
+};
+
+export type LinterRequest = {
+  event: 'lint-request';
+  fileName: string;
+  requestId: string;
+};
+
+export type LinterResponse = {
+  event: 'post-error-linter';
+  tsErrors: ts.Diagnostic[];
   requestId: string;
 };
