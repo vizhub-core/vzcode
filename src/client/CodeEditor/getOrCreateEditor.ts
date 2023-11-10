@@ -34,6 +34,7 @@ import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
+import { TabState } from '../vzReducer';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -84,6 +85,7 @@ export const getOrCreateEditor = ({
   aiAssistEndpoint,
   aiAssistOptions,
   typeScriptWorker,
+  tabList,
 }: {
   fileId: FileId;
 
@@ -108,6 +110,7 @@ export const getOrCreateEditor = ({
     [key: string]: any;
   };
   typeScriptWorker: Worker;
+  tabList: Array<TabState>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -227,6 +230,7 @@ export const getOrCreateEditor = ({
     AIAssist({
       shareDBDoc,
       fileId,
+      tabList,
       aiAssistEndpoint,
       aiAssistOptions,
     }),

@@ -96,6 +96,7 @@ export const Middle = ({
           }
           username={username}
           typeScriptWorker={typeScriptWorker}
+          tabList={tabList}
         />
       ) : null}
       <CodeErrorOverlay errorMessage={prettierError} />
@@ -108,6 +109,7 @@ export const Middle = ({
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
           editorCache={editorCache}
+          tabList={tabList}
         />
       ) : null}
     </div>
