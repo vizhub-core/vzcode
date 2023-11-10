@@ -169,7 +169,6 @@ onmessage = async ({ data }) => {
       // absolute latest version. This is critical
       // for correct completions.
       setFile(tsFileName, fileContent);
-      console.log("ADKJGBSDJKGHDS" + fileContent);
 
       completions =
         env.languageService.getCompletionsAtPosition(
