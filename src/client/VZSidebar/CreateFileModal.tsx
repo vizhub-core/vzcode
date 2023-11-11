@@ -32,7 +32,7 @@ export const CreateFileModal = ({
 
   // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback((fileName : string) => {
-    let regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
+    const regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
     return regex.test(fileName);
   }, []);
 
