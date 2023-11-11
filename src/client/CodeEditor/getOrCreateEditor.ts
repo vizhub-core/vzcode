@@ -37,7 +37,7 @@ import { typeScriptLinter } from './typeScriptLinter';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
-const enableTypeScriptLinter = false;
+const enableTypeScriptLinter = true;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -251,6 +251,8 @@ export const getOrCreateEditor = ({
         typeScriptLinter({
           typeScriptWorker,
           fileName: name,
+          shareDBDoc,
+          fileId,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),
