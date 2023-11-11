@@ -30,7 +30,7 @@ export const CreateFileModal = ({
     setNewName('');
   }, [newName, onRename]);
 
-  //returns true if filename isvalid, false otherwise
+  // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback((fileName : string) => {
     let regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
     return regex.test(fileName);
