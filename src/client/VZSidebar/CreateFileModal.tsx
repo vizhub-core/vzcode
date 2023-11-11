@@ -30,6 +30,13 @@ export const CreateFileModal = ({
     setNewName('');
   }, [newName, onRename]);
 
+  // Returns true if file name is valid, false otherwise.
+  const validateFileName = useCallback((fileName : string) => {
+    const regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
+    return regex.test(fileName);
+  }, []);
+
+
   const handleKeyDown = useCallback(
     (e) => {
       if (
@@ -73,6 +80,7 @@ export const CreateFileModal = ({
         <Button
           variant="primary"
           onClick={handleRenameClick}
+          disabled={!validateFileName(newName)}
         >
           Create File
         </Button>
@@ -80,3 +88,5 @@ export const CreateFileModal = ({
     </Modal>
   ) : null;
 };
+
+
