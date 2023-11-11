@@ -3,7 +3,8 @@
 // Purpose: support folks using VZCode as the editor
 // for their Vite-based projects.
 const enableIframe = false;
-export const Right = () => {
+
+export const VZRight = () => {
   return (
     <div className="right">
       {enableIframe ? (

@@ -1,73 +1,47 @@
 import { useContext } from 'react';
-import {
-  Files,
-  ShareDBDoc,
-  Username,
-  VZCodeContent,
-} from '../../types';
-import { ThemeLabel } from '../themes';
-import { EditorCache } from '../useEditorCache';
-import { TabState } from '../vzReducer';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { TabList } from '../TabList';
 import { CodeEditor } from '../CodeEditor';
 import { CodeErrorOverlay } from '../CodeErrorOverlay';
 import { PresenceNotifications } from '../PresenceNotifications';
 import { AIAssistWidget } from '../AIAssistWidget';
+import { VZCodeContext } from './VZCodeContext';
 
-export const Middle = ({
-  files,
-  tabList,
-  activeFileId,
-  setActiveFileId,
-  openTab,
-  closeTabs,
-  createFile,
-  content,
-  shareDBDoc,
-  submitOperation,
-  localPresence,
-  docPresence,
-  theme,
-  editorCache,
-  editorWantsFocus,
-  editorNoLongerWantsFocus,
-  username,
-  prettierError,
-  typeScriptWorker,
-}: {
-  files: Files | null;
-  tabList: Array<TabState>;
-  activeFileId: string | null;
-  setActiveFileId: (fileId: string) => void;
-  openTab: ({
-    fileId,
-    isTransient,
-  }: {
-    fileId: string;
-    isTransient?: boolean;
-  }) => void;
-  closeTabs: (fileIds: string[]) => void;
-  createFile: (fileName: string) => void;
-  content: VZCodeContent | null;
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
-  submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void;
-  localPresence: any;
-  docPresence: any;
-  theme: ThemeLabel;
-  editorCache: EditorCache;
-  editorWantsFocus: boolean;
-  editorNoLongerWantsFocus: () => void;
-  username: Username;
-  prettierError: string | null;
-  typeScriptWorker: Worker | null;
-}) => {
+// The middle portion of the VZCode environment, containing:
+// * The list of tabs at the top
+// * The code editor itself
+// * The code error overlay
+// * The presence notifications
+// * The UI for AI Assist
+export const VZMiddle = () => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
   );
-  return (
+
+  // TODO leverage this context in deeper levels of the component tree.
+  const {
+    content,
+    shareDBDoc,
+    submitOperation,
+    localPresence,
+    docPresence,
+    files,
+    createFile,
+    activeFileId,
+    setActiveFileId,
+    tabList,
+    openTab,
+    closeTabs,
+    theme,
+    username,
+    editorCache,
+    editorWantsFocus,
+    editorNoLongerWantsFocus,
+    errorMessage,
+    typeScriptWorker,
+  } = useContext(VZCodeContext);
+
+  return activeFileId !== null ? (
     <div
       className="middle"
       style={{ width: codeEditorWidth + 'px' }}
@@ -98,7 +72,7 @@ export const Middle = ({
           typeScriptWorker={typeScriptWorker}
         />
       ) : null}
-      <CodeErrorOverlay errorMessage={prettierError} />
+      <CodeErrorOverlay errorMessage={errorMessage} />
       <PresenceNotifications
         docPresence={docPresence}
         localPresence={localPresence}
@@ -111,5 +85,5 @@ export const Middle = ({
         />
       ) : null}
     </div>
-  );
+  ) : null;
 };

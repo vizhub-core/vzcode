@@ -57,7 +57,8 @@ export const AIAssistWidget = ({
   useEffect(() => {
     const handleOp = (op, source) => {
       if (op !== null && op[0] === 'aiStreams') {
-        //The check if the value is true is required because the value could be null rather than false.
+        // The check if the value is true is required
+        // because the value could be null rather than false.
         setAIAssistRunning(
           shareDBDoc.data.aiStreams[mostRecentStreamId]
             ?.AIStreamStatus.serverIsRunning === true,
