@@ -1,19 +1,18 @@
 import { VZState } from '.';
+import { Username } from '../../types';
 import { ThemeLabel } from '../themes';
 
 export const createInitialState = ({
   defaultTheme,
-  initialUsername,
+  initialUsername = 'Anonymous',
 }: {
   defaultTheme: ThemeLabel;
-  initialUsername?: string;
+  initialUsername?: Username;
 }): VZState => ({
   tabList: [],
   activeFileId: null,
   theme: defaultTheme,
   isSettingsOpen: false,
   editorWantsFocus: false,
-
-  // TODO unify this with App.tsx
-  username: initialUsername || 'Anonymous',
+  username: initialUsername,
 });

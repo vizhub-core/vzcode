@@ -13,13 +13,17 @@ export type {
   ThemeOption,
 } from './client/themes';
 
+export { VZCodeProvider } from './client/App/VZCodeContext';
 export { VZSidebar } from './client/VZSidebar';
 export { VZSettings } from './client/VZSettings';
+export { VZResizer } from './client/VZResizer';
+export { VZLeft } from './client/App/VZLeft';
+export { VZMiddle } from './client/App/VZMiddle';
+
 export {
   SplitPaneResizeProvider,
   SplitPaneResizeContext,
 } from './client/SplitPaneResizeContext';
-export { Resizer } from './client/Resizer';
 export { TabList } from './client/TabList';
 export { CodeEditor } from './client/CodeEditor';
 export { usePrettier } from './client/usePrettier';
