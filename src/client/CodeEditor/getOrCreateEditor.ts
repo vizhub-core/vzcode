@@ -34,10 +34,11 @@ import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
+import { TabState } from '../vzReducer';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
-const enableTypeScriptLinter = false;
+const enableTypeScriptLinter = true;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -84,6 +85,7 @@ export const getOrCreateEditor = ({
   aiAssistEndpoint,
   aiAssistOptions,
   typeScriptWorker,
+  tabList,
 }: {
   fileId: FileId;
 
@@ -108,6 +110,7 @@ export const getOrCreateEditor = ({
     [key: string]: any;
   };
   typeScriptWorker: Worker;
+  tabList: Array<TabState>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -227,6 +230,7 @@ export const getOrCreateEditor = ({
     AIAssist({
       shareDBDoc,
       fileId,
+      tabList,
       aiAssistEndpoint,
       aiAssistOptions,
     }),
@@ -251,6 +255,8 @@ export const getOrCreateEditor = ({
         typeScriptLinter({
           typeScriptWorker,
           fileName: name,
+          shareDBDoc,
+          fileId,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),

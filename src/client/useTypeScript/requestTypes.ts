@@ -1,4 +1,5 @@
 import ts from 'typescript';
+import {VZCodeContent} from "../../types";
 
 export type AutocompleteRequest = {
   event: 'autocomplete-request';
@@ -17,6 +18,7 @@ export type AutocompleteResponse = {
 export type LinterRequest = {
   event: 'lint-request';
   fileName: string;
+  fileContent: string;
   requestId: string;
 };
 

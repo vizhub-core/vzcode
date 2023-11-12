@@ -17,6 +17,7 @@ import {
 } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
+import { TabState } from '../vzReducer';
 
 export const CodeEditor = ({
   activeFileId,
@@ -33,6 +34,7 @@ export const CodeEditor = ({
   aiAssistEndpoint,
   aiAssistOptions,
   typeScriptWorker,
+  tabList,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -64,6 +66,8 @@ export const CodeEditor = ({
     [key: string]: string;
   };
   typeScriptWorker: Worker;
+
+  tabList: Array<TabState>;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -114,6 +118,7 @@ export const CodeEditor = ({
         aiAssistEndpoint,
         aiAssistOptions,
         typeScriptWorker,
+        tabList,
       }),
     [
       activeFileId,

@@ -39,7 +39,7 @@ export async function generateAIResponse({
       {
         role: 'system',
         content:
-          'Write typescript or javascript code that would follow the prompt. Use // for comments.',
+          'Write typescript or javascript code to continue the current file, given the other files for context. Use // for comments.',
       },
       { role: 'user', content: inputText },
     ],

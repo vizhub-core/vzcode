@@ -70,6 +70,7 @@ export const VZMiddle = () => {
           }
           username={username}
           typeScriptWorker={typeScriptWorker}
+          tabList={tabList}
         />
       ) : null}
       <CodeErrorOverlay errorMessage={errorMessage} />
@@ -82,6 +83,7 @@ export const VZMiddle = () => {
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
           editorCache={editorCache}
+          tabList={tabList}
         />
       ) : null}
     </div>
