@@ -192,13 +192,14 @@ onmessage = async ({ data }) => {
       console.log('Lint Request');
     }
     const linterRequest: LinterRequest = data;
-    const { fileName, fileContent, requestId } = linterRequest;
+    const { fileName, fileContent, requestId } =
+      linterRequest;
 
     const tsFileName = getTSFileName(fileName);
     let tsErrors = null;
     // Since we are also updating the server when we autocomplete we do not need to update
     if (isTS(tsFileName)) {
-      setFile(tsFileName,fileContent);
+      setFile(tsFileName, fileContent);
       // Creates an array of diagnostic objects containing
       // both semantic and syntactic diagnostics.
       tsErrors = env.languageService

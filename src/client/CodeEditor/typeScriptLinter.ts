@@ -8,8 +8,8 @@ import ts from 'typescript';
 export const typeScriptLinter = ({
   typeScriptWorker,
   fileName,
-    shareDBDoc,
-    fileId
+  shareDBDoc,
+  fileId,
 }) => {
   return async () => {
     const requestId = generateRequestId();

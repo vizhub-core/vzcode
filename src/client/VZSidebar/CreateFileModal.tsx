@@ -31,11 +31,14 @@ export const CreateFileModal = ({
   }, [newName, onRename]);
 
   // Returns true if file name is valid, false otherwise.
-  const validateFileName = useCallback((fileName : string) => {
-    const regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
-    return regex.test(fileName);
-  }, []);
-
+  const validateFileName = useCallback(
+    (fileName: string) => {
+      const regex =
+        /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
+      return regex.test(fileName);
+    },
+    [],
+  );
 
   const handleKeyDown = useCallback(
     (e) => {
@@ -88,5 +91,3 @@ export const CreateFileModal = ({
     </Modal>
   ) : null;
 };
-
-

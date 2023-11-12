@@ -62,7 +62,11 @@ export const json1PresenceDisplay = ({
                   value: Decoration.widget({
                     side: -1,
                     block: false,
-                    widget: new PresenceWidget(id, userColor, username),
+                    widget: new PresenceWidget(
+                      id,
+                      userColor,
+                      username,
+                    ),
                   }),
                 };
               } else {
@@ -127,7 +131,11 @@ class PresenceWidget extends WidgetType {
   id: string;
   color: string;
   username: Username;
-  constructor(id: string, color: string, username: Username) {
+  constructor(
+    id: string,
+    color: string,
+    username: Username,
+  ) {
     super();
     this.id = id;
     this.color = color;
@@ -151,7 +159,7 @@ class PresenceWidget extends WidgetType {
     const div = document.createElement('div');
     span.appendChild(div);
     div.style.borderLeft = `1px solid rgba(${this.color})`;
-    
+
     // background color behind username
     const userDiv = document.createElement('div');
     userDiv.className = 'remote-cursor-username';
@@ -161,7 +169,9 @@ class PresenceWidget extends WidgetType {
     userDiv.style.backgroundColor = `rgba(${this.color})`;
     userDiv.style.color = `black`;
     userDiv.style.textAlign = `center`;
-    userDiv.appendChild(document.createTextNode(this.username));
+    userDiv.appendChild(
+      document.createTextNode(this.username),
+    );
     span.appendChild(userDiv);
 
     return span;

@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import {VZCodeContent} from "../../types";
+import { VZCodeContent } from '../../types';
 
 export type AutocompleteRequest = {
   event: 'autocomplete-request';
