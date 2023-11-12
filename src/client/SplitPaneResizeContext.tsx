@@ -4,6 +4,7 @@ import {
   useReducer,
   useEffect,
   useCallback,
+  useLayoutEffect,
 } from 'react';
 
 export type Side = 'left' | 'right';
@@ -33,9 +34,12 @@ const initialSidebarWidthDefault = 220;
 let initialSidebarWidth: number =
   initialSidebarWidthDefault;
 
-const initialCodeEditorWidthDefault = 500;
+const initialCodeEditorWidthDefault = 800;
 let initialCodeEditorWidth: number =
   initialCodeEditorWidthDefault;
+
+// If no value is found in localStorage, we'll use the default.
+let needsInitialization = false;
 
 // If we're in the browser,
 if (typeof window !== 'undefined' && enableLocalStorage) {
@@ -50,11 +54,13 @@ if (typeof window !== 'undefined' && enableLocalStorage) {
   if (sidebarWidthLocal !== null) {
     // use it as the initial width.
     initialSidebarWidth = +sidebarWidthLocal;
+    needsInitialization = true;
   }
 
   if (codeEditorWidthLocal !== null) {
     // use it as the initial width.
     initialCodeEditorWidth = +codeEditorWidthLocal;
+    needsInitialization = true;
   }
 } else {
   // If we're not in the browser, use the default initial width.
@@ -78,13 +84,30 @@ type SplitPaneState = {
   codeEditorWidth: number;
   isDraggingLeft: boolean;
   isDraggingRight: boolean;
+
+  // False on first render
+  isInitialized: boolean;
 };
 
 const initialState: SplitPaneState = {
-  sidebarWidth: initialSidebarWidth,
-  codeEditorWidth: initialCodeEditorWidth,
+  // sidebarWidth: initialSidebarWidth,
+  // codeEditorWidth: initialCodeEditorWidth,
+
+  // These need to match between SSR and the first
+  // client-side render (hydration), to avoid
+  // React hydration errors like this one:
+  //  * Warning: Prop `style` did not match.
+  //  * Server: "left:210px;width:20px"
+  //  * Client: "left:218px;width:20px"
+
+  sidebarWidth: initialSidebarWidthDefault,
+  codeEditorWidth: initialCodeEditorWidthDefault,
   isDraggingLeft: false,
   isDraggingRight: false,
+
+  // Solution for hydration errors: we set the value from localStorage
+  // in a layoutEffect that happens after first render.
+  isInitialized: false,
 };
 
 type SplitPaneAction =
@@ -97,6 +120,9 @@ type SplitPaneAction =
       type: 'setIsDragging';
       side: Side;
       isDragging: boolean;
+    }
+  | {
+      type: 'initialize';
     };
 
 const splitPaneReducer = (
@@ -104,6 +130,13 @@ const splitPaneReducer = (
   action: SplitPaneAction,
 ) => {
   switch (action.type) {
+    case 'initialize':
+      return {
+        ...state,
+        sidebarWidth: initialSidebarWidth,
+        codeEditorWidth: initialCodeEditorWidth,
+        isInitialized: true,
+      };
     case 'move':
       return action.side === 'left'
         ? {
@@ -157,7 +190,15 @@ export const SplitPaneResizeProvider = ({ children }) => {
     codeEditorWidth,
     isDraggingLeft,
     isDraggingRight,
+    isInitialized,
   } = state;
+
+  // Logic around initializing from localStorage.
+  useLayoutEffect(() => {
+    if (needsInitialization && !isInitialized) {
+      dispatch({ type: 'initialize' });
+    }
+  }, [isInitialized]);
 
   // Logic around storing the values in localStorage.
   useEffect(() => {

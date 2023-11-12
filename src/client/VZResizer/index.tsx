@@ -12,6 +12,7 @@ import {
   SplitPaneResizeContext,
 } from '../SplitPaneResizeContext';
 import './styles.scss';
+import { VZCodeContext } from '../App/VZCodeContext';
 
 // This is the width of the resizer interaction surface.
 // On this surface, the cursor changes to a resize cursor.
@@ -34,6 +35,12 @@ export const VZResizer = ({ side }: { side: Side }) => {
     isDraggingLeft,
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
+
+  // If there is no active file, don't render the resizer
+  // for the right side.
+  const { activeFileId } = useContext(VZCodeContext);
+  const shouldRenderResizer =
+    side === 'left' || activeFileId;
 
   const previousClientX = useRef<number>(0);
 
@@ -92,7 +99,7 @@ export const VZResizer = ({ side }: { side: Side }) => {
       : sidebarWidth + codeEditorWidth) -
     resizerWidth / 2;
 
-  return (
+  return shouldRenderResizer ? (
     <div
       className="vz-resizer"
       onMouseDown={onMouseDown}
@@ -109,5 +116,5 @@ export const VZResizer = ({ side }: { side: Side }) => {
         }}
       />
     </div>
-  );
+  ) : null;
 };
