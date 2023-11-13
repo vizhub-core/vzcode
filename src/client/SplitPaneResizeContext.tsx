@@ -194,11 +194,14 @@ export const SplitPaneResizeProvider = ({ children }) => {
   } = state;
 
   // Logic around initializing from localStorage.
-  useLayoutEffect(() => {
-    if (needsInitialization && !isInitialized) {
-      dispatch({ type: 'initialize' });
-    }
-  }, [isInitialized]);
+  // Only run this on the client.
+  if (typeof window !== 'undefined') {
+    useLayoutEffect(() => {
+      if (needsInitialization && !isInitialized) {
+        dispatch({ type: 'initialize' });
+      }
+    }, [isInitialized]);
+  }
 
   // Logic around storing the values in localStorage.
   useEffect(() => {
