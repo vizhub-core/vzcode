@@ -121,7 +121,6 @@ onmessage = async ({ data }) => {
     const files: Files = content.files;
 
     // Iterate over the files
-
     for (const fileId of Object.keys(files)) {
       const file: File = files[fileId];
       const { name, text } = file;
@@ -187,7 +186,7 @@ onmessage = async ({ data }) => {
     postMessage(autocompleteResponse);
   }
 
-  if (data.event == 'lint-request') {
+  if (data.event === 'lint-request') {
     if (debug) {
       console.log('Lint Request');
     }
@@ -203,12 +202,33 @@ onmessage = async ({ data }) => {
       // Creates an array of diagnostic objects containing
       // both semantic and syntactic diagnostics.
       tsErrors = env.languageService
-        .getSemanticDiagnostics(fileName)
+        .getSemanticDiagnostics(tsFileName)
         .concat(
           env.languageService.getSyntacticDiagnostics(
-            fileName,
+            tsFileName,
           ),
         );
+
+      // Be less aggressive for non-TS files,
+      // e.g. files that end in .js or .jsx.
+      if (!isTS(fileName)) {
+        // This code is for errors like:
+        // "Binding element 'data' implicitly has an 'any' type."
+        const LINT_ERROR_CODE_ANY = 7031;
+
+        // This code is for errors like:
+        // "Cannot find module 'd3' or its corresponding type declarations."
+        const LINT_ERROR_CODE_IMPORT = 2307;
+
+        if (debug) {
+          console.log(tsErrors);
+        }
+        tsErrors = tsErrors.filter(
+          (error: { code: number }) =>
+            error.code !== LINT_ERROR_CODE_ANY &&
+            error.code !== LINT_ERROR_CODE_IMPORT,
+        );
+      }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
     }
 
