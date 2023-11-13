@@ -99,6 +99,14 @@ app.use(express.static(dir));
 // Create the initial "document",
 // which is a representation of files on disk.
 const shareDBConnection = shareDBBackend.connect();
+
+// Attach the middleware that handle AI Assist.
+shareDBBackend.use('afterWrite', (context, next) => {
+  const { collection, id } = context;
+  console.log('TODO trigger AI Assist here');
+  next();
+});
+
 const shareDBDoc = shareDBConnection.get('documents', '1');
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
