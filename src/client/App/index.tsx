@@ -60,6 +60,7 @@ function App() {
     content,
     localPresence,
     docPresence,
+    submitOperation,
   } = useShareDB({
     connection,
   });
@@ -80,6 +81,7 @@ function App() {
       <VZCodeProvider
         content={content}
         shareDBDoc={shareDBDoc}
+        submitOperation={submitOperation}
         localPresence={localPresence}
         docPresence={docPresence}
         prettierWorker={prettierWorker}

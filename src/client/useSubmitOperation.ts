@@ -1,25 +1,22 @@
 import { useCallback } from 'react';
-import { ShareDBDoc, VZCodeContent } from '../types';
+import { ShareDBDoc } from '../types'; // Assuming ShareDBDoc is already generic
 import { diff } from './diff';
 
-// A helper function to submit diff-based operations to ShareDB
-export const useSubmitOperation = (
-  shareDBDoc: ShareDBDoc<VZCodeContent>,
-): ((
-  next: (content: VZCodeContent) => VZCodeContent,
-) => void) => {
-  const submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void = useCallback(
-    (next) => {
-      const content: VZCodeContent = shareDBDoc.data;
-      const op = diff(content, next(content));
-      if (op && shareDBDoc) {
-        shareDBDoc.submitOp(op);
-      }
-    },
-    [shareDBDoc],
-  );
+// A generic helper function to submit diff-based operations to ShareDB
+export const useSubmitOperation = <T>(
+  shareDBDoc: ShareDBDoc<T>,
+): ((next: (data: T) => T) => void) => {
+  const submitOperation: (next: (data: T) => T) => void =
+    useCallback(
+      (next) => {
+        const data: T = shareDBDoc.data;
+        const op = diff(data, next(data));
+        if (op && shareDBDoc) {
+          shareDBDoc.submitOp(op);
+        }
+      },
+      [shareDBDoc],
+    );
 
   return submitOperation;
 };
