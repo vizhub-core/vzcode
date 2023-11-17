@@ -195,7 +195,7 @@ onmessage = async ({ data }) => {
       linterRequest;
 
     const tsFileName = getTSFileName(fileName);
-    let tsErrors = null;
+    let tsErrors = [];
     // Since we are also updating the server when we autocomplete we do not need to update
     if (isTS(tsFileName)) {
       setFile(tsFileName, fileContent);
