@@ -54,7 +54,7 @@
     "@codemirror/state": "^6.3.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.22.0",
-    "@lezer/highlight": "^1.1.6",
+    "@lezer/highlight": "^1.2.0",
     "@replit/codemirror-interact": "^6.3.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.5.0",
@@ -78,7 +78,7 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^9.1.0",
-    "openai": "^4.17.4",
+    "openai": "^4.19.0",
     "ot-json1": "^1.0.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
@@ -91,11 +91,11 @@
   "devDependencies": {
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.1.1",
-    "prettier": "^3.0.3",
+    "@vitejs/plugin-react": "^4.2.0",
+    "prettier": "^3.1.0",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",
-    "vite": "^4.5.0",
+    "vite": "^5.0.0",
     "vitest": "^0.34.6"
   }
 }
