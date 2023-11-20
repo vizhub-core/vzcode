@@ -100,8 +100,11 @@ export const Item = ({
 
   // Function to handle confirmation on modal
   const handleConfirmModal = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation();
+    (event: React.MouseEvent | undefined) => {
+      // TODO clean this up.
+      // This was added to prevent parent listeners from firing
+      // when the modal is confirmed.
+      event?.stopPropagation();
       setShowModal(false);
       handleDeleteClick();
     },
