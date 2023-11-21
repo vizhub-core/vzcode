@@ -211,6 +211,8 @@ function debounceSave() {
   );
 }
 
+const generator = 'Replicate'; //Can be OpenAI or Replicate. Controls the source of AI Assist code completions.
+
 // Subscribe to listen for modifications
 shareDBDoc.subscribe(() => {
   shareDBDoc.on('op', (op, source) => {
@@ -241,6 +243,7 @@ shareDBDoc.subscribe(() => {
           shareDBDoc: shareDBDoc,
           streamId: op[op.length - 2],
           fileId: input.fileId,
+          generator: generator,
         });
 
         const confirmStartOperation = replaceOp(
