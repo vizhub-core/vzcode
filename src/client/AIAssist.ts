@@ -1,4 +1,5 @@
 import { EditorView, keymap } from '@codemirror/view';
+import json1 from 'ot-json1';
 import {
   FileId,
   File,
@@ -6,9 +7,10 @@ import {
   VZCodeContent,
 } from '../types';
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
-import { insertOp, replaceOp } from 'ot-json1';
 
 import { TabState } from './vzReducer';
+
+const { insertOp, replaceOp } = json1;
 
 export const AIAssist = ({
   shareDBDoc,
