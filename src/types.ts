@@ -161,7 +161,7 @@ export type VZCodeContent = {
   //    client and server.
   //  * This can power the transition of the icon from
   //    lightning bolt to stop sign and back (when stream finishes)
-  aiStreams: {
+  aiStreams?: {
     // These need to be removed at some point?
     [aiStreamId: AIStreamId]: {
       AIStreamStatus: AIStreamStatus;
