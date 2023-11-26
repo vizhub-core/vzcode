@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
-import json1 from 'ot-json1';
+import { json1Presence } from '../ot.js';
 
-const { editOp, type, replaceOp } = json1;
+const { editOp, type, replaceOp } = json1Presence;
 
 // Feature flag to slow down AI for development/testing
 const slowdown = false;

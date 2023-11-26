@@ -1,5 +1,5 @@
 import { EditorView, keymap } from '@codemirror/view';
-import { insertOp, replaceOp } from 'ot-json1';
+import { json1Presence } from '../ot';
 import {
   FileId,
   File,
@@ -9,6 +9,8 @@ import {
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
 
 import { TabState } from './vzReducer';
+
+const { insertOp, replaceOp } = json1Presence;
 
 export const AIAssist = ({
   shareDBDoc,
