@@ -217,6 +217,10 @@ onmessage = async ({ data }) => {
         const LINT_ERROR_CODE_ANY = 7031;
 
         // This code is for errors like:
+        // "Parameter 'selection' implicitly has an 'any' type.""
+        const LINT_ERROR_CODE_ANY_PARAM = 7006;
+
+        // This code is for errors like:
         // "Cannot find module 'd3' or its corresponding type declarations."
         const LINT_ERROR_CODE_IMPORT = 2307;
 
@@ -226,7 +230,8 @@ onmessage = async ({ data }) => {
         tsErrors = tsErrors.filter(
           (error: { code: number }) =>
             error.code !== LINT_ERROR_CODE_ANY &&
-            error.code !== LINT_ERROR_CODE_IMPORT,
+            error.code !== LINT_ERROR_CODE_IMPORT &&
+            error.code !== LINT_ERROR_CODE_ANY_PARAM,
         );
       }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
