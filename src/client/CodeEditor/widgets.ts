@@ -17,7 +17,7 @@ import { EditorView } from 'codemirror';
 //  * Number dragger
 //  * Boolean toggler
 //  * URL clicker
-//  * TODO color picker
+//  * color picker
 // Inspired by:
 // https://github.com/replit/codemirror-interact/blob/master/dev/index.ts
 // `onInteract` is called when the user interacts with a widget.
@@ -51,7 +51,7 @@ export const widgets = ({
 
           const updateHex = (e: Event) => {
             const el = e.target as HTMLInputElement;
-
+            if (onInteract) onInteract();
             if (el.value) {
               setText(
                 `"${
@@ -140,6 +140,8 @@ export const widgets = ({
 
           const updateRGB = (e: Event) => {
             const el = e.target as HTMLInputElement;
+            if (onInteract) onInteract();
+
             if (el.value) {
               const [r, g, b] = hex2RGB(el.value);
               setText(`rgb(${r}, ${g}, ${b})`);
