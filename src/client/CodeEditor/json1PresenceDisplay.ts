@@ -174,6 +174,12 @@ class PresenceWidget extends WidgetType {
     );
     span.appendChild(userDiv);
 
+    // after 2 seconds of inactivity, username is made less visible
+    setTimeout(() => {
+      userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
+      userDiv.style.color = 'rgba(0,0,0,0.2)';
+    }, 2000);
+
     return span;
   }
 
