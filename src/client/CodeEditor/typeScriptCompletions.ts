@@ -41,6 +41,17 @@ export const typeScriptCompletions = ({
       requestId,
     };
 
+    //Prevent completions from appearing on certain characters
+    if (
+      fileContent[completionContext.pos - 1] === '"' ||
+      fileContent[completionContext.pos - 1] === "'" ||
+      fileContent[completionContext.pos - 1] === ';' ||
+      fileContent[completionContext.pos - 1] === '(' ||
+      fileContent[completionContext.pos - 1] === ')'
+    ) {
+      return { from: completionContext.pos, options: [] };
+    }
+
     //Post message to our sharedWorker to get completions.
     typeScriptWorker.postMessage(autocompleteRequest);
 
