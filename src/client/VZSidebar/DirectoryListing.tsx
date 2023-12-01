@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Item } from './Item';
 import { Listing } from './Listing';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
@@ -33,6 +33,9 @@ export const DirectoryListing = ({
   toggleDirectory: (path: string) => void;
   activeFileId: string;
 }) => {
+  const [isRenaming, setRenaming] = useState(false);
+  const [newName, setNewName] = useState(name);
+
   const handleClick = useCallback(() => {
     toggleDirectory(path);
   }, [toggleDirectory, path]);
@@ -42,9 +45,37 @@ export const DirectoryListing = ({
   }, [deleteDirectory, path]);
 
   const handleRenameClick = useCallback(() => {
-    // https://github.com/vizhub-core/vzcode/issues/103
-    console.log('TODO handleRenameDirectoryClick');
-  }, []);
+    if (isRenaming) {
+      // Renames the directory and propagate changes to children
+      renameFile(path, newName);
+      updateChildrenPaths(children, path, newName);
+      setRenaming(false);
+    } else {
+      setRenaming(true);
+    }
+  }, [isRenaming, path, newName, renameFile, children]);
+
+  const updateChildrenPaths = (
+    children: Array<FileTree | FileTreeFile>,
+    parentPath: string,
+    newParentName: string,
+  ) => {
+    children.forEach((entity) => {
+      if ('path' in entity) {
+        const childPath = entity.path;
+        const newPath = childPath.replace(
+          parentPath,
+          newParentName,
+        );
+        renameFile(childPath, newPath);
+        updateChildrenPaths(
+          entity.children || [],
+          childPath,
+          newPath,
+        );
+      }
+    });
+  };
 
   const isOpen = useMemo(
     () => isDirectoryOpen(path),
@@ -54,7 +85,25 @@ export const DirectoryListing = ({
   return (
     <>
       <Item
-        name={name}
+        name={
+          isRenaming ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRenameClick();
+              }}
+            >
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <button type="submit">Rename</button>
+            </form>
+          ) : (
+            name
+          )
+        }
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
