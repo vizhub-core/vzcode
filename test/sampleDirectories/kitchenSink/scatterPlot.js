@@ -7,7 +7,7 @@ export const scatterPlot = (
     width,
     height,
     xValue,
-    yValue, 
+    yValue,
     circleRadius = 38,
     color = "#10EA64",
     margin = { top: 55, right: 40, bottom: 9, left: 20 },

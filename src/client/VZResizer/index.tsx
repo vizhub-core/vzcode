@@ -11,8 +11,8 @@ import {
   Side,
   SplitPaneResizeContext,
 } from '../SplitPaneResizeContext';
-import { VZCodeContext } from '../VZCodeContext';
 import './styles.scss';
+import { VZCodeContext } from '../App/VZCodeContext';
 
 // This is the width of the resizer interaction surface.
 // On this surface, the cursor changes to a resize cursor.

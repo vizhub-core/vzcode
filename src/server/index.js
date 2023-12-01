@@ -10,16 +10,15 @@ import { fileURLToPath } from 'url';
 import open from 'open';
 import ngrok from 'ngrok';
 import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
-import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
+import { json1Presence } from '../ot.js';
+import bodyParser from 'body-parser';
 import {
   generateAIResponse,
   haltGeneration,
   handleAIAssist,
 } from './handleAIAssist.js';
-
-const { replaceOp } = json1Presence;
+import { replaceOp } from 'ot-json1';
 
 dotenv.config({ path: '../../.env' });
 
