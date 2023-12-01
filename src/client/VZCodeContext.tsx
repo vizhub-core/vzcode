@@ -4,27 +4,26 @@ import {
   ShareDBDoc,
   Username,
   VZCodeContent,
-} from '../../types';
-import { useSubmitOperation } from '../useSubmitOperation';
-import { usePrettier } from '../usePrettier';
-import { useTypeScript } from '../useTypeScript';
+} from '../types';
+import { usePrettier } from './usePrettier';
+import { useTypeScript } from './useTypeScript';
 import {
   TabState,
   createInitialState,
   vzReducer,
-} from '../vzReducer';
+} from './vzReducer';
 import {
   ThemeLabel,
   defaultTheme,
   useDynamicTheme,
-} from '../themes';
-import { useActions } from '../useActions';
-import { useOpenDirectories } from '../useOpenDirectories';
-import { useFileCRUD } from '../useFileCRUD';
+} from './themes';
+import { useActions } from './useActions';
+import { useOpenDirectories } from './useOpenDirectories';
+import { useFileCRUD } from './useFileCRUD';
 import {
   EditorCache,
   useEditorCache,
-} from '../useEditorCache';
+} from './useEditorCache';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes

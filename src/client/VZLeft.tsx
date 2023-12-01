@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { VZSettings } from '../VZSettings';
-import { VZSidebar } from '../VZSidebar';
+import { VZSettings } from './VZSettings';
+import { VZSidebar } from './VZSidebar';
 import { VZCodeContext } from './VZCodeContext';
 
 // The middle portion of the VZCode environment, containing:
