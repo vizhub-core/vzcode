@@ -84,11 +84,11 @@
     "react-dom": "^18.2.0",
     "sharedb": "^4.1.1",
     "sharedb-client-browser": "^4.4.0",
-    "vizhub-ui": "^3.7.0",
+    "vizhub-ui": "^3.8.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@types/react": "^18.2.39",
+    "@types/react": "^18.2.41",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.0",
     "prettier": "^3.1.0",
