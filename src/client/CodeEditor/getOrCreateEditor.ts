@@ -10,6 +10,7 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
@@ -262,6 +263,19 @@ export const getOrCreateEditor = ({
       ),
     );
   }
+
+  // Add the extension that provides indentation markers.
+  extensions.push(
+    indentationMarkers({
+      // thickness: 2,
+      colors: {
+        light: '#4d586b',
+        dark: '#4d586b',
+        activeLight: '#8e949f',
+        activeDark: '#8e949f',
+      },
+    }),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({
