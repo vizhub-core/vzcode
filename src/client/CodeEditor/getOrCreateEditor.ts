@@ -11,6 +11,7 @@ import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
+import { showMinimap } from '@replit/codemirror-minimap';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
@@ -275,6 +276,17 @@ export const getOrCreateEditor = ({
         activeDark: '#8e949f',
       },
     }),
+  );
+
+  // Show the minimap
+  // See https://github.com/replit/codemirror-minimap#usage
+  extensions.push(
+    showMinimap.compute(['doc'], () => ({
+      create: () => ({
+        dom: document.createElement('div'),
+      }),
+      // displayText: 'blocks',
+    })),
   );
 
   const editor = new EditorView({
