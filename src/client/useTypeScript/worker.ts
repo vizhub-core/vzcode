@@ -163,7 +163,7 @@ onmessage = async ({ data }) => {
     const tsFileName = getTSFileName(fileName);
 
     let completions = null;
-    if (isTS(tsFileName) && fileContent != "") {
+    if (isTS(tsFileName) && fileContent !== "") {
       // Update the file in the file system to the
       // absolute latest version. This is critical
       // for correct completions.
