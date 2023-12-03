@@ -163,7 +163,7 @@ onmessage = async ({ data }) => {
     const tsFileName = getTSFileName(fileName);
 
     let completions = null;
-    if (isTS(tsFileName)) {
+    if (isTS(tsFileName) && fileContent !== "") {
       // Update the file in the file system to the
       // absolute latest version. This is critical
       // for correct completions.
@@ -197,7 +197,7 @@ onmessage = async ({ data }) => {
     const tsFileName = getTSFileName(fileName);
     let tsErrors = [];
     // Since we are also updating the server when we autocomplete we do not need to update
-    if (isTS(tsFileName)) {
+    if (isTS(tsFileName) && fileContent !== "") {
       setFile(tsFileName, fileContent);
       // Creates an array of diagnostic objects containing
       // both semantic and syntactic diagnostics.
