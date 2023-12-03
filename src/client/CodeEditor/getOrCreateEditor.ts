@@ -12,6 +12,7 @@ import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 import { showMinimap } from '@replit/codemirror-minimap';
+import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
@@ -37,6 +38,7 @@ import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
 import { TabState } from '../vzReducer';
+import { keymap } from '@codemirror/view';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -288,6 +290,10 @@ export const getOrCreateEditor = ({
       // displayText: 'blocks',
     })),
   );
+
+  // VSCode keybindings
+  // See https://github.com/replit/codemirror-vscode-keymap#usage
+  extensions.push(keymap.of(vscodeKeymap));
 
   const editor = new EditorView({
     state: EditorState.create({
