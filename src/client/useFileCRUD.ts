@@ -3,6 +3,7 @@ import {
   FileId,
   FileTreePath,
   VZCodeContent,
+  Directory
 } from '../types';
 import { randomId } from '../randomId';
 
@@ -86,24 +87,26 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
-  const createDirectory = useCallback(
-    (name: string) => {
-      if (name) {
-        const fileId: FileId = randomId();
-        const directoryPath: FileTreePath = name; // Assuming the directory path is the name for simplicity
-        submitOperation((document: VZCodeContent) => {
-          return {
-            ...document,
-            files: {
-              ...document.files,
-              [fileId]: { name: directoryPath, isDirectory: true, files: {} } as File,
-            },
-          };
-        });
-      }
-    },
-    [submitOperation],
-  );
+  // Update createDirectory function to use the Directory type
+const createDirectory = useCallback(
+  (name: string) => {
+    if (name) {
+      const fileId: FileId = randomId();
+      const directoryPath: FileTreePath = name;
+      submitOperation((document: VZCodeContent) => {
+        return {
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name: directoryPath, isDirectory: true, files: {} } as Directory,
+          },
+        };
+      });
+    }
+  },
+  [submitOperation],
+);
+  
 
   return {
     createFile,

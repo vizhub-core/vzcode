@@ -15,9 +15,15 @@ export type FileId = string;
 //  * When the file name changes, or files are added/deleted,
 //    this ID stays the same, simplifying things re:OT.
 export interface Files {
-  [fileId: FileId]: File;
+  [fileId: FileId]: File | Directory;
 }
 
+// Introduce a new Directory interface
+export interface Directory {
+  name: string;
+  isDirectory: true;
+  files: Files;
+}
 // File
 //  * A file with `name` and `text`.
 export interface File {
