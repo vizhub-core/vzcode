@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import {
   FileId,
   FileTreePath,
@@ -6,8 +6,6 @@ import {
 } from '../types';
 import { randomId } from '../randomId';
 
-// CRUD operations for files and directories
-// CRUD = Create, Read, Update, Delete
 export const useFileCRUD = ({
   submitOperation,
   closeTabs,
@@ -25,7 +23,6 @@ export const useFileCRUD = ({
     isTransient: boolean;
   }) => void;
 }) => {
-  // Create a new file
   const createFile = useCallback(
     (name: string) => {
       if (name) {
@@ -37,15 +34,12 @@ export const useFileCRUD = ({
             [fileId]: { name, text: '' },
           },
         }));
-        // When a new file is created, open it in a new tab
-        // and focus the editor on it.
         openTab({ fileId, isTransient: false });
       }
     },
-    [submitOperation],
+    [submitOperation, openTab],
   );
 
-  // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
     (fileId: FileId, newName: string) => {
       submitOperation((document: VZCodeContent) => ({
@@ -62,7 +56,6 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
-  // Deletes a file
   const deleteFile = useCallback(
     (fileId: FileId) => {
       closeTabs([fileId]);
@@ -75,7 +68,6 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
-  // Deletes a directory and all files within it
   const deleteDirectory = useCallback(
     (path: FileTreePath) => {
       const tabsToClose: Array<FileId> = [];
@@ -94,8 +86,27 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
+  // New function to create a directory
+  const createDirectory = useCallback(
+    (name: string) => {
+      if (name) {
+        const fileId: FileId = randomId();
+        const directoryPath: FileTreePath = name; // Assuming the directory path is the name for simplicity
+        submitOperation((document: VZCodeContent) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name: directoryPath, isDirectory: true, files: {} },
+          },
+        }));
+      }
+    },
+    [submitOperation],
+  );
+
   return {
     createFile,
+    createDirectory,
     renameFile,
     deleteFile,
     deleteDirectory,
