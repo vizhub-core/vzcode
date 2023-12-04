@@ -86,19 +86,20 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
-  // New function to create a directory
   const createDirectory = useCallback(
     (name: string) => {
       if (name) {
         const fileId: FileId = randomId();
         const directoryPath: FileTreePath = name; // Assuming the directory path is the name for simplicity
-        submitOperation((document: VZCodeContent) => ({
-          ...document,
-          files: {
-            ...document.files,
-            [fileId]: { name: directoryPath, isDirectory: true, files: {} },
-          },
-        }));
+        submitOperation((document: VZCodeContent) => {
+          return {
+            ...document,
+            files: {
+              ...document.files,
+              [fileId]: { name: directoryPath, isDirectory: true, files: {} } as File,
+            },
+          };
+        });
       }
     },
     [submitOperation],
