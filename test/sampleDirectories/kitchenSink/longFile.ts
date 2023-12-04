@@ -1,54 +1,41 @@
-
-import { EditorView } from 'codemirror';
-import {
-  Compartment,
-  EditorState,
-} from '@codemirror/state';
-import { javascript } from '@codemirror/lang-javascript';
-import { json } from '@codemirror/lang-json';
-import { markdown } from '@codemirror/lang-markdown';
-import { html } from '@codemirror/lang-html';
-import { css } from '@codemirror/lang-css';
-import { json1Sync } from 'codemirror-ot';
-import { autocompletion } from '@codemirror/autocomplete';
-import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { showMinimap } from '@replit/codemirror-minimap';
-import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
-import { Diagnostic, linter } from '@codemirror/lint';
-import { json1Presence, textUnicode } from '../../ot';
-import {
-  FileId,
-  ShareDBDoc,
-  Username,
-  VZCodeContent,
-} from '../../types';
-import { json1PresenceBroadcast } from './json1PresenceBroadcast';
-import { json1PresenceDisplay } from './json1PresenceDisplay';
+import { EditorView } from "codemirror";
+import { Compartment, EditorState } from "@codemirror/state";
+import { javascript } from "@codemirror/lang-javascript";
+import { json } from "@codemirror/lang-json";
+import { markdown } from "@codemirror/lang-markdown";
+import { html } from "@codemirror/lang-html";
+import { css } from "@codemirror/lang-css";
+import { json1Sync } from "codemirror-ot";
+import { autocompletion } from "@codemirror/autocomplete";
+import { indentationMarkers } from "@replit/codemirror-indentation-markers";
+import { showMinimap } from "@replit/codemirror-minimap";
+import { vscodeKeymap } from "@replit/codemirror-vscode-keymap";
+import { Diagnostic, linter } from "@codemirror/lint";
+import { json1Presence, textUnicode } from "../../ot";
+import { FileId, ShareDBDoc, Username, VZCodeContent } from "../../types";
+import { json1PresenceBroadcast } from "./json1PresenceBroadcast";
+import { json1PresenceDisplay } from "./json1PresenceDisplay";
 import {
   colorsInTextPlugin,
   highlightWidgets,
   rotationIndicator,
   widgets,
-} from './widgets';
-import {
-  EditorCache,
-  EditorCacheValue,
-} from '../useEditorCache';
-import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { AIAssist } from '../AIAssist';
-import { typeScriptCompletions } from './typeScriptCompletions';
-import { typeScriptLinter } from './typeScriptLinter';
-import { TabState } from '../vzReducer';
-import { keymap } from '@codemirror/view';
-import { basicSetup } from './basicSetup';
+} from "./widgets";
+import { EditorCache, EditorCacheValue } from "../useEditorCache";
+import { ThemeLabel, themeOptionsByLabel } from "../themes";
+import { AIAssist } from "../AIAssist";
+import { typeScriptCompletions } from "./typeScriptCompletions";
+import { typeScriptLinter } from "./typeScriptLinter";
+import { TabState } from "../vzReducer";
+import { keymap } from "@codemirror/view";
+import { basicSetup } from "./basicSetup";
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
 const enableTypeScriptLinter = true;
 
 // Enables TypeScript +JSX support in CodeMirror.
-const tsx = () =>
-  javascript({ jsx: true, typescript: true });
+const tsx = () => javascript({ jsx: true, typescript: true });
 
 // Language extensions for CodeMirror.
 // Keys are file extensions.
@@ -127,11 +114,11 @@ export const getOrCreateEditor = ({
 
   // Compute `text` and `fileExtension` from the ShareDB document.
   const data = shareDBDoc.data;
-  const textPath = [...filesPath, fileId, 'text'];
-  const namePath = [...filesPath, fileId, 'name'];
+  const textPath = [...filesPath, fileId, "text"];
+  const namePath = [...filesPath, fileId, "name"];
   const text = getAtPath(data, textPath);
   const name = getAtPath(data, namePath);
-  const fileExtension = name.split('.').pop();
+  const fileExtension = name.split(".").pop();
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
@@ -163,11 +150,24 @@ export const getOrCreateEditor = ({
     );
   }
 
+  // Show the minimap
+  // See https://github.com/replit/codemirror-minimap#usage
+  extensions.push(
+    showMinimap.compute(["doc"], () => ({
+      create: () => ({
+        dom: document.createElement("div"),
+      }),
+      // displayText: 'blocks',
+    })),
+  );
+
+  // VSCode keybindings
+  // See https://github.com/replit/codemirror-vscode-keymap#usage
+  extensions.push(keymap.of(vscodeKeymap));
+
   // Deals with receiving the broadcas from other clients and displaying them.
   if (docPresence)
-    extensions.push(
-      json1PresenceDisplay({ path: textPath, docPresence }),
-    );
+    extensions.push(json1PresenceDisplay({ path: textPath, docPresence }));
 
   extensions.push(colorsInTextPlugin);
 
@@ -179,9 +179,7 @@ export const getOrCreateEditor = ({
   extensions.push(basicSetup);
 
   // This supports dynamic changing of the theme.
-  extensions.push(
-    themeCompartment.of(themeOptionsByLabel[theme].value),
-  );
+  extensions.push(themeCompartment.of(themeOptionsByLabel[theme].value));
 
   // TODO handle dynamic changing of the file extension.
   // TODO handle dynamic file extensions by making
@@ -194,20 +192,15 @@ export const getOrCreateEditor = ({
     return languageFunc ? languageFunc() : undefined;
   };
 
-  const languageExtension =
-    getLanguageExtension(fileExtension);
+  const languageExtension = getLanguageExtension(fileExtension);
   if (languageExtension) {
-    extensions.push(
-      languageCompartment.of(languageExtension),
-    );
+    extensions.push(languageCompartment.of(languageExtension));
   } else {
     // Not sure if this case even works.
     // TODO manually test this case by creating a file
     // that has no extension, opening it up,
     // and then adding an extension.
-    console.warn(
-      `No language extension for file extension: ${fileExtension}`,
-    );
+    console.warn(`No language extension for file extension: ${fileExtension}`);
     // We still need to push the compartment,
     // otherwise the compartment won't work when
     // a file extension _is_ added later on.
@@ -274,28 +267,13 @@ export const getOrCreateEditor = ({
     indentationMarkers({
       // thickness: 2,
       colors: {
-        light: '#4d586b',
-        dark: '#4d586b',
-        activeLight: '#8e949f',
-        activeDark: '#8e949f',
+        light: "#4d586b",
+        dark: "#4d586b",
+        activeLight: "#8e949f",
+        activeDark: "#8e949f",
       },
     }),
   );
-
-  // Show the minimap
-  // See https://github.com/replit/codemirror-minimap#usage
-  extensions.push(
-    showMinimap.compute(['doc'], () => ({
-      create: () => ({
-        dom: document.createElement('div'),
-      }),
-      // displayText: 'blocks',
-    })),
-  );
-
-  // VSCode keybindings
-  // See https://github.com/replit/codemirror-vscode-keymap#usage
-  extensions.push(keymap.of(vscodeKeymap));
 
   const editor = new EditorView({
     state: EditorState.create({
