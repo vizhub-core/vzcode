@@ -1,4 +1,4 @@
-import { EditorView, basicSetup } from 'codemirror';
+import { EditorView } from 'codemirror';
 import {
   Compartment,
   EditorState,
