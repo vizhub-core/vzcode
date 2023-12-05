@@ -47,44 +47,58 @@ export const json1PresenceDisplay = ({
           }
           // Update decorations to reflect new presence state.
           // TODO consider mutating this rather than recomputing it on each change.
+
+          const presenceDecorations = [];
+
+          // Object.keys(presenceState).map((id) => {
+          for (const id of Object.keys(presenceState)) {
+            const presence = presenceState[id];
+            const { start, end } = presence;
+            const from = start[start.length - 1];
+            const to = end[end.length - 1];
+            const userColor = new ColorHash().rgb(id);
+            const { username } = presence;
+
+            presenceDecorations.push({
+              from,
+              to: from,
+              value: Decoration.widget({
+                side: -1,
+                block: false,
+                widget: new PresenceWidget(
+                  // TODO see if we can figure out why
+                  // updateDOM was not being called when passing
+                  // the presence id as the id
+                  // id,
+                  '' + Math.random(),
+                  userColor,
+                  username,
+                ),
+              }),
+            });
+
+            // This is `true` when the presence is a cursor,
+            // with no selection.
+            if (from !== to) {
+              // This is the case when the presence is a selection.
+              presenceDecorations.push({
+                from,
+                to,
+                value: Decoration.mark({
+                  class: 'cm-json1-presence',
+                  attributes: {
+                    style: `
+                      background-color: rgba(${userColor}, 0.75);
+                      mix-blend-mode: luminosity;
+                      `,
+                  },
+                }),
+              });
+            }
+          }
+
           this.decorations = Decoration.set(
-            Object.keys(presenceState).map((id) => {
-              const presence = presenceState[id];
-              const { start, end } = presence;
-              const from = start[start.length - 1];
-              const to = end[end.length - 1];
-              const userColor = new ColorHash().rgb(id);
-              const { username } = presence;
-              if (from === to) {
-                return {
-                  from,
-                  to,
-                  value: Decoration.widget({
-                    side: -1,
-                    block: false,
-                    widget: new PresenceWidget(
-                      id,
-                      userColor,
-                      username,
-                    ),
-                  }),
-                };
-              } else {
-                return {
-                  from,
-                  to,
-                  value: Decoration.mark({
-                    class: 'cm-json1-presence',
-                    attributes: {
-                      style: `
-                        background-color: rgba(${userColor}, 0.75);
-                        mix-blend-mode: luminosity;
-                        `,
-                    },
-                  }),
-                };
-              }
-            }),
+            presenceDecorations,
             // Without this argument, we get the following error:
             // Uncaught Error: Ranges must be added sorted by `from` position and `startSide`
             true,
@@ -131,6 +145,7 @@ class PresenceWidget extends WidgetType {
   id: string;
   color: string;
   username: Username;
+  timeout: number;
   constructor(
     id: string,
     color: string,
@@ -144,9 +159,11 @@ class PresenceWidget extends WidgetType {
 
   eq(other: PresenceWidget) {
     return other.id === this.id;
+    // return false;
   }
 
   toDOM() {
+    // console.log('inside toDOM');
     const span = document.createElement('span');
     span.setAttribute('aria-hidden', 'true');
     span.className = 'cm-json1-presence';
@@ -165,24 +182,40 @@ class PresenceWidget extends WidgetType {
     userDiv.className = 'remote-cursor-username';
     userDiv.style.top = `-20px`;
     userDiv.style.height = `20px`;
-    userDiv.style.width = `${this.username.length * 11}px`;
+    userDiv.style.width = `${this.username.length * 12}px`;
     userDiv.style.backgroundColor = `rgba(${this.color})`;
     userDiv.style.color = `black`;
-    userDiv.style.textAlign = `center`;
+    // userDiv.style.textAlign = `center`;
     userDiv.appendChild(
       document.createTextNode(this.username),
     );
     span.appendChild(userDiv);
 
     // after 2 seconds of inactivity, username is made less visible
-    setTimeout(() => {
-      userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
-      userDiv.style.color = 'rgba(0,0,0,0.2)';
+    this.timeout = window.setTimeout(() => {
+      // userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
+      // userDiv.style.color = 'rgba(0,0,0,0.2)';
+      userDiv.style.opacity = '0.3';
     }, 2000);
 
     return span;
   }
 
+  // TODO try to use this instead of toDOM
+  // updateDOM(dom: HTMLElement, view: EditorView) {
+  //   console.log('inside updateDOM');
+  //   dom.style.opacity = '1';
+  //   window.clearTimeout(this.timeout);
+
+  //   // after 2 seconds of inactivity, username is made less visible
+  //   this.timeout = window.setTimeout(() => {
+  //     // userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
+  //     // userDiv.style.color = 'rgba(0,0,0,0.2)';
+  //     dom.style.opacity = '0.3';
+  //   }, 2000);
+
+  //   return false;
+  // }
   ignoreEvent() {
     return false;
   }
