@@ -96,7 +96,6 @@ export const typeScriptCompletions = ({
           completion.name.startsWith(lastWord),
       );
     }
-
     return {
       from: completionContext.pos,
       // @ts-ignore
@@ -104,11 +103,21 @@ export const typeScriptCompletions = ({
         label: completion.name,
         // Applies autocompletions to be seen in the code Editor
         apply: (view) => {
+          //Calculation to get the new cursor position after the autocompletion
+          const newPosition =
+            completionContext.pos +
+            completion.name.length -
+            lastWord.length;
           view.dispatch({
             changes: {
               from,
               to: completionContext.pos,
               insert: completion.name,
+            },
+            // Move the cursor to the end of the autocompletion
+            selection: {
+              anchor: newPosition,
+              head: newPosition,
             },
           });
         },
