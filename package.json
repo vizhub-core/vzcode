@@ -57,7 +57,7 @@
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-markdown": "^6.2.3",
-    "@codemirror/state": "^6.3.2",
+    "@codemirror/state": "^6.3.3",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.22.1",
     "@lezer/highlight": "^1.2.0",
@@ -91,7 +91,7 @@
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
-    "sharedb": "^4.1.1",
+    "sharedb": "^4.1.2",
     "sharedb-client-browser": "^4.4.0",
     "vizhub-ui": "^3.10.0",
     "ws": "^8.14.2"
@@ -102,8 +102,8 @@
     "@vitejs/plugin-react": "^4.2.1",
     "prettier": "^3.1.0",
     "sass": "^1.69.5",
-    "typescript": "^5.3.2",
-    "vite": "^5.0.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.6",
     "vitest": "^1.0.1"
   }
 }
