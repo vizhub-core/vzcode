@@ -36,8 +36,14 @@
     "Visualization"
   ],
   "contributors": [
-    "Curran Kelleher",
-    "Anooj Pai"
+    {
+      "name": "Curran Kelleher",
+      "url": "https://github.com/curran"
+    },
+    {
+      "name": "Anooj Pai",
+      "url": "https://github.com/Anooj-Pai"
+    }
   ],
   "license": "MIT",
   "bugs": {
