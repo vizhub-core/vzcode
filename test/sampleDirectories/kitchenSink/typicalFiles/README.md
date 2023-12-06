@@ -12,8 +12,11 @@ An example showing the capabilities of VizHub:
 
 This line should wrap with Prettier:
 
-- **Source:** Weekly PDFs from "Constructing Visualizations" by Curran Kelleher
+- **Source:** Weekly PDFs from "Constructing Visualizations"
+  by Curran Kelleher
 
 ## Course Description
 
-Data Visualization CS573 explores the art and science of converting data into interactive graphics, emphasizing JavaScript and Web technologies.
+Data Visualization CS573 explores the art and science of
+converting data into interactive graphics, emphasizing
+JavaScript and Web technologies.
