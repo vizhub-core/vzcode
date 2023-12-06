@@ -81,6 +81,13 @@ onmessage = async ({
     const fileTextPrettified = await format(fileText, {
       parser,
       plugins,
+
+      // This helps with Markdown files
+      proseWrap: 'always',
+
+      // Opinionated code style for JavaScript
+      singleQuote: true,
+      printWidth: 60,
     });
 
     postMessage({

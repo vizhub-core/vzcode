@@ -30,6 +30,12 @@ import {
   PANIC,
 } from './colors';
 
+// Use semi-bold weight for keywords and other important things
+// const boldWeight = 'bold';
+
+// This looks way better as we are pulling in the semi-bold font from Google Fonts
+const boldWeight = '500';
+
 const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] =
   {
     background: backgroundColor,
@@ -97,7 +103,7 @@ function vizhubThemeInit(
       },
       {
         tag: t.heading,
-        fontWeight: 'bold',
+        fontWeight: boldWeight,
         color: SKY,
       },
       {
@@ -145,7 +151,7 @@ function vizhubThemeInit(
         color: AQUA,
       },
       { tag: [t.angleBracket], color: AQUA },
-      { tag: t.strong, fontWeight: 'bold' },
+      { tag: t.strong, fontWeight: boldWeight },
       { tag: t.emphasis, fontStyle: 'italic' },
       {
         tag: t.strikethrough,
