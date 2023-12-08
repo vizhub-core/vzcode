@@ -259,3 +259,17 @@ For detailed progress, visit the [VZCode Kanban Board](https://github.com/orgs/v
 89. Mod-u (Ctrl-u or Cmd-u): Undoes the last selection change.
 90. Mod-Shift-m (Ctrl-Shift-m or Cmd-Shift-m): Opens the lint panel.
 91. F8: Goes to the next diagnostic issue.
+
+## Interactive Widgets
+
+Number literals: alt-drag to change the number (right is positive)
+
+Boolean literals: alt-click to toggle
+
+Hex/rgb color: alt-click and then use color picker
+
+Vec2: alt-drag horizontally to change x number (right is positive), alt-drag vertically to change y number (up is positive)
+
+Rotate: alt-drag around the word rotate. The angle is set to the angle in degrees between the x-axis and a line from the point where the user first clicks to the current mouse position.
+
+Links: alt-click to open link in new tab
