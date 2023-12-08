@@ -1,38 +1,21 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Item } from './Item';
 import { Listing } from './Listing';
 import { DirectoryArrowSVG } from './DirectoryArrowSVG';
-import type {
-  FileTree,
-  FileTreeFile,
-  FileTreePath,
-} from '../../types';
 
 export const DirectoryListing = ({
   name,
   path,
   children,
-  renameFile,
-  deleteFile,
-  deleteDirectory,
-  handleFileClick,
-  handleFileDoubleClick,
   isDirectoryOpen,
   toggleDirectory,
+  renameFile, // Assuming this function renames files/directories and updates the state
+  deleteDirectory,
   activeFileId,
-}: {
-  name: string;
-  path: string;
-  children: Array<FileTree | FileTreeFile>;
-  renameFile: (fileId: string, newName: string) => void;
-  deleteFile: (fileId: string) => void;
-  deleteDirectory: (path: FileTreePath) => void;
-  handleFileClick: (fileId: string) => void;
-  handleFileDoubleClick: (fileId: string) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
-  activeFileId: string;
 }) => {
+  const [isRenaming, setRenaming] = useState(false);
+  const [newName, setNewName] = useState(name);
+
   const handleClick = useCallback(() => {
     toggleDirectory(path);
   }, [toggleDirectory, path]);
@@ -42,9 +25,47 @@ export const DirectoryListing = ({
   }, [deleteDirectory, path]);
 
   const handleRenameClick = useCallback(() => {
-    // https://github.com/vizhub-core/vzcode/issues/103
-    console.log('TODO handleRenameDirectoryClick');
-  }, []);
+    if (isRenaming) {
+      // Renames the directory
+      const newPath = path.replace(name, newName);
+      renameFile(path, newPath);
+      // Update paths for all children
+      updateChildrenPaths(children, path, newPath);
+      setRenaming(false);
+    } else {
+      setRenaming(true);
+    }
+  }, [
+    isRenaming,
+    path,
+    name,
+    newName,
+    renameFile,
+    children,
+  ]);
+
+  const updateChildrenPaths = useCallback(
+    (children, parentPath, newParentPath) => {
+      children.forEach((entity) => {
+        if ('path' in entity) {
+          const childPath = entity.path;
+          const newPath = childPath.replace(
+            parentPath,
+            newParentPath,
+          );
+          renameFile(childPath, newPath);
+          if (entity.children) {
+            updateChildrenPaths(
+              entity.children,
+              childPath,
+              newPath,
+            );
+          }
+        }
+      });
+    },
+    [renameFile],
+  );
 
   const isOpen = useMemo(
     () => isDirectoryOpen(path),
@@ -54,46 +75,32 @@ export const DirectoryListing = ({
   return (
     <>
       <Item
-        name={name}
+        name={
+          isRenaming ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRenameClick();
+              }}
+            >
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <button type="submit">Rename</button>
+            </form>
+          ) : (
+            name
+          )
+        }
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
-        isDirectory={true}
-      >
-        <div
-          className="arrow-wrapper"
-          style={{
-            transform: `rotate(${isOpen ? 90 : 0}deg)`,
-          }}
-        >
-          <DirectoryArrowSVG />
-        </div>
-        {name}
-      </Item>
-      {children && isOpen ? (
-        <div className="indentation">
-          {children.map((entity) => {
-            const { fileId } = entity as FileTreeFile;
-            const { path } = entity as FileTree;
-            return (
-              <Listing
-                entity={entity}
-                key={fileId || path}
-                renameFile={renameFile}
-                deleteFile={deleteFile}
-                deleteDirectory={deleteDirectory}
-                handleFileClick={handleFileClick}
-                handleFileDoubleClick={
-                  handleFileDoubleClick
-                }
-                isDirectoryOpen={isDirectoryOpen}
-                toggleDirectory={toggleDirectory}
-                activeFileId={activeFileId}
-              />
-            );
-          })}
-        </div>
-      ) : null}
+        // ... other props
+      />
+      {/* Render children if the directory is open */}
+      {isOpen && <Listing items={children} />}
     </>
   );
 };
