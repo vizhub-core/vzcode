@@ -1,14 +1,7 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { Username } from '../types';
-
-// const saveTimes = [
-//   { value: 1, label: '1 second' },
-//   { value: 5, label: '5 seconds' },
-//   { value: 10, label: '10 seconds' },
-//   { value: 30, label: '30 seconds' },
-// ];
 
 export const VZSettings = ({
   show,
@@ -17,24 +10,19 @@ export const VZSettings = ({
   setTheme,
   username,
   setUsername,
-
   enableUsernameField = true,
-}: {
-  show: boolean;
-  onClose: () => void;
-  theme: ThemeLabel;
-  setTheme: (theme: ThemeLabel) => void;
-  username: Username;
-  setUsername: (username: Username) => void;
-
-  // Feature flag to enable/disable username field
-  enableUsernameField?: boolean;
 }) => {
-  const handleThemeChange = useCallback((event) => {
-    const selectedValue = event.target.value;
-    console.log(selectedValue);
-    setTheme(selectedValue);
-  }, []);
+  const usernameRef = useRef<HTMLInputElement>(null);
+
+  // Function to update theme
+  const handleThemeChange = useCallback(
+    (event) => {
+      const selectedValue = event.target.value;
+      console.log(selectedValue);
+      setTheme(selectedValue);
+    },
+    [setTheme],
+  );
 
   // TODO https://github.com/vizhub-core/vzcode/issues/95
   // const handleSaveTimeChange = useCallback(
@@ -51,11 +39,38 @@ export const VZSettings = ({
   //   [],
   // );
 
-  const usernameRef = useRef<HTMLInputElement>(null);
-
+  // Function to update username
   const handleUsernameChange = useCallback(() => {
     setUsername(usernameRef.current?.value || '');
   }, [setUsername]);
+
+  // Function to handle 'Enter' key press
+  // This enables submitting changes by pressing 'Enter'
+  const handleEnterKeyPress = useCallback(
+    (event) => {
+      if (event.key === 'Enter') {
+        onClose(); // Closes the modal, assuming onClose also saves changes
+        event.preventDefault(); // Prevents the default action for 'Enter'
+      }
+    },
+    [onClose],
+  );
+
+  // Attaches a keydown listener to handle 'Enter' key press when modal is shown
+  useEffect(() => {
+    if (show) {
+      window.addEventListener(
+        'keydown',
+        handleEnterKeyPress,
+      );
+    }
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        handleEnterKeyPress,
+      );
+    };
+  }, [show, handleEnterKeyPress]);
 
   return show ? (
     <Modal
@@ -69,7 +84,10 @@ export const VZSettings = ({
       </Modal.Header>
       <Modal.Body>
         {enableUsernameField ? (
-          <Form.Group className="mb-3" controlId="formFork">
+          <Form.Group
+            className="mb-3"
+            controlId="formUsername"
+          >
             <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
@@ -85,9 +103,8 @@ export const VZSettings = ({
           </Form.Group>
         ) : null}
 
-        <Form.Group className="mb-3" controlId="formFork">
+        <Form.Group className="mb-3" controlId="formTheme">
           <Form.Label>Theme</Form.Label>
-
           <select
             className="form-select"
             value={theme}
@@ -99,11 +116,11 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select a color theme for the editor
           </Form.Text>
         </Form.Group>
+        {/* Future implementation for auto-save time */}
         {/*
           TODO https://github.com/vizhub-core/vzcode/issues/95
           <Form.Group className="mb-3" controlId="formFork">
