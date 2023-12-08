@@ -165,3 +165,97 @@ For detailed progress, visit the [VZCode Kanban Board](https://github.com/orgs/v
 
 - [GitHub Repository](https://github.com/vizhub-core/vzcode)
 - [Discord Channel within RCOS](https://discord.com/channels/738593165438746634/1066068656045441044)
+
+## Keyboard Shortcuts
+
+1. Ctrl-Space: Starts the auto-completion process.
+2. Escape: Closes the auto-completion menu.
+3. Arrow Down: Moves the selection down in the auto-completion menu.
+4. Arrow Up: Moves the selection up in the auto-completion menu.
+5. Page Down: Moves the selection down by one page in the auto-completion menu.
+6. Page Up: Moves the selection up by one page in the auto-completion menu.
+7. Enter: Accepts the currently selected auto-completion suggestion.
+8. Tab: Also accepts the currently selected auto-completion suggestion.
+9. Mod-f (Ctrl-f or Cmd-f): Opens the search panel.
+10. Escape: Closes the search panel (in the context of the search panel).
+11. Alt-Enter: Selects all matches found in the search panel.
+12. Mod-Alt-Enter (Ctrl-Alt-Enter or Cmd-Alt-Enter): Replaces all found matches in the search panel.
+13. Ctrl-g: Goes to a specific line number.
+14. Mod-d (Ctrl-d or Cmd-d): Selects the next occurrence of the current selection.
+15. Shift-Mod-l (Shift-Ctrl-l or Shift-Cmd-l): Selects all instances of the current selection.
+16. Enter: Inserts a new line and indents it (handled internally by the search panel plugin).
+17. Shift-Enter: Also inserts a new line and indents it.
+18. Arrow Left: Moves the cursor one character to the left.
+19. Shift-Arrow Left: Selects the character to the left of the cursor.
+20. Mod-Arrow Left (Ctrl-Arrow Left or Cmd-Arrow Left): Moves the cursor one word to the left.
+21. Shift-Mod-Arrow Left (Shift-Ctrl-Arrow Left or Shift-Cmd-Arrow Left): Selects the word to the left of the cursor.
+22. Arrow Right: Moves the cursor one character to the right.
+23. Shift-Arrow Right: Selects the character to the right of the cursor.
+24. Mod-Arrow Right (Ctrl-Arrow Right or Cmd-Arrow Right): Moves the cursor one word to the right.
+25. Shift-Mod-Arrow Right (Shift-Ctrl-Arrow Right or Shift-Cmd-Arrow Right): Selects the word to the right of the cursor.
+26. Arrow Up: Moves the cursor up one line.
+27. Shift-Arrow Up: Selects the line above the cursor.
+28. Arrow Down: Moves the cursor down one line.
+29. Shift-Arrow Down: Selects the line below the cursor.
+30. Home: Moves the cursor to the beginning of the current line.
+31. Shift-Home: Selects from the current position to the beginning of the line.
+32. Mod-Home (Ctrl-Home or Cmd-Home): Moves the cursor to the start of the document.
+33. Shift-Mod-Home (Shift-Ctrl-Home or Shift-Cmd-Home): Selects from the current position to the start of the document.
+34. Page Up: Moves the cursor up one page.
+35. Shift-Page Up: Selects one page upwards from the current position.
+36. Page Down: Moves the cursor down one page.
+37. Shift-Page Down: Selects one page downwards from the current position.
+38. End: Moves the cursor to the end of the current line.
+39. Shift-End: Selects from the current position to the end of the line.
+40. Mod-Alt-Arrow Up (Ctrl-Alt-Arrow Up or Cmd-Alt-Arrow Up): Adds a cursor above the current line.
+41. Mod-Alt-Arrow Down (Ctrl-Alt-Arrow Down or Cmd-Alt-Arrow Down): Adds a cursor below the current line.
+42. Shift-Alt-i: Adds a cursor at the start of each line in the current selection.
+43. Mod-End (Ctrl-End or Cmd-End): Moves the cursor to the end of the document.
+44. Shift-Mod-End (Shift-Ctrl-End or Shift-Cmd-End): Selects from the current position to the end of the document.
+45. Mod-a (Ctrl-a or Cmd-a): Selects all text in the document.
+46. Backspace: Deletes the character to the left of the cursor.
+47. Shift-Backspace: Also deletes the character to the left of the cursor.
+48. Delete: Deletes the character to the right of the cursor.
+49. Mod-Backspace (Ctrl-Backspace or Alt-Backspace): Deletes the word to the left of the cursor.
+50. Mod-Delete (Ctrl-Delete or Alt-Delete): Deletes the word to the right of the cursor.
+51. Mod-Backspace (Cmd-Backspace): Deletes from the cursor to the start of the line (Mac).
+52. Mod-Delete (Cmd-Delete): Deletes from the cursor to the end of the line (Mac).
+53. Ctrl-b (Mac): Moves the cursor one character left (Mac).
+54. Ctrl-f (Mac): Moves the cursor one character right (Mac).
+55. Ctrl-p (Mac): Moves the cursor up one line (Mac).
+56. Ctrl-n (Mac): Moves the cursor down one line (Mac).
+57. Ctrl-a (Mac): Moves the cursor to the start of the line (Mac).
+58. Ctrl-e (Mac): Moves the cursor to the end of the line (Mac).
+59. Ctrl-d (Mac): Deletes the character to the right of the cursor (Mac).
+60. Ctrl-h (Mac): Deletes the character to the left of the cursor (Mac).
+61. Ctrl-k (Mac): Deletes from the cursor to the end of the line (Mac).
+62. Ctrl-Alt-h (Mac): Deletes the word to the left of the cursor (Mac).
+63. Ctrl-o (Mac): Splits the line at the cursor (Mac).
+64. Ctrl-t (Mac): Transposes characters around the cursor (Mac).
+65. Ctrl-v (Mac): Moves the cursor down one page (Mac).
+66. Alt-v (Mac): Moves the cursor up one page (Mac).
+67. Shift-Mod-k (Shift-Ctrl-k or Shift-Cmd-k): Deletes the current line.
+68. Alt-Arrow Down: Moves the current line down.
+69. Alt-Arrow Up: Moves the current line up.
+70. Shift-Alt-Arrow Down (Win/Mac): Copies the current line down.
+71. Shift-Alt-Arrow Up (Win/Mac): Copies the current line up.
+72. Mod-l (Ctrl-l or Cmd-l): Selects the current line.
+73. Shift-Mod-\ (Shift-Ctrl-\ or Shift-Cmd-\): Moves the cursor to the matching bracket.
+74. Tab: Indents the current line or selection.
+75. Shift-Tab: Reduces the indentation of the current line or selection.
+76. Mod-[ (Ctrl-[ or Cmd-[): Reduces the indentation of the current line or selection.
+77. Mod-] (Ctrl-] or Cmd-]): Increases the indentation of the current line or selection.
+78. Ctrl-Shift-[ (Cmd-Alt-[ on Mac): Folds the code at the current line.
+79. Ctrl-Shift-] (Cmd-Alt-] on Mac): Unfolds the folded code at the current line.
+80. Mod-k Mod-0: Folds all the code in the document.
+81. Mod-k Mod-j: Unfolds all the folded code in the document.
+82. Mod-k Mod-c: Comments out the current line or selection.
+83. Mod-k Mod-u: Uncomments the current line or selection.
+84. Mod-/: Toggles commenting for the current line or selection.
+85. Shift-Alt-a: Toggles block commenting for the current selection.
+86. Mod-z (Ctrl-z or Cmd-z): Undoes the last action.
+87. Mod-y (Ctrl-y or Cmd-y): Redoes the last undone action.
+88. Mod-Shift-z (Ctrl-Shift-z or Cmd-Shift-z): Also redoes the last undone action.
+89. Mod-u (Ctrl-u or Cmd-u): Undoes the last selection change.
+90. Mod-Shift-m (Ctrl-Shift-m or Cmd-Shift-m): Opens the lint panel.
+91. F8: Goes to the next diagnostic issue.
