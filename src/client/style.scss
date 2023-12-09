@@ -1,15 +1,8 @@
 :root {
   --vzcode-font-family: ui-monospace, SFMono-Regular,
     'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace !important;
-
   --vzcode-font-size: 16px;
-
-  /* Variable for the background color */
-  --vz-bg-color: rgb(
-    41,
-    44,
-    52
-  ); /* Variable for the background color */
+  --vz-bg-color: rgb(41, 44, 52);
 }
 
 /* Scrollbar Styles */
@@ -44,16 +37,12 @@ body,
     'Noto Sans', Helvetica, Arial, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji';
   display: flex;
-
-  /* To support Resizer, which is position: absolute */
-  position: relative;
+  position: relative; /* To support Resizer, which is position: absolute */
 
   .left,
   .right {
     display: flex;
-
-    /* To suport PrettierErrorOverlay, which is position: absolute */
-    position: relative;
+    position: relative; /* To support PrettierErrorOverlay, which is position: absolute */
   }
 
   .right {
@@ -61,4 +50,23 @@ body,
     flex-direction: column;
     min-width: 0;
   }
+}
+
+/* Style the completion tooltip container */
+.cm-tooltip.cm-tooltip-autocomplete {
+  border: 1px solid #888;
+  background-color: #f8f8f8;
+}
+
+/* Style the individual completion items */
+.cm-tooltip-autocomplete .cm-completionLabel {
+  padding: 2px 10px;
+  color: #555;
+}
+
+/* Style the selected completion item */
+.cm-tooltip-autocomplete
+  .cm-completionLabel.cm-completion-active {
+  background-color: #0077cc;
+  color: white;
 }
