@@ -1,64 +1,47 @@
-import { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import type { FileId } from '../../types';
-import type { TabState } from '../vzReducer';
-
-// Supports adding the file's containing folder to the tab name
-const fileNameSplit = (fileName: string) => {
-  const split = fileName.split('/');
-  if (split.length === 1) return split[split.length - 1];
-  return (
-    split[split.length - 2] + '/' + split[split.length - 1]
-  );
-};
 
 export const Tab = ({
   fileId,
-  isTransient,
+  index,
   isActive,
   setActiveFileId,
-  openTab,
   closeTabs,
   fileName,
+  onDragStart,
+  onDrop,
 }: {
   fileId: FileId;
-  isTransient: boolean;
+  index: number;
   isActive: boolean;
   setActiveFileId: (fileId: FileId) => void;
-  openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: FileId[]) => void;
   fileName: string;
+  onDragStart: () => void;
+  onDrop: () => void;
 }) => {
+  const handleClick = useCallback(() => {
+    setActiveFileId(fileId);
+  }, [fileId, setActiveFileId]);
+
   const handleCloseClick = useCallback(
     (event: React.MouseEvent) => {
-      // Stop propagation so that the outer listener doesn't fire.
       event.stopPropagation();
-
       closeTabs([fileId]);
     },
     [closeTabs, fileId],
   );
 
-  const tabName = useMemo(
-    () => fileNameSplit(fileName),
-    [fileName],
-  );
-
-  const handleClick = useCallback(() => {
-    setActiveFileId(fileId);
-  }, [fileId, setActiveFileId]);
-
-  // Double-clicking a transient tab makes it a persistent tab.
-  const handleDoubleClick = useCallback(() => {
-    openTab({ fileId, isTransient: false });
-  }, [fileId, openTab]);
+  const tabName = fileName; // Assuming fileName is the display name of the tab
 
   return (
     <div
-      className={`tab user-select-none ${
-        isActive ? 'active' : ''
-      } ${isTransient ? 'transient' : ''}`}
+      className={`tab ${isActive ? 'active' : ''}`}
       onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
+      draggable="true"
+      onDragStart={onDragStart}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={onDrop}
     >
       {tabName}
       <div
@@ -68,3 +51,5 @@ export const Tab = ({
     </div>
   );
 };
+
+export default Tab;
