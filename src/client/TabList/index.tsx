@@ -1,10 +1,13 @@
-import { useCallback, useEffect } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import type { TabState } from '../vzReducer';
 import type { FileId, Files } from '../../types';
 import { Tab } from './Tab';
 import './style.scss';
 
-// Displays the list of tabs above the code editor.
 export const TabList = ({
   files,
   tabList,
@@ -22,22 +25,49 @@ export const TabList = ({
   closeTabs: (fileIds: FileId[]) => void;
   createFile: (fileName: string) => void;
 }) => {
-  // Close the active tab on alt+w
+  const [draggedTabIndex, setDraggedTabIndex] = useState<
+    number | null
+  >(null);
+
+  const handleDragStart = useCallback((index: number) => {
+    setDraggedTabIndex(index);
+  }, []);
+
+  const handleDrop = useCallback(
+    (index: number) => {
+      if (
+        draggedTabIndex !== null &&
+        draggedTabIndex !== index
+      ) {
+        const newTabList = [...tabList];
+        const [removed] = newTabList.splice(
+          draggedTabIndex,
+          1,
+        );
+        newTabList.splice(index, 0, removed);
+        // Assuming you have a way to update the global state of tabList
+        // updateTabList(newTabList);
+      }
+      setDraggedTabIndex(null);
+    },
+    [draggedTabIndex, tabList],
+  );
+
+  // Close the active tab on alt+w and create new file on alt+n
   const handleKeyPress = useCallback(
     (event: { altKey: boolean; key: string }) => {
-      if (event.altKey == true) {
-        if (event.key == 'w') {
+      if (event.altKey) {
+        if (event.key === 'w') {
           closeTabs([activeFileId]);
         }
-        if (event.key == 'n') {
+        if (event.key === 'n') {
           createFile('UnnamedFile');
         }
       }
     },
-    [createFile, closeTabs, activeFileId],
+    [closeTabs, createFile, activeFileId],
   );
 
-  // Add the global keydown event listener
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     return () => {
@@ -51,16 +81,18 @@ export const TabList = ({
   return (
     <div className="vz-tab-list">
       {files &&
-        tabList.map((tabState: TabState) => (
+        tabList.map((tabState, index) => (
           <Tab
             key={tabState.fileId}
             fileId={tabState.fileId}
-            isTransient={tabState.isTransient}
+            index={index}
             isActive={tabState.fileId === activeFileId}
             setActiveFileId={setActiveFileId}
             openTab={openTab}
             closeTabs={closeTabs}
             fileName={files[tabState.fileId].name}
+            onDragStart={() => handleDragStart(index)}
+            onDrop={() => handleDrop(index)}
           />
         ))}
     </div>
