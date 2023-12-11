@@ -4,7 +4,6 @@ import {
   ViewPlugin,
   Decoration,
   WidgetType,
-  keymap,
 } from '@codemirror/view';
 import {
   Annotation,
@@ -30,15 +29,17 @@ export const widgets = ({
     rules: [
       // hex color picker
       // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
+      // Extended to support single and double quotes
       {
-        regexp: /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+        regexp: /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
         cursor: 'pointer',
         onClick(text, setText, e) {
           const res =
-            /\"(?<hex>\#([0-9]|[A-F]|[a-f]){6})\"/.exec(
+            /(?<quote>["'])(?<hex>\#([0-9]|[A-F]|[a-f]){6})\k<quote>/.exec(
               text,
             );
           const startingColor = res.groups?.hex;
+          const quoteType = res.groups?.quote;
 
           const sel = document.createElement('input');
           sel.type = 'color';
@@ -54,11 +55,11 @@ export const widgets = ({
             if (onInteract) onInteract();
             if (el.value) {
               setText(
-                `"${
+                `${quoteType}${
                   valueIsUpper
                     ? el.value.toUpperCase()
                     : el.value
-                }"`,
+                }${quoteType}`,
               );
             }
           };
