@@ -244,4 +244,24 @@ onmessage = async ({ data }) => {
     };
     postMessage(linterResponse);
   }
+
+  // Handle the transpile-request event, which
+  // transpiles TypeScript to JavaScript.
+  if (data.event === 'transpile-request') {
+    const tsCode = data.tsCode;
+
+    const compilerOptions = {
+      jsx: ts.JsxEmit.React,
+    };
+
+    const jsCode = ts.transpileModule(tsCode, {
+      compilerOptions,
+    }).outputText;
+
+    postMessage({
+      event: 'transpile-response',
+      jsCode,
+      fileId: data.fileId,
+    });
+  }
 };
