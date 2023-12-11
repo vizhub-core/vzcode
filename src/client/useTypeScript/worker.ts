@@ -10,7 +10,7 @@ let isFileSystemInitialized = false;
 
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
-const debug = true;
+const debug = false;
 
 // replace .js or .jsx with .ts or .tsx,
 // to support TypeScript completions on non-TS files.
@@ -164,5 +164,25 @@ onmessage = async ({ data }) => {
     };
 
     postMessage(autocompleteResponse);
+  }
+
+  // Handle the transpile-request event, which
+  // transpiles TypeScript to JavaScript.
+  if (data.event === 'transpile-request') {
+    const tsCode = data.tsCode;
+
+    const compilerOptions = {
+      jsx: ts.JsxEmit.React,
+    };
+
+    const jsCode = ts.transpileModule(tsCode, {
+      compilerOptions,
+    }).outputText;
+
+    postMessage({
+      event: 'transpile-response',
+      jsCode,
+      fileId: data.fileId,
+    });
   }
 };
