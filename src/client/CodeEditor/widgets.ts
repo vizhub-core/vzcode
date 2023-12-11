@@ -211,10 +211,11 @@ const rgb2Hex = (r: number, g: number, b: number): string =>
   '#' + r.toString(16) + g.toString(16) + b.toString(16);
 
 const colorCircleTheme = EditorView.baseTheme({
-  '.color-circle-parent': { display: 'inline-block' },
+  '.color-circle-parent': {
+    display: 'inline-block',
+    cursor: 'inherit',
+  },
 });
-
-const colorCircleAnnotation = Annotation.define();
 
 export const colorsInTextPlugin: Extension = [
   ViewPlugin.fromClass(
@@ -233,7 +234,8 @@ export const colorsInTextPlugin: Extension = [
         const lines = v.view.state.doc.iter();
         let line = lines.next();
 
-        //Offset is the number of characters before the hex so the circle can be placed properly.
+        // Offset is the number of characters before the hex
+        // so the circle can be placed properly.
         let offset = 0;
         while (!line.done) {
           if (line.value === '\n') {
@@ -241,15 +243,16 @@ export const colorsInTextPlugin: Extension = [
             line = lines.next();
             continue;
           }
-          const hexColorOccurances = line.value.matchAll(
-            /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+          const hexColorOccurences = line.value.matchAll(
+            // /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
+            /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
           );
-          let hexOccurance = hexColorOccurances.next();
+          let hexOccurance = hexColorOccurences.next();
           while (!hexOccurance.done) {
             const offsetColorInfo = hexOccurance.value;
             offsetColorInfo.index += offset;
             colorInfos.push(offsetColorInfo);
-            hexOccurance = hexColorOccurances.next();
+            hexOccurance = hexColorOccurences.next();
           }
           offset += line.value.length;
           line = lines.next();
@@ -258,7 +261,7 @@ export const colorsInTextPlugin: Extension = [
         return Decoration.set(
           colorInfos.map((colorInfo) => {
             return {
-              //9 is the length of the hex color string including quotation marks
+              // 9 is the length of the hex color string including quotation marks
               from: colorInfo.index + 9,
               to: colorInfo.index + 9,
               value: Decoration.widget({
@@ -288,8 +291,13 @@ class ColorWidget extends WidgetType {
 
   toDOM(view: EditorView): HTMLElement {
     const parent = document.createElement('div');
+    const size = 20;
+    const innerSize = 16;
 
-    parent.setAttribute('style', 'width:10px;height:10px');
+    parent.setAttribute(
+      'style',
+      `width:${size}px;height:${size}px`,
+    );
     parent.className = 'color-circle-parent';
     const svg = document.createElementNS(
       'http://www.w3.org/2000/svg',
@@ -302,15 +310,23 @@ class ColorWidget extends WidgetType {
     colorCircle.setAttributeNS(
       null,
       'fill',
-      this.color.replace(/\"/g, ''),
+      this.color.replace(/["']/g, ''),
     );
-    colorCircle.setAttributeNS(null, 'r', '5');
-    colorCircle.setAttributeNS(null, 'cx', '5');
-    colorCircle.setAttributeNS(null, 'cy', '5');
+    colorCircle.setAttributeNS(null, 'stroke', 'black');
+    colorCircle.setAttributeNS(
+      null,
+      'r',
+      '' + innerSize / 2,
+    );
+    colorCircle.setAttributeNS(null, 'cx', '' + size / 2);
+    colorCircle.setAttributeNS(
+      null,
+      'cy',
+      '' + (size / 2 - 1),
+    );
 
-    svg.setAttributeNS(null, 'viewBox', '0 0 10 10');
-    svg.setAttributeNS(null, 'width', '10');
-    svg.setAttributeNS(null, 'height', '10');
+    svg.setAttributeNS(null, 'width', '' + size);
+    svg.setAttributeNS(null, 'height', '' + size);
 
     svg.appendChild(colorCircle);
 
