@@ -6,7 +6,7 @@ import { VZCodeContext } from './VZCodeContext';
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
 // * The settings modal
-export const VZLeft = () => {
+export const VZLeft = ({ enableUsernameField = true }) => {
   // TODO leverage this context in deeper levels of the component tree.
   const {
     files,
@@ -50,6 +50,7 @@ export const VZLeft = () => {
         setTheme={setTheme}
         username={username}
         setUsername={setUsername}
+        enableUsernameField={enableUsernameField}
       />
     </div>
   );

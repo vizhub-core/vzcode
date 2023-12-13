@@ -13,7 +13,7 @@ import { VZCodeContext } from './VZCodeContext';
 // * The code error overlay
 // * The presence notifications
 // * The UI for AI Assist
-export const VZMiddle = () => {
+export const VZMiddle = ({ enableAIAssist = true }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
   );
@@ -78,7 +78,7 @@ export const VZMiddle = () => {
         docPresence={docPresence}
         localPresence={localPresence}
       />
-      {content && activeFileId ? (
+      {enableAIAssist && content && activeFileId ? (
         <AIAssistWidget
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
