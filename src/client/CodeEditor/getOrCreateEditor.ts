@@ -40,6 +40,7 @@ import { typeScriptLinter } from './typeScriptLinter';
 import { TabState } from '../vzReducer';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
+import { isArrayBindingElement } from 'typescript';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -294,7 +295,17 @@ export const getOrCreateEditor = ({
 
   // VSCode keybindings
   // See https://github.com/replit/codemirror-vscode-keymap#usage
-  extensions.push(keymap.of(vscodeKeymap));
+  // extensions.push(keymap.of(vscodeKeymap));
+  extensions.push(
+    keymap.of(
+      vscodeKeymap.map((binding) => {
+        if (binding.key === 'Enter') {
+          delete binding.shift;
+        }
+        return binding;
+      }),
+    ),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({

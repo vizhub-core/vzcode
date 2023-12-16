@@ -21,4 +21,5 @@ export {
   SplitPaneResizeProvider,
   SplitPaneResizeContext,
   useSubmitOperation,
+  shouldTriggerRun,
 } from './client';
