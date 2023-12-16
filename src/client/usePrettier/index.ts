@@ -1,4 +1,4 @@
-import { JSONOp } from 'ot-json1';
+import { JSONOp } from '../../ot';
 import {
   FileId,
   ShareDBDoc,
@@ -20,16 +20,23 @@ const extension = (fileName: string) => {
   }
 };
 
-export const usePrettier = (
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null,
+export const usePrettier = ({
+  shareDBDoc,
+  submitOperation,
+  prettierWorker,
+  enableManualPretter,
+}: {
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
-  ) => void,
-  prettierWorker: Worker,
-) => {
+  ) => void;
+  prettierWorker: Worker;
+  enableManualPretter: boolean;
+}) => {
   // The set of files that have been modified
   // since the last Prettier run.
-  const dirtyFiles: Set<FileId> = new Set<FileId>();
+  // const dirtyFiles: Set<FileId> = new Set<FileId>();
+  const dirtyFilesRef = useRef<Set<FileId>>(new Set());
 
   // State to hold the error from Prettier
   // `null` means no errors
@@ -95,6 +102,9 @@ export const usePrettier = (
       // Get the files
       const files = content.files;
 
+      // Get the set of dirty files
+      const dirtyFiles = dirtyFilesRef.current;
+
       // Get the dirty files
       const dirtyFileIds = Array.from(dirtyFiles);
 
@@ -118,19 +128,34 @@ export const usePrettier = (
       }
     };
 
-    // Function to debounce running Prettier
+    let debouncePrettier;
     let debounceTimeout;
-    function debouncePrettier() {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(
-        runPrettier,
-        autoPrettierDebounceTimeMS,
-      );
-    }
+    let handleKeyDown;
+    if (enableManualPretter) {
+      handleKeyDown = (event: KeyboardEvent) => {
+        if (event.ctrlKey && event.key === 's') {
+          event.preventDefault();
+          runPrettier();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+    } else {
+      // Function to debounce running Prettier
 
-    //Stops prettier from running when you perform a mouse move or a keydown
-    window.addEventListener('mousemove', debouncePrettier);
-    window.addEventListener('keydown', debouncePrettier);
+      debouncePrettier = () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(
+          runPrettier,
+          autoPrettierDebounceTimeMS,
+        );
+      };
+      //Stops prettier from running when you perform a mouse move or a keydown
+      window.addEventListener(
+        'mousemove',
+        debouncePrettier,
+      );
+      window.addEventListener('keydown', debouncePrettier);
+    }
 
     // Listen for changes
     shareDBDoc.on(
@@ -170,11 +195,12 @@ export const usePrettier = (
             const fileId: FileId = op[1];
 
             // Add the file id to the set of dirty files
-            dirtyFiles.add(fileId);
+            dirtyFilesRef.current.add(fileId);
 
             // Debounce running Prettier
-            debouncePrettier();
-
+            if (!enableManualPretter) {
+              debouncePrettier();
+            }
             // console.log('Op is for file', fileId);
           }
         } else {
@@ -190,17 +216,24 @@ export const usePrettier = (
         'message',
         handleMessage,
       );
-      window.removeEventListener(
-        'keydown',
-        debouncePrettier,
-      );
-      window.removeEventListener(
-        'mousemove',
-        debouncePrettier,
-      );
+      if (enableManualPretter) {
+        document.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        );
+      } else {
+        window.removeEventListener(
+          'keydown',
+          debouncePrettier,
+        );
+        window.removeEventListener(
+          'mousemove',
+          debouncePrettier,
+        );
 
-      // Clear the timeout
-      clearTimeout(debounceTimeout);
+        // Clear the timeout
+        clearTimeout(debounceTimeout);
+      }
     };
   }, [shareDBDoc]);
   return { prettierError }; // Return the errors for use in other files
