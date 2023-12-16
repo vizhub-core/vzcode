@@ -94,6 +94,7 @@ export const VZCodeProvider = ({
   initialUsername,
   children,
   codeError = null,
+  enableManualPretter = false,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -107,17 +108,19 @@ export const VZCodeProvider = ({
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
+  enableManualPretter?: boolean;
 }) => {
   // Auto-run Pretter after local changes.
   const {
     prettierError,
   }: {
     prettierError: string | null;
-  } = usePrettier(
+  } = usePrettier({
     shareDBDoc,
     submitOperation,
     prettierWorker,
-  );
+    enableManualPretter,
+  });
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
