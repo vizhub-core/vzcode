@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { computeInitialDocument } from '../src/server/computeInitialDocument';
+import { getRequiredHeader } from 'openai/core';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -137,4 +138,41 @@ describe('Listing files', () => {
       },
     ]);
   });
+});
+
+it('should list files, respecting .ignore files', () => {
+  expect(getSampleFiles('listFilesIgnore')).toEqual([
+    {
+      text: 'ignoredFile\nignoredDirectory/*\n!ignoredDirectory/keptFile\n',
+      name: '.ignore',
+    },
+    {
+      text: '',
+      name: 'file',
+    },
+    {
+      text: null,
+      name: 'ignoredDirectory/',
+    },
+    {
+      text: '',
+      name: 'ignoredDirectory/keptFile',
+    },
+    {
+      text: null,
+      name: 'subdirectory/',
+    },
+    {
+      text: 'ignoredSubdirectoryFile\n',
+      name: 'subdirectory/.ignore',
+    },
+    {
+      text: '',
+      name: 'subdirectory/file',
+    },
+    {
+      text: '',
+      name: 'subdirectory/subdirectoryFile',
+    },
+  ]);
 });
