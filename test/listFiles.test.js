@@ -176,3 +176,131 @@ it('should list files, respecting .ignore files', () => {
     },
   ]);
 });
+it('should list files, respecting .ignore files, when directory names include special characters', () => {
+  expect(getSampleFiles('listFilesIgnoreEscape')).toEqual([
+    {
+      text: null,
+      name: '!/',
+    },
+    {
+      text: '/ignored\nignored\\!',
+      name: '!/.ignore',
+    },
+    {
+      text: '',
+      name: '!/kept',
+    },
+    {
+      text: null,
+      name: '#/',
+    },
+    {
+      text: '/ignored\nignored\\#',
+      name: '#/.ignore',
+    },
+    {
+      text: '',
+      name: '#/kept',
+    },
+    {
+      text: null,
+      name: '**/',
+    },
+    {
+      text: '/ignored\nignored\\*\\*\n',
+      name: '**/.ignore',
+    },
+    {
+      text: '',
+      name: '**/kept',
+    },
+    {
+      text: null,
+      name: '**/subdirectory/',
+    },
+    {
+      text: '',
+      name: '**/subdirectory/ignored',
+    },
+    {
+      text: '',
+      name: '**/subdirectory/kept',
+    },
+    {
+      text: null,
+      name: '*/',
+    },
+    {
+      text: '/ignored\nignored\\*',
+      name: '*/.ignore',
+    },
+    {
+      text: '',
+      name: '*/kept',
+    },
+    {
+      text: '/ignored\nignoredRoot\n',
+      name: '.ignore',
+    },
+    {
+      text: null,
+      name: '?/',
+    },
+    {
+      text: '/ignored\nignored\\?',
+      name: '?/.ignore',
+    },
+    {
+      text: '',
+      name: '?/ignored',
+    },
+    {
+      text: '',
+      name: '?/ignored?',
+    },
+    {
+      text: '',
+      name: '?/kept',
+    },
+    {
+      text: null,
+      name: '[/',
+    },
+    {
+      text: '/ignored\nignored\\[',
+      name: '[/.ignore',
+    },
+    {
+      text: '',
+      name: '[/kept',
+    },
+    {
+      text: null,
+      name: '\\/',
+    },
+    {
+      text: '/ignored\nignored\\',
+      name: '\\/.ignore',
+    },
+    {
+      text: '',
+      name: '\\/ignored\\',
+    },
+    {
+      text: '',
+      name: '\\/kept',
+    },
+    {
+      text: null,
+      name: ']/',
+    },
+    {
+      text: '/ignored\nignored\\]',
+      name: ']/.ignore',
+    },
+    {
+      text: '',
+      name: ']/kept',
+    },
+  ]);
+});

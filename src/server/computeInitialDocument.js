@@ -27,19 +27,29 @@ const parseIgnoreFile = (
   );
   const content = fs.readFileSync(filePath, 'utf8');
   const globs = content
-    .split(/(?:[\n\r]\s*)+/)
+    .split(/(?:[\n\r])+/)
     .filter(
+      // remove blank line and comments
       (line) => line.length > 0 && !line.startsWith('#'),
     )
     .map((line) => {
-      const { bang, glob } = line.match(
-        /^(?<bang>!?)(?<glob>.*)$/,
+      const { bang, slash, glob } = line.match(
+        /^(?<bang>!?)(?<slash>\/?)(?<glob>.*)$/,
       ).groups;
+      const hasSlash =
+        Boolean(slash) || /\/.*\S/.test(glob);
       const relativeGlob = path.posix.join(
-        currentDirectory,
+        currentDirectory.replace(
+          // escape characters ith special meaning in glob expressions
+          /[*?!# \[\]\\]/g,
+          (char) => '\\' + char,
+        ),
+        // a pattern that doesn't include a slash (not counting a trailing one) matches files in any descendant directory od the current one
+        hasSlash ? '' : '**',
         glob,
       );
-      return bang + relativeGlob;
+      // preserve leading ! and / characters
+      return bang + slash + relativeGlob;
     });
   if (debugDirectories) {
     console.debug(
