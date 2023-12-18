@@ -40,7 +40,6 @@ import { typeScriptLinter } from './typeScriptLinter';
 import { TabState } from '../vzReducer';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
-import { isArrayBindingElement } from 'typescript';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
