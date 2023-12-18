@@ -294,7 +294,20 @@ export const getOrCreateEditor = ({
 
   // VSCode keybindings
   // See https://github.com/replit/codemirror-vscode-keymap#usage
-  extensions.push(keymap.of(vscodeKeymap));
+  // extensions.push(keymap.of(vscodeKeymap));
+  extensions.push(
+    keymap.of(
+      vscodeKeymap.map((binding) => {
+        // Here we override the Shift+Enter behavior specifically,
+        // as that can be used to trigger a manual save/Prettier,
+        // and the default behavior from the keymap interferes.
+        if (binding.key === 'Enter') {
+          delete binding.shift;
+        }
+        return binding;
+      }),
+    ),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({
