@@ -96,6 +96,7 @@
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "ignore": "^5.3.0",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^9.1.0",
