@@ -4,7 +4,6 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { computeInitialDocument } from '../src/server/computeInitialDocument';
-import { getRequiredHeader } from 'openai/core';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
