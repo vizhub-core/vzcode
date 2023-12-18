@@ -178,8 +178,17 @@ it('should list files, respecting .ignore files', () => {
 it('should list files, respecting .ignore files, when directory names include special characters', () => {
   expect(getSampleFiles('listFilesIgnoreEscape')).toEqual([
     {
+      name: ' /',
       text: null,
+    },
+    {
+      name: ' /.ignore',
+      text: '/ignored\nignored\\ \n',
+    },
+    { name: ' /kept', text: '' },
+    {
       name: '!/',
+      text: null,
     },
     {
       text: '/ignored\nignored\\!',
