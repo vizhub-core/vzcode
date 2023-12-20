@@ -4,8 +4,10 @@ import { randomId } from '../randomId.js';
 import {
   enableDirectories,
   debugDirectories,
+  debugIgnore,
 } from './featureFlags.js';
 import createIgnore from 'ignore';
+import { ignoreFilePattern, baseIgnore } from './config.js';
 
 const isDirectory = (file) => file.endsWith('/');
 
@@ -27,7 +29,7 @@ const parseIgnoreFile = (
   );
   const content = fs.readFileSync(filePath, 'utf8');
   const globs = content
-    .split(/(?:[\n\r])+/)
+    .split(/[\n\r]+/)
     .filter(
       // remove blank line and comments
       (line) => line.length > 0 && !line.startsWith('#'),
@@ -40,7 +42,7 @@ const parseIgnoreFile = (
         Boolean(slash) || /\/.*\S/.test(glob);
       const relativeGlob = path.posix.join(
         currentDirectory.replace(
-          // escape characters ith special meaning in glob expressions
+          // escape characters with special meaning in glob expressions
           /[*?!# \[\]\\]/g,
           (char) => '\\' + char,
         ),
@@ -48,10 +50,10 @@ const parseIgnoreFile = (
         hasSlash ? '' : '**',
         glob,
       );
-      // preserve leading ! and / characters
+      // preserve leading `!` and `/` characters
       return bang + slash + relativeGlob;
     });
-  if (debugDirectories) {
+  if (debugIgnore) {
     console.debug(
       'at',
       currentDirectory,
@@ -94,18 +96,21 @@ export const computeInitialDocument = ({ fullPath }) => {
    */
   let files = [];
 
-  // default paths to ignore
-  const globs = ['.git'];
-  const ignoreStack = [
-    { ignore: createIgnore().add('globs'), globs },
-  ];
+  const ignoreFileMatcher = createIgnore().add(
+    ignoreFilePattern,
+  );
+  const isIgnoreFile = (fileName) =>
+    ignoreFileMatcher.ignores(fileName);
 
   const unsearchedDirectories = [
-    { currentDirectory: '.', ignoreStack },
+    {
+      currentDirectory: '.',
+      ignore: createIgnore().add(baseIgnore),
+    },
   ];
 
   while (unsearchedDirectories.length !== 0) {
-    const { currentDirectory, ignoreStack } =
+    const { currentDirectory, ignore: parentIgnore } =
       unsearchedDirectories.pop();
     const currentDirectoryPath = path.join(
       fullPath,
@@ -122,13 +127,10 @@ export const computeInitialDocument = ({ fullPath }) => {
     const ignoreFiles = dirEntries
       .filter(
         (dirent) =>
-          dirent.isFile() &&
-          /^\.(?:git)?ignore$/.test(dirent.name),
+          dirent.isFile() && isIgnoreFile(dirent.name),
       )
       .map((file) => file.name);
-    const ignoreEntry = ignoreStack.at(-1);
-    let { ignore } = ignoreEntry;
-    let newIgnoreStack = ignoreStack;
+    let ignore = parentIgnore;
     if (ignoreFiles.length > 0) {
       const globs = ignoreFiles.flatMap((fileName) =>
         parseIgnoreFile(
@@ -137,33 +139,20 @@ export const computeInitialDocument = ({ fullPath }) => {
           fileName,
         ),
       );
-      const newEntry = { ignore, globs };
-      newIgnoreStack = ignoreStack.slice();
-      newIgnoreStack.push(newEntry);
-      ignore = createIgnore().add(
-        newIgnoreStack.flatMap((entry) => entry.globs),
-      );
-      newEntry.ignore = ignore;
-      if (debugDirectories) {
-        console.debug(
-          'at',
-          currentDirectory,
-          'ignoring globs',
-          newIgnoreStack.map((item) => item.globs),
-        );
-      }
+      ignore = createIgnore().add(parentIgnore).add(globs);
     }
     const newFiles = dirEntries
       .filter((dirent) => {
-        let keep = !ignore.ignores(
-          path.posix.join(currentDirectory, dirent.name),
-        );
-        if (debugDirectories && !keep) {
+        const relativePath =
+          path.posix.join(currentDirectory, dirent.name) +
+          (dirent.isDirectory() ? '/' : '');
+        const keep = !ignore.ignores(relativePath);
+        if (debugIgnore && !keep) {
           console.debug(
             'at',
             currentDirectory,
             'ignoring',
-            dirent.name,
+            relativePath,
           );
         }
         return keep;
@@ -180,7 +169,7 @@ export const computeInitialDocument = ({ fullPath }) => {
         }
         unsearchedDirectories.push({
           currentDirectory: relativePath,
-          ignoreStack: newIgnoreStack,
+          ignore,
         });
         return relativePath + '/';
       });
