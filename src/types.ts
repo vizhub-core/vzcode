@@ -142,7 +142,7 @@ export type AIStreamStatus = {
 export type VZCodeContent = {
   // `files`
   //   * The files in the VZCode instance.
-  files: Files;
+  files?: Files;
 
   // `isInteracting`
   //   * `true` when the user is interacting
