@@ -1,8 +1,6 @@
 // FileId
 //   * A unique ID for a file.
 
-import { JSONOp } from 'ot-json1';
-
 //   * This is a random string.
 export type FileId = string;
 
@@ -59,6 +57,8 @@ export interface FileTreeFile {
   file: File;
   fileId: FileId;
 }
+
+export type JSONOp = any;
 
 // `ShareDBDoc`
 // A ShareDB Document.
