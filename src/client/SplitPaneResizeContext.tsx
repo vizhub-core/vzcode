@@ -87,6 +87,9 @@ type SplitPaneState = {
 
   // False on first render
   isInitialized: boolean;
+  // whether the last change to the state was performed manually by the user
+  // false in case of wimdow resizes
+  manual: boolean;
 };
 
 const initialState: SplitPaneState = {
@@ -108,6 +111,7 @@ const initialState: SplitPaneState = {
   // Solution for hydration errors: we set the value from localStorage
   // in a layoutEffect that happens after first render.
   isInitialized: false,
+  manual: false,
 };
 
 type SplitPaneAction =
@@ -115,6 +119,7 @@ type SplitPaneAction =
       type: 'move';
       side: Side;
       movementX: number;
+      manual: boolean;
     }
   | {
       type: 'setIsDragging';
@@ -123,6 +128,9 @@ type SplitPaneAction =
     }
   | {
       type: 'initialize';
+    }
+  | {
+      type: 'resize';
     };
 
 const clamp = (width: number) => {
@@ -131,6 +139,7 @@ const clamp = (width: number) => {
     Math.min(window.innerWidth - 10, width),
   );
 };
+
 const splitPaneReducer = (
   state: SplitPaneState,
   action: SplitPaneAction,
@@ -143,16 +152,28 @@ const splitPaneReducer = (
         codeEditorWidth: initialCodeEditorWidth,
         isInitialized: true,
       };
+    case 'resize':
+      if (state.sidebarWidth > window.innerWidth - 10) {
+        return {
+          ...state,
+          manual: false,
+          sidebarWidth: clamp(state.sidebarWidth),
+        };
+      } else {
+        return state;
+      }
     case 'move':
       return action.side === 'left'
         ? {
             ...state,
+            manual: state.manual,
             sidebarWidth: clamp(
               state.sidebarWidth + action.movementX,
             ),
           }
         : {
             ...state,
+            manual: state.manual,
             codeEditorWidth:
               state.codeEditorWidth + action.movementX,
           };
@@ -187,7 +208,12 @@ export const SplitPaneResizeProvider = ({ children }) => {
 
   const moveSplitPane = useCallback(
     (movementX: number, side: Side) => {
-      dispatch({ type: 'move', movementX, side });
+      dispatch({
+        type: 'move',
+        manual: true,
+        movementX,
+        side,
+      });
     },
     [dispatch],
   );
@@ -198,6 +224,7 @@ export const SplitPaneResizeProvider = ({ children }) => {
     isDraggingLeft,
     isDraggingRight,
     isInitialized,
+    manual,
   } = state;
 
   // Logic around initializing from localStorage.
@@ -212,6 +239,11 @@ export const SplitPaneResizeProvider = ({ children }) => {
 
   // Logic around storing the values in localStorage.
   useEffect(() => {
+    if (!manual) {
+      // avpid changing local storage for chamges that were caused by resizing
+      // the window rather than dragging the resizers
+      return;
+    }
     if (sidebarWidth !== initialSidebarWidth) {
       setTimeout(() => {
         window.localStorage.setItem(
@@ -229,7 +261,15 @@ export const SplitPaneResizeProvider = ({ children }) => {
         );
       }, localStorageWriteDebounceMS);
     }
-  }, [codeEditorWidth, sidebarWidth]);
+  }, [manual, codeEditorWidth, sidebarWidth]);
+
+  // handle window resizes
+  useEffect(() => {
+    const handler = () => dispatch({ type: 'resize' });
+    window.addEventListener('resize', handler);
+    return () =>
+      window.removeEventListener('resize', handler);
+  }, []);
 
   const value: SplitPaneResizeContextValue = {
     codeEditorWidth,
