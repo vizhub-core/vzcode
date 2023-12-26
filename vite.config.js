@@ -5,11 +5,11 @@ const APP_PORT = 3030;
 
 /** @returns {import('vite').Plugin} */
 const startServerPlugin = () => {
-  let start = process.argv.includes('--open');
+  let start = true;
   return {
     name: 'start-vzcode-server',
-    async configureServer({ config: { logger } }) {
-      if (!start) {
+    async configureServer({ config: { logger, mode } }) {
+      if (mode !== 'fullstack' || !start) {
         return;
       }
       const { createServer } = await import(

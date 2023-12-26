@@ -12,7 +12,7 @@
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
     "dev": "vite",
-    "dev-fullstack": "vite --open",
+    "dev-fullstack": "vite --open --mode fullstack",
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "vite preview",
