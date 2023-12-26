@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
@@ -14,10 +13,6 @@ import { VZCodeContext } from './VZCodeContext';
 // * The presence notifications
 // * The UI for AI Assist
 export const VZMiddle = ({ enableAIAssist = true }) => {
-  const { codeEditorWidth } = useContext(
-    SplitPaneResizeContext,
-  );
-
   // TODO leverage this context in deeper levels of the component tree.
   const {
     content,
@@ -42,10 +37,7 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
   } = useContext(VZCodeContext);
 
   return activeFileId !== null ? (
-    <div
-      className="middle"
-      style={{ width: codeEditorWidth + 'px' }}
-    >
+    <div className="middle">
       <TabList
         files={files}
         tabList={tabList}

@@ -46,13 +46,14 @@ body,
   //   'Apple Color Emoji', 'Segoe UI Emoji';
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 
   /* To support Resizer, which is position: absolute */
   position: relative;
   contain: paint;
 
-  .left {
-    flex: 0 1 auto;
+  .left, .right {
+    flex: none;
     contain: size paint;
   }
 
@@ -67,11 +68,10 @@ body,
   .middle {
     flex: 1;
     flex-direction: column;
-    min-width: 0;
+    contain: size paint;
   }
 
   .right {
-    flex: 1;
     background-color: white;
 
     iframe {

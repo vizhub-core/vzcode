@@ -1,12 +1,17 @@
-// Displays the Vite devserver iframe.
-// TODO test this out, think this through.
-// Purpose: support folks using VZCode as the editor
-// for their Vite-based projects.
-const enableIframe = false;
+import { useContext } from 'react';
+import { enableIframe } from './featureFlags';
+import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 
 export const VZRight = () => {
+  const { rightPanelWidth } = useContext(
+    SplitPaneResizeContext,
+  );
+
   return (
-    <div className="right">
+    <div
+      className="right"
+      style={{ width: rightPanelWidth + 'px' }}
+    >
       {enableIframe ? (
         <iframe src="http://localhost:5173/"></iframe>
       ) : null}

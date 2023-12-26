@@ -10,8 +10,8 @@ import {
 export type Side = 'left' | 'right';
 
 export type SplitPaneResizeContextValue = {
-  codeEditorWidth: number;
-  sidebarWidth: number;
+  rightPanelWidth: number;
+  leftPanelWidth: number;
   moveSplitPane: (a: number, side: Side) => void;
   isDraggingRight: boolean;
   isDraggingLeft: boolean;
@@ -27,16 +27,16 @@ const enableLocalStorage = true;
 const localStorageWriteDebounceMS = 800;
 
 // Properties in LocalStorage
-const sidebarWidthProperty = 'vzCodeSidebarWidth';
-const codeEditorWidthProperty = 'vzCodeCodeEditorWidth';
+const leftPanelWidthProperty = 'vzCodeLeftPanelWidth';
+const rightPanelWidthProperty = 'vzCodeRightPanelWidth';
 
-const initialSidebarWidthDefault = 220;
-let initialSidebarWidth: number =
-  initialSidebarWidthDefault;
+const initialLeftPanelWidthDefault = 220;
+let initialLeftPanelWidth: number =
+  initialLeftPanelWidthDefault;
 
-const initialCodeEditorWidthDefault = 800;
-let initialCodeEditorWidth: number =
-  initialCodeEditorWidthDefault;
+const initialRightPanelWidthDefault = 800;
+let initialRightPanelWidth: number =
+  initialRightPanelWidthDefault;
 
 // If no value is found in localStorage, we'll use the default.
 let needsInitialization = false;
@@ -44,22 +44,22 @@ let needsInitialization = false;
 // If we're in the browser,
 if (typeof window !== 'undefined' && enableLocalStorage) {
   //check localStorage for a previously stored width.
-  const sidebarWidthLocal: string | null =
-    window.localStorage.getItem(sidebarWidthProperty);
+  const leftPanelWidthLocal: string | null =
+    window.localStorage.getItem(leftPanelWidthProperty);
 
-  const codeEditorWidthLocal: string | null =
-    window.localStorage.getItem(codeEditorWidthProperty);
+  const rightPanelWidthLocal: string | null =
+    window.localStorage.getItem(rightPanelWidthProperty);
 
   // If there is a previously stored width,
-  if (sidebarWidthLocal !== null) {
+  if (leftPanelWidthLocal !== null) {
     // use it as the initial width.
-    initialSidebarWidth = +sidebarWidthLocal;
+    initialLeftPanelWidth = +leftPanelWidthLocal;
     needsInitialization = true;
   }
 
-  if (codeEditorWidthLocal !== null) {
+  if (rightPanelWidthLocal !== null) {
     // use it as the initial width.
-    initialCodeEditorWidth = +codeEditorWidthLocal;
+    initialRightPanelWidth = +rightPanelWidthLocal;
     needsInitialization = true;
   }
 } else {
@@ -67,8 +67,8 @@ if (typeof window !== 'undefined' && enableLocalStorage) {
 }
 
 const initialValue: SplitPaneResizeContextValue = {
-  codeEditorWidth: initialCodeEditorWidth,
-  sidebarWidth: initialSidebarWidth,
+  rightPanelWidth: initialRightPanelWidth,
+  leftPanelWidth: initialLeftPanelWidth,
   moveSplitPane: () => {},
   isDraggingRight: false,
   isDraggingLeft: false,
@@ -80,8 +80,8 @@ export const SplitPaneResizeContext =
 
 type SplitPaneState = {
   // The width of the sidebar, in pixels.
-  sidebarWidth: number;
-  codeEditorWidth: number;
+  leftPanelWidth: number;
+  rightPanelWidth: number;
   isDraggingLeft: boolean;
   isDraggingRight: boolean;
 
@@ -93,8 +93,8 @@ type SplitPaneState = {
 };
 
 const initialState: SplitPaneState = {
-  // sidebarWidth: initialSidebarWidth,
-  // codeEditorWidth: initialCodeEditorWidth,
+  // leftPanelWidth: initialLeftPanelWidth,
+  // rightPanelWidth: initialRightPanelWidth,
 
   // These need to match between SSR and the first
   // client-side render (hydration), to avoid
@@ -103,8 +103,8 @@ const initialState: SplitPaneState = {
   //  * Server: "left:210px;width:20px"
   //  * Client: "left:218px;width:20px"
 
-  sidebarWidth: initialSidebarWidthDefault,
-  codeEditorWidth: initialCodeEditorWidthDefault,
+  leftPanelWidth: initialLeftPanelWidthDefault,
+  rightPanelWidth: initialRightPanelWidthDefault,
   isDraggingLeft: false,
   isDraggingRight: false,
 
@@ -119,7 +119,6 @@ type SplitPaneAction =
       type: 'move';
       side: Side;
       movementX: number;
-      manual: boolean;
     }
   | {
       type: 'setIsDragging';
@@ -148,16 +147,20 @@ const splitPaneReducer = (
     case 'initialize':
       return {
         ...state,
-        sidebarWidth: initialSidebarWidth,
-        codeEditorWidth: initialCodeEditorWidth,
+        leftPanelWidth: initialLeftPanelWidth,
+        rightPanelWidth: initialRightPanelWidth,
         isInitialized: true,
       };
     case 'resize':
-      if (state.sidebarWidth > window.innerWidth - 10) {
+      if (
+        state.leftPanelWidth > window.innerWidth - 10 ||
+        state.rightPanelWidth > window.innerWidth - 10
+      ) {
         return {
           ...state,
           manual: false,
-          sidebarWidth: clamp(state.sidebarWidth),
+          leftPanelWidth: clamp(state.leftPanelWidth),
+          rightPanelWidth: clamp(state.rightPanelWidth),
         };
       } else {
         return state;
@@ -166,16 +169,17 @@ const splitPaneReducer = (
       return action.side === 'left'
         ? {
             ...state,
-            manual: state.manual,
-            sidebarWidth: clamp(
-              state.sidebarWidth + action.movementX,
+            manual: true,
+            leftPanelWidth: clamp(
+              state.leftPanelWidth + action.movementX,
             ),
           }
         : {
             ...state,
-            manual: state.manual,
-            codeEditorWidth:
-              state.codeEditorWidth + action.movementX,
+            manual: true,
+            rightPanelWidth: clamp(
+              state.rightPanelWidth - action.movementX,
+            ),
           };
     // Handle setIsDragging
     case 'setIsDragging':
@@ -210,7 +214,6 @@ export const SplitPaneResizeProvider = ({ children }) => {
     (movementX: number, side: Side) => {
       dispatch({
         type: 'move',
-        manual: true,
         movementX,
         side,
       });
@@ -219,8 +222,8 @@ export const SplitPaneResizeProvider = ({ children }) => {
   );
 
   const {
-    sidebarWidth,
-    codeEditorWidth,
+    leftPanelWidth,
+    rightPanelWidth,
     isDraggingLeft,
     isDraggingRight,
     isInitialized,
@@ -244,36 +247,37 @@ export const SplitPaneResizeProvider = ({ children }) => {
       // the window rather than dragging the resizers
       return;
     }
-    if (sidebarWidth !== initialSidebarWidth) {
+    if (leftPanelWidth !== initialLeftPanelWidth) {
       setTimeout(() => {
         window.localStorage.setItem(
-          sidebarWidthProperty,
-          '' + sidebarWidth,
+          leftPanelWidthProperty,
+          '' + leftPanelWidth,
         );
       }, localStorageWriteDebounceMS);
     }
 
-    if (codeEditorWidth !== initialCodeEditorWidth) {
+    if (rightPanelWidth !== initialRightPanelWidth) {
       setTimeout(() => {
         window.localStorage.setItem(
-          codeEditorWidthProperty,
-          '' + codeEditorWidth,
+          rightPanelWidthProperty,
+          '' + rightPanelWidth,
         );
       }, localStorageWriteDebounceMS);
     }
-  }, [manual, codeEditorWidth, sidebarWidth]);
+  }, [manual, rightPanelWidth, leftPanelWidth]);
 
   // handle window resizes
   useEffect(() => {
     const handler = () => dispatch({ type: 'resize' });
+    handler();
     window.addEventListener('resize', handler);
     return () =>
       window.removeEventListener('resize', handler);
   }, []);
 
   const value: SplitPaneResizeContextValue = {
-    codeEditorWidth,
-    sidebarWidth,
+    rightPanelWidth,
+    leftPanelWidth,
     moveSplitPane,
     isDraggingLeft,
     isDraggingRight,

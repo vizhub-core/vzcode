@@ -28,19 +28,14 @@ const resizerThumbWidth = 4;
 
 export const VZResizer = ({ side }: { side: Side }) => {
   const {
-    sidebarWidth,
-    codeEditorWidth,
+    [side === 'right'
+      ? 'rightPanelWidth'
+      : 'leftPanelWidth']: panelWidth,
     moveSplitPane,
     isDraggingRight,
     isDraggingLeft,
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
-
-  // If there is no active file, don't render the resizer
-  // for the right side.
-  const { activeFileId } = useContext(VZCodeContext);
-  const shouldRenderResizer =
-    side === 'left' || activeFileId;
 
   const previousClientX = useRef<number>(0);
   const pointerId = useRef<number>(null);
@@ -115,18 +110,12 @@ export const VZResizer = ({ side }: { side: Side }) => {
     ? resizerInteractionSurfaceWidthWhileDragging
     : resizerInteractionSurfaceWidth;
 
-  const left =
-    (side === 'left'
-      ? sidebarWidth
-      : sidebarWidth + codeEditorWidth) -
-    resizerWidth / 2;
-
-  return shouldRenderResizer ? (
+  return (
     <div
       className="vz-resizer"
       onPointerDown={onPointerDown}
       style={{
-        left,
+        [side]: panelWidth - resizerWidth / 2,
         width: resizerWidth,
       }}
     >
@@ -138,5 +127,5 @@ export const VZResizer = ({ side }: { side: Side }) => {
         }}
       />
     </div>
-  ) : null;
+  );
 };

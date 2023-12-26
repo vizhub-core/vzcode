@@ -29,14 +29,14 @@ export const VZLeft = ({ enableUsernameField = true }) => {
     toggleDirectory,
   } = useContext(VZCodeContext);
 
-  const { sidebarWidth } = useContext(
+  const { leftPanelWidth } = useContext(
     SplitPaneResizeContext,
   );
 
   return (
     <div
       className="left"
-      style={{ width: sidebarWidth + 'px' }}
+      style={{ width: leftPanelWidth + 'px' }}
     >
       <VZSidebar
         files={files}
