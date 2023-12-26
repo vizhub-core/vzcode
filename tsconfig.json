@@ -3,6 +3,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "skipLibCheck": true,
+    "module": "es2020",
+    "moduleResolution": "bundler",
     "esModuleInterop": true
   },
   "include": ["src/**/*"],

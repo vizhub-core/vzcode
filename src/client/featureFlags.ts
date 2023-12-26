@@ -1,3 +1,5 @@
+// edit env.d.ts to change the properties declared on import.meta.env
+
 // A feature flag to disable settings for release, until it's completed.
 // See https://vitejs.dev/guide/env-and-mode.html
 export const disableSettings =
