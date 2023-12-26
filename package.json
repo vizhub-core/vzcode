@@ -8,7 +8,7 @@
   "files": ["dist/**", "src/**"],
   "scripts": {
     "test": "vitest run",
-    "test-interactive": "npm run build; cd test/sampleDirectories/kitchenSink; node ../../../src/server/index.js",
+    "test-interactive": "npm run build; cd test/sampleDirectories/kitchenSink; node ../../../src/server/cli.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
     "dev": "vite",
