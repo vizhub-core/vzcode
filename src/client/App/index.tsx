@@ -21,6 +21,7 @@ import {
   VZCodeProvider,
 } from '../VZCodeContext';
 import './style.scss';
+import { enableRightPanel } from '../featureFlags';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -67,14 +68,6 @@ function App() {
 
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
-
-  // Feature flag for enabling the right-side panel.
-  // Useful for debugging dual split pane functionality.
-  // We may want to add this as an actual VZCode feature,
-  // for running the code that the VZCode user is developing
-  // in the same browser window as the VZCode editor,
-  // so that multiple browser windows are not required.
-  const enableRightPanel = true;
 
   return (
     <SplitPaneResizeProvider>
