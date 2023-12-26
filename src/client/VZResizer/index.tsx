@@ -43,19 +43,24 @@ export const VZResizer = ({ side }: { side: Side }) => {
     side === 'left' || activeFileId;
 
   const previousClientX = useRef<number>(0);
+  const pointerId = useRef<number>(null);
 
-  const onMouseDown = useCallback(
-    (event: React.MouseEvent) => {
+  const onPointerDown = useCallback(
+    (event: React.PointerEvent) => {
       event.preventDefault();
       previousClientX.current = event.clientX;
+      pointerId.current = event.pointerId;
       setIsDragging(true, side);
       document.body.style.cursor = 'col-resize';
     },
     [setIsDragging, side],
   );
 
-  const onMouseMove = useCallback(
-    (event: MouseEvent) => {
+  const onPointerMove = useCallback(
+    (event: PointerEvent) => {
+      if (pointerId.current !== event.pointerId) {
+        return;
+      }
       event.preventDefault();
       const movementX =
         event.clientX - previousClientX.current;
@@ -65,10 +70,17 @@ export const VZResizer = ({ side }: { side: Side }) => {
     [moveSplitPane, side],
   );
 
-  const onMouseUp = useCallback(() => {
-    setIsDragging(false, side);
-    document.body.style.cursor = 'default';
-  }, [setIsDragging, side]);
+  const onPointerUp = useCallback(
+    (event: PointerEvent) => {
+      if (pointerId.current !== event.pointerId) {
+        return;
+      }
+      pointerId.current = null;
+      setIsDragging(false, side);
+      document.body.style.cursor = 'default';
+    },
+    [setIsDragging, side],
+  );
 
   // Is the resizer currently being dragged?
   const isDragging =
@@ -77,17 +89,27 @@ export const VZResizer = ({ side }: { side: Side }) => {
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener(
+        'pointermove',
+        onPointerMove,
+      );
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener(
+        'pointercancel',
+        onPointerUp,
+      );
       return () => {
         document.removeEventListener(
-          'mousemove',
-          onMouseMove,
+          'pointermove',
+          onPointerMove,
         );
-        document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener(
+          'pointerup',
+          onPointerUp,
+        );
       };
     }
-  }, [isDragging, onMouseMove, onMouseUp]);
+  }, [isDragging, onPointerMove, onPointerUp]);
 
   const resizerWidth = isDragging
     ? resizerInteractionSurfaceWidthWhileDragging
@@ -102,7 +124,7 @@ export const VZResizer = ({ side }: { side: Side }) => {
   return shouldRenderResizer ? (
     <div
       className="vz-resizer"
-      onMouseDown={onMouseDown}
+      onPointerDown={onPointerDown}
       style={{
         left,
         width: resizerWidth,

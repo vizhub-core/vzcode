@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
 import { VZCodeContext } from './VZCodeContext';
+import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
@@ -28,8 +29,15 @@ export const VZLeft = ({ enableUsernameField = true }) => {
     toggleDirectory,
   } = useContext(VZCodeContext);
 
+  const { sidebarWidth } = useContext(
+    SplitPaneResizeContext,
+  );
+
   return (
-    <div className="left">
+    <div
+      className="left"
+      style={{ width: sidebarWidth + 'px' }}
+    >
       <VZSidebar
         files={files}
         createFile={createFile}

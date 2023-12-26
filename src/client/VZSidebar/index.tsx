@@ -15,7 +15,6 @@ import {
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
-import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
@@ -45,7 +44,7 @@ export const VZSidebar = ({
   activeFileId,
 }: {
   files: Files;
-  createFile: (fileName) => void;
+  createFile: (fileName: string) => void;
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
   deleteDirectory: (path: FileTreePath) => void;
@@ -113,10 +112,6 @@ export const VZSidebar = ({
     setIsSettingsOpen(true);
   }, []);
 
-  const { sidebarWidth } = useContext(
-    SplitPaneResizeContext,
-  );
-
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
     (fileId: FileId) => {
@@ -140,10 +135,7 @@ export const VZSidebar = ({
     fileTree.children.length > 0;
 
   return (
-    <div
-      className="vz-sidebar"
-      style={{ width: sidebarWidth + 'px' }}
-    >
+    <div className="vz-sidebar">
       <div className="files">
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>

@@ -45,9 +45,16 @@ body,
   //   'Noto Sans', Helvetica, Arial, sans-serif,
   //   'Apple Color Emoji', 'Segoe UI Emoji';
   display: flex;
+  flex-direction: row;
 
   /* To support Resizer, which is position: absolute */
   position: relative;
+  contain: paint;
+
+  .left {
+    flex: 0 1 auto;
+    contain: size paint;
+  }
 
   .left,
   .middle {
@@ -58,7 +65,7 @@ body,
   }
 
   .middle {
-    // flex: 1;
+    flex: 1;
     flex-direction: column;
     min-width: 0;
   }
