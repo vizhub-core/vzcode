@@ -125,6 +125,12 @@ type SplitPaneAction =
       type: 'initialize';
     };
 
+const clamp = (width: number) => {
+  return Math.max(
+    10,
+    Math.min(window.innerWidth - 10, width),
+  );
+};
 const splitPaneReducer = (
   state: SplitPaneState,
   action: SplitPaneAction,
@@ -141,8 +147,9 @@ const splitPaneReducer = (
       return action.side === 'left'
         ? {
             ...state,
-            sidebarWidth:
+            sidebarWidth: clamp(
               state.sidebarWidth + action.movementX,
+            ),
           }
         : {
             ...state,
