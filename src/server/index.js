@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import './setupEnv.js';
 import http from 'http';
 import express from 'express';
@@ -8,8 +7,6 @@ import WebSocketJSONStream from '@teamwork/websocket-json-stream';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import open from 'open';
-import ngrok from 'ngrok';
 import bodyParser from 'body-parser';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
@@ -28,20 +25,6 @@ const autoSaveDebounceTimeMS = 800;
 // when the user is interacting with the widgets in the editor.
 const throttleTimeMS = 100;
 
-// Helper function to get the port from command line arguments or use default.
-function getPortFromArgs(defaultPort = 3030) {
-  const portArg = process.argv.find((arg) =>
-    arg.startsWith('--port='),
-  );
-  if (portArg) {
-    return parseInt(portArg.split('=')[1], 10);
-  }
-  return defaultPort;
-}
-
-// Server port.
-const port = getPortFromArgs();
-
 const initialDocument = computeInitialDocument({
   // Use the current working directory to look for files.
   fullPath: process.cwd(),
@@ -55,7 +38,7 @@ const app = express();
 
 // TODO make this configurable
 // See https://github.com/vizhub-core/vzcode/issues/95
-app.post('/saveTime', (req, res) => {
+app.post('/saveTime', (req, _res) => {
   //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
   console.log('autoSaveDebounceTimeMS', req.body);
 });
@@ -67,33 +50,40 @@ const shareDBBackend = new ShareDB({
   presence: true,
   doNotForwardSendPresenceErrorsToClient: true,
 });
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
-wss.on('connection', (ws) => {
-  const clientStream = new WebSocketJSONStream(ws);
-  shareDBBackend.listen(clientStream);
 
-  // Prevent server crashes on errors.
-  clientStream.on('error', (error) => {
-    console.log('clientStream error: ' + error.message);
+export const createServer = (
+  { serveStaticFiles } = { serveStaticFiles: false },
+) => {
+  const server = http.createServer(app);
+  const wss = new WebSocketServer({ server });
+  wss.on('connection', (ws) => {
+    const clientStream = new WebSocketJSONStream(ws);
+    shareDBBackend.listen(clientStream);
+
+    // Prevent server crashes on errors.
+    clientStream.on('error', (error) => {
+      console.log('clientStream error: ' + error.message);
+    });
+
+    // Handle errors
+    ws.on('error', (error) => {
+      console.log('ws error: ' + error.message);
+    });
+
+    // Handle disconnections
+    ws.on('close', (_code) => {
+      clientStream.end();
+    });
   });
-
-  // Handle errors
-  ws.on('error', (error) => {
-    console.log('ws error: ' + error.message);
-  });
-
-  // Handle disconnections
-  ws.on('close', (code) => {
-    clientStream.end();
-  });
-});
-
-// Serve static files
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
-const dir = path.join(dirname, '..', '..', 'dist');
-app.use(express.static(dir));
+  if (serveStaticFiles) {
+    // Serve static files
+    const filename = fileURLToPath(import.meta.url);
+    const dirname = path.dirname(filename);
+    const dir = path.join(dirname, '..', '..', 'dist');
+    app.use(express.static(dir));
+  }
+  return server;
+};
 
 // Create the initial "document",
 // which is a representation of files on disk.
@@ -267,20 +257,4 @@ shareDBDoc.subscribe(() => {
       }
     }
   });
-});
-
-server.listen(port, async () => {
-  if (process.env.NGROK_TOKEN) {
-    (async function () {
-      await ngrok.authtoken(process.env.NGROK_TOKEN);
-      const url = await ngrok.connect(port);
-      console.log(`Editor is live at ${url}`);
-      open(url);
-    })();
-  } else {
-    console.log(
-      `Editor is live at http://localhost:${port}`,
-    );
-    open(`http://localhost:${port}`);
-  }
 });

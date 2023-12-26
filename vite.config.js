@@ -1,13 +1,38 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const APP_PORT = 3030;
+
+/** @returns {import('vite').Plugin} */
+const startServerPlugin = () => {
+  let start = process.argv.includes('--open');
+  return {
+    name: 'start-vzcode-server',
+    async configureServer({ config: { logger } }) {
+      if (!start) {
+        return;
+      }
+      const { createServer } = await import(
+        './src/server/index.js'
+      );
+      logger.info('start vzcode server');
+      const server = createServer();
+      await new Promise((resolve) =>
+        server.listen(APP_PORT, resolve),
+      );
+      start = false;
+      logger.info('vzcode server started');
+    },
+  };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), startServerPlugin()],
   server: {
     proxy: {
       '/ws': {
-        target: 'ws://localhost:3030',
+        target: 'ws://localhost:' + APP_PORT,
         ws: true,
       },
     },

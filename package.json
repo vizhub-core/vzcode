@@ -4,17 +4,15 @@
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
-  "bin": "src/server/index.js",
-  "files": [
-    "dist/**",
-    "src/**"
-  ],
+  "bin": "src/server/cli.js",
+  "files": ["dist/**", "src/**"],
   "scripts": {
     "test": "vitest run",
     "test-interactive": "npm run build; cd test/sampleDirectories/kitchenSink; node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
     "dev": "vite",
+    "dev-fullstack": "vite --open",
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "vite preview",
