@@ -53,39 +53,43 @@ export const AIAssistWidget = ({
   editorCache: EditorCache;
   tabList: Array<TabState>;
 }) => {
-  const [AIAssistRunning, setAIAssistRunning] =
-    useState(false);
+  // const [AIAssistRunning, setAIAssistRunning] =
+  //   useState(false);
 
-  useEffect(() => {
-    const handleOp = (op, source) => {
-      if (op !== null && op[0] === 'aiStreams') {
-        // The check if the value is true is required
-        // because the value could be null rather than false.
-        setAIAssistRunning(
-          shareDBDoc.data.aiStreams[mostRecentStreamId]
-            ?.AIStreamStatus.serverIsRunning === true,
-        );
-      }
-    };
-    shareDBDoc.on('op', handleOp);
+  // useEffect(() => {
+  //   const handleOp = (op, source) => {
+  //     if (op !== null && op[0] === 'aiStreams') {
+  //       // The check if the value is true is required
+  //       // because the value could be null rather than false.
+  //       setAIAssistRunning(
+  //         shareDBDoc.data.aiStreams[mostRecentStreamId]
+  //           ?.AIStreamStatus.serverIsRunning === true,
+  //       );
+  //     }
+  //   };
+  //   shareDBDoc.on('op', handleOp);
 
-    return () => {
-      shareDBDoc.off('op', handleOp);
-    };
-  }, [shareDBDoc]);
+  //   return () => {
+  //     shareDBDoc.off('op', handleOp);
+  //   };
+  // }, [shareDBDoc]);
 
   const handleClick = useCallback(() => {
-    if (!AIAssistRunning) {
-      startAIAssist(
-        editorCache.get(activeFileId).editor,
-        shareDBDoc,
-        activeFileId,
-        tabList,
-      );
-    } else {
-      haltAIAssist(shareDBDoc);
-    }
-  }, [activeFileId, AIAssistRunning]);
+    // TODO stop it
+    // if (!AIAssistRunning) {
+    startAIAssist(
+      editorCache.get(activeFileId).editor,
+      shareDBDoc,
+      activeFileId,
+      tabList,
+    );
+    // } else {
+    //   haltAIAssist(shareDBDoc);
+    // }
+  }, [activeFileId]);
+
+  // TODO set this up
+  const isGenerating = false;
 
   return (
     <div className="vz-code-ai-assist-widget">
@@ -94,7 +98,7 @@ export const AIAssistWidget = ({
         title="Start AI Assist"
         onClick={handleClick}
       >
-        {AIAssistRunning ? <StopSVG /> : <ZapSVG />}
+        {isGenerating ? <StopSVG /> : <ZapSVG />}
       </Button>
     </div>
   );

@@ -30,32 +30,29 @@ export const AIAssist = ({
     {
       key: 'control-m',
       run: (view: EditorView) => {
-        if (
-          shareDBDoc.data.aiStreams === undefined ||
-          shareDBDoc.data.aiStreams[mostRecentStreamId] ===
-            null ||
-          shareDBDoc.data.aiStreams[mostRecentStreamId]
-            ?.AIStreamStatus.serverIsRunning !== true
-        ) {
-          startAIAssist(view, shareDBDoc, fileId, tabList);
-        } else {
-          haltAIAssist(shareDBDoc);
-        }
+        // if (
+        //   shareDBDoc.data.aiStreams === undefined ||
+        //   shareDBDoc.data.aiStreams[mostRecentStreamId] ===
+        //     null ||
+        //   shareDBDoc.data.aiStreams[mostRecentStreamId]
+        //     ?.AIStreamStatus.serverIsRunning !== true
+        // ) {
+        startAIAssist(view, shareDBDoc, fileId, tabList);
+        // TODO handle stopping it
+        // } else {
+        //   haltAIAssist(shareDBDoc);
+        // }
 
         return true;
       },
     },
   ]);
 
-// TODO use ref forwarding instead of `export let`
-export let mostRecentStreamId = null;
-
 export const startAIAssist = async (
   view: EditorView,
   shareDBDoc: ShareDBDoc<VZCodeContent>,
   fileId: FileId,
   tabList: Array<TabState>,
-  // TODO mostRecentStreamIdRef: React.MutableRefObject<string>,
 ) => {
   const textToSend =
     (await generateFilesContext(
@@ -67,29 +64,32 @@ export const startAIAssist = async (
     'Current File:\n' +
     view.state.sliceDoc(0, view.state.selection.main.to);
 
-  console.log(textToSend);
+  // console.log(textToSend);
 
-  // TODO mostRecentStreamIdRef.current = generateRequestId();
-  mostRecentStreamId = generateRequestId();
+  // TODO store this somewhere else
+  let mostRecentStreamId = generateRequestId();
 
-  if (shareDBDoc.data['aiStreams'] === undefined) {
-    shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
-      source: 'AIClient',
-    });
-  }
+  // if (shareDBDoc.data['aiStreams'] === undefined) {
+  //   shareDBDoc.submitOp(insertOp(['aiStreams'], {}), {
+  //     source: 'AIClient',
+  //   });
+  // }
 
-  shareDBDoc.submitOp(
-    insertOp(['aiStreams', mostRecentStreamId], {
-      AIStreamStatus: {
-        clientWantsToStart: true,
-        serverIsRunning: false,
-        text: textToSend,
-        insertionCursor: view.state.selection.main.to,
-        fileId: fileId,
-      },
-    }),
-    { source: 'AIClient' },
-  );
+  // shareDBDoc.submitOp(
+  //   insertOp(['aiStreams', mostRecentStreamId], {
+  //     AIStreamStatus: {
+  //       clientWantsToStart: true,
+  //       serverIsRunning: false,
+  //       text: textToSend,
+  //       insertionCursor: view.state.selection.main.to,
+  //       fileId: fileId,
+  //     },
+  //   }),
+  //   { source: 'AIClient' },
+  // );
+  console.log('TODO startAIAssist');
+  console.log('mostRecentStreamId', mostRecentStreamId);
+  console.log('textToSend', textToSend);
 };
 
 export const haltAIAssist = (
