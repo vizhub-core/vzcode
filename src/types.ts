@@ -1,8 +1,6 @@
 // FileId
 //   * A unique ID for a file.
 
-import { JSONOp } from 'ot-json1';
-
 //   * This is a random string.
 export type FileId = string;
 
@@ -59,6 +57,8 @@ export interface FileTreeFile {
   file: File;
   fileId: FileId;
 }
+
+export type JSONOp = any;
 
 // `ShareDBDoc`
 // A ShareDB Document.
@@ -142,7 +142,7 @@ export type AIStreamStatus = {
 export type VZCodeContent = {
   // `files`
   //   * The files in the VZCode instance.
-  files: Files;
+  files?: Files;
 
   // `isInteracting`
   //   * `true` when the user is interacting
@@ -161,7 +161,7 @@ export type VZCodeContent = {
   //    client and server.
   //  * This can power the transition of the icon from
   //    lightning bolt to stop sign and back (when stream finishes)
-  aiStreams: {
+  aiStreams?: {
     // These need to be removed at some point?
     [aiStreamId: AIStreamId]: {
       AIStreamStatus: AIStreamStatus;

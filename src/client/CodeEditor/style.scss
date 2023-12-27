@@ -12,4 +12,12 @@
     font-family: var(--vzcode-font-family);
     font-size: var(--vzcode-font-size);
   }
+
+  .remote-cursor-username {
+    transition: opacity 1s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
 }

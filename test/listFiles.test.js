@@ -138,3 +138,177 @@ describe('Listing files', () => {
     ]);
   });
 });
+
+it('should list files, respecting .ignore files', () => {
+  expect(getSampleFiles('listFilesIgnore')).toEqual([
+    {
+      text: 'ignoredFile\nignoredDirectory/*\n!ignoredDirectory/keptFile\n',
+      name: '.ignore',
+    },
+    {
+      text: '',
+      name: 'file',
+    },
+    {
+      text: null,
+      name: 'ignoredDirectory/',
+    },
+    {
+      text: '',
+      name: 'ignoredDirectory/keptFile',
+    },
+    {
+      text: null,
+      name: 'subdirectory/',
+    },
+    {
+      text: 'ignoredSubdirectoryFile\n',
+      name: 'subdirectory/.ignore',
+    },
+    {
+      text: '',
+      name: 'subdirectory/file',
+    },
+    {
+      text: '',
+      name: 'subdirectory/subdirectoryFile',
+    },
+  ]);
+});
+it('should list files, respecting .ignore files, when directory names include special characters', () => {
+  expect(getSampleFiles('listFilesIgnoreEscape')).toEqual([
+    {
+      name: ' /',
+      text: null,
+    },
+    {
+      name: ' /.ignore',
+      text: '/ignored\nignored\\ \n',
+    },
+    { name: ' /kept', text: '' },
+    {
+      name: '!/',
+      text: null,
+    },
+    {
+      text: '/ignored\nignored\\!',
+      name: '!/.ignore',
+    },
+    {
+      text: '',
+      name: '!/kept',
+    },
+    {
+      text: null,
+      name: '#/',
+    },
+    {
+      text: '/ignored\nignored\\#',
+      name: '#/.ignore',
+    },
+    {
+      text: '',
+      name: '#/kept',
+    },
+    {
+      text: null,
+      name: '**/',
+    },
+    {
+      text: '/ignored\nignored\\*\\*\n',
+      name: '**/.ignore',
+    },
+    {
+      text: '',
+      name: '**/kept',
+    },
+    {
+      text: null,
+      name: '**/subdirectory/',
+    },
+    {
+      text: '',
+      name: '**/subdirectory/ignored',
+    },
+    {
+      text: '',
+      name: '**/subdirectory/kept',
+    },
+    {
+      text: null,
+      name: '*/',
+    },
+    {
+      text: '/ignored\nignored\\*',
+      name: '*/.ignore',
+    },
+    {
+      text: '',
+      name: '*/kept',
+    },
+    {
+      text: '/ignored\nignoredRoot\n',
+      name: '.ignore',
+    },
+    {
+      text: null,
+      name: '?/',
+    },
+    {
+      text: '/ignored\nignored\\?',
+      name: '?/.ignore',
+    },
+    {
+      text: '',
+      name: '?/ignored',
+    },
+    {
+      text: '',
+      name: '?/ignored?',
+    },
+    {
+      text: '',
+      name: '?/kept',
+    },
+    {
+      text: null,
+      name: '[/',
+    },
+    {
+      text: '/ignored\nignored\\[',
+      name: '[/.ignore',
+    },
+    {
+      text: '',
+      name: '[/kept',
+    },
+    {
+      text: null,
+      name: '\\/',
+    },
+    {
+      text: '/ignored\nignored\\',
+      name: '\\/.ignore',
+    },
+    {
+      text: '',
+      name: '\\/ignored\\',
+    },
+    {
+      text: '',
+      name: '\\/kept',
+    },
+    {
+      text: null,
+      name: ']/',
+    },
+    {
+      text: '/ignored\nignored\\]',
+      name: ']/.ignore',
+    },
+    {
+      text: '',
+      name: ']/kept',
+    },
+  ]);
+});

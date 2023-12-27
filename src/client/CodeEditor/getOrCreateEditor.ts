@@ -1,4 +1,4 @@
-import { EditorView, basicSetup } from 'codemirror';
+import { EditorView } from 'codemirror';
 import {
   Compartment,
   EditorState,
@@ -10,6 +10,9 @@ import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
+import { indentationMarkers } from '@replit/codemirror-indentation-markers';
+import { showMinimap } from '@replit/codemirror-minimap';
+import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
@@ -35,6 +38,8 @@ import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
 import { TabState } from '../vzReducer';
+import { keymap } from '@codemirror/view';
+import { basicSetup } from './basicSetup';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -262,6 +267,47 @@ export const getOrCreateEditor = ({
       ),
     );
   }
+
+  // Add the extension that provides indentation markers.
+  extensions.push(
+    indentationMarkers({
+      // thickness: 2,
+      colors: {
+        light: '#4d586b',
+        dark: '#4d586b',
+        activeLight: '#8e949f',
+        activeDark: '#8e949f',
+      },
+    }),
+  );
+
+  // Show the minimap
+  // See https://github.com/replit/codemirror-minimap#usage
+  extensions.push(
+    showMinimap.compute(['doc'], () => ({
+      create: () => ({
+        dom: document.createElement('div'),
+      }),
+      // displayText: 'blocks',
+    })),
+  );
+
+  // VSCode keybindings
+  // See https://github.com/replit/codemirror-vscode-keymap#usage
+  // extensions.push(keymap.of(vscodeKeymap));
+  extensions.push(
+    keymap.of(
+      vscodeKeymap.map((binding) => {
+        // Here we override the Shift+Enter behavior specifically,
+        // as that can be used to trigger a manual save/Prettier,
+        // and the default behavior from the keymap interferes.
+        if (binding.key === 'Enter') {
+          delete binding.shift;
+        }
+        return binding;
+      }),
+    ),
+  );
 
   const editor = new EditorView({
     state: EditorState.create({

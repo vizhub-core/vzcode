@@ -1,4 +1,5 @@
 import { EditorView, keymap } from '@codemirror/view';
+import { json1Presence } from '../ot';
 import {
   FileId,
   File,
@@ -6,21 +7,16 @@ import {
   VZCodeContent,
 } from '../types';
 import { generateRequestId } from './CodeEditor/typeScriptCompletions';
-import { insertOp, replaceOp } from 'ot-json1';
 
 import { TabState } from './vzReducer';
+
+const { insertOp, replaceOp } = json1Presence;
 
 export const AIAssist = ({
   shareDBDoc,
   // The file id of the file the AI should assist with.
   fileId,
   tabList,
-
-  // Optional endpoint override.
-  aiAssistEndpoint = '/AIAssist',
-
-  // Optional additional options to pass to the endpoint.
-  aiAssistOptions = {},
 }: {
   shareDBDoc: ShareDBDoc<VZCodeContent>;
   fileId: string;

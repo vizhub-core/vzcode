@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import './setupEnv.js';
 import http from 'http';
 import express from 'express';
 import ShareDB from 'sharedb';
@@ -9,18 +10,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import open from 'open';
 import ngrok from 'ngrok';
-import dotenv from 'dotenv';
-import { computeInitialDocument } from './computeInitialDocument.js';
-import { json1Presence } from '../ot.js';
 import bodyParser from 'body-parser';
+import { json1Presence } from '../ot.js';
+import { computeInitialDocument } from './computeInitialDocument.js';
 import {
   generateAIResponse,
   haltGeneration,
   handleAIAssist,
 } from './handleAIAssist.js';
-import { replaceOp } from 'ot-json1';
 
-dotenv.config({ path: '../../.env' });
+const { replaceOp } = json1Presence;
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;

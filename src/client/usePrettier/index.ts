@@ -1,4 +1,4 @@
-import { JSONOp } from 'ot-json1';
+import { JSONOp } from '../../ot';
 import {
   FileId,
   ShareDBDoc,
@@ -20,16 +20,58 @@ const extension = (fileName: string) => {
   }
 };
 
-export const usePrettier = (
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null,
+// export const shouldTriggerRun = (event: KeyboardEvent) => {
+//   if(event.ctrlKey && event.key === 's') {
+//     return true;
+//   }
+// }
+
+export const shouldTriggerRun = (event: KeyboardEvent) => {
+  const isMac = /Mac|iMac|MacBook/i.test(
+    navigator.userAgent,
+  );
+  const ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
+  if (ctrlOrCmd && event.key === 's') {
+    // Save
+    return true;
+  } else if (
+    event.key === 'F5' || // Run (F5)
+    (ctrlOrCmd && event.key === 'Enter') || // Ctrl+Enter or Cmd+Enter
+    (event.shiftKey && event.key === 'Enter') || // Shift+Enter
+    // Let's not override the browser's default behavior for refresh page.
+    // (ctrlOrCmd && event.key === 'r') || // Ctrl+R or Cmd+R
+
+    (event.altKey && event.key === 'Enter') || // Alt+Enter
+    (ctrlOrCmd &&
+      event.shiftKey &&
+      (event.key === 'B' || event.key === 'b')) || // Ctrl+Shift+B or Cmd+Shift+B
+    (ctrlOrCmd && event.shiftKey && event.key === 'F10') || // Ctrl+Shift+F10 or Cmd+Shift+F10
+    event.key === 'F8' ||
+    event.key === 'F9'
+  ) {
+    return true;
+  }
+  return false;
+};
+
+export const usePrettier = ({
+  shareDBDoc,
+  submitOperation,
+  prettierWorker,
+  enableManualPretter,
+}: {
+  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
-  ) => void,
-  prettierWorker: Worker,
-) => {
+  ) => void;
+  prettierWorker: Worker;
+  enableManualPretter: boolean;
+}) => {
   // The set of files that have been modified
   // since the last Prettier run.
-  const dirtyFiles: Set<FileId> = new Set<FileId>();
+  // const dirtyFiles: Set<FileId> = new Set<FileId>();
+  const dirtyFilesRef = useRef<Set<FileId>>(new Set());
 
   // State to hold the error from Prettier
   // `null` means no errors
@@ -95,6 +137,9 @@ export const usePrettier = (
       // Get the files
       const files = content.files;
 
+      // Get the set of dirty files
+      const dirtyFiles = dirtyFilesRef.current;
+
       // Get the dirty files
       const dirtyFileIds = Array.from(dirtyFiles);
 
@@ -118,19 +163,34 @@ export const usePrettier = (
       }
     };
 
-    // Function to debounce running Prettier
+    let debouncePrettier;
     let debounceTimeout;
-    function debouncePrettier() {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(
-        runPrettier,
-        autoPrettierDebounceTimeMS,
-      );
-    }
+    let handleKeyDown;
+    if (enableManualPretter) {
+      handleKeyDown = (event: KeyboardEvent) => {
+        if (shouldTriggerRun(event)) {
+          event.preventDefault();
+          runPrettier();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+    } else {
+      // Function to debounce running Prettier
 
-    //Stops prettier from running when you perform a mouse move or a keydown
-    window.addEventListener('mousemove', debouncePrettier);
-    window.addEventListener('keydown', debouncePrettier);
+      debouncePrettier = () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(
+          runPrettier,
+          autoPrettierDebounceTimeMS,
+        );
+      };
+      //Stops prettier from running when you perform a mouse move or a keydown
+      window.addEventListener(
+        'mousemove',
+        debouncePrettier,
+      );
+      window.addEventListener('keydown', debouncePrettier);
+    }
 
     // Listen for changes
     shareDBDoc.on(
@@ -170,11 +230,12 @@ export const usePrettier = (
             const fileId: FileId = op[1];
 
             // Add the file id to the set of dirty files
-            dirtyFiles.add(fileId);
+            dirtyFilesRef.current.add(fileId);
 
             // Debounce running Prettier
-            debouncePrettier();
-
+            if (!enableManualPretter) {
+              debouncePrettier();
+            }
             // console.log('Op is for file', fileId);
           }
         } else {
@@ -190,17 +251,24 @@ export const usePrettier = (
         'message',
         handleMessage,
       );
-      window.removeEventListener(
-        'keydown',
-        debouncePrettier,
-      );
-      window.removeEventListener(
-        'mousemove',
-        debouncePrettier,
-      );
+      if (enableManualPretter) {
+        document.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        );
+      } else {
+        window.removeEventListener(
+          'keydown',
+          debouncePrettier,
+        );
+        window.removeEventListener(
+          'mousemove',
+          debouncePrettier,
+        );
 
-      // Clear the timeout
-      clearTimeout(debounceTimeout);
+        // Clear the timeout
+        clearTimeout(debounceTimeout);
+      }
     };
   }, [shareDBDoc]);
   return { prettierError }; // Return the errors for use in other files

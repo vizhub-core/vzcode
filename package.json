@@ -1,6 +1,6 @@
 {
   "name": "vzcode",
-  "version": "0.29.0",
+  "version": "0.45.0",
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
@@ -36,8 +36,26 @@
     "Visualization"
   ],
   "contributors": [
-    "Curran Kelleher",
-    "Anooj Pai"
+    {
+      "name": "Curran Kelleher",
+      "url": "https://github.com/curran"
+    },
+    {
+      "name": "Anooj Pai",
+      "url": "https://github.com/Anooj-Pai"
+    },
+    {
+      "name": "Jack Hankin",
+      "url": "https://github.com/Darmin-Geek"
+    },
+    {
+      "name": "Amanda Ruan",
+      "url": "https://github.com/aruan20"
+    },
+    {
+      "name": "Evan Whymark",
+      "url": "https://github.com/EvWhymark"
+    }
   ],
   "license": "MIT",
   "bugs": {
@@ -45,57 +63,60 @@
   },
   "homepage": "https://github.com/vizhub-core/vzcode#readme",
   "dependencies": {
-    "@codemirror/autocomplete": "^6.11.0",
+    "@codemirror/autocomplete": "^6.11.1",
     "@codemirror/lang-css": "^6.2.1",
-    "@codemirror/lang-html": "^6.4.6",
+    "@codemirror/lang-html": "^6.4.7",
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/lang-markdown": "^6.2.2",
-    "@codemirror/state": "^6.3.1",
+    "@codemirror/lang-markdown": "^6.2.3",
+    "@codemirror/state": "^6.3.3",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.22.0",
-    "@lezer/highlight": "^1.1.6",
+    "@codemirror/view": "^6.22.3",
+    "@lezer/highlight": "^1.2.0",
+    "@replit/codemirror-indentation-markers": "^6.5.0",
     "@replit/codemirror-interact": "^6.3.0",
+    "@replit/codemirror-minimap": "^0.5.2",
+    "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.5.0",
-    "@uiw/codemirror-theme-abcdef": "^4.21.20",
-    "@uiw/codemirror-theme-dracula": "^4.21.20",
-    "@uiw/codemirror-theme-eclipse": "^4.21.20",
-    "@uiw/codemirror-theme-github": "^4.21.20",
-    "@uiw/codemirror-theme-material": "^4.21.20",
-    "@uiw/codemirror-theme-nord": "^4.21.20",
-    "@uiw/codemirror-theme-okaidia": "^4.21.20",
-    "@uiw/codemirror-theme-xcode": "^4.21.20",
-    "@uiw/codemirror-themes": "^4.21.20",
+    "@uiw/codemirror-theme-abcdef": "^4.21.21",
+    "@uiw/codemirror-theme-dracula": "^4.21.21",
+    "@uiw/codemirror-theme-eclipse": "^4.21.21",
+    "@uiw/codemirror-theme-github": "^4.21.21",
+    "@uiw/codemirror-theme-material": "^4.21.21",
+    "@uiw/codemirror-theme-nord": "^4.21.21",
+    "@uiw/codemirror-theme-okaidia": "^4.21.21",
+    "@uiw/codemirror-theme-xcode": "^4.21.21",
+    "@uiw/codemirror-themes": "^4.21.21",
     "body-parser": "^1.20.2",
     "codemirror": "^6.0.1",
-    "codemirror-ot": "^4.1.0",
+    "codemirror-ot": "^4.2.0",
     "color-hash": "^2.0.2",
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "ignore": "^5.3.0",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
-    "open": "^9.1.0",
-    "openai": "^4.17.4",
-    "ot-json1": "^1.0.2",
+    "open": "^10.0.0",
+    "openai": "^4.24.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
-    "sharedb": "^4.1.1",
-    "sharedb-client-browser": "^4.3.1",
-    "vizhub-ui": "^3.5.0",
-    "ws": "^8.14.2"
+    "sharedb": "^4.1.2",
+    "sharedb-client-browser": "^4.4.0",
+    "vizhub-ui": "^3.14.0",
+    "ws": "^8.15.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.1.1",
-    "prettier": "^3.0.3",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "prettier": "^3.1.1",
     "sass": "^1.69.5",
-    "typescript": "^5.2.2",
-    "vite": "^4.5.0",
-    "vitest": "^0.34.6"
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
   }
 }

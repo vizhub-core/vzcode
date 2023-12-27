@@ -13,13 +13,13 @@ import {
   usePersistUsername,
 } from '../usernameLocalStorage';
 import { useShareDB } from './useShareDB';
-import { VZLeft } from './VZLeft';
-import { VZMiddle } from './VZMiddle';
-import { VZRight } from './VZRight';
+import { VZLeft } from '../VZLeft';
+import { VZMiddle } from '../VZMiddle';
+import { VZRight } from '../VZRight';
 import {
   VZCodeContext,
   VZCodeProvider,
-} from './VZCodeContext';
+} from '../VZCodeContext';
 import './style.scss';
 
 // Instantiate the Prettier worker.
@@ -60,6 +60,7 @@ function App() {
     content,
     localPresence,
     docPresence,
+    submitOperation,
   } = useShareDB({
     connection,
   });
@@ -80,6 +81,7 @@ function App() {
       <VZCodeProvider
         content={content}
         shareDBDoc={shareDBDoc}
+        submitOperation={submitOperation}
         localPresence={localPresence}
         docPresence={docPresence}
         prettierWorker={prettierWorker}
