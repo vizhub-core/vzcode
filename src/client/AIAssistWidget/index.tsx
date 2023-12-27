@@ -62,11 +62,7 @@ export const AIAssistWidget = ({
 
   return (
     <div className="vz-code-ai-assist-widget">
-      <Button
-        variant="light"
-        title="Start AI Assist"
-        onClick={handleClick}
-      >
+      <Button title="Start AI Assist" onClick={handleClick}>
         {isGenerating ? <StopSVG /> : <SparklesSVG />}
       </Button>
     </div>
