@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 import './style.scss';
+import { VZCodeContent } from '../../types';
 
 const enableErrorDismiss = true;
 
 export const CodeErrorOverlay = ({
   errorMessage,
+  content,
 }: {
   errorMessage: string | null;
+  content: VZCodeContent;
 }) => {
   const [isOverlayVisible, setIsOverlayVisible] =
     useState(true);
@@ -18,36 +21,38 @@ export const CodeErrorOverlay = ({
     }
   }, [errorMessage]);
 
+  // If the content changes, set the overlay to be not visible.
   useEffect(() => {
-    document.addEventListener(
-      'keydown',
-      detectKeyDown,
-      true,
-    );
+    setIsOverlayVisible(false);
+  }, [content]);
 
-    return () => {
-      // Remove the event listener when the component unmounts
-      document.removeEventListener(
-        'keydown',
-        detectKeyDown,
-        true,
-      );
-    };
-  }, []);
-
+  // Set the visibility state to false when the button is clicked
   const handleCloseClick = useCallback(() => {
-    // Set the visibility state to false when the button is clicked
     setIsOverlayVisible(false);
   }, []);
 
-  const detectKeyDown = useCallback(
-    (event: KeyboardEvent) => {
+  // If the user presses the escape key, close the overlay.
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         handleCloseClick();
       }
-    },
-    [handleCloseClick],
-  );
+    };
+    document.addEventListener(
+      'keydown',
+      handleKeyDown,
+      true,
+    );
+
+    // Remove the event listener when the component unmounts
+    return () => {
+      document.removeEventListener(
+        'keydown',
+        handleKeyDown,
+        true,
+      );
+    };
+  }, [handleCloseClick]);
 
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">

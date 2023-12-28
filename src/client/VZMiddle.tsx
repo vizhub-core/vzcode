@@ -90,7 +90,10 @@ export const VZMiddle = ({
           aiAssistOptions={aiAssistOptions}
         />
       ) : null}
-      <CodeErrorOverlay errorMessage={errorMessage} />
+      <CodeErrorOverlay
+        errorMessage={errorMessage}
+        content={content}
+      />
       <PresenceNotifications
         docPresence={docPresence}
         localPresence={localPresence}
