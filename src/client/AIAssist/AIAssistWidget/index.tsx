@@ -7,24 +7,30 @@ import {
 import { Button } from '../../bootstrap';
 import { EditorCache } from '../../useEditorCache';
 import { TabState } from '../../vzReducer';
-import { SparklesSVG, StopSVG } from '../../Icons';
-import { startAIAssist } from '../startAIAssist';
-import './style.scss';
 import {
   RequestId,
   generateRequestId,
 } from '../../generateRequestId';
+import { SparklesSVG, StopSVG } from '../../Icons';
+import { startAIAssist } from '../startAIAssist';
+import './style.scss';
+
+const enableStopGeneration = false;
 
 export const AIAssistWidget = ({
   activeFileId,
   shareDBDoc,
   editorCache,
   tabList,
+  aiAssistEndpoint,
+  aiAssistOptions,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
   editorCache: EditorCache;
   tabList: Array<TabState>;
+  aiAssistEndpoint: string;
+  aiAssistOptions: { [key: string]: string };
 }) => {
   // The stream ID of the most recent request.
   //  * If `null`, no request has been made yet.
@@ -48,6 +54,8 @@ export const AIAssistWidget = ({
         fileId: activeFileId,
         tabList,
         aiStreamId: newAiStreamId,
+        aiAssistEndpoint,
+        aiAssistOptions,
       });
 
       // Handles the case that the user has started,
@@ -63,11 +71,26 @@ export const AIAssistWidget = ({
     }
   }, [activeFileId, aiStreamId]);
 
+  const showWidget = enableStopGeneration
+    ? true
+    : aiStreamId === null;
+
   return (
-    <div className="vz-code-ai-assist-widget">
-      <Button title="Start AI Assist" onClick={handleClick}>
-        {aiStreamId ? <StopSVG /> : <SparklesSVG />}
-      </Button>
-    </div>
+    showWidget && (
+      <div className="vz-code-ai-assist-widget">
+        <Button
+          title="Start AI Assist"
+          onClick={handleClick}
+        >
+          {aiStreamId ? (
+            enableStopGeneration ? (
+              <StopSVG />
+            ) : null
+          ) : (
+            <SparklesSVG />
+          )}
+        </Button>
+      </div>
+    )
   );
 };

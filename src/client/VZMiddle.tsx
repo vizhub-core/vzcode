@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react';
+import { useContext } from 'react';
 import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
@@ -6,7 +6,6 @@ import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
 import { AIAssistWidget } from './AIAssist/AIAssistWidget';
 import { VZCodeContext } from './VZCodeContext';
-import { AIAssistState } from './AIAssist';
 
 // The middle portion of the VZCode environment, containing:
 // * The list of tabs at the top
@@ -14,7 +13,15 @@ import { AIAssistState } from './AIAssist';
 // * The code error overlay
 // * The presence notifications
 // * The UI for AI Assist
-export const VZMiddle = ({ enableAIAssist = true }) => {
+export const VZMiddle = ({
+  enableAIAssist = true,
+  aiAssistEndpoint,
+  aiAssistOptions,
+}: {
+  enableAIAssist?: boolean;
+  aiAssistEndpoint: string;
+  aiAssistOptions: { [key: string]: string };
+}) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
   );
@@ -41,12 +48,6 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
     errorMessage,
     typeScriptWorker,
   } = useContext(VZCodeContext);
-
-  // We need this to be a ref here so that the state can be
-  // shared between the CodeEditor and AIAssistWidget components.
-  const aiAssistStateRef = useRef<AIAssistState>({
-    streamId: null,
-  });
 
   return activeFileId !== null ? (
     <div
@@ -77,8 +78,6 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
           }
           username={username}
           typeScriptWorker={typeScriptWorker}
-          tabList={tabList}
-          aiAssistStateRef={aiAssistStateRef}
         />
       ) : null}
       {enableAIAssist && content && activeFileId ? (
@@ -87,7 +86,8 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
           shareDBDoc={shareDBDoc}
           editorCache={editorCache}
           tabList={tabList}
-          aiAssistStateRef={aiAssistStateRef}
+          aiAssistEndpoint={aiAssistEndpoint}
+          aiAssistOptions={aiAssistOptions}
         />
       ) : null}
       <CodeErrorOverlay errorMessage={errorMessage} />

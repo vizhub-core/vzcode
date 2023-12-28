@@ -15,8 +15,6 @@ import {
   EditorCache,
   EditorCacheValue,
 } from '../useEditorCache';
-import { TabState } from '../vzReducer';
-import { AIAssistState } from '../AIAssist';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
 
@@ -32,11 +30,7 @@ export const CodeEditor = ({
   editorWantsFocus,
   editorNoLongerWantsFocus,
   username,
-  aiAssistEndpoint,
-  aiAssistOptions,
-  aiAssistStateRef,
   typeScriptWorker,
-  tabList,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -67,10 +61,7 @@ export const CodeEditor = ({
   aiAssistOptions?: {
     [key: string]: string;
   };
-  aiAssistStateRef: React.MutableRefObject<AIAssistState>;
   typeScriptWorker: Worker;
-
-  tabList: Array<TabState>;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -118,11 +109,7 @@ export const CodeEditor = ({
         onInteract,
         editorCache,
         usernameRef,
-        aiAssistEndpoint,
-        aiAssistOptions,
         typeScriptWorker,
-        tabList,
-        aiAssistStateRef,
       }),
     [
       activeFileId,
@@ -134,10 +121,7 @@ export const CodeEditor = ({
       onInteract,
       editorCache,
       usernameRef,
-      aiAssistEndpoint,
-      aiAssistOptions,
       typeScriptWorker,
-      aiAssistStateRef,
     ],
   );
 
@@ -158,11 +142,6 @@ export const CodeEditor = ({
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, editorCacheValue]);
-
-  // useEffect(() => {
-  //   if (editorWantsFocus) {
-  //     editorCacheValue.editor.focus();
-  //   }
 
   // Focus the editor
   useLayoutEffect(() => {
