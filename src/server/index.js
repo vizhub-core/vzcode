@@ -13,13 +13,7 @@ import ngrok from 'ngrok';
 import bodyParser from 'body-parser';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
-import {
-  generateAIResponse,
-  haltGeneration,
-  handleAIAssist,
-} from './handleAIAssist.js';
-
-const { replaceOp } = json1Presence;
+import { handleAIAssist } from './handleAIAssist.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -103,7 +97,7 @@ shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // Handle AI Assist requests.
 app.post(
-  '/AIAssist',
+  '/ai-assist',
   bodyParser.json(),
   handleAIAssist(shareDBDoc),
 );
@@ -219,53 +213,53 @@ shareDBDoc.subscribe(() => {
       debounceSave();
     }
 
-    if (
-      op !== null &&
-      op[0] == 'aiStreams' &&
-      source !== 'AIServer' &&
-      source !== 'AIAssist'
-    ) {
-      //This is an insert operation (a new request)
-      if (
-        op[op.length - 1]['i'] !== undefined &&
-        op[op.length - 1]['i']['AIStreamStatus'] !==
-          undefined
-      ) {
-        const input =
-          op[op.length - 1]['i']['AIStreamStatus'];
+    // if (
+    //   op !== null &&
+    //   op[0] == 'aiStreams' &&
+    //   source !== 'AIServer' &&
+    //   source !== 'AIAssist'
+    // ) {
+    //   //This is an insert operation (a new request)
+    //   if (
+    //     op[op.length - 1]['i'] !== undefined &&
+    //     op[op.length - 1]['i']['AIStreamStatus'] !==
+    //       undefined
+    //   ) {
+    //     const input =
+    //       op[op.length - 1]['i']['AIStreamStatus'];
 
-        generateAIResponse({
-          inputText: input.text,
-          insertionCursor: input.insertionCursor,
-          shareDBDoc: shareDBDoc,
-          streamId: op[op.length - 2],
-          fileId: input.fileId,
-        });
+    //     generateAIResponse({
+    //       inputText: input.text,
+    //       insertionCursor: input.insertionCursor,
+    //       shareDBDoc: shareDBDoc,
+    //       streamId: op[op.length - 2],
+    //       fileId: input.fileId,
+    //     });
 
-        const confirmStartOperation = replaceOp(
-          [
-            ...op.filter(
-              (value) => typeof value === 'string',
-            ),
-            'AIStreamStatus',
-            'serverIsRunning',
-          ],
-          true,
-          true,
-        );
+    //     const confirmStartOperation = replaceOp(
+    //       [
+    //         ...op.filter(
+    //           (value) => typeof value === 'string',
+    //         ),
+    //         'AIStreamStatus',
+    //         'serverIsRunning',
+    //       ],
+    //       true,
+    //       true,
+    //     );
 
-        shareDBDoc.submitOp(confirmStartOperation, {
-          source: 'AIServer',
-        });
-      }
-      if (
-        op[op.length - 1]['r'] !== null &&
-        op[op.length - 2] == 'clientWantsToStart'
-      ) {
-        //client wants to halt generation
-        haltGeneration(op[1]);
-      }
-    }
+    //     shareDBDoc.submitOp(confirmStartOperation, {
+    //       source: 'AIServer',
+    //     });
+    //   }
+    //   if (
+    //     op[op.length - 1]['r'] !== null &&
+    //     op[op.length - 2] == 'clientWantsToStart'
+    //   ) {
+    //     //client wants to halt generation
+    //     haltGeneration(op[1]);
+    //   }
+    // }
   });
 });
 

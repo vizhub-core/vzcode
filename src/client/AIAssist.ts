@@ -37,7 +37,12 @@ export const AIAssist = ({
         //   shareDBDoc.data.aiStreams[mostRecentStreamId]
         //     ?.AIStreamStatus.serverIsRunning !== true
         // ) {
-        startAIAssist(view, shareDBDoc, fileId, tabList);
+        startAIAssist({
+          view,
+          shareDBDoc,
+          fileId,
+          tabList,
+        });
         // TODO handle stopping it
         // } else {
         //   haltAIAssist(shareDBDoc);
@@ -47,14 +52,26 @@ export const AIAssist = ({
       },
     },
   ]);
+const defaultAIAssistEndpoint = '/ai-assist';
 
-export const startAIAssist = async (
-  view: EditorView,
-  shareDBDoc: ShareDBDoc<VZCodeContent>,
-  fileId: FileId,
-  tabList: Array<TabState>,
-) => {
-  const textToSend =
+export const startAIAssist = async ({
+  view,
+  shareDBDoc,
+  fileId,
+  tabList,
+  aiAssistEndpoint = defaultAIAssistEndpoint,
+  aiAssistOptions = {},
+}: {
+  view: EditorView;
+  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  fileId: FileId;
+  tabList: Array<TabState>;
+  aiAssistEndpoint?: string;
+  aiAssistOptions?: {
+    [key: string]: any;
+  };
+}) => {
+  const inputText =
     (await generateFilesContext(
       tabList.map(
         (tabState) =>
@@ -89,27 +106,41 @@ export const startAIAssist = async (
   // );
   console.log('TODO startAIAssist');
   console.log('mostRecentStreamId', mostRecentStreamId);
-  console.log('textToSend', textToSend);
-};
+  console.log('inputText', inputText);
 
-export const haltAIAssist = (
-  shareDBDoc: ShareDBDoc<VZCodeContent>,
-) => {
-  const haltGenerationOp = replaceOp(
-    [
-      'aiStreams',
-      mostRecentStreamId,
-      'AIStreamStatus',
-      'clientWantsToStart',
-    ],
-    true,
-    false,
-  );
-
-  shareDBDoc.submitOp(haltGenerationOp, {
-    source: 'AIClient',
+  fetch(aiAssistEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      // Pass additional options to the AI Assist endpoint.
+      ...aiAssistOptions,
+      inputText,
+      fileId,
+      insertionCursor: view.state.selection.main.to,
+    }),
   });
 };
+
+// export const haltAIAssist = (
+//   shareDBDoc: ShareDBDoc<VZCodeContent>,
+// ) => {
+//   const haltGenerationOp = replaceOp(
+//     [
+//       'aiStreams',
+//       mostRecentStreamId,
+//       'AIStreamStatus',
+//       'clientWantsToStart',
+//     ],
+//     true,
+//     false,
+//   );
+
+//   shareDBDoc.submitOp(haltGenerationOp, {
+//     source: 'AIClient',
+//   });
+// };
 
 export const generateFilesContext = async (
   goodFiles: File[],

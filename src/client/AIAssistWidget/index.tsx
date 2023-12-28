@@ -46,12 +46,12 @@ export const AIAssistWidget = ({
   const handleClick = useCallback(() => {
     // TODO stop it
     // if (!AIAssistRunning) {
-    startAIAssist(
-      editorCache.get(activeFileId).editor,
+    startAIAssist({
+      view: editorCache.get(activeFileId).editor,
       shareDBDoc,
-      activeFileId,
+      fileId: activeFileId,
       tabList,
-    );
+    });
     // } else {
     //   haltAIAssist(shareDBDoc);
     // }

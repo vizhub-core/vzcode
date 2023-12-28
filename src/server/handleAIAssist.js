@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { json1Presence } from '../ot.js';
 
-const { editOp, type, replaceOp } = json1Presence;
+const { editOp, type } = json1Presence;
 
 // Feature flag to slow down AI for development/testing
 const slowdown = false;
@@ -73,19 +73,19 @@ export async function generateAIResponse({
   }
   shareDBDoc.off('op', accomodateDocChanges);
 
-  const confirmCompletedOperation = replaceOp(
-    [
-      'aiStreams',
-      streamId,
-      'AIStreamStatus',
-      'serverIsRunning',
-    ],
-    true,
-    false,
-  );
-  shareDBDoc.submitOp(confirmCompletedOperation, {
-    source: 'AIServer',
-  });
+  // const confirmCompletedOperation = replaceOp(
+  //   [
+  //     'aiStreams',
+  //     streamId,
+  //     'AIStreamStatus',
+  //     'serverIsRunning',
+  //   ],
+  //   true,
+  //   false,
+  // );
+  // shareDBDoc.submitOp(confirmCompletedOperation, {
+  //   source: 'AIServer',
+  // });
 }
 
 const AISourceName = 'AIAssist';
@@ -96,13 +96,20 @@ function opComesFromAIAssist(ops, source) {
 
 const streams = {};
 
+const debug = true;
+
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
-    const {
-      text: inputText,
-      cursorLocation: insertionCursor,
-      fileId,
-    } = req.body;
+    const { inputText, insertionCursor, fileId } = req.body;
+
+    if (debug) {
+      console.log('[handleAIAssist] inputText:', inputText);
+      console.log(
+        '[handleAIAssist] insertionCursor:',
+        insertionCursor,
+      );
+      console.log('[handleAIAssist] fileId:', fileId);
+    }
 
     try {
       await generateAIResponse({
