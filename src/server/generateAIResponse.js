@@ -59,18 +59,28 @@ export const generateAIResponse = async ({
 
   shareDBDoc.on('op', accomodateDocChanges);
 
+  const messages = [
+    {
+      role: 'system',
+      content: [
+        'You are an expert programmer.',
+        'Your task is to output ONLY the code that replaces <FILL_ME> correctly.',
+        'Do not add any markdown.',
+        'Do not duplicate the code before or after <FILL_ME>.',
+        'Do not make any changes outside of <FILL_ME>.',
+      ].join(' '),
+    },
+    { role: 'user', content: inputText },
+  ];
+
+  console.log('messages');
+  console.log(messages);
+
   streams[streamId] = await openai.chat.completions.create({
     // model: 'gpt-3.5-turbo',
     model: 'gpt-4',
 
-    messages: [
-      {
-        role: 'system',
-        content:
-          'Write typescript or javascript code to continue the current file, given the other files for context. Use // for comments.',
-      },
-      { role: 'user', content: inputText },
-    ],
+    messages,
     stream: true,
   });
 
