@@ -27,6 +27,10 @@ export const useTypeScript = ({
 
   const debounceUpdateContent = useCallback(
     (content: VZCodeContent) => {
+      // Handle the case where the content has not yet been loaded.
+      if (content === null) {
+        return;
+      }
       clearTimeout(debounceTimeoutId.current);
       debounceTimeoutId.current = window.setTimeout(() => {
         typeScriptWorker.postMessage({

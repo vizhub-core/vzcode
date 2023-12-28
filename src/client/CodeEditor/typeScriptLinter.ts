@@ -1,9 +1,9 @@
-import { generateRequestId } from './typeScriptCompletions';
+import ts from 'typescript';
 import {
   LinterResponse,
   LinterRequest,
 } from '../useTypeScript/requestTypes';
-import ts from 'typescript';
+import { generateRequestId } from '../generateRequestId';
 
 export const typeScriptLinter = ({
   typeScriptWorker,

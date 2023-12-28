@@ -34,10 +34,8 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
-import { TabState } from '../vzReducer';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 
@@ -87,10 +85,7 @@ export const getOrCreateEditor = ({
   onInteract,
   editorCache,
   usernameRef,
-  aiAssistEndpoint,
-  aiAssistOptions,
   typeScriptWorker,
-  tabList,
 }: {
   fileId: FileId;
 
@@ -111,11 +106,7 @@ export const getOrCreateEditor = ({
   editorCache: EditorCache;
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
-  aiAssistOptions?: {
-    [key: string]: any;
-  };
   typeScriptWorker: Worker;
-  tabList: Array<TabState>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -231,15 +222,15 @@ export const getOrCreateEditor = ({
 
   extensions.push(rotationIndicator);
 
-  extensions.push(
-    AIAssist({
-      shareDBDoc,
-      fileId,
-      tabList,
-      aiAssistEndpoint,
-      aiAssistOptions,
-    }),
-  );
+  // extensions.push(
+  //   AIAssistCodeMirrorKeyMap({
+  //     shareDBDoc,
+  //     fileId,
+  //     tabList,
+  //     aiAssistEndpoint,
+  //     aiAssistOptions,
+  //   }),
+  // );
 
   // Add the extension that provides TypeScript completions.
   if (enableTypeScriptCompletions) {

@@ -99,15 +99,15 @@
     "ignore": "^5.3.0",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
-    "open": "^10.0.0",
-    "openai": "^4.24.0",
+    "open": "^10.0.1",
+    "openai": "^4.24.1",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.9.1",
+    "react-bootstrap": "^2.9.2",
     "react-dom": "^18.2.0",
     "sharedb": "^4.1.2",
     "sharedb-client-browser": "^4.4.0",
     "vizhub-ui": "^3.14.0",
-    "ws": "^8.15.1"
+    "ws": "^8.16.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",

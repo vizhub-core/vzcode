@@ -10,6 +10,10 @@ export default defineConfig({
         target: 'ws://localhost:3030',
         ws: true,
       },
+      '/ai-assist': {
+        target: 'http://localhost:3030',
+        ws: true,
+      },
     },
   },
 

@@ -4,7 +4,7 @@ import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
-import { AIAssistWidget } from './AIAssistWidget';
+import { AIAssistWidget } from './AIAssist/AIAssistWidget';
 import { VZCodeContext } from './VZCodeContext';
 
 // The middle portion of the VZCode environment, containing:
@@ -13,7 +13,15 @@ import { VZCodeContext } from './VZCodeContext';
 // * The code error overlay
 // * The presence notifications
 // * The UI for AI Assist
-export const VZMiddle = ({ enableAIAssist = true }) => {
+export const VZMiddle = ({
+  enableAIAssist = true,
+  aiAssistEndpoint,
+  aiAssistOptions,
+}: {
+  enableAIAssist?: boolean;
+  aiAssistEndpoint: string;
+  aiAssistOptions: { [key: string]: string };
+}) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
   );
@@ -70,22 +78,26 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
           }
           username={username}
           typeScriptWorker={typeScriptWorker}
-          tabList={tabList}
         />
       ) : null}
-      <CodeErrorOverlay errorMessage={errorMessage} />
-      <PresenceNotifications
-        docPresence={docPresence}
-        localPresence={localPresence}
-      />
       {enableAIAssist && content && activeFileId ? (
         <AIAssistWidget
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
           editorCache={editorCache}
           tabList={tabList}
+          aiAssistEndpoint={aiAssistEndpoint}
+          aiAssistOptions={aiAssistOptions}
         />
       ) : null}
+      <CodeErrorOverlay
+        errorMessage={errorMessage}
+        content={content}
+      />
+      <PresenceNotifications
+        docPresence={docPresence}
+        localPresence={localPresence}
+      />
     </div>
   ) : null;
 };

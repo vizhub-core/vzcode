@@ -6,11 +6,7 @@ import {
   AutocompleteRequest,
   AutocompleteResponse,
 } from '../useTypeScript/requestTypes';
-
-type RequestId = string;
-
-export const generateRequestId = (): RequestId =>
-  (Math.random() + '').slice(2);
+import { generateRequestId } from '../generateRequestId';
 
 export const typeScriptCompletions = ({
   typeScriptWorker,
