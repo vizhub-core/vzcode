@@ -15,9 +15,10 @@ import {
   EditorCache,
   EditorCacheValue,
 } from '../useEditorCache';
+import { TabState } from '../vzReducer';
+import { AIAssistState } from '../AIAssist';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
-import { TabState } from '../vzReducer';
 
 export const CodeEditor = ({
   activeFileId,
@@ -33,6 +34,7 @@ export const CodeEditor = ({
   username,
   aiAssistEndpoint,
   aiAssistOptions,
+  aiAssistStateRef,
   typeScriptWorker,
   tabList,
 }: {
@@ -65,6 +67,7 @@ export const CodeEditor = ({
   aiAssistOptions?: {
     [key: string]: string;
   };
+  aiAssistStateRef: React.MutableRefObject<AIAssistState>;
   typeScriptWorker: Worker;
 
   tabList: Array<TabState>;
@@ -119,6 +122,7 @@ export const CodeEditor = ({
         aiAssistOptions,
         typeScriptWorker,
         tabList,
+        aiAssistStateRef,
       }),
     [
       activeFileId,
@@ -133,6 +137,7 @@ export const CodeEditor = ({
       aiAssistEndpoint,
       aiAssistOptions,
       typeScriptWorker,
+      aiAssistStateRef,
     ],
   );
 

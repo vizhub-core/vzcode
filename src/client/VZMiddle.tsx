@@ -1,11 +1,12 @@
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
-import { AIAssistWidget } from './AIAssistWidget';
+import { AIAssistWidget } from './AIAssist/AIAssistWidget';
 import { VZCodeContext } from './VZCodeContext';
+import { AIAssistState } from './AIAssist';
 
 // The middle portion of the VZCode environment, containing:
 // * The list of tabs at the top
@@ -41,6 +42,12 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
     typeScriptWorker,
   } = useContext(VZCodeContext);
 
+  // We need this to be a ref here so that the state can be
+  // shared between the CodeEditor and AIAssistWidget components.
+  const aiAssistStateRef = useRef<AIAssistState>({
+    streamId: null,
+  });
+
   return activeFileId !== null ? (
     <div
       className="middle"
@@ -71,6 +78,16 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
           username={username}
           typeScriptWorker={typeScriptWorker}
           tabList={tabList}
+          aiAssistStateRef={aiAssistStateRef}
+        />
+      ) : null}
+      {enableAIAssist && content && activeFileId ? (
+        <AIAssistWidget
+          activeFileId={activeFileId}
+          shareDBDoc={shareDBDoc}
+          editorCache={editorCache}
+          tabList={tabList}
+          aiAssistStateRef={aiAssistStateRef}
         />
       ) : null}
       <CodeErrorOverlay errorMessage={errorMessage} />
@@ -78,14 +95,6 @@ export const VZMiddle = ({ enableAIAssist = true }) => {
         docPresence={docPresence}
         localPresence={localPresence}
       />
-      {enableAIAssist && content && activeFileId ? (
-        <AIAssistWidget
-          activeFileId={activeFileId}
-          shareDBDoc={shareDBDoc}
-          editorCache={editorCache}
-          tabList={tabList}
-        />
-      ) : null}
     </div>
   ) : null;
 };

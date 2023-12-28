@@ -96,7 +96,7 @@ function opComesFromAIAssist(ops, source) {
 
 const streams = {};
 
-const debug = true;
+const debug = false;
 
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
