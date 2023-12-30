@@ -11,7 +11,7 @@ import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { showMinimap } from '@replit/codemirror-minimap';
+// import { showMinimap } from '@replit/codemirror-minimap';
 import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
@@ -274,14 +274,16 @@ export const getOrCreateEditor = ({
 
   // Show the minimap
   // See https://github.com/replit/codemirror-minimap#usage
-  extensions.push(
-    showMinimap.compute(['doc'], () => ({
-      create: () => ({
-        dom: document.createElement('div'),
-      }),
-      // displayText: 'blocks',
-    })),
-  );
+  // This extension has poor performance, so it's disabled for now.
+  // extensions.push(
+  //   showMinimap.compute(['doc'], () => ({
+  //     create: () => ({
+  //       dom: document.createElement('div'),
+  //     }),
+  //     // Without this, performance is terrible.
+  //     displayText: 'blocks',
+  //   })),
+  // );
 
   // VSCode keybindings
   // See https://github.com/replit/codemirror-vscode-keymap#usage

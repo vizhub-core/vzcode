@@ -75,7 +75,6 @@
     "@lezer/highlight": "^1.2.0",
     "@replit/codemirror-indentation-markers": "^6.5.0",
     "@replit/codemirror-interact": "^6.3.0",
-    "@replit/codemirror-minimap": "^0.5.2",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.5.0",
