@@ -5,11 +5,7 @@ import {
   Decoration,
   WidgetType,
 } from '@codemirror/view';
-import {
-  Annotation,
-  Extension,
-  RangeSet,
-} from '@codemirror/state';
+import { Extension, RangeSet } from '@codemirror/state';
 import { EditorView } from 'codemirror';
 
 // Interactive code widgets.
@@ -24,8 +20,8 @@ export const widgets = ({
   onInteract,
 }: {
   onInteract?: () => void;
-}) =>
-  interact({
+}) => {
+  const interactInstance = interact({
     rules: [
       // hex color picker
       // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
@@ -75,12 +71,39 @@ export const widgets = ({
         // set cursor to "ew-resize" on hover
         cursor: 'ew-resize',
         // change number value based on mouse X movement on drag
+        // This works fine with the 999 to 1000 transition
         onDrag: (text, setText, e) => {
           if (onInteract) onInteract();
           const newVal = Number(text) + e.movementX;
           if (isNaN(newVal)) return;
           setText(newVal.toString());
         },
+
+        // This DOES NOT works fine with the 999 to 1000 transition
+        // TODO figure out why
+        // onClick(text, setText, e) {
+        //   let newVal = Number(text);
+
+        //   const handleDrag = (e: MouseEvent) => {
+        //     if (onInteract) onInteract();
+        //     newVal += e.movementX;
+        //     if (isNaN(newVal)) return;
+        //     setText(newVal.toString());
+        //   };
+        //   // add an event listener to the document for mouse move
+        //   document.addEventListener(
+        //     'mousemove',
+        //     handleDrag,
+        //   );
+
+        //   // when the mouse is released, remove the event listener
+        //   document.addEventListener('mouseup', () => {
+        //     document.removeEventListener(
+        //       'mousemove',
+        //       handleDrag,
+        //     );
+        //   });
+        // },
       },
       // bool toggler
       {
@@ -197,6 +220,8 @@ export const widgets = ({
       },
     ],
   });
+  return interactInstance;
+};
 
 let rotationOrigin: { x: number; y: number } = null;
 
