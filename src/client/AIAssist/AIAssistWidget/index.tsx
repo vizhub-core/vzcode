@@ -4,7 +4,11 @@ import {
   ShareDBDoc,
   VZCodeContent,
 } from '../../../types';
-import { Button } from '../../bootstrap';
+import {
+  Button,
+  OverlayTrigger,
+  Tooltip,
+} from '../../bootstrap';
 import { EditorCache } from '../../useEditorCache';
 import { TabState } from '../../vzReducer';
 import {
@@ -24,6 +28,8 @@ export const AIAssistWidget = ({
   tabList,
   aiAssistEndpoint,
   aiAssistOptions,
+  aiAssistTooltipText = 'Start AI Assist',
+  aiAssistClickOverride,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -31,6 +37,8 @@ export const AIAssistWidget = ({
   tabList: Array<TabState>;
   aiAssistEndpoint: string;
   aiAssistOptions: { [key: string]: string };
+  aiAssistTooltipText?: string;
+  aiAssistClickOverride?: () => void;
 }) => {
   // The stream ID of the most recent request.
   //  * If `null`, no request has been made yet.
@@ -78,18 +86,26 @@ export const AIAssistWidget = ({
   return (
     showWidget && (
       <div className="vz-code-ai-assist-widget">
-        <Button
-          title="Start AI Assist"
-          onClick={handleClick}
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <Tooltip id="ai-assist-widget-tooltip">
+              {aiAssistTooltipText}
+            </Tooltip>
+          }
         >
-          {aiStreamId ? (
-            enableStopGeneration ? (
-              <StopSVG />
-            ) : null
-          ) : (
-            <SparklesSVG />
-          )}
-        </Button>
+          <Button
+            onClick={aiAssistClickOverride || handleClick}
+          >
+            {aiStreamId ? (
+              enableStopGeneration ? (
+                <StopSVG />
+              ) : null
+            ) : (
+              <SparklesSVG />
+            )}
+          </Button>
+        </OverlayTrigger>
       </div>
     )
   );

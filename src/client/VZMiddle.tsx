@@ -17,10 +17,14 @@ export const VZMiddle = ({
   enableAIAssist = true,
   aiAssistEndpoint,
   aiAssistOptions,
+  aiAssistTooltipText,
+  aiAssistClickOverride,
 }: {
   enableAIAssist?: boolean;
   aiAssistEndpoint: string;
   aiAssistOptions: { [key: string]: string };
+  aiAssistTooltipText?: string;
+  aiAssistClickOverride?: () => void;
 }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
@@ -88,6 +92,8 @@ export const VZMiddle = ({
           tabList={tabList}
           aiAssistEndpoint={aiAssistEndpoint}
           aiAssistOptions={aiAssistOptions}
+          aiAssistTooltipText={aiAssistTooltipText}
+          aiAssistClickOverride={aiAssistClickOverride}
         />
       ) : null}
       <CodeErrorOverlay

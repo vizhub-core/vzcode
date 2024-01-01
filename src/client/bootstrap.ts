@@ -4,8 +4,10 @@
 import Form from 'react-bootstrap/cjs/Form.js';
 import Button from 'react-bootstrap/cjs/Button.js';
 import Modal from 'react-bootstrap/cjs/Modal.js';
+import OverlayTrigger from 'react-bootstrap/cjs/OverlayTrigger.js';
+import Tooltip from 'react-bootstrap/cjs/Tooltip.js';
 
 // Pull in custom CSS from vizhub-ui.
 import 'vizhub-ui/dist/vizhub-ui.css';
 
-export { Form, Button, Modal };
+export { Form, Button, Modal, OverlayTrigger, Tooltip };

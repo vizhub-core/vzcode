@@ -65,16 +65,20 @@ export const generateAIResponse = async ({
       content: [
         'You are an expert programmer.',
         'Your task is to output ONLY the code that replaces <FILL_ME> correctly.',
-        'Do not add any markdown.',
+        'Do not add any markdown around.',
         'Do not duplicate the code before or after <FILL_ME>.',
         'Do not make any changes outside of <FILL_ME>.',
+        'Do not enclose the output with backticks.',
+        'If any additional instructions are required, they will be provided in comments.',
       ].join(' '),
     },
     { role: 'user', content: inputText },
   ];
 
-  console.log('messages');
-  console.log(messages);
+  if (debug) {
+    console.log('[generateAIResponse] messages:');
+    console.log(JSON.stringify(messages, null, 2));
+  }
 
   streams[streamId] = await openai.chat.completions.create({
     // model: 'gpt-3.5-turbo',
