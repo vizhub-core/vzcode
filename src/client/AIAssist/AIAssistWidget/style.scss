@@ -1,0 +1,19 @@
+.vz-code-ai-assist-widget {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+
+  .btn {
+    /* Center the icon */
+    padding: 6px 6px 7px 6px;
+    background: #33415b;
+    color: #e0e8ff;
+    border-radius: 4px;
+    border: none;
+  }
+  .btn:hover,
+  .btn:active,
+  .btn:focus {
+    background: #47546b;
+  }
+}
