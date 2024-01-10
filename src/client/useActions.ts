@@ -8,16 +8,6 @@ import { TabState, VZAction } from './vzReducer';
 export const useActions = (
   dispatch: (action: VZAction) => void,
 ) => {
-  const initializeTabs = useCallback(
-    (tabList: TabState[], activeFileId: FileId) => {
-      dispatch({
-        type: 'initialize_tabs',
-        tabList,
-        activeFileId,
-      });
-    },
-    [dispatch],
-  );
   const setActiveFileId = useCallback(
     (activeFileId: FileId) => {
       dispatch({
@@ -91,7 +81,6 @@ export const useActions = (
   );
 
   return {
-    initializeTabs,
     setActiveFileId,
     openTab,
     closeTabs,

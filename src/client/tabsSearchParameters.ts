@@ -1,0 +1,73 @@
+import { useNavigate } from 'react-router-dom';
+import { TabState } from './vzReducer';
+import { useEffect } from 'react';
+import { FileId } from '../types';
+
+export interface EditorTabsState {
+  // The ID of the file that is currently active.
+  // Invariant: `activeFileId` is always in `tabList`.
+  activeFileId: FileId | null;
+
+  // The list of open tabs.
+  tabList: Array<TabState>;
+}
+
+const encodeTabs = ({
+  tabList,
+  activeFileId,
+}: EditorTabsState): URLSearchParams => {
+  const searchParams = new URLSearchParams();
+  for (const tab of tabList) {
+    let tabState = tab.isTransient ? 't' : 'p';
+    // mark the active file
+    if (tab.fileId === activeFileId) {
+      tabState += 'a';
+    }
+    searchParams.set(tab.fileId, tabState);
+  }
+  return searchParams;
+};
+
+const decodeTabs = (
+  searchParams: URLSearchParams,
+): EditorTabsState => {
+  const tabList: TabState[] = [];
+  let activeFileId = null;
+  for (const [fileId, tabState] of Array.from(
+    searchParams.entries(),
+  )) {
+    const isTransient = tabState.includes('t');
+    const isActive = tabState.includes('a');
+    if (isActive) {
+      activeFileId = fileId;
+    }
+    tabList.push({ fileId, isTransient });
+  }
+  return { tabList, activeFileId };
+};
+
+export const useInitialTabs = (): EditorTabsState => {
+  return decodeTabs(
+    new URLSearchParams(window.location.search),
+  );
+};
+
+export const usePersistTabs = ({
+  activeFileId,
+  tabList,
+}: EditorTabsState) => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate(
+      {
+        search: encodeTabs({
+          activeFileId,
+          tabList,
+        })
+          .toString()
+          .replace(/^\?$/, ''),
+      },
+      { replace: true },
+    );
+  }, [activeFileId, tabList]);
+};

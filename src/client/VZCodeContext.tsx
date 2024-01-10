@@ -5,6 +5,7 @@ import {
   useRef,
 } from 'react';
 import {
+  FileId,
   Files,
   ShareDBDoc,
   Username,
@@ -97,6 +98,8 @@ export const VZCodeProvider = ({
   prettierWorker,
   typeScriptWorker,
   initialUsername,
+  initialTabList,
+  initialActiveFileId,
   children,
   codeError = null,
   enableManualPretter = false,
@@ -111,6 +114,8 @@ export const VZCodeProvider = ({
   prettierWorker: Worker;
   typeScriptWorker: Worker;
   initialUsername: Username;
+  initialTabList: TabState[];
+  initialActiveFileId: FileId | null;
   children: React.ReactNode;
   codeError?: string | null;
   enableManualPretter?: boolean;
@@ -151,7 +156,12 @@ export const VZCodeProvider = ({
   // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
-    { defaultTheme, initialUsername },
+    {
+      defaultTheme,
+      initialUsername,
+      initialTabList,
+      initialActiveFileId,
+    },
     createInitialState,
   );
 
@@ -167,7 +177,6 @@ export const VZCodeProvider = ({
 
   // Functions for dispatching actions to the reducer.
   const {
-    initializeTabs,
     setActiveFileId,
     openTab,
     closeTabs,
@@ -177,29 +186,6 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
-
-  // initialize open tabs from the url search parameters
-  useEffect(() => {
-    const search = new URLSearchParams(
-      document.location.search,
-    );
-    if (search.size === 0) {
-      return;
-    }
-    const tabList: TabState[] = [];
-    let activeFileId = null;
-    for (const [fileId, tabState] of Array.from(
-      search.entries(),
-    )) {
-      const isTransient = tabState.includes('t');
-      const isActive = tabState.includes('a');
-      if (isActive) {
-        activeFileId = fileId;
-      }
-      tabList.push({ fileId, isTransient });
-    }
-    initializeTabs(tabList, activeFileId);
-  }, []);
 
   // save the opem tabs to the url search parameters
   const tabListTimeoutId = useRef<number>(null);
