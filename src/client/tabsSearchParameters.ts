@@ -12,7 +12,7 @@ export interface EditorTabsState {
   tabList: Array<TabState>;
 }
 
-const encodeTabs = ({
+export const encodeTabs = ({
   tabList,
   activeFileId,
 }: EditorTabsState): URLSearchParams => {
@@ -28,7 +28,7 @@ const encodeTabs = ({
   return searchParams;
 };
 
-const decodeTabs = (
+export const decodeTabs = (
   searchParams: URLSearchParams,
 ): EditorTabsState => {
   const tabList: TabState[] = [];
