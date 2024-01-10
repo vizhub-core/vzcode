@@ -25,18 +25,20 @@ export const TabList = ({
   return (
     <div className="vz-tab-list">
       {files &&
-        tabList.map((tabState: TabState) => (
-          <Tab
-            key={tabState.fileId}
-            fileId={tabState.fileId}
-            isTransient={tabState.isTransient}
-            isActive={tabState.fileId === activeFileId}
-            setActiveFileId={setActiveFileId}
-            openTab={openTab}
-            closeTabs={closeTabs}
-            fileName={files[tabState.fileId].name}
-          />
-        ))}
+        tabList
+          .filter((tabState) => tabState.fileId in files)
+          .map((tabState: TabState) => (
+            <Tab
+              key={tabState.fileId}
+              fileId={tabState.fileId}
+              isTransient={tabState.isTransient}
+              isActive={tabState.fileId === activeFileId}
+              setActiveFileId={setActiveFileId}
+              openTab={openTab}
+              closeTabs={closeTabs}
+              fileName={files[tabState.fileId].name}
+            />
+          ))}
     </div>
   );
 };

@@ -67,7 +67,9 @@ export const VZMiddle = ({
         closeTabs={closeTabs}
         createFile={createFile}
       />
-      {content && activeFileId ? (
+      {content &&
+      activeFileId &&
+      shareDBDoc.data.files[activeFileId] ? (
         <CodeEditor
           shareDBDoc={shareDBDoc}
           submitOperation={submitOperation}
