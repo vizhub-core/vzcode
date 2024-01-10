@@ -1,4 +1,9 @@
-import { createContext, useReducer } from 'react';
+import {
+  createContext,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import {
   Files,
   ShareDBDoc,
@@ -162,6 +167,7 @@ export const VZCodeProvider = ({
 
   // Functions for dispatching actions to the reducer.
   const {
+    initializeTabs,
     setActiveFileId,
     openTab,
     closeTabs,
@@ -171,6 +177,52 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
+
+  // initialize open tabs from the url search parameters
+  useEffect(() => {
+    const search = new URLSearchParams(
+      document.location.search,
+    );
+    if (search.size === 0) {
+      return;
+    }
+    const tabList: TabState[] = [];
+    let activeFileId = null;
+    for (const [fileId, tabState] of Array.from(
+      search.entries(),
+    )) {
+      const isTransient = tabState.includes('t');
+      const isActive = tabState.includes('a');
+      if (isActive) {
+        activeFileId = fileId;
+      }
+      tabList.push({ fileId, isTransient });
+    }
+    initializeTabs(tabList, activeFileId);
+  }, []);
+
+  // save the opem tabs to the url search parameters
+  const tabListTimeoutId = useRef<number>(null);
+  useEffect(() => {
+    // debounce: only update the url when the tabList stops changing
+    clearTimeout(tabListTimeoutId.current);
+    setTimeout(() => {
+      const query = new URLSearchParams();
+      for (const tab of tabList) {
+        let tabState = tab.isTransient ? 't' : 'p';
+        // mark the active file
+        if (tab.fileId === activeFileId) {
+          tabState += 'a';
+        }
+        query.set(tab.fileId, tabState);
+      }
+      history.replaceState(
+        null,
+        '',
+        '?' + query.toString(),
+      );
+    }, 100);
+  }, [tabList]);
 
   // The set of open directories.
   // TODO move this into reducer/useActions

@@ -7,6 +7,7 @@ import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
+import { initializeTabsReducer } from './initializeTabsReducer';
 
 export { createInitialState } from './createInitialState';
 
@@ -34,6 +35,14 @@ export type VZState = {
 
 // The shape of the actions that can be dispatched to the reducer.
 export type VZAction =
+  // `initialize_tabs`
+  //  * Initialize open tabs and set active tab.
+  | {
+      type: 'initialize_tabs';
+      tabList: TabState[];
+      activeFileId: FileId;
+    }
+
   // `set_active_file_id`
   //  * Sets the active file ID.
   | { type: 'set_active_file_id'; activeFileId: FileId }
@@ -87,6 +96,7 @@ export type TabState = {
 };
 
 const reducers = [
+  initializeTabsReducer,
   setActiveFileIdReducer,
   openTabReducer,
   closeTabsReducer,
