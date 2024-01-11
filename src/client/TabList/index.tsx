@@ -25,18 +25,21 @@ export const TabList = ({
   return (
     <div className="vz-tab-list">
       {files &&
-        tabList.map((tabState: TabState) => (
-          <Tab
-            key={tabState.fileId}
-            fileId={tabState.fileId}
-            isTransient={tabState.isTransient}
-            isActive={tabState.fileId === activeFileId}
-            setActiveFileId={setActiveFileId}
-            openTab={openTab}
-            closeTabs={closeTabs}
-            fileName={files[tabState.fileId].name}
-          />
-        ))}
+        tabList
+          // Handles the case that the tab list references a file that was deleted.
+          .filter((tabState) => tabState.fileId in files)
+          .map((tabState: TabState) => (
+            <Tab
+              key={tabState.fileId}
+              fileId={tabState.fileId}
+              isTransient={tabState.isTransient}
+              isActive={tabState.fileId === activeFileId}
+              setActiveFileId={setActiveFileId}
+              openTab={openTab}
+              closeTabs={closeTabs}
+              fileName={files[tabState.fileId].name}
+            />
+          ))}
     </div>
   );
 };

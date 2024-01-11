@@ -1,5 +1,11 @@
-import { createContext, useReducer } from 'react';
 import {
+  createContext,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
+import {
+  FileId,
   Files,
   ShareDBDoc,
   Username,
@@ -92,6 +98,8 @@ export const VZCodeProvider = ({
   prettierWorker,
   typeScriptWorker,
   initialUsername,
+  initialTabList,
+  initialActiveFileId,
   children,
   codeError = null,
   enableManualPretter = false,
@@ -106,6 +114,8 @@ export const VZCodeProvider = ({
   prettierWorker: Worker;
   typeScriptWorker: Worker;
   initialUsername: Username;
+  initialTabList: TabState[];
+  initialActiveFileId: FileId | null;
   children: React.ReactNode;
   codeError?: string | null;
   enableManualPretter?: boolean;
@@ -146,7 +156,12 @@ export const VZCodeProvider = ({
   // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
-    { defaultTheme, initialUsername },
+    {
+      defaultTheme,
+      initialUsername,
+      initialTabList,
+      initialActiveFileId,
+    },
     createInitialState,
   );
 
@@ -171,6 +186,29 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
+
+  // Save the open tabs to the url search parameters.
+  const tabListTimeoutId = useRef<number>(null);
+  useEffect(() => {
+    // debounce: only update the url when the tabList stops changing
+    clearTimeout(tabListTimeoutId.current);
+    setTimeout(() => {
+      const query = new URLSearchParams();
+      for (const tab of tabList) {
+        let tabState = tab.isTransient ? 't' : 'p';
+        // mark the active file
+        if (tab.fileId === activeFileId) {
+          tabState += 'a';
+        }
+        query.set(tab.fileId, tabState);
+      }
+      history.replaceState(
+        null,
+        '',
+        '?' + query.toString(),
+      );
+    }, 100);
+  }, [tabList]);
 
   // The set of open directories.
   // TODO move this into reducer/useActions
