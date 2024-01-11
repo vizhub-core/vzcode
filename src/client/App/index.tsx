@@ -21,10 +21,6 @@ import {
   VZCodeProvider,
 } from '../VZCodeContext';
 import './style.scss';
-import {
-  useInitialTabs,
-  usePersistTabs,
-} from '../tabsSearchParameters';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -52,11 +48,9 @@ const connection = new Connection(socket);
 // TODO consider if there's a cleaner pattern for this.
 // This makes sense in VZCode itself, but for an app with
 // authentication that wraps VZCode, it is not required.
-const PersistUsernameAndTabs = () => {
-  const { username, activeFileId, tabList } =
-    useContext(VZCodeContext);
+const PersistUsername = () => {
+  const { username } = useContext(VZCodeContext);
   usePersistUsername(username);
-  usePersistTabs({ activeFileId, tabList });
   return null;
 };
 
@@ -73,12 +67,6 @@ function App() {
 
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
-
-  // get the initial open tabs from the URL
-  const {
-    tabList: initialTabList,
-    activeFileId: initialActiveFileId,
-  } = useInitialTabs();
 
   // Feature flag for enabling the right-side panel.
   // Useful for debugging dual split pane functionality.
@@ -99,8 +87,6 @@ function App() {
         prettierWorker={prettierWorker}
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
-        initialTabList={initialTabList}
-        initialActiveFileId={initialActiveFileId}
       >
         <div className="app">
           <VZLeft />
@@ -111,7 +97,7 @@ function App() {
             <VZResizer side="right" />
           ) : null}
         </div>
-        <PersistUsernameAndTabs />
+        <PersistUsername />
       </VZCodeProvider>
     </SplitPaneResizeProvider>
   );
