@@ -26,7 +26,13 @@ const resizerInteractionSurfaceWidthWhileDragging = 200;
 // This is the part of the resizer that is visible to the user.
 const resizerThumbWidth = 4;
 
-export const VZResizer = ({ side }: { side: Side }) => {
+export const VZResizer = ({
+  side,
+  isSidebarVisible = true,
+}: {
+  side: Side;
+  isSidebarVisible: boolean;
+}) => {
   const {
     sidebarWidth,
     codeEditorWidth,
@@ -96,7 +102,9 @@ export const VZResizer = ({ side }: { side: Side }) => {
   const left =
     (side === 'left'
       ? sidebarWidth
-      : sidebarWidth + codeEditorWidth) -
+      : isSidebarVisible
+        ? sidebarWidth + codeEditorWidth
+        : codeEditorWidth) -
     resizerWidth / 2;
 
   return shouldRenderResizer ? (
