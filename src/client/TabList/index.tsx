@@ -1,4 +1,3 @@
-import { useCallback, useEffect } from 'react';
 import type { TabState } from '../vzReducer';
 import type { FileId, Files } from '../../types';
 import { Tab } from './Tab';
