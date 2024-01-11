@@ -187,7 +187,7 @@ export const VZCodeProvider = ({
     setUsername,
   } = useActions(dispatch);
 
-  // save the opem tabs to the url search parameters
+  // Save the open tabs to the url search parameters.
   const tabListTimeoutId = useRef<number>(null);
   useEffect(() => {
     // debounce: only update the url when the tabList stops changing
