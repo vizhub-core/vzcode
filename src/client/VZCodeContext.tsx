@@ -1,11 +1,5 @@
+import { createContext, useReducer } from 'react';
 import {
-  createContext,
-  useEffect,
-  useReducer,
-  useRef,
-} from 'react';
-import {
-  FileId,
   Files,
   ShareDBDoc,
   Username,
@@ -30,6 +24,10 @@ import {
   EditorCache,
   useEditorCache,
 } from './useEditorCache';
+import {
+  useInitialTabs,
+  usePersistTabs,
+} from './tabsSearchParameters';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -98,8 +96,6 @@ export const VZCodeProvider = ({
   prettierWorker,
   typeScriptWorker,
   initialUsername,
-  initialTabList,
-  initialActiveFileId,
   children,
   codeError = null,
   enableManualPretter = false,
@@ -114,8 +110,6 @@ export const VZCodeProvider = ({
   prettierWorker: Worker;
   typeScriptWorker: Worker;
   initialUsername: Username;
-  initialTabList: TabState[];
-  initialActiveFileId: FileId | null;
   children: React.ReactNode;
   codeError?: string | null;
   enableManualPretter?: boolean;
@@ -152,6 +146,12 @@ export const VZCodeProvider = ({
     typeScriptWorker,
   });
 
+  // Get the initial open tabs from the URL
+  const {
+    tabList: initialTabList,
+    activeFileId: initialActiveFileId,
+  } = useInitialTabs();
+
   // Set up the reducer that manages much of the application state.
   // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
@@ -174,6 +174,9 @@ export const VZCodeProvider = ({
     editorWantsFocus,
     username,
   } = state;
+
+  // Sync tab state to the URL
+  usePersistTabs({ activeFileId, tabList });
 
   // Functions for dispatching actions to the reducer.
   const {
