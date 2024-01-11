@@ -1,7 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-import { TabState } from './vzReducer';
 import { useEffect } from 'react';
+import {
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { FileId } from '../types';
+import { TabState } from './vzReducer';
 
 export interface EditorTabsState {
   // The ID of the file that is currently active.
@@ -47,9 +50,9 @@ export const decodeTabs = (
 };
 
 export const useInitialTabs = (): EditorTabsState => {
-  return decodeTabs(
-    new URLSearchParams(window.location.search),
-  );
+  let [searchParams] = useSearchParams();
+
+  return decodeTabs(searchParams);
 };
 
 export const usePersistTabs = ({
