@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
@@ -53,6 +53,13 @@ export const VZMiddle = ({
     typeScriptWorker,
   } = useContext(VZCodeContext);
 
+  // This prevents the CodeEditor from rendering
+  // during SSR.
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return activeFileId !== null ? (
     <div
       className="middle"
@@ -67,9 +74,7 @@ export const VZMiddle = ({
         closeTabs={closeTabs}
         createFile={createFile}
       />
-      {content &&
-      activeFileId &&
-      shareDBDoc.data.files[activeFileId] ? (
+      {isClient && content && activeFileId && (
         <CodeEditor
           shareDBDoc={shareDBDoc}
           submitOperation={submitOperation}
@@ -85,8 +90,11 @@ export const VZMiddle = ({
           username={username}
           typeScriptWorker={typeScriptWorker}
         />
-      ) : null}
-      {enableAIAssist && content && activeFileId ? (
+      )}
+      {isClient &&
+      enableAIAssist &&
+      content &&
+      activeFileId ? (
         <AIAssistWidget
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
