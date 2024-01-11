@@ -4,7 +4,7 @@
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
-  "bin": "src/server/cli.js",
+  "bin": "src/server/index.js",
   "files": ["dist/**", "src/**"],
   "scripts": {
     "test": "vitest run",

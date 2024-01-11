@@ -13,7 +13,7 @@ const startServerPlugin = () => {
         return;
       }
       const { createServer } = await import(
-        './src/server/index.js'
+        './src/server/app.js'
       );
       logger.info('start vzcode server');
       const server = createServer();
