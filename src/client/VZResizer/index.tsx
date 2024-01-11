@@ -31,7 +31,7 @@ export const VZResizer = ({
   isSidebarVisible = true,
 }: {
   side: Side;
-  isSidebarVisible: boolean;
+  isSidebarVisible?: boolean;
 }) => {
   const {
     sidebarWidth,

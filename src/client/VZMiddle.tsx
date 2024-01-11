@@ -21,8 +21,8 @@ export const VZMiddle = ({
   aiAssistClickOverride,
 }: {
   enableAIAssist?: boolean;
-  aiAssistEndpoint: string;
-  aiAssistOptions: { [key: string]: string };
+  aiAssistEndpoint?: string;
+  aiAssistOptions?: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
 }) => {
