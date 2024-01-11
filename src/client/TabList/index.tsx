@@ -26,6 +26,7 @@ export const TabList = ({
     <div className="vz-tab-list">
       {files &&
         tabList
+          // Handles the case that the tab list references a file that was deleted.
           .filter((tabState) => tabState.fileId in files)
           .map((tabState: TabState) => (
             <Tab
