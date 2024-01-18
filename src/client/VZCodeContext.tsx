@@ -24,10 +24,7 @@ import {
   EditorCache,
   useEditorCache,
 } from './useEditorCache';
-import {
-  useInitialTabs,
-  usePersistTabs,
-} from './tabsSearchParameters';
+import { useURLSync } from './useURLSync';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -177,7 +174,7 @@ export const VZCodeProvider = ({
   } = useActions(dispatch);
 
   // Sync tab state to the URL.
-  useSyncURLParams({
+  useURLSync({
     content,
     openTab,
     setActiveFileId,

@@ -10,21 +10,25 @@ describe('tabsSearchParameters', () => {
   test.each([
     {
       name: 'empty',
-      search: '',
+      params: {},
       tabList: [],
       activeFileId: null,
     },
     {
       name: 'single active tab',
-      search: 'file=index.html',
+      params: {
+        file: 'index.html',
+      },
 
       tabList: [{ fileId: '789' }],
       activeFileId: '789',
     },
     {
       name: 'multiple tabs, active tab first',
-      search: `file=index.html&tabs=index.html${delimiter}README.md${delimiter}index.js`,
-
+      params: {
+        file: 'index.html',
+        tabs: `index.html${delimiter}README.md${delimiter}index.js`,
+      },
       tabList: [
         { fileId: '789' },
         { fileId: '456' },
@@ -34,8 +38,10 @@ describe('tabsSearchParameters', () => {
     },
     {
       name: 'multiple tabs, active tab in middle',
-      search: `file=README.md&tabs=index.html${delimiter}README.md${delimiter}index.js`,
-
+      params: {
+        file: 'README.md',
+        tabs: `index.html${delimiter}README.md${delimiter}index.js`,
+      },
       tabList: [
         { fileId: '789' },
         { fileId: '456' },
@@ -45,9 +51,9 @@ describe('tabsSearchParameters', () => {
     },
   ])(
     'round trip: $name',
-    ({ search, tabList, activeFileId }) => {
+    ({ params, tabList, activeFileId }) => {
       // Fake Content object
-      const fakeContent: VZCodeContent = {
+      const content: VZCodeContent = {
         files: {
           '123': { name: 'index.js', text: 'abc' },
           '456': { name: 'README.md', text: 'def' },
@@ -55,24 +61,15 @@ describe('tabsSearchParameters', () => {
         },
       };
 
-      const decoded = decodeTabs({
-        searchParams: new URLSearchParams(search),
-        content: fakeContent,
-      });
+      const decoded = decodeTabs({ params, content });
       const expected = { tabList, activeFileId };
       expect(decoded).toStrictEqual(expected);
       const encoded = encodeTabs({
         tabList,
         activeFileId,
-        content: {
-          files: {
-            '123': { name: 'index.js', text: 'abc' },
-            '456': { name: 'README.md', text: 'def' },
-            '789': { name: 'index.html', text: 'ghi' },
-          },
-        },
-      }).toString();
-      expect(decodeURIComponent(encoded)).toBe(search);
+        content,
+      });
+      expect(encoded).toEqual(params);
     },
   );
 });

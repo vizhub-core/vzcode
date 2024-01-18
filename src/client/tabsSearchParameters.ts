@@ -37,12 +37,18 @@ const getFileName = (
   return null;
 };
 
+// An object representing the search parameters.
+export type TabStateParams = {
+  file?: string;
+  tabs?: string;
+};
+
 // Decodes the tab list and active file from the search parameters.
 export const decodeTabs = ({
-  searchParams,
+  params,
   content,
 }: {
-  searchParams: URLSearchParams;
+  params: TabStateParams;
   content: VZCodeContent;
 }): {
   tabList: Array<TabState>;
@@ -51,11 +57,11 @@ export const decodeTabs = ({
   const tabList: TabState[] = [];
 
   // Decode active file
-  const activeFileName = searchParams.get('file');
+  const activeFileName = params.file;
   const activeFileId = getFileId(content, activeFileName);
 
   // Decode tab list
-  const tabs = searchParams.get('tabs');
+  const tabs = params.tabs;
   if (tabs) {
     tabs.split(delimiter).forEach((fileName) => {
       const fileId = getFileId(content, fileName);
@@ -76,24 +82,20 @@ export const encodeTabs = ({
   tabList,
   activeFileId,
   content,
-  searchParams = new URLSearchParams(),
 }: {
   tabList: Array<TabState>;
   activeFileId: FileId | null;
   content: VZCodeContent;
-
-  // The existing search params, if any.
-  // This is provided so that we can preserve
-  // any other search parameters that might be present.
-  searchParams?: URLSearchParams;
-}): URLSearchParams => {
+}): TabStateParams => {
   // Get the file name of the active file
   const activeFileName = getFileName(content, activeFileId);
+
+  const params: TabStateParams = {};
 
   // If that's missing, no need to proceed (should never happen).
   if (activeFileName) {
     // In any case we set the `file` parameter.
-    searchParams.set('file', activeFileName);
+    params.file = activeFileName;
 
     // We only need to encode the `tabs` parameter
     // if there's more than one tab.
@@ -104,9 +106,9 @@ export const encodeTabs = ({
           getFileName(content, tabstate.fileId),
         )
         .join(delimiter);
-      searchParams.set('tabs', tabs);
+      params.tabs = tabs;
     }
   }
 
-  return searchParams;
+  return params;
 };
