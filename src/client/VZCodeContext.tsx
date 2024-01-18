@@ -146,22 +146,11 @@ export const VZCodeProvider = ({
     typeScriptWorker,
   });
 
-  // Get the initial open tabs from the URL
-  const {
-    tabList: initialTabList,
-    activeFileId: initialActiveFileId,
-  } = useInitialTabs();
-
   // Set up the reducer that manages much of the application state.
   // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
-    {
-      defaultTheme,
-      initialUsername,
-      initialTabList,
-      initialActiveFileId,
-    },
+    { defaultTheme, initialUsername },
     createInitialState,
   );
 
@@ -175,9 +164,6 @@ export const VZCodeProvider = ({
     username,
   } = state;
 
-  // Sync tab state to the URL
-  usePersistTabs({ activeFileId, tabList });
-
   // Functions for dispatching actions to the reducer.
   const {
     setActiveFileId,
@@ -189,6 +175,15 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
+
+  // Sync tab state to the URL.
+  useSyncURLParams({
+    content,
+    openTab,
+    setActiveFileId,
+    tabList,
+    activeFileId,
+  });
 
   // The set of open directories.
   // TODO move this into reducer/useActions

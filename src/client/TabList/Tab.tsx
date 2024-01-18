@@ -21,7 +21,7 @@ export const Tab = ({
   fileName,
 }: {
   fileId: FileId;
-  isTransient: boolean;
+  isTransient?: boolean;
   isActive: boolean;
   setActiveFileId: (fileId: FileId) => void;
   openTab: (tabState: TabState) => void;
@@ -49,7 +49,7 @@ export const Tab = ({
 
   // Double-clicking a transient tab makes it a persistent tab.
   const handleDoubleClick = useCallback(() => {
-    openTab({ fileId, isTransient: false });
+    openTab({ fileId });
   }, [fileId, openTab]);
 
   return (

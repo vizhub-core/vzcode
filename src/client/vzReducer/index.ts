@@ -44,7 +44,7 @@ export type VZAction =
   | {
       type: 'open_tab';
       fileId: FileId;
-      isTransient: boolean;
+      isTransient?: boolean;
     }
 
   // `close_tabs`
@@ -79,11 +79,11 @@ export type TabState = {
   //    appears as italic, and it will be automatically
   //    closed when the user switches to another file.
   //    If `true` and the tab is opened, the editor will not focus.
-  //  * `false` if the tab is persistent, meaning its text
+  //  * `false` or `undefined` if the tab is persistent, meaning its text
   //    appears as normal, and it will not be automatically
   //    closed when the user switches to another file.
   //    If `false` and the tab is opened, the editor will focus.
-  isTransient: boolean;
+  isTransient?: boolean;
 };
 
 const reducers = [
