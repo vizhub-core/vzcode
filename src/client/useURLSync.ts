@@ -1,8 +1,9 @@
 import { useSearchParams } from 'react-router-dom';
 import { FileId, VZCodeContent } from '../types';
 import { TabState } from './vzReducer';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
+  TabStateParams,
   decodeTabs,
   encodeTabs,
 } from './tabsSearchParameters';
@@ -24,6 +25,15 @@ export const useURLSync = ({
   // Use React router to get and set the  search parameters.
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // Extract the tab state parameters from the search parameters.
+  const tabStateParams: TabStateParams = useMemo(
+    () => ({
+      file: searchParams.get('file'),
+      tabs: searchParams.get('tabs'),
+    }),
+    [searchParams],
+  );
+
   // `true` after the state is updated based on the
   // initial search parameters from the URL.
   const isInitialized = useRef(false);
@@ -42,7 +52,7 @@ export const useURLSync = ({
 
     // Decode the search parameters.
     const { tabList, activeFileId } = decodeTabs({
-      searchParams,
+      tabStateParams,
       content,
     });
 
@@ -60,27 +70,65 @@ export const useURLSync = ({
     isInitialized,
   ]);
 
+  // Track content in a ref so that we can use it in the
+  // effect below without triggering the effect when
+  // the content changes.
+  const contentRef = useRef(content);
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+
   // Update the URL to match the current state whenever
   // the active file or tab list changes.
   useEffect(() => {
-    if (!content) {
+    // Safety check to make sure the content is loaded.
+    // Should never happen.
+    if (!contentRef.current) {
       return;
     }
 
-    const newSearchParams = encodeTabs({
+    const newTabStateParams: TabStateParams = encodeTabs({
       tabList,
       activeFileId,
-      content,
+      content: contentRef.current,
     });
 
-    console.log(
-      'newSearchParams',
-      newSearchParams.toString(),
-    );
+    if (
+      tabStateParams.file !== newTabStateParams.file ||
+      tabStateParams.tabs !== newTabStateParams.tabs
+    ) {
+      // Update the URL if the search parameters have changed.
+      setSearchParams(
+        (oldSearchParams: URLSearchParams) => {
+          // Create a copy of the old search params
+          const updatedSearchParams = new URLSearchParams(
+            oldSearchParams,
+          );
 
-    // Update the URL if the search parameters have changed.
-    setSearchParams((oldSearchParams) => {
-      return { foo: 'bar' };
-    });
-  }, [searchParams, content, tabList, activeFileId]);
+          // Set the 'file' parameter
+          if (newTabStateParams.file) {
+            updatedSearchParams.set(
+              'file',
+              newTabStateParams.file,
+            );
+          } else {
+            updatedSearchParams.delete('file'); // Remove 'file' if it's not present in newTabStateParams
+          }
+
+          // Set the 'tabs' parameter
+          if (newTabStateParams.tabs) {
+            updatedSearchParams.set(
+              'tabs',
+              newTabStateParams.tabs,
+            );
+          } else {
+            updatedSearchParams.delete('tabs'); // Remove 'tabs' if it's not present in newTabStateParams
+          }
+
+          // Return the updated search params
+          return updatedSearchParams;
+        },
+      );
+    }
+  }, [searchParams, tabList, activeFileId]);
 };
