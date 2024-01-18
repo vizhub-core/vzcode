@@ -10,13 +10,13 @@ describe('tabsSearchParameters', () => {
   test.each([
     {
       name: 'empty',
-      params: {},
+      tabStateParams: {},
       tabList: [],
       activeFileId: null,
     },
     {
       name: 'single active tab',
-      params: {
+      tabStateParams: {
         file: 'index.html',
       },
 
@@ -25,7 +25,7 @@ describe('tabsSearchParameters', () => {
     },
     {
       name: 'multiple tabs, active tab first',
-      params: {
+      tabStateParams: {
         file: 'index.html',
         tabs: `index.html${delimiter}README.md${delimiter}index.js`,
       },
@@ -38,7 +38,7 @@ describe('tabsSearchParameters', () => {
     },
     {
       name: 'multiple tabs, active tab in middle',
-      params: {
+      tabStateParams: {
         file: 'README.md',
         tabs: `index.html${delimiter}README.md${delimiter}index.js`,
       },
@@ -51,7 +51,7 @@ describe('tabsSearchParameters', () => {
     },
   ])(
     'round trip: $name',
-    ({ params, tabList, activeFileId }) => {
+    ({ tabStateParams, tabList, activeFileId }) => {
       // Fake Content object
       const content: VZCodeContent = {
         files: {
@@ -61,7 +61,10 @@ describe('tabsSearchParameters', () => {
         },
       };
 
-      const decoded = decodeTabs({ params, content });
+      const decoded = decodeTabs({
+        tabStateParams,
+        content,
+      });
       const expected = { tabList, activeFileId };
       expect(decoded).toStrictEqual(expected);
       const encoded = encodeTabs({
@@ -69,7 +72,7 @@ describe('tabsSearchParameters', () => {
         activeFileId,
         content,
       });
-      expect(encoded).toEqual(params);
+      expect(encoded).toEqual(tabStateParams);
     },
   );
 });
