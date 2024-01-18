@@ -1,102 +1,75 @@
-import { describe, expect, it, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import {
   encodeTabs,
   decodeTabs,
-  type EditorTabsState,
+  delimiter,
 } from './tabsSearchParameters';
+import { VZCodeContent } from '../types';
 
 describe('tabsSearchParameters', () => {
   test.each([
     {
       name: 'empty',
-      search: '',
-      state: { tabList: [], activeFileId: null },
+      params: {},
+      tabList: [],
+      activeFileId: null,
     },
     {
-      name: 'persistent tab',
-      search: '123=pa',
-      state: {
-        tabList: [{ fileId: '123', isTransient: false }],
-        activeFileId: '123',
+      name: 'single active tab',
+      params: {
+        file: 'index.html',
       },
-    },
-    {
-      name: 'transient tab',
-      search: '456=ta',
-      state: {
-        tabList: [{ fileId: '456', isTransient: true }],
-        activeFileId: '456',
-      },
-    },
-    {
-      name: 'no active file',
-      search: '678=p',
-      state: {
-        tabList: [{ fileId: '678', isTransient: false }],
-        activeFileId: null,
-      },
-    },
-    {
-      name: 'three tabs',
-      search: '111=p&222=ta&333=p',
-      state: {
-        tabList: [
-          { fileId: '111', isTransient: false },
-          { fileId: '222', isTransient: true },
-          { fileId: '333', isTransient: false },
-        ],
-        activeFileId: '222',
-      },
-    },
-  ])('round trip: $name', ({ search, state }) => {
-    const decoded = decodeTabs(new URLSearchParams(search));
-    expect(decoded).toStrictEqual(state);
-    const encoded = encodeTabs(state).toString();
-    expect(encoded).toBe(search);
-  });
 
-  test.each([
-    {
-      name: 'empty value',
-      search: 'abc',
-      correctedSearch: 'abc=p',
-      state: {
-        tabList: [{ fileId: 'abc', isTransient: false }],
-        activeFileId: null,
-      },
+      tabList: [{ fileId: '789' }],
+      activeFileId: '789',
     },
     {
-      name: 'unknown characters',
-      search: '890=xytzaw',
-      correctedSearch: '890=ta',
-      state: {
-        tabList: [{ fileId: '890', isTransient: true }],
-        activeFileId: '890',
+      name: 'multiple tabs, active tab first',
+      params: {
+        file: 'index.html',
+        tabs: `index.html${delimiter}README.md${delimiter}index.js`,
       },
+      tabList: [
+        { fileId: '789' },
+        { fileId: '456' },
+        { fileId: '123' },
+      ],
+      activeFileId: '789',
     },
     {
-      name: 'wrong order',
-      search: '321=ap',
-      correctedSearch: '321=pa',
-      state: {
-        tabList: [{ fileId: '321', isTransient: false }],
-        activeFileId: '321',
+      name: 'multiple tabs, active tab in middle',
+      params: {
+        file: 'README.md',
+        tabs: `index.html${delimiter}README.md${delimiter}index.js`,
       },
+      tabList: [
+        { fileId: '789' },
+        { fileId: '456' },
+        { fileId: '123' },
+      ],
+      activeFileId: '456',
     },
   ])(
-    'decode: $name',
-    ({ search, correctedSearch, state }) => {
-      const { tabList, activeFileId } = decodeTabs(
-        new URLSearchParams(),
-      );
-      expect(tabList).toStrictEqual([]);
-      expect(activeFileId).toBe(null);
-      const decoded = decodeTabs(
-        new URLSearchParams(search),
-      );
-      expect(decoded).toStrictEqual(state);
-      const corrected = encodeTabs(decoded).toString();
-      expect(corrected).toBe(correctedSearch);
+    'round trip: $name',
+    ({ params, tabList, activeFileId }) => {
+      // Fake Content object
+      const content: VZCodeContent = {
+        files: {
+          '123': { name: 'index.js', text: 'abc' },
+          '456': { name: 'README.md', text: 'def' },
+          '789': { name: 'index.html', text: 'ghi' },
+        },
+      };
+
+      const decoded = decodeTabs({ params, content });
+      const expected = { tabList, activeFileId };
+      expect(decoded).toStrictEqual(expected);
+      const encoded = encodeTabs({
+        tabList,
+        activeFileId,
+        content,
+      });
+      expect(encoded).toEqual(params);
     },
   );
 });
