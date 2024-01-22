@@ -4,6 +4,7 @@ import {
   EditorState,
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
+import { svelte } from '@replit/codemirror-lang-svelte';
 import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
@@ -60,6 +61,7 @@ const languageExtensions = {
   html,
   css,
   md: markdown,
+  svelte,
 };
 
 // Gets a value at a path in an object.
@@ -195,9 +197,9 @@ export const getOrCreateEditor = ({
     // TODO manually test this case by creating a file
     // that has no extension, opening it up,
     // and then adding an extension.
-    console.warn(
-      `No language extension for file extension: ${fileExtension}`,
-    );
+    // console.warn(
+    //   `No language extension for file extension: ${fileExtension}`,
+    // );
     // We still need to push the compartment,
     // otherwise the compartment won't work when
     // a file extension _is_ added later on.
