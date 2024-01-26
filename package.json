@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "test-interactive": "npm run build; cd test/sampleDirectories/kitchenSink; node ../../../src/server/index.js",
+    "test-interactive": "npm run build && cd test/sampleDirectories/kitchenSink && node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
     "dev": "vite",
@@ -111,6 +111,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@rollup/rollup-win32-x64-msvc": "^4.9.6",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
