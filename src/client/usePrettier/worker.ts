@@ -9,8 +9,16 @@ import * as prettierPluginCSS from 'prettier/plugins/postcss';
 // import * as prettierPluginAngular from 'prettier/plugins/angular';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
 
+// This plugin refers to Buffer, which breaks in the browser.
+import * as prettierPluginSvelte from 'prettier-plugin-svelte';
+import { Buffer } from 'buffer';
+
+globalThis.Buffer = Buffer;
 import { FileId } from '../../types';
 
+const enableSvelte = false;
+// console.log('Buffer');
+// console.log(Buffer);
 const parsers = {
   js: 'babel',
   jsx: 'babel',
@@ -32,6 +40,7 @@ const parsers = {
   //   '.yml': 'yaml',
   //   '.vue': 'vue',
   //   '.component.html': 'angular',
+  svelte: 'svelte',
 };
 
 const plugins = [
@@ -41,6 +50,7 @@ const plugins = [
   prettierPluginMarkdown,
   prettierPluginTypescript,
   prettierPluginCSS,
+  prettierPluginSvelte,
 ];
 
 onmessage = async ({
@@ -52,7 +62,7 @@ onmessage = async ({
 
     // The file extension
     // Supported extensions: https://prettier.io/docs/en/options.html#parser
-    // VizHub only supports
+    // The editor only supports
     // - JavaScript
     // - TypeScript
     // - HTML
