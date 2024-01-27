@@ -43,19 +43,25 @@ To invite others to edit with you in real time, share your IP in your LAN with t
 
 - **Local Setup**:
 
-  ```bash
-  cd vzcode
-  npm install
-  npm run test-interactive
-  ```
+```bash
+cd vzcode
+npm install
+npm run test-interactive
+```
 
-  For hot reloading (client-side only), run:
+If you're on Windows, you'll also need to do this additional step:
 
-  ```bash
-  npm run dev
-  ```
+```
+npm install @rollup/rollup-win32-x64-msvc
+```
 
-  You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to set up the `vzcode` NPM package in another project to point to your clone of the repository. This can be useful when testing out how `vzcode` functions as a dependency.
+For hot reloading (client-side only), run:
+
+```bash
+npm run dev
+```
+
+You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to set up the `vzcode` NPM package in another project to point to your clone of the repository. This can be useful when testing out how `vzcode` functions as a dependency.
 
 ## Features
 
