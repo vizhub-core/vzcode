@@ -38,12 +38,22 @@ export const typeScriptCompletions = ({
     };
 
     //Prevent completions from appearing on certain characters
+    const lastCharacter =
+      fileContent[completionContext.pos - 1];
     if (
-      fileContent[completionContext.pos - 1] === '"' ||
-      fileContent[completionContext.pos - 1] === "'" ||
-      fileContent[completionContext.pos - 1] === ';' ||
-      fileContent[completionContext.pos - 1] === '(' ||
-      fileContent[completionContext.pos - 1] === ')'
+      [
+        '"',
+        "'",
+        ';',
+        '(',
+        ')',
+        '{',
+        ',',
+        ' ',
+        '=',
+        '<',
+        '>',
+      ].includes(lastCharacter)
     ) {
       return { from: completionContext.pos, options: [] };
     }
