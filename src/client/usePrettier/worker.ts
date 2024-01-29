@@ -4,16 +4,8 @@ import * as prettierPluginEstree from 'prettier/plugins/estree';
 import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown';
 import * as prettierPluginCSS from 'prettier/plugins/postcss';
-// import * as prettierPluginYaml from 'prettier/plugins/yaml';
-// import * as prettierPluginGraphql from 'prettier/plugins/graphql';
-// import * as prettierPluginAngular from 'prettier/plugins/angular';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
-
-// This plugin refers to Buffer, which breaks in the browser.
-import * as prettierPluginSvelte from 'prettier-plugin-svelte';
-import { Buffer } from 'buffer';
-
-globalThis.Buffer = Buffer;
+import * as prettierPluginSvelte from 'prettier-plugin-svelte/browser';
 import { FileId } from '../../types';
 
 const enableSvelte = false;
@@ -80,10 +72,12 @@ onmessage = async ({
   const parser = parsers[fileExtension];
 
   if (!parser) {
-    postMessage({
-      fileId,
-      error: `Unsupported file extension for Prettier: ${fileExtension}`,
-    });
+    // These messages are annoying and unnecessary
+    // postMessage({
+    //   fileId,
+    //   error: `Unsupported file extension for Prettier: ${fileExtension}`,
+    // });
+    // If no parser is found, just do nothing.
     return;
   }
 

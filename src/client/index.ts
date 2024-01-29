@@ -12,4 +12,4 @@ export {
   SplitPaneResizeContext,
 } from './SplitPaneResizeContext';
 export { useSubmitOperation } from './useSubmitOperation';
-export { shouldTriggerRun } from './usePrettier';
+export { shouldTriggerRun } from './shouldTriggerRun';
