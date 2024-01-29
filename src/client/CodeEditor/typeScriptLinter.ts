@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import type { Diagnostic } from 'typescript';
 import {
   LinterResponse,
   LinterRequest,
@@ -24,7 +24,7 @@ export const typeScriptLinter = ({
     typeScriptWorker.postMessage(linterRequest);
 
     //An array of diagnostic (CodeMirror) objects.
-    const tsErrors: ts.Diagnostic[] = await new Promise(
+    const tsErrors: Diagnostic[] = await new Promise(
       (resolve) => {
         typeScriptWorker.onmessage = (message: {
           data: LinterResponse;
