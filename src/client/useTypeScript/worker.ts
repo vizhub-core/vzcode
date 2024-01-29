@@ -38,7 +38,9 @@ const initializeFileSystem = async () => {
   if (debug) {
     console.log('initializeFileSystem');
   }
-  const compilerOptions: ts.CompilerOptions = {};
+  const compilerOptions: ts.CompilerOptions = {
+    lib: ['dom', 'esnext'],
+  };
 
   // `true` breaks in a Web Worker because
   // this uses `localStorage` under the hood,
