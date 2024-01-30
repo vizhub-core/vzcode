@@ -96,32 +96,33 @@ export const VZResizer = ({
   }, [isDragging, onMouseMove, onMouseUp]);
 
   const resizerWidth = isDragging
-    ? resizerInteractionSurfaceWidthWhileDragging
-    : resizerInteractionSurfaceWidth;
+  ? resizerInteractionSurfaceWidthWhileDragging
+  : resizerInteractionSurfaceWidth;
 
-  const left =
-    side === 'left'
-      ? sidebarWidth
-      : isSidebarVisible
-      ? sidebarWidth + codeEditorWidth - resizerWidth / 2
-      : codeEditorWidth - resizerWidth / 2;
+const left =
+  (side === 'left'
+    ? sidebarWidth
+    : isSidebarVisible
+      ? sidebarWidth + codeEditorWidth
+      : codeEditorWidth) +
+  (isDragging ? 0 : resizerThumbWidth) - resizerWidth / 2;
 
-  return shouldRenderResizer ? (
+return shouldRenderResizer ? (
+  <div
+    className="vz-resizer"
+    onMouseDown={onMouseDown}
+    style={{
+      left,
+      width: resizerWidth,
+    }}
+  >
     <div
-      className="vz-resizer"
-      onMouseDown={onMouseDown}
+      className="vz-resizer-thumb"
       style={{
-        left,
-        width: resizerWidth,
+        left: resizerWidth / 2 - resizerThumbWidth / 2,
+        width: resizerThumbWidth,
       }}
-    >
-      <div
-        className="vz-resizer-thumb"
-        style={{
-          left: resizerWidth / 2 - resizerThumbWidth / 2,
-          width: resizerThumbWidth,
-        }}
-      />
-    </div>
-  ) : null;
+    />
+  </div>
+) : null;
 };
