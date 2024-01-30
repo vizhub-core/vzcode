@@ -100,12 +100,11 @@ export const VZResizer = ({
     : resizerInteractionSurfaceWidth;
 
   const left =
-    (side === 'left'
+    side === 'left'
       ? sidebarWidth
       : isSidebarVisible
-        ? sidebarWidth + codeEditorWidth
-        : codeEditorWidth) -
-    resizerWidth / 2;
+      ? sidebarWidth + codeEditorWidth - resizerWidth / 2
+      : codeEditorWidth - resizerWidth / 2;
 
   return shouldRenderResizer ? (
     <div
