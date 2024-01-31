@@ -197,6 +197,13 @@ export const VZSidebar = ({
           Editor Settings
         </div>
       )}
+      <div className="connection-status">
+        Connection Status
+        <div className="connection">
+          Saved
+          <div className="saved" />
+        </div>
+      </div>
       <CreateFileModal
         show={isModalOpen}
         onClose={handleCloseModal}
