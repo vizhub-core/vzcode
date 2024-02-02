@@ -46,6 +46,9 @@ export const Item = ({
   // Tracks whether the delete confirmation modal is open
   const [showModal, setShowModal] = useState(false);
 
+  // Tracks whether the mouse is hovering over the delete icon
+  const [isIconHovered, setIsIconHovered] = useState(false);
+
   // Ref to track the input DOM, so that we can focus and blur it
   const renameInputRef = useRef(null);
 
@@ -120,7 +123,13 @@ export const Item = ({
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);
+  const handleIconEnter = useCallback(() => {
+    setIsIconHovered(true);
+  }, []);
 
+  const handleIconLeave = useCallback(() => {
+    setIsIconHovered(false);
+  }, []);
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
   }, []);
@@ -169,14 +178,33 @@ export const Item = ({
             style={{ color: '#ff006b' }}
             onClick={handleModalOpen}
           ></i> */}
-          <Button
-            size="sm"
-            // className="bx bx-trash utilities"
+          <button
+            className="bx utilities"
+            style={{
+              backgroundColor: isIconHovered
+                ? '#384966'
+                : 'transparent',
+              boxShadow: 'none',
+              border: 'none',
+              width: '20px',
+              height: '20px',
+              borderRadius: '2px',
+              position: 'relative',
+            }}
             onClick={handleModalOpen}
-            variant="hidden"
+            onMouseEnter={handleIconEnter}
+            onMouseLeave={handleIconLeave}
           >
-            <Trash />
-          </Button>
+            <div
+              style={{
+                position: 'absolute',
+                left: 2.5,
+                bottom: 2,
+              }}
+            >
+              <Trash />
+            </div>
+          </button>
         </div>
       ) : null}
 
