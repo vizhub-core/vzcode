@@ -20,6 +20,11 @@ import { Listing } from './Listing';
 import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
 
+// TODO turn this UI back on when we are actually detecting
+// the connection status.
+// See https://github.com/vizhub-core/vzcode/issues/456
+const enableConnectionStatus = false;
+
 const CreateFileButton = ({ handleCreateFile }) => {
   return (
     <i
@@ -197,13 +202,15 @@ export const VZSidebar = ({
           Editor Settings
         </div>
       )}
-      <div className="connection-status">
-        Connection Status
-        <div className="connection">
-          Saved
-          <div className="saved" />
+      {enableConnectionStatus && (
+        <div className="connection-status">
+          Connection Status
+          <div className="connection">
+            Saved
+            <div className="saved" />
+          </div>
         </div>
-      </div>
+      )}
       <CreateFileModal
         show={isModalOpen}
         onClose={handleCloseModal}
