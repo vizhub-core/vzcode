@@ -107,4 +107,23 @@
     margin-bottom: 10px;
     font-size: 14px;
   }
+
+  .connection-status {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .connection {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .saved {
+    width: 16px;
+    height: 16px;
+    border-radius: 99px;
+    background-color: #34eb52;
+  }
 }
