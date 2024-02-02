@@ -5,7 +5,7 @@ import {
   useEffect,
 } from 'react';
 
-import { Button } from '../bootstrap'
+import { Button } from '../bootstrap';
 import { Edit } from '../Icons';
 
 // TODO consider moving this up to a higher level of the component tree
@@ -166,31 +166,41 @@ export const Item = ({
         )}
       </div>
       {isHovered && !isRenaming ? (
-        <div className="utils"
-              style={{position: 'relative'}}>
+        <div
+          className="utils"
+          style={{ position: 'relative' }}
+        >
           {(isDirectory ? enableRenameDirectory : true) ? (
             //<i
             //  className="bx bxs-edit utilities"
             //  style={{ color: '#9edcff' }}
             //  onClick={handleRenameIconClick}
             //></i>
-            
-            
+
             <button
               className="bx utilities"
-              style={{backgroundColor: isIconHovered ? '#384966' : 'transparent', 
-                      boxShadow: 'none', 
-                      border: 'none',
-                      width: '20px',
-                      height: '20px',
-                      borderRadius: '2px',
-                      position: 'relative'
-                    }}
+              style={{
+                backgroundColor: isIconHovered
+                  ? '#384966'
+                  : 'transparent',
+                boxShadow: 'none',
+                border: 'none',
+                width: '20px',
+                height: '20px',
+                borderRadius: '2px',
+                position: 'relative',
+              }}
               onClick={handleRenameIconClick}
               onMouseEnter={handleIconEnter}
               onMouseLeave={handleIconLeave}
             >
-              <div style={{ position: 'absolute', left: 2.5, bottom: 2 }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 2.5,
+                  bottom: 2,
+                }}
+              >
                 <Edit />
               </div>
             </button>
