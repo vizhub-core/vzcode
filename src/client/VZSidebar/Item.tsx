@@ -7,6 +7,8 @@ import {
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
+import { Trash } from '../Icons/Trash';
+import { Button } from 'react-bootstrap';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -162,11 +164,19 @@ export const Item = ({
             ></i>
           ) : null}
 
-          <i
+          {/* <i
             className="bx bx-trash utilities"
             style={{ color: '#ff006b' }}
             onClick={handleModalOpen}
-          ></i>
+          ></i> */}
+          <Button
+            size="sm"
+            // className="bx bx-trash utilities"
+            onClick={handleModalOpen}
+            variant="hidden"
+          >
+            <Trash />
+          </Button>
         </div>
       ) : null}
 
