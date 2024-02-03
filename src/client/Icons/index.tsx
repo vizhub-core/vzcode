@@ -4,3 +4,4 @@ export { Edit } from './Edit';
 export { New } from './New';
 export { Gear } from './Gear';
 export { Close } from './Close';
+export { Trash } from './Trash';
