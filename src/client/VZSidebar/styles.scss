@@ -1,7 +1,7 @@
 .vz-sidebar {
   height: 100%;
   color: #d6d9de;
-  background: #33415b;
+  background: #1f2022;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -61,7 +61,7 @@
 
   .active-file,
   .active-file:hover {
-    background-color: #202e46;
+    background-color: #264399;
   }
 
   .name {
@@ -106,5 +106,24 @@
   .empty-text {
     margin-bottom: 10px;
     font-size: 14px;
+  }
+
+  .connection-status {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  .connection {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .saved {
+    width: 16px;
+    height: 16px;
+    border-radius: 99px;
+    background-color: #34eb52;
   }
 }

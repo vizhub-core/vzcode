@@ -55,11 +55,13 @@ If you're on Windows, you'll also need to do this additional step:
 npm install @rollup/rollup-win32-x64-msvc
 ```
 
-For hot reloading (client-side only), run:
+For local development with hot reloading (for client-side changes only), _keep the server running, started by_ `npm run test-interactive`, and also in a separate terminal run this:
 
 ```bash
 npm run dev
 ```
+
+This will expose http://localhost:5173/ and proxy the requests for data to the server (running on port 3030).
 
 You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to set up the `vzcode` NPM package in another project to point to your clone of the repository. This can be useful when testing out how `vzcode` functions as a dependency.
 

@@ -55,10 +55,9 @@ export const widgets = ({
             if (onInteract) onInteract();
             if (el.value) {
               setText(
-                `${quoteType}${
-                  valueIsUpper
-                    ? el.value.toUpperCase()
-                    : el.value
+                `${quoteType}${valueIsUpper
+                  ? el.value.toUpperCase()
+                  : el.value
                 }${quoteType}`,
               );
             }
@@ -180,7 +179,7 @@ export const widgets = ({
               e.clientX - rotationOrigin.x,
             ) *
               180) /
-              Math.PI,
+            Math.PI,
           );
           //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
           setText(`rotate(${rotationDegree})`);

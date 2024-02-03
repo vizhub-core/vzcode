@@ -5,6 +5,9 @@ import {
   useEffect,
 } from 'react';
 
+import { Button } from '../bootstrap';
+import { Edit } from '../Icons';
+
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { Trash } from '../Icons/Trash';
@@ -36,6 +39,8 @@ export const Item = ({
 }) => {
   // Tracks whether the mouse is hovering over the file or directory
   const [isHovered, setIsHovered] = useState(false);
+
+  const [isIconHovered, setIsIconHovered] = useState(false);
 
   // Tracks whether the file is being renamed (inline text input)
   const [isRenaming, setIsRenaming] = useState(false);
@@ -127,9 +132,14 @@ export const Item = ({
     setIsIconHovered(true);
   }, []);
 
+  const handleIconEnter = useCallback(() => {
+    setIsIconHovered(true);
+  }, []);
+
   const handleIconLeave = useCallback(() => {
     setIsIconHovered(false);
   }, []);
+
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
   }, []);
@@ -164,13 +174,44 @@ export const Item = ({
         )}
       </div>
       {isHovered && !isRenaming ? (
-        <div className="utils">
+        <div
+          className="utils"
+          style={{ position: 'relative' }}
+        >
           {(isDirectory ? enableRenameDirectory : true) ? (
-            <i
-              className="bx bxs-edit utilities"
-              style={{ color: '#9edcff' }}
+            //<i
+            //  className="bx bxs-edit utilities"
+            //  style={{ color: '#9edcff' }}
+            //  onClick={handleRenameIconClick}
+            //></i>
+
+            <button
+              className="bx utilities"
+              style={{
+                backgroundColor: isIconHovered
+                  ? '#384966'
+                  : 'transparent',
+                boxShadow: 'none',
+                border: 'none',
+                width: '20px',
+                height: '20px',
+                borderRadius: '2px',
+                position: 'relative',
+              }}
               onClick={handleRenameIconClick}
-            ></i>
+              onMouseEnter={handleIconEnter}
+              onMouseLeave={handleIconLeave}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 2.5,
+                  bottom: 2,
+                }}
+              >
+                <Edit />
+              </div>
+            </button>
           ) : null}
 
           {/* <i
