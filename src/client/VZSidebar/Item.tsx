@@ -10,6 +10,8 @@ import { Edit } from '../Icons';
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
+import { Trash } from '../Icons/Trash';
+import { Button } from '../bootstrap';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -48,6 +50,9 @@ export const Item = ({
 
   // Tracks whether the delete confirmation modal is open
   const [showModal, setShowModal] = useState(false);
+
+  // Tracks whether the mouse is hovering over the delete icon
+  const [isIconHovered, setIsIconHovered] = useState(false);
 
   // Ref to track the input DOM, so that we can focus and blur it
   const renameInputRef = useRef(null);
@@ -122,6 +127,9 @@ export const Item = ({
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
+  }, []);
+  const handleIconEnter = useCallback(() => {
+    setIsIconHovered(true);
   }, []);
 
   const handleIconEnter = useCallback(() => {
@@ -206,11 +214,38 @@ export const Item = ({
             </button>
           ) : null}
 
-          <i
+          {/* <i
             className="bx bx-trash utilities"
             style={{ color: '#ff006b' }}
             onClick={handleModalOpen}
-          ></i>
+          ></i> */}
+          <button
+            className="bx utilities"
+            style={{
+              backgroundColor: isIconHovered
+                ? '#384966'
+                : 'transparent',
+              boxShadow: 'none',
+              border: 'none',
+              width: '20px',
+              height: '20px',
+              borderRadius: '2px',
+              position: 'relative',
+            }}
+            onClick={handleModalOpen}
+            onMouseEnter={handleIconEnter}
+            onMouseLeave={handleIconLeave}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                left: 2.5,
+                bottom: 2,
+              }}
+            >
+              <Trash />
+            </div>
+          </button>
         </div>
       ) : null}
 
