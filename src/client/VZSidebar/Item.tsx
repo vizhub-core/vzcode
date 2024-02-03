@@ -4,14 +4,10 @@ import {
   useRef,
   useEffect,
 } from 'react';
-
-import { Button } from '../bootstrap';
-import { Edit } from '../Icons';
+import { Edit, Trash } from '../Icons';
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
-import { Trash } from '../Icons/Trash';
-import { Button } from '../bootstrap';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -40,8 +36,6 @@ export const Item = ({
   // Tracks whether the mouse is hovering over the file or directory
   const [isHovered, setIsHovered] = useState(false);
 
-  const [isIconHovered, setIsIconHovered] = useState(false);
-
   // Tracks whether the file is being renamed (inline text input)
   const [isRenaming, setIsRenaming] = useState(false);
 
@@ -50,9 +44,6 @@ export const Item = ({
 
   // Tracks whether the delete confirmation modal is open
   const [showModal, setShowModal] = useState(false);
-
-  // Tracks whether the mouse is hovering over the delete icon
-  const [isIconHovered, setIsIconHovered] = useState(false);
 
   // Ref to track the input DOM, so that we can focus and blur it
   const renameInputRef = useRef(null);
@@ -128,17 +119,6 @@ export const Item = ({
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
   }, []);
-  const handleIconEnter = useCallback(() => {
-    setIsIconHovered(true);
-  }, []);
-
-  const handleIconEnter = useCallback(() => {
-    setIsIconHovered(true);
-  }, []);
-
-  const handleIconLeave = useCallback(() => {
-    setIsIconHovered(false);
-  }, []);
 
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
@@ -146,7 +126,7 @@ export const Item = ({
 
   return (
     <div
-      className={`full-box file-or-directory user-select-none ${
+      className={`file-or-directory user-select-none ${
         isActive ? 'active-file' : ''
       }`}
       onClick={isRenaming ? null : handleClick}
@@ -179,73 +159,13 @@ export const Item = ({
           style={{ position: 'relative' }}
         >
           {(isDirectory ? enableRenameDirectory : true) ? (
-            //<i
-            //  className="bx bxs-edit utilities"
-            //  style={{ color: '#9edcff' }}
-            //  onClick={handleRenameIconClick}
-            //></i>
-
-            <button
-              className="bx utilities"
-              style={{
-                backgroundColor: isIconHovered
-                  ? '#384966'
-                  : 'transparent',
-                boxShadow: 'none',
-                border: 'none',
-                width: '20px',
-                height: '20px',
-                borderRadius: '2px',
-                position: 'relative',
-              }}
-              onClick={handleRenameIconClick}
-              onMouseEnter={handleIconEnter}
-              onMouseLeave={handleIconLeave}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  left: 2.5,
-                  bottom: 2,
-                }}
-              >
-                <Edit />
-              </div>
-            </button>
+            <i onClick={handleRenameIconClick}>
+              <Edit />
+            </i>
           ) : null}
-
-          {/* <i
-            className="bx bx-trash utilities"
-            style={{ color: '#ff006b' }}
-            onClick={handleModalOpen}
-          ></i> */}
-          <button
-            className="bx utilities"
-            style={{
-              backgroundColor: isIconHovered
-                ? '#384966'
-                : 'transparent',
-              boxShadow: 'none',
-              border: 'none',
-              width: '20px',
-              height: '20px',
-              borderRadius: '2px',
-              position: 'relative',
-            }}
-            onClick={handleModalOpen}
-            onMouseEnter={handleIconEnter}
-            onMouseLeave={handleIconLeave}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                left: 2.5,
-                bottom: 2,
-              }}
-            >
-              <Trash />
-            </div>
-          </button>
+          <i onClick={handleModalOpen}>
+            <Trash />
+          </i>
         </div>
       ) : null}
 
