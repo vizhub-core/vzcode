@@ -8,7 +8,7 @@ import {
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { Trash } from '../Icons/Trash';
-import { Button } from 'react-bootstrap';
+import { Button } from '../bootstrap';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
