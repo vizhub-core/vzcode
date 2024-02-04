@@ -16,7 +16,7 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
-import { BugSVG, NewSVG } from '../Icons';
+import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { Listing } from './Listing';
 import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
@@ -165,6 +165,19 @@ export const VZSidebar = ({
                 <BugSVG />
               </i>
             </a>
+
+            {disableSettings ? null : (
+              <i onClick={handleSettingsClick}>
+                <GearSVG />
+              </i>
+              // <div
+              //   className="settings"
+              //   onClick={handleSettingsClick}
+              // >
+              //   Editor Settings
+              // </div>
+            )}
+
             <i onClick={handleCreateFile}>
               <NewSVG />
             </i>
@@ -206,14 +219,7 @@ export const VZSidebar = ({
           </div>
         )}
       </div>
-      {disableSettings ? null : (
-        <div
-          className="settings"
-          onClick={handleSettingsClick}
-        >
-          Editor Settings
-        </div>
-      )}
+
       {enableConnectionStatus && (
         <div className="connection-status">
           Connection Status
