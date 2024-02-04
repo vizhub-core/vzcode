@@ -13,3 +13,5 @@ export {
 } from './SplitPaneResizeContext';
 export { useSubmitOperation } from './useSubmitOperation';
 export { shouldTriggerRun } from './shouldTriggerRun';
+
+export * from './Icons';
