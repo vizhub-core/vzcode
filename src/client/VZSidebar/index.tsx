@@ -12,6 +12,7 @@ import {
   FileTreePath,
   Files,
 } from '../../types';
+import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
@@ -40,6 +41,7 @@ const CreateFileButton = ({ handleCreateFile }) => {
 export const VZSidebar = ({
   files,
   createFile,
+  createFileTooltipText='New File',
   renameFile,
   deleteFile,
   deleteDirectory,
@@ -49,9 +51,12 @@ export const VZSidebar = ({
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
+  openSettingsTooltipText='Open Settings',
+  reportBugTooltipText='Report Bug',
 }: {
   files: Files;
   createFile: (fileName) => void;
+  createFileTooltipText?: string;
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
   deleteDirectory: (path: FileTreePath) => void;
@@ -67,6 +72,8 @@ export const VZSidebar = ({
   isDirectoryOpen: (path: string) => boolean;
   toggleDirectory: (path: string) => void;
   activeFileId?: FileId;
+  openSettingsTooltipText?: string;
+  reportBugTooltipText?: string;
 }) => {
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
@@ -156,31 +163,56 @@ export const VZSidebar = ({
             Project Files
           </div>
           <div className="sidebar-section-buttons">
-            <a
-              href="https://github.com/vizhub-core/vzcode/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
+            <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id="report-bug-tooltip">
+                  {reportBugTooltipText}
+                </Tooltip>
+              }
             >
-              <i className="icon-button">
-                <BugSVG />
-              </i>
-            </a>
-
+              <a
+                href="https://github.com/vizhub-core/vzcode/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="icon-button">
+                  <BugSVG />
+                </i>
+              </a>
+            </OverlayTrigger>
             {disableSettings ? null : (
+              <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id="open-settings-tooltip">
+                  {openSettingsTooltipText}
+                </Tooltip>
+              }
+              >
+                <i
+                  onClick={handleSettingsClick}
+                  className="icon-button"
+                >
+                  <GearSVG />
+                </i>
+              </OverlayTrigger>
+            )}
+            <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id="create-file-tooltip">
+                  {createFileTooltipText}
+                </Tooltip>
+              }
+            >
               <i
-                onClick={handleSettingsClick}
+                onClick={handleCreateFile}
                 className="icon-button"
               >
-                <GearSVG />
+                <NewSVG />
               </i>
-            )}
-
-            <i
-              onClick={handleCreateFile}
-              className="icon-button"
-            >
-              <NewSVG />
-            </i>
+            </OverlayTrigger>
           </div>
         </div>
         {filesExist ? (
@@ -212,7 +244,6 @@ export const VZSidebar = ({
               Click the "Create file" button below to create
               your first file.
             </div>
-
             <CreateFileButton
               handleCreateFile={handleCreateFile}
             />
