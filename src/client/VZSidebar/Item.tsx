@@ -6,6 +6,8 @@ import {
 } from 'react';
 import { EditSVG, FileSVG, TrashSVG } from '../Icons';
 
+import { Tooltip, OverlayTrigger } from '../bootstrap';
+
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 
@@ -23,6 +25,10 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
+  renameFileTooltipText = 'Rename File',
+  deleteFileTooltipText = isDirectory
+    ? 'Delete Directory'
+    : 'Delete File',
 }: {
   name: string;
   children: React.ReactNode;
@@ -32,6 +38,8 @@ export const Item = ({
   handleDeleteClick: () => void;
   isDirectory?: boolean;
   isActive?: boolean;
+  renameFileTooltipText?: string;
+  deleteFileTooltipText?: string;
 }) => {
   // Tracks whether the mouse is hovering over the file or directory
   const [isHovered, setIsHovered] = useState(false);
@@ -159,19 +167,37 @@ export const Item = ({
           style={{ position: 'relative' }}
         >
           {(isDirectory ? enableRenameDirectory : true) ? (
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip id="rename-file-tooltip">
+                  {renameFileTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleRenameIconClick}
+                className="icon-button"
+              >
+                <EditSVG />
+              </i>
+            </OverlayTrigger>
+          ) : null}
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id="delete-file-tooltip">
+                {deleteFileTooltipText}
+              </Tooltip>
+            }
+          >
             <i
-              onClick={handleRenameIconClick}
+              onClick={handleModalOpen}
               className="icon-button"
             >
-              <EditSVG />
+              <TrashSVG />
             </i>
-          ) : null}
-          <i
-            onClick={handleModalOpen}
-            className="icon-button"
-          >
-            <TrashSVG />
-          </i>
+          </OverlayTrigger>
         </div>
       ) : null}
 
