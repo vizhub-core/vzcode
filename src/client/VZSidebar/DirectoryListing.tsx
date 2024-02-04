@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Item } from './Item';
 import { Listing } from './Listing';
-import { DirectoryArrowSVG } from './DirectoryArrowSVG';
+import { DirectoryArrowSVG } from '../Icons';
 import type {
   FileTree,
   FileTreeFile,

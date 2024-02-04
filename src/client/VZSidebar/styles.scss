@@ -6,16 +6,17 @@
   flex-direction: column;
   justify-content: space-between;
 
-  i {
+  .icon-button {
     padding: 4px;
     border-radius: 4px;
+    /* These are required to center the icon */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
   }
 
-  i:hover {
+  .icon-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -35,6 +36,7 @@
   }
 
   .file-or-directory {
+    min-height: 40px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -59,7 +61,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: var(--vh-color-action-03);
     a {
       color: inherit;
     }
@@ -89,17 +90,18 @@
   .name {
     display: flex;
     text-overflow: ellipsis;
+    align-items: center;
     white-space: nowrap;
     overflow: hidden;
-    padding: 8px 0;
+    gap: 8px;
+    .file-icon,
+    .arrow-wrapper {
+      opacity: 0.5;
+    }
   }
 
   .indentation {
     margin-left: 20px;
-  }
-
-  .arrow-wrapper {
-    margin-right: 4px;
   }
 
   .settings {

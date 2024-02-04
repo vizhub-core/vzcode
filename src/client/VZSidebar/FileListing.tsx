@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Item } from './Item';
 import { FileId } from '../../types';
+import { FileSVG } from '../Icons';
 
 export const FileListing = ({
   name,
@@ -47,6 +48,9 @@ export const FileListing = ({
       handleRenameClick={handleRenameClick}
       isActive={isActive}
     >
+      <i className="file-icon">
+        <FileSVG />
+      </i>
       {name}
     </Item>
   );

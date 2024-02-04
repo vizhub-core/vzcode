@@ -6,3 +6,5 @@ export { GearSVG } from './GearSVG';
 export { CloseSVG } from './CloseSVG';
 export { TrashSVG } from './TrashSVG';
 export { BugSVG } from './BugSVG';
+export { FileSVG } from './FileSVG';
+export { DirectoryArrowSVG } from './DirectoryArrowSVG';
