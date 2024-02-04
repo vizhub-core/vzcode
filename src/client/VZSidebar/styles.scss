@@ -22,7 +22,6 @@
   }
 
   .file-or-directory {
-    height: max(30px);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -66,6 +65,7 @@
   }
 
   .name {
+    height: 24px;
     display: flex;
     text-overflow: ellipsis;
     white-space: nowrap;
