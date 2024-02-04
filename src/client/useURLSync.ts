@@ -78,6 +78,14 @@ export const useURLSync = ({
     contentRef.current = content;
   }, [content]);
 
+  // track setSearchParams in a ref so that we can use it in the
+  // effect below without triggering the effect on each render.
+  // The definition of `setSearchParams` changes on every render.
+  const setSearchParamsRef = useRef(setSearchParams);
+  useEffect(() => {
+    setSearchParamsRef.current = setSearchParams;
+  }, [setSearchParams]);
+
   // Update the URL to match the current state whenever
   // the active file or tab list changes.
   useEffect(() => {
@@ -93,42 +101,37 @@ export const useURLSync = ({
       content: contentRef.current,
     });
 
-    if (
-      tabStateParams.file !== newTabStateParams.file ||
-      tabStateParams.tabs !== newTabStateParams.tabs
-    ) {
-      // Update the URL if the search parameters have changed.
-      setSearchParams(
-        (oldSearchParams: URLSearchParams) => {
-          // Create a copy of the old search params
-          const updatedSearchParams = new URLSearchParams(
-            oldSearchParams,
+    // Update the URL if the search parameters have changed.
+    setSearchParamsRef.current(
+      (oldSearchParams: URLSearchParams) => {
+        // Create a copy of the old search params
+        const updatedSearchParams = new URLSearchParams(
+          oldSearchParams,
+        );
+
+        // Set the 'file' parameter
+        if (newTabStateParams.file) {
+          updatedSearchParams.set(
+            'file',
+            newTabStateParams.file,
           );
+        } else {
+          updatedSearchParams.delete('file'); // Remove 'file' if it's not present in newTabStateParams
+        }
 
-          // Set the 'file' parameter
-          if (newTabStateParams.file) {
-            updatedSearchParams.set(
-              'file',
-              newTabStateParams.file,
-            );
-          } else {
-            updatedSearchParams.delete('file'); // Remove 'file' if it's not present in newTabStateParams
-          }
+        // Set the 'tabs' parameter
+        if (newTabStateParams.tabs) {
+          updatedSearchParams.set(
+            'tabs',
+            newTabStateParams.tabs,
+          );
+        } else {
+          updatedSearchParams.delete('tabs'); // Remove 'tabs' if it's not present in newTabStateParams
+        }
 
-          // Set the 'tabs' parameter
-          if (newTabStateParams.tabs) {
-            updatedSearchParams.set(
-              'tabs',
-              newTabStateParams.tabs,
-            );
-          } else {
-            updatedSearchParams.delete('tabs'); // Remove 'tabs' if it's not present in newTabStateParams
-          }
-
-          // Return the updated search params
-          return updatedSearchParams;
-        },
-      );
-    }
-  }, [searchParams, tabList, activeFileId]);
+        // Return the updated search params
+        return updatedSearchParams;
+      },
+    );
+  }, [tabList, activeFileId]);
 };
