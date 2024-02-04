@@ -25,8 +25,8 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
-  renameFileTooltipText='Rename File',
-  deleteFileTooltipText='Delete File',
+  renameFileTooltipText = 'Rename File',
+  deleteFileTooltipText = 'Delete File',
 }: {
   name: string;
   children: React.ReactNode;
@@ -182,12 +182,12 @@ export const Item = ({
             </OverlayTrigger>
           ) : null}
           <OverlayTrigger
-              placement="top"
-              overlay={
-                <Tooltip id="delete-file-tooltip">
-                  {deleteFileTooltipText}
-                </Tooltip>
-              }
+            placement="top"
+            overlay={
+              <Tooltip id="delete-file-tooltip">
+                {deleteFileTooltipText}
+              </Tooltip>
+            }
           >
             <i
               onClick={handleModalOpen}

@@ -41,7 +41,7 @@ const CreateFileButton = ({ handleCreateFile }) => {
 export const VZSidebar = ({
   files,
   createFile,
-  createFileTooltipText='New File',
+  createFileTooltipText = 'New File',
   renameFile,
   deleteFile,
   deleteDirectory,
@@ -51,8 +51,8 @@ export const VZSidebar = ({
   isDirectoryOpen,
   toggleDirectory,
   activeFileId,
-  openSettingsTooltipText='Open Settings',
-  reportBugTooltipText='Report Bug',
+  openSettingsTooltipText = 'Open Settings',
+  reportBugTooltipText = 'Report Bug',
 }: {
   files: Files;
   createFile: (fileName) => void;
@@ -183,12 +183,12 @@ export const VZSidebar = ({
             </OverlayTrigger>
             {disableSettings ? null : (
               <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="open-settings-tooltip">
-                  {openSettingsTooltipText}
-                </Tooltip>
-              }
+                placement="bottom"
+                overlay={
+                  <Tooltip id="open-settings-tooltip">
+                    {openSettingsTooltipText}
+                  </Tooltip>
+                }
               >
                 <i
                   onClick={handleSettingsClick}
