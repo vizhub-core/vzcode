@@ -4,7 +4,7 @@ import {
   useRef,
   useEffect,
 } from 'react';
-import { Edit, Trash } from '../Icons';
+import { EditSVG, TrashSVG } from '../Icons';
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
@@ -160,11 +160,11 @@ export const Item = ({
         >
           {(isDirectory ? enableRenameDirectory : true) ? (
             <i onClick={handleRenameIconClick}>
-              <Edit />
+              <EditSVG />
             </i>
           ) : null}
           <i onClick={handleModalOpen}>
-            <Trash />
+            <TrashSVG />
           </i>
         </div>
       ) : null}

@@ -6,6 +6,19 @@
   flex-direction: column;
   justify-content: space-between;
 
+  i {
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  i:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
   .full-box {
     padding: 4px;
     display: flex;
@@ -28,7 +41,7 @@
     justify-content: space-between;
     cursor: pointer;
     margin: 0 10px;
-    padding: 0 2px 0 8px;
+    padding: 0 4px 0 8px;
     border-radius: 4px;
     font-family: var(--vzcode-font-family);
     font-weight: 500;
@@ -49,18 +62,6 @@
   .utils {
     display: flex;
     gap: 2px;
-
-    i {
-      padding: 2px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    i:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
   }
 
   .file-or-directory:hover,
@@ -78,7 +79,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    padding: 4px 0;
+    padding: 8px 0;
   }
 
   .indentation {
