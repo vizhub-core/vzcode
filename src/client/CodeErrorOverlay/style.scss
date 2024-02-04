@@ -1,16 +1,16 @@
 .vz-code-error-overlay {
-  color: rgb(255, 35, 35);
-
-  background-color: rgba(0, 0, 0, 0.9);
+  color: var(--vh-color-neutral-04);
+  background: var(--vh-color-neutral-01);
+  opacity: 0.9;
+  border-left: 4px solid var(--vh-color-warning-01);
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  // pointer-events: none;
   margin: 0;
-  padding: 8px 12px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  padding: 12px 16px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 
   /* Add a box shadow for a subtle effect */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -19,6 +19,7 @@
   pre {
     font-family: var(--vzcode-font-family);
     font-size: var(--vzcode-font-size);
+    margin: 0;
   }
 
   /* Customize the dismiss button style */
@@ -26,16 +27,5 @@
     position: absolute;
     top: 5px; /* Adjust the top position */
     right: 5px; /* Adjust the right position */
-    margin: 0;
-    padding: 5px; /* Adjust padding for the button */
-    cursor: pointer;
-    color: white;
-    background-color: #ff5733; /* Change the button's background color */
-    border-radius: 50%; /* Make it circular */
-  }
-
-  /* Style the button on hover */
-  .error-dismiss-button:hover {
-    background-color: #ff826d; /* Change the background color on hover */
   }
 }

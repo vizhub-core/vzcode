@@ -177,7 +177,7 @@ export const Item = ({
             >
               <i
                 onClick={handleRenameIconClick}
-                className="icon-button"
+                className="icon-button icon-button-dark"
               >
                 <EditSVG />
               </i>
@@ -193,7 +193,7 @@ export const Item = ({
           >
             <i
               onClick={handleModalOpen}
-              className="icon-button"
+              className="icon-button icon-button-dark"
             >
               <TrashSVG />
             </i>
