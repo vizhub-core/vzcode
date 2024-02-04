@@ -161,24 +161,24 @@ export const VZSidebar = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i>
+              <i className="icon-button">
                 <BugSVG />
               </i>
             </a>
 
             {disableSettings ? null : (
-              <i onClick={handleSettingsClick}>
+              <i
+                onClick={handleSettingsClick}
+                className="icon-button"
+              >
                 <GearSVG />
               </i>
-              // <div
-              //   className="settings"
-              //   onClick={handleSettingsClick}
-              // >
-              //   Editor Settings
-              // </div>
             )}
 
-            <i onClick={handleCreateFile}>
+            <i
+              onClick={handleCreateFile}
+              className="icon-button"
+            >
               <NewSVG />
             </i>
           </div>
