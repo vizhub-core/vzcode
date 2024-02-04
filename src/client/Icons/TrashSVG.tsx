@@ -1,4 +1,4 @@
-export const Trash = () => {
+export const TrashSVG = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

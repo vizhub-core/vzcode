@@ -19,6 +19,7 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { Listing } from './Listing';
 import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
+import { NewSVG } from '../Icons';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -151,12 +152,17 @@ export const VZSidebar = ({
     >
       <div className="files">
         <div className="full-box">
-          <div className="sidebar-section-hint">Files</div>
-          <div>
+          <div className="sidebar-section-hint">
+            Project Files
+          </div>
+          <i onClick={handleCreateFile}>
+            <NewSVG />
+          </i>
+          {/* <div>
             <CreateFileButton
               handleCreateFile={handleCreateFile}
             />
-          </div>
+          </div> */}
         </div>
         {filesExist ? (
           fileTree.children.map((entity) => {
