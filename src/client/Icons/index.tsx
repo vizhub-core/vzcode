@@ -5,3 +5,4 @@ export { NewSVG } from './NewSVG';
 export { GearSVG } from './GearSVG';
 export { CloseSVG } from './CloseSVG';
 export { TrashSVG } from './TrashSVG';
+export { BugSVG } from './BugSVG';
