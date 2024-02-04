@@ -4,11 +4,7 @@ import {
   ShareDBDoc,
   VZCodeContent,
 } from '../../../types';
-import {
-  Button,
-  OverlayTrigger,
-  Tooltip,
-} from '../../bootstrap';
+import { OverlayTrigger, Tooltip } from '../../bootstrap';
 import { EditorCache } from '../../useEditorCache';
 import { TabState } from '../../vzReducer';
 import {
@@ -87,14 +83,15 @@ export const AIAssistWidget = ({
     showWidget && (
       <div className="vz-code-ai-assist-widget">
         <OverlayTrigger
-          placement="top"
+          placement="left"
           overlay={
             <Tooltip id="ai-assist-widget-tooltip">
               {aiAssistTooltipText}
             </Tooltip>
           }
         >
-          <Button
+          <i
+            className="icon-button icon-button-dark"
             onClick={aiAssistClickOverride || handleClick}
           >
             {aiStreamId ? (
@@ -104,7 +101,7 @@ export const AIAssistWidget = ({
             ) : (
               <SparklesSVG />
             )}
-          </Button>
+          </i>
         </OverlayTrigger>
       </div>
     )
