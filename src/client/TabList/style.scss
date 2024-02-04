@@ -11,27 +11,16 @@
     font-weight: 500;
     align-items: center;
     display: flex;
-    padding-top: 2px;
-    padding-left: 8px;
-    padding-right: 5px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
+    gap: 8px;
+    padding: 8px 8px 8px 16px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     margin-top: 5px;
     margin-left: 2px;
     margin-right: 2px;
     cursor: pointer;
     // Make sure text doesn't wrap within tabs.
     white-space: nowrap;
-
-    // TODO unify with styles in code error overlay dismiss button
-    .tab-close {
-      margin-left: 5px;
-      margin-bottom: 2px;
-    }
-    .tab-close:hover {
-      border-radius: 50%;
-      background-color: rgba(255, 255, 255, 0.2);
-    }
 
     // No left margin for first child
     &:first-child {
@@ -40,7 +29,8 @@
 
     // on hover
     &:hover {
-      background-color: #47546b;
+      // background-color: var(--vh-color-hover-dark);
+      background-color: rgba(255, 255, 255, 0.075);
     }
   }
 
@@ -50,5 +40,12 @@
 
   .tab.transient {
     font-style: italic;
+  }
+
+  .icon-button {
+    color: var(--vh-color-neutral-03);
+  }
+  .icon-button:hover {
+    color: var(--vh-color-action-03);
   }
 }

@@ -6,26 +6,13 @@
   flex-direction: column;
   justify-content: space-between;
 
-  .icon-button {
-    padding: 4px;
-    border-radius: 4px;
-    /* These are required to center the icon */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .icon-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
   .full-box {
     padding: 4px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 2px solid var(--vh-color-neutral-02);
   }
 
   .files {
@@ -79,7 +66,8 @@
 
   .file-or-directory:hover,
   .settings:hover {
-    background-color: #47546b;
+    // background-color: #47546b;
+    background-color: rgba(255, 255, 255, 0.075);
   }
 
   .active-file,

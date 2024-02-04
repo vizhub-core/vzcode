@@ -165,7 +165,7 @@ export const VZSidebar = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <i className="icon-button">
+                <i className="icon-button icon-button-dark">
                   <BugSVG />
                 </i>
               </a>
@@ -181,7 +181,7 @@ export const VZSidebar = ({
               >
                 <i
                   onClick={handleSettingsClick}
-                  className="icon-button"
+                  className="icon-button icon-button-dark"
                 >
                   <GearSVG />
                 </i>
@@ -197,7 +197,7 @@ export const VZSidebar = ({
             >
               <i
                 onClick={handleCreateFile}
-                className="icon-button"
+                className="icon-button icon-button-dark"
               >
                 <NewSVG />
               </i>
