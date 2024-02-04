@@ -8,4 +8,3 @@ export { TrashSVG } from './TrashSVG';
 export { BugSVG } from './BugSVG';
 export { FileSVG } from './FileSVG';
 export { DirectoryArrowSVG } from './DirectoryArrowSVG';
-export { XSVG } from './XSVG';

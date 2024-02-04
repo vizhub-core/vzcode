@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { VZCodeContent } from '../../types';
-import { XSVG } from '../Icons';
+import { CloseSVG } from '../Icons';
 import './style.scss';
 
 const enableErrorDismiss = true;
@@ -63,7 +63,7 @@ export const CodeErrorOverlay = ({
           className="icon-button icon-button-dark error-dismiss-button"
           onClick={handleCloseClick}
         >
-          <XSVG />
+          <CloseSVG />
         </i>
       ) : null}
     </div>

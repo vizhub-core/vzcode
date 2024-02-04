@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import type { FileId } from '../../types';
 import type { TabState } from '../vzReducer';
+import { CloseSVG } from '../Icons';
 
 // Supports adding the file's containing folder to the tab name
 const fileNameSplit = (fileName: string) => {
@@ -61,10 +62,12 @@ export const Tab = ({
       onDoubleClick={handleDoubleClick}
     >
       {tabName}
-      <div
-        className={'bx bx-x tab-close'}
+      <i
+        className="icon-button icon-button-dark"
         onClick={handleCloseClick}
-      ></div>
+      >
+        <CloseSVG />
+      </i>
     </div>
   );
 };
