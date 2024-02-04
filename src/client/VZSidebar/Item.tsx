@@ -26,7 +26,9 @@ export const Item = ({
   isDirectory = false,
   isActive = false,
   renameFileTooltipText = 'Rename File',
-  deleteFileTooltipText = 'Delete File',
+  deleteFileTooltipText = isDirectory
+    ? 'Delete Directory'
+    : 'Delete File',
 }: {
   name: string;
   children: React.ReactNode;

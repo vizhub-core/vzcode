@@ -27,17 +27,6 @@ import './styles.scss';
 // See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = false;
 
-const CreateFileButton = ({ handleCreateFile }) => {
-  return (
-    <i
-      className="bx bxs-file-plus new-btn"
-      style={{ color: '#dbdde1' }}
-      onClick={handleCreateFile}
-      // TODO better tooltip
-      title="Create file"
-    ></i>
-  );
-};
 export const VZSidebar = ({
   files,
   createFile,
@@ -164,7 +153,7 @@ export const VZSidebar = ({
           </div>
           <div className="sidebar-section-buttons">
             <OverlayTrigger
-              placement="bottom"
+              placement="left"
               overlay={
                 <Tooltip id="report-bug-tooltip">
                   {reportBugTooltipText}
@@ -183,7 +172,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
             {disableSettings ? null : (
               <OverlayTrigger
-                placement="bottom"
+                placement="left"
                 overlay={
                   <Tooltip id="open-settings-tooltip">
                     {openSettingsTooltipText}
@@ -199,7 +188,7 @@ export const VZSidebar = ({
               </OverlayTrigger>
             )}
             <OverlayTrigger
-              placement="bottom"
+              placement="left"
               overlay={
                 <Tooltip id="create-file-tooltip">
                   {createFileTooltipText}
@@ -241,12 +230,9 @@ export const VZSidebar = ({
           <div className="empty">
             <div className="empty-text">
               It looks like you don't have any files yet!
-              Click the "Create file" button below to create
+              Click the "Create file" button above to create
               your first file.
             </div>
-            <CreateFileButton
-              handleCreateFile={handleCreateFile}
-            />
           </div>
         )}
       </div>
