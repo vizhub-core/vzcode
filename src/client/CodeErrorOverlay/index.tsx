@@ -12,6 +12,10 @@ export const CodeErrorOverlay = ({
   errorMessage: string | null;
   content: VZCodeContent;
 }) => {
+  // console.log(
+  //   'errorMessage in CodeErrorOverlay: ',
+  //   errorMessage,
+  // );
   const [isOverlayVisible, setIsOverlayVisible] =
     useState(true);
 
@@ -23,9 +27,11 @@ export const CodeErrorOverlay = ({
   }, [errorMessage]);
 
   // If the content changes, set the overlay to be not visible.
-  useEffect(() => {
-    setIsOverlayVisible(false);
-  }, [content]);
+  // Removed because it was interfering in the case of
+  // server-side build errors on page load.
+  // useEffect(() => {
+  //   setIsOverlayVisible(false);
+  // }, [content]);
 
   // Set the visibility state to false when the button is clicked
   const handleCloseClick = useCallback(() => {
