@@ -149,6 +149,7 @@ export const Item = ({
       <div className="name">
         {isRenaming ? (
           <input
+            className="rename-input"
             ref={renameInputRef}
             type="text"
             aria-label="Field name"
