@@ -100,7 +100,7 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^10.0.3",
-    "openai": "^4.26.0",
+    "openai": "^4.26.1",
     "prettier-plugin-svelte": "^3.1.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.0",
@@ -112,7 +112,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.52",
+    "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
