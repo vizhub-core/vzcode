@@ -7,25 +7,27 @@
   bottom: 0;
   left: 0;
   right: 0;
-  margin: 0;
-  padding: 12px 16px;
+  margin: 0 12px;
+  /* Right padding is so that the wrapped text
+     doesn't overlap with the .error-dismiss-button */
+  padding: 14px 38px 14px 16px;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-
-  /* Add a box shadow for a subtle effect */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
   /* Style the monospace font */
   pre {
     font-family: var(--vzcode-font-family);
     font-size: var(--vzcode-font-size);
     margin: 0;
+
+    /* Wrap long lines */
+    white-space: pre-wrap;
   }
 
   /* Customize the dismiss button style */
   .error-dismiss-button {
     position: absolute;
-    top: 5px; /* Adjust the top position */
-    right: 5px; /* Adjust the right position */
+    top: 8px;
+    right: 8px;
   }
 }
