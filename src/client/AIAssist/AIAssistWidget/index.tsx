@@ -14,7 +14,7 @@ import {
 import { SparklesSVG, StopSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import './style.scss';
-import { Spinner } from "../Spinner"
+import { Spinner } from '../Spinner';
 
 const enableStopGeneration = false;
 
@@ -76,29 +76,33 @@ export const AIAssistWidget = ({
     }
   }, [activeFileId, aiStreamId]);
 
-  const showWidget = enableStopGeneration ? true : aiStreamId === null;
+  const showWidget = enableStopGeneration
+    ? true
+    : aiStreamId === null;
 
-    return (
-      <div className="vz-code-ai-assist-widget">
-        {aiStreamId ? (
-          <Spinner /> // Show spinner when aiStreamId is not null
-        ) : (
-          showWidget && (
-            <OverlayTrigger
-              placement="left"
-              overlay={
-                <Tooltip id="ai-assist-widget-tooltip">{aiAssistTooltipText}</Tooltip>
-              }
+  return (
+    <div className="vz-code-ai-assist-widget">
+      {aiStreamId ? (
+        <Spinner /> // Show spinner when aiStreamId is not null
+      ) : (
+        showWidget && (
+          <OverlayTrigger
+            placement="left"
+            overlay={
+              <Tooltip id="ai-assist-widget-tooltip">
+                {aiAssistTooltipText}
+              </Tooltip>
+            }
+          >
+            <i
+              className="icon-button icon-button-dark"
+              onClick={aiAssistClickOverride || handleClick}
             >
-              <i
-                className="icon-button icon-button-dark"
-                onClick={aiAssistClickOverride || handleClick}
-              >
-                <SparklesSVG />
-              </i>
-            </OverlayTrigger>
-          )
-        )}
-      </div>
-    );
+              <SparklesSVG />
+            </i>
+          </OverlayTrigger>
+        )
+      )}
+    </div>
+  );
 };
