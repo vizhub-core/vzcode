@@ -3,32 +3,37 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useContext,
 } from 'react';
 import { Modal, Form, Button } from '../bootstrap';
+import { VZCodeContext } from '../VZCodeContext';
 
 export const CreateFileModal = ({
-  show,
-  onClose,
-  onRename,
   initialFileName = '',
 }) => {
   const [newName, setNewName] = useState(initialFileName);
   const inputRef = useRef(null);
 
+  const {
+    isCreateFileModalOpen,
+    handleCloseCreateFileModal,
+    handleCreateFileClick,
+  } = useContext(VZCodeContext);
+
   useEffect(() => {
-    if (show && inputRef.current) {
+    if (isCreateFileModalOpen && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [show]);
+  }, [isCreateFileModalOpen]);
 
   const handleNameChange = useCallback((event) => {
     setNewName(event.target.value);
   }, []);
 
-  const handleRenameClick = useCallback(() => {
-    onRename(newName);
+  const onCreateClick = useCallback(() => {
+    handleCreateFileClick(newName);
     setNewName('');
-  }, [newName, onRename]);
+  }, [newName, handleCreateFileClick]);
 
   // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback(
@@ -48,16 +53,16 @@ export const CreateFileModal = ({
           e.shiftKey ||
           (!e.altKey && !e.metaKey))
       ) {
-        handleRenameClick();
+        onCreateClick();
       }
     },
-    [handleRenameClick],
+    [onCreateClick],
   );
 
-  return show ? (
+  return isCreateFileModalOpen ? (
     <Modal
-      show={show}
-      onHide={onClose}
+      show={isCreateFileModalOpen}
+      onHide={handleCloseCreateFileModal}
       animation={false}
       onKeyDown={handleKeyDown}
     >
@@ -82,7 +87,7 @@ export const CreateFileModal = ({
       <Modal.Footer>
         <Button
           variant="primary"
-          onClick={handleRenameClick}
+          onClick={onCreateClick}
           disabled={!validateFileName(newName)}
         >
           Create File
