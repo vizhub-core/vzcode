@@ -1,4 +1,9 @@
-import { createContext, useReducer } from 'react';
+import {
+  createContext,
+  useCallback,
+  useReducer,
+  useState,
+} from 'react';
 import {
   Files,
   ShareDBDoc,
@@ -25,6 +30,7 @@ import {
   useEditorCache,
 } from './useEditorCache';
 import { useURLSync } from './useURLSync';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -82,6 +88,11 @@ export type VZCodeContextValue = {
   errorMessage: string | null;
 
   typeScriptWorker: Worker | null;
+
+  isCreateFileModalOpen: boolean;
+  handleOpenCreateFileModal: () => void;
+  handleCloseCreateFileModal: () => void;
+  handleCreateFileClick: (newFileName: string) => void;
 };
 
 export const VZCodeProvider = ({
@@ -205,6 +216,32 @@ export const VZCodeProvider = ({
     openTab,
   });
 
+  // State to control the create file modal's visibility
+  const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
+    useState(false);
+
+  const handleOpenCreateFileModal = useCallback(() => {
+    setIsCreateFileModalOpen(true);
+  }, []);
+
+  const handleCloseCreateFileModal = useCallback(() => {
+    setIsCreateFileModalOpen(false);
+  }, []);
+
+  const handleCreateFileClick = useCallback(
+    (newFileName: string) => {
+      createFile(newFileName);
+      setIsCreateFileModalOpen(false);
+    },
+    [createFile, setIsCreateFileModalOpen],
+  );
+
+  useKeyboardShortcuts({
+    closeTabs,
+    activeFileId,
+    handleOpenCreateFileModal,
+  });
+
   // Isolate the files object from the document.
   const files: Files | null = content
     ? content.files
@@ -251,6 +288,11 @@ export const VZCodeProvider = ({
     errorMessage,
 
     typeScriptWorker,
+
+    isCreateFileModalOpen,
+    handleOpenCreateFileModal,
+    handleCloseCreateFileModal,
+    handleCreateFileClick,
   };
 
   return (

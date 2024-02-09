@@ -21,6 +21,7 @@ import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { Listing } from './Listing';
 import { CreateFileModal } from './CreateFileModal';
 import './styles.scss';
+import { VZCodeContext } from '../VZCodeContext';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -64,52 +65,14 @@ export const VZSidebar = ({
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
 }) => {
+  // TODO move many of the props into usage of this context.
+  const { handleOpenCreateFileModal } =
+    useContext(VZCodeContext);
+
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal's visibility
-
-  const handleCreateFile = useCallback(() => {
-    setIsModalOpen(true);
-  }, [setIsModalOpen]);
-
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, [setIsModalOpen]);
-
-  const handleRename = useCallback(
-    (newFileName: string) => {
-      createFile(newFileName);
-      setIsModalOpen(false);
-    },
-    [createFile, setIsModalOpen],
-  );
-
-  const handleKeyPress = useCallback(
-    (event: { altKey: boolean; key: string }) => {
-      if (event.altKey == true) {
-        if (event.key == 'w') {
-          closeTabs([activeFileId]);
-        }
-        if (event.key == 'n') {
-          handleCreateFile();
-        }
-      }
-    },
-    [createFile, closeTabs, activeFileId],
-  );
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener(
-        'keydown',
-        handleKeyPress,
-      );
-    };
-  }, [handleKeyPress]);
 
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
@@ -196,7 +159,7 @@ export const VZSidebar = ({
               }
             >
               <i
-                onClick={handleCreateFile}
+                onClick={handleOpenCreateFileModal}
                 className="icon-button icon-button-dark"
               >
                 <NewSVG />
@@ -246,11 +209,6 @@ export const VZSidebar = ({
           </div>
         </div>
       )}
-      <CreateFileModal
-        show={isModalOpen}
-        onClose={handleCloseModal}
-        onRename={handleRename}
-      />
     </div>
   );
 };

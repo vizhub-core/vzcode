@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
 import { VZCodeContext } from './VZCodeContext';
+import { CreateFileModal } from './VZSidebar/CreateFileModal';
 
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
@@ -52,6 +53,7 @@ export const VZLeft = ({ enableUsernameField = true }) => {
         setUsername={setUsername}
         enableUsernameField={enableUsernameField}
       />
+      <CreateFileModal />
     </div>
   );
 };
