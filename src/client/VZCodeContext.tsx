@@ -57,6 +57,8 @@ export type VZCodeContextValue = {
 
   activeFileId: string | null;
   setActiveFileId: (fileId: string | null) => void;
+  setActiveFileLeft: () => void;
+  setActiveFileRight: () => void;
 
   tabList: Array<TabState>;
   openTab: ({
@@ -175,6 +177,8 @@ export const VZCodeProvider = ({
   // Functions for dispatching actions to the reducer.
   const {
     setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
     openTab,
     closeTabs,
     setTheme,
@@ -240,6 +244,8 @@ export const VZCodeProvider = ({
     closeTabs,
     activeFileId,
     handleOpenCreateFileModal,
+    setActiveFileLeft,
+    setActiveFileRight,
   });
 
   // Isolate the files object from the document.
@@ -263,6 +269,8 @@ export const VZCodeProvider = ({
 
     activeFileId,
     setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
 
     tabList,
     openTab,

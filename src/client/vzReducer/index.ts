@@ -3,6 +3,10 @@ import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
 import { openTabReducer } from './openTabReducer';
 import { setActiveFileIdReducer } from './setActiveFileIdReducer';
+import {
+  setActiveFileLeftReducer,
+  setActiveFileRightReducer,
+} from './setActiveFileLeftRightReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
@@ -37,6 +41,12 @@ export type VZAction =
   // `set_active_file_id`
   //  * Sets the active file ID.
   | { type: 'set_active_file_id'; activeFileId: FileId }
+
+  // `set_active_file_left' 'set_active_file_right`
+  //  * Sets the active file ID to be the tab directly to the left or right
+  //  * of the currently active tab.
+  | { type: 'set_active_file_left' }
+  | { type: 'set_active_file_right' }
 
   // `open_tab`
   //  * Opens a tab.
@@ -88,6 +98,8 @@ export type TabState = {
 
 const reducers = [
   setActiveFileIdReducer,
+  setActiveFileLeftReducer,
+  setActiveFileRightReducer,
   openTabReducer,
   closeTabsReducer,
   setThemeReducer,

@@ -18,6 +18,14 @@ export const useActions = (
     [dispatch],
   );
 
+  const setActiveFileLeft = useCallback(() => {
+    dispatch({ type: 'set_active_file_left' });
+  }, [dispatch]);
+
+  const setActiveFileRight = useCallback(() => {
+    dispatch({ type: 'set_active_file_right' });
+  }, [dispatch]);
+
   const openTab = useCallback(
     (tabState: TabState): void => {
       dispatch({
@@ -82,6 +90,8 @@ export const useActions = (
 
   return {
     setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
     openTab,
     closeTabs,
     setTheme,
