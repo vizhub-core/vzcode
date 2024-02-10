@@ -30,8 +30,13 @@ const parsers = {
   md: 'markdown',
   markdown: 'markdown',
   //   '.vue': 'vue',
-  svelte: 'svelte',
+  // svelte: 'svelte',
 };
+
+if (enableSvelte) {
+  // @ts-ignore
+  parsers.svelte = 'svelte';
+}
 
 const plugins = [
   prettierPluginBabel,
