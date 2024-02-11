@@ -94,17 +94,25 @@ const convertToCodeMirrorDiagnostic = (
   }));
 };
 
+// This is a promise that resolves when the file system is initialized.
+let fileSystemInitializationPromise = null;
+async function ensureFileSystemInitialized() {
+  if (!fileSystemInitializationPromise) {
+    fileSystemInitializationPromise =
+      initializeFileSystem();
+  }
+  await fileSystemInitializationPromise;
+}
+
 onmessage = async ({ data }) => {
   if (debug) {
     console.log('message received');
   }
-  // Initialize the file system.
-  if (!isFileSystemInitialized) {
-    isFileSystemInitialized = true;
-    await initializeFileSystem();
-  }
 
-  // Sanity check.
+  // Ensure the file system is initialized.
+  await ensureFileSystemInitialized();
+
+  // Sanity check - should never happen.
   if (env === null) {
     throw new Error('File system not initialized');
   }
