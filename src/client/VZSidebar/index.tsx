@@ -1,16 +1,8 @@
-import {
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  useEffect,
-} from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   FileId,
   FileTree,
   FileTreeFile,
-  FileTreePath,
-  Files,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
@@ -19,9 +11,8 @@ import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { Listing } from './Listing';
-import { CreateFileModal } from './CreateFileModal';
-import './styles.scss';
 import { VZCodeContext } from '../VZCodeContext';
+import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -29,45 +20,26 @@ import { VZCodeContext } from '../VZCodeContext';
 const enableConnectionStatus = false;
 
 export const VZSidebar = ({
-  files,
-  createFile,
   createFileTooltipText = 'New File',
-  renameFile,
-  deleteFile,
-  deleteDirectory,
-  openTab,
-  closeTabs,
-  setIsSettingsOpen,
-  isDirectoryOpen,
-  toggleDirectory,
-  activeFileId,
   openSettingsTooltipText = 'Open Settings',
   reportBugTooltipText = 'Report Bug',
 }: {
-  files: Files;
-  createFile: (fileName) => void;
   createFileTooltipText?: string;
-  renameFile: (fileId: FileId, newName: string) => void;
-  deleteFile: (fileId: FileId) => void;
-  deleteDirectory: (path: FileTreePath) => void;
-  openTab: ({
-    fileId,
-    isTransient,
-  }: {
-    fileId: FileId;
-    isTransient?: boolean;
-  }) => void;
-  closeTabs: (fileIds: FileId[]) => void;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
-  activeFileId?: FileId;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
 }) => {
-  // TODO move many of the props into usage of this context.
-  const { handleOpenCreateFileModal } =
-    useContext(VZCodeContext);
+  const {
+    files,
+    renameFile,
+    deleteFile,
+    deleteDirectory,
+    activeFileId,
+    openTab,
+    setIsSettingsOpen,
+    isDirectoryOpen,
+    toggleDirectory,
+    handleOpenCreateFileModal,
+  } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
