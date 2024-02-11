@@ -4,6 +4,8 @@ export const useKeyboardShortcuts = ({
   closeTabs,
   activeFileId,
   handleOpenCreateFileModal,
+  setActiveFileLeft,
+  setActiveFileRight,
 }) => {
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -14,15 +16,23 @@ export const useKeyboardShortcuts = ({
         if (event.key === 'n') {
           handleOpenCreateFileModal();
         }
-        if (event.key === 'pageup') {
+        if (event.key === 'PageUp') {
           // Change the active tab to the previous one
+          setActiveFileLeft();
         }
-        if (event.key === 'pagedown') {
+        if (event.key === 'PageDown') {
           // Change the active tab to the next one
+          setActiveFileRight();
         }
       }
     },
-    [handleOpenCreateFileModal, closeTabs, activeFileId],
+    [
+      handleOpenCreateFileModal,
+      closeTabs,
+      activeFileId,
+      setActiveFileLeft,
+      setActiveFileRight,
+    ],
   );
 
   useEffect(() => {
