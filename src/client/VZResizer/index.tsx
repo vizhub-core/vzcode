@@ -112,14 +112,14 @@ export const VZResizer = ({
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left,
+        left: left + resizerWidth / 2 - 1.5,
         width: resizerWidth,
       }}
     >
       <div
         className="vz-resizer-thumb"
         style={{
-          left: resizerWidth / 2 - resizerThumbWidth / 2,
+          left: resizerThumbWidth / 2 - 1.5,
           width: resizerThumbWidth,
         }}
       />
