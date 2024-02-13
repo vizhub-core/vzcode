@@ -15,7 +15,6 @@ import { SparklesSVG, StopSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import './style.scss';
 import { Spinner } from '../Spinner';
-import { isNullishCoalesce } from 'typescript';
 import { VZCodeContext } from '../../VZCodeContext';
 
 const enableStopGeneration = false;
