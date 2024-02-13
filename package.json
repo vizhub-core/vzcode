@@ -17,7 +17,7 @@
     "dev": "concurrently \"npm run test-interactive\" \"vite\"",
     "build": "vite build",
     "build-release": "vite build --mode release",
-    "preview": "vite preview",
+    "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
     "prepublishOnly": "npm run build-release"
   },
   "repository": {
