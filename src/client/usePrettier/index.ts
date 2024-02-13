@@ -105,7 +105,6 @@ export const usePrettier = ({
     const runPrettier = async () => {
       // Get the content of the document
       const content = shareDBDoc.data;
-
       // Get the files
       const files = content.files;
 
@@ -121,6 +120,7 @@ export const usePrettier = ({
       // Run Prettier on each dirty file
       for (const fileId of dirtyFileIds) {
         // Get the file
+
         const file = files[fileId];
 
         // Craft the data to send to the worker
@@ -129,6 +129,7 @@ export const usePrettier = ({
           fileExtension: extension(file.name),
           fileId,
         };
+        console.log('RAN PRETTIER');
 
         // Run Prettier for this file
         prettierWorker.postMessage(data);
@@ -176,7 +177,7 @@ export const usePrettier = ({
             // console.log('ignoring op from Prettier');
             return;
           }
-
+          console.log('asdas');
           // Example op that we want to act on:
           // op [
           //   "files",

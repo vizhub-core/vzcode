@@ -90,7 +90,7 @@ function App() {
       >
         <div className="app">
           <VZLeft />
-          <VZMiddle />
+          <VZMiddle prettierWorker={prettierWorker} />
           {enableRightPanel ? <VZRight /> : null}
           <VZResizer side="left" />
           {enableRightPanel ? (

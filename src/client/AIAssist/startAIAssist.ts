@@ -8,6 +8,8 @@ import {
 import { TabState } from '../vzReducer';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
+import { usePrettier } from '../usePrettier';
+import { useContext } from 'react';
 
 const debug = false;
 
@@ -115,6 +117,11 @@ export const startAIAssist = async ({
     console.error(
       '[startAIAssist] error from server:',
       responseJson.error,
+    );
+  } else {
+    console.log(
+      '[startAIAssist] responseJson:',
+      responseJson,
     );
   }
 };

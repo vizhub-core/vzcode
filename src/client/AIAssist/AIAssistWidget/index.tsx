@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   FileId,
   ShareDBDoc,
@@ -15,10 +15,13 @@ import { SparklesSVG, StopSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import './style.scss';
 import { Spinner } from '../Spinner';
+import { usePrettier } from '../../usePrettier'; // Import Prettier hook
 
 const enableStopGeneration = false;
 
 export const AIAssistWidget = ({
+  prettierWorker,
+  submitOperation,
   activeFileId,
   shareDBDoc,
   editorCache,
@@ -28,6 +31,10 @@ export const AIAssistWidget = ({
   aiAssistTooltipText = 'Start AI Assist',
   aiAssistClickOverride,
 }: {
+  prettierWorker: Worker;
+  submitOperation: (
+    next: (content: VZCodeContent) => VZCodeContent,
+  ) => void;
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
   editorCache: EditorCache;
@@ -37,22 +44,26 @@ export const AIAssistWidget = ({
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
 }) => {
-  // The stream ID of the most recent request.
-  //  * If `null`, no request has been made yet.
-  //  * If non-null, a request has been made, and the
-  //    server is processing it.
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
-
+  const { prettierError } = usePrettier({
+    shareDBDoc,
+    submitOperation: submitOperation,
+    prettierWorker: prettierWorker,
+    enableManualPretter: false, // Enable manual Prettier execution
+    // runPretter: aiStreamId,
+  });
+  useEffect(() => {
+    console.log(aiStreamId);
+  }, [aiStreamId]);
   const handleClick = useCallback(async () => {
-    const isCurrentlyGenerationg = aiStreamId !== null;
-    if (isCurrentlyGenerationg) {
+    const isCurrentlyGenerating = aiStreamId !== null;
+    if (isCurrentlyGenerating) {
       // TODO stop generation
     } else {
       const newAiStreamId = generateRequestId();
       setAiStreamId(newAiStreamId);
 
-      // Wait for generation to finish.
       await startAIAssist({
         view: editorCache.get(activeFileId).editor,
         shareDBDoc,
@@ -63,16 +74,19 @@ export const AIAssistWidget = ({
         aiAssistOptions,
       });
 
-      // Handles the case that the user has started,
-      // stopped, and started again before the first request
-      // has finished, bu comparing the current stream ID
-      // with the stream ID that was active when the request
-      // was started.
+      // Run Prettier after code generation
+
+      // Handle Prettier error if any
+      if (prettierError) {
+        console.error('Prettier error:', prettierError);
+      }
+      console.log(aiStreamId);
       setAiStreamId((currentAIStreamId) =>
         currentAIStreamId === newAiStreamId
           ? null
           : currentAIStreamId,
       );
+      console.log(aiStreamId);
     }
   }, [activeFileId, aiStreamId]);
 
@@ -83,7 +97,7 @@ export const AIAssistWidget = ({
   return (
     <div className="vz-code-ai-assist-widget">
       {aiStreamId ? (
-        <Spinner /> // Show spinner when aiStreamId is not null
+        <Spinner />
       ) : (
         showWidget && (
           <OverlayTrigger

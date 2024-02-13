@@ -14,12 +14,14 @@ import { VZCodeContext } from './VZCodeContext';
 // * The presence notifications
 // * The UI for AI Assist
 export const VZMiddle = ({
+  prettierWorker,
   enableAIAssist = true,
   aiAssistEndpoint,
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
 }: {
+  prettierWorker: Worker;
   enableAIAssist?: boolean;
   aiAssistEndpoint?: string;
   aiAssistOptions?: { [key: string]: string };
@@ -96,6 +98,8 @@ export const VZMiddle = ({
       content &&
       activeFileId ? (
         <AIAssistWidget
+          prettierWorker={prettierWorker}
+          submitOperation={submitOperation}
           activeFileId={activeFileId}
           shareDBDoc={shareDBDoc}
           editorCache={editorCache}
