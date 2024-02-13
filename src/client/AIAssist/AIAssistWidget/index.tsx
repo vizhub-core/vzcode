@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import {
   FileId,
   ShareDBDoc,
@@ -15,6 +15,8 @@ import { SparklesSVG, StopSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import './style.scss';
 import { Spinner } from '../Spinner';
+import { isNullishCoalesce } from 'typescript';
+import { VZCodeContext } from '../../VZCodeContext';
 
 const enableStopGeneration = false;
 
@@ -44,6 +46,8 @@ export const AIAssistWidget = ({
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
 
+  const { runPrettierRef } = useContext(VZCodeContext);
+
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
     if (isCurrentlyGenerationg) {
@@ -62,6 +66,12 @@ export const AIAssistWidget = ({
         aiAssistEndpoint,
         aiAssistOptions,
       });
+
+      // Trigger a Prettier run after the AI Assist.
+      const runPrettier = runPrettierRef.current;
+      if (runPrettier !== null) {
+        runPrettier();
+      }
 
       // Handles the case that the user has started,
       // stopped, and started again before the first request

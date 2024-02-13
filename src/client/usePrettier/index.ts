@@ -58,6 +58,9 @@ export const usePrettier = ({
   // when the op is coming from Prettier itself.
   const isApplyingOpRef = useRef(false);
 
+  // We use a ref to keep track of the runPrettier function.
+  const runPrettierRef = useRef(null);
+
   useEffect(() => {
     if (!shareDBDoc) {
       return;
@@ -134,6 +137,7 @@ export const usePrettier = ({
         prettierWorker.postMessage(data);
       }
     };
+    runPrettierRef.current = runPrettier;
 
     let debouncePrettier;
     let debounceTimeout;
@@ -169,50 +173,51 @@ export const usePrettier = ({
       'op batch',
       (op: JSONOp, isLocal: boolean) => {
         // Only act on changes coming from the client
-        if (isLocal) {
-          // If the op is coming from Prettier itself,
-          // then do nothing.
-          if (isApplyingOpRef.current) {
-            // console.log('ignoring op from Prettier');
-            return;
-          }
-
-          // Example op that we want to act on:
-          // op [
-          //   "files",
-          //   "2514857669",
-          //   "text",
-          //   {
-          //     "es": [
-          //       18,
-          //       "d"
-          //     ]
-          //   }
-          // ]
-
-          // Check if the path of this op is the text content of a file
-          if (
-            op &&
-            op.length === 4 &&
-            op[0] === 'files' &&
-            typeof op[1] === 'string' &&
-            op[2] === 'text'
-          ) {
-            // Get the file id
-            const fileId: FileId = op[1];
-
-            // Add the file id to the set of dirty files
-            dirtyFilesRef.current.add(fileId);
-
-            // Debounce running Prettier
-            if (!enableManualPretter) {
-              debouncePrettier();
-            }
-            // console.log('Op is for file', fileId);
-          }
-        } else {
-          // console.log('ignoring op from remote', op, isLocal);
+        // OR changes coming from the AI Assist that we
+        // if (isLocal) {
+        // If the op is coming from Prettier itself,
+        // then do nothing.
+        if (isApplyingOpRef.current) {
+          // console.log('ignoring op from Prettier');
+          return;
         }
+
+        // Example op that we want to act on:
+        // op [
+        //   "files",
+        //   "2514857669",
+        //   "text",
+        //   {
+        //     "es": [
+        //       18,
+        //       "d"
+        //     ]
+        //   }
+        // ]
+
+        // Check if the path of this op is the text content of a file
+        if (
+          op &&
+          op.length === 4 &&
+          op[0] === 'files' &&
+          typeof op[1] === 'string' &&
+          op[2] === 'text'
+        ) {
+          // Get the file id
+          const fileId: FileId = op[1];
+
+          // Add the file id to the set of dirty files
+          dirtyFilesRef.current.add(fileId);
+
+          // Debounce running Prettier
+          if (!enableManualPretter) {
+            debouncePrettier();
+          }
+          // console.log('Op is for file', fileId);
+        }
+        // } else {
+        //   // console.log('ignoring op from remote', op, isLocal);
+        // }
       },
     );
 
@@ -243,5 +248,5 @@ export const usePrettier = ({
       }
     };
   }, [shareDBDoc]);
-  return { prettierError }; // Return the errors for use in other files
+  return { prettierError, runPrettierRef }; // Return the errors for use in other files
 };

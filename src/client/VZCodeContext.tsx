@@ -95,6 +95,9 @@ export type VZCodeContextValue = {
   handleOpenCreateFileModal: () => void;
   handleCloseCreateFileModal: () => void;
   handleCreateFileClick: (newFileName: string) => void;
+  runPrettierRef: React.MutableRefObject<
+    null | (() => void)
+  >;
 };
 
 export const VZCodeProvider = ({
@@ -127,8 +130,12 @@ export const VZCodeProvider = ({
   // Auto-run Pretter after local changes.
   const {
     prettierError,
+    runPrettierRef,
   }: {
     prettierError: string | null;
+    runPrettierRef: React.MutableRefObject<
+      null | (() => void)
+    >;
   } = usePrettier({
     shareDBDoc,
     submitOperation,
@@ -301,6 +308,7 @@ export const VZCodeProvider = ({
     handleOpenCreateFileModal,
     handleCloseCreateFileModal,
     handleCreateFileClick,
+    runPrettierRef,
   };
 
   return (
