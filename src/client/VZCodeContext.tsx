@@ -111,7 +111,7 @@ export const VZCodeProvider = ({
   initialUsername,
   children,
   codeError = null,
-  enableManualPretter = false,
+  enableManualPretter = true,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
