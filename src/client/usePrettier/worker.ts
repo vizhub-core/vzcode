@@ -5,15 +5,15 @@ import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown';
 import * as prettierPluginCSS from 'prettier/plugins/postcss';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
-// TODO bring this back when these PRs are merged and released:
-// https://github.com/sveltejs/prettier-plugin-svelte/pull/423
-// https://github.com/sveltejs/prettier-plugin-svelte/pull/417
+// TODO bring this back once this PR is released:
+// https://github.com/sveltejs/prettier-plugin-svelte/pull/430
 // import * as prettierPluginSvelte from 'prettier-plugin-svelte/browser';
+import * as prettierPluginSvelte from './prettier-plugin-svelte-browser';
+
 import { FileId } from '../../types';
 
-const enableSvelte = false;
-// console.log('Buffer');
-// console.log(Buffer);
+const enableSvelte = true;
+
 const parsers = {
   js: 'babel',
   jsx: 'babel',
@@ -45,9 +45,12 @@ const plugins = [
   prettierPluginMarkdown,
   prettierPluginTypescript,
   prettierPluginCSS,
-  // TODO bring this back
-  // prettierPluginSvelte,
 ];
+
+if (enableSvelte) {
+  // @ts-ignore
+  plugins.push(prettierPluginSvelte);
+}
 
 onmessage = async ({
   data,
@@ -101,6 +104,7 @@ onmessage = async ({
       fileTextPrettified,
     });
   } catch (error) {
+    console.error(error);
     postMessage({
       fileId,
       error: error.toString(),
