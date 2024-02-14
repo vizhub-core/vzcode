@@ -1,57 +1,19 @@
-import { useContext } from 'react';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
-import { VZCodeContext } from './VZCodeContext';
+import { CreateFileModal } from './VZSidebar/CreateFileModal';
 
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
 // * The settings modal
+// * The create file modal
 export const VZLeft = ({ enableUsernameField = true }) => {
-  // TODO leverage this context in deeper levels of the component tree.
-  const {
-    files,
-    createFile,
-    renameFile,
-    deleteFile,
-    deleteDirectory,
-    activeFileId,
-    openTab,
-    closeTabs,
-    isSettingsOpen,
-    setIsSettingsOpen,
-    closeSettings,
-    theme,
-    setTheme,
-    username,
-    setUsername,
-    isDirectoryOpen,
-    toggleDirectory,
-  } = useContext(VZCodeContext);
-
   return (
     <div className="left">
-      <VZSidebar
-        files={files}
-        createFile={createFile}
-        renameFile={renameFile}
-        deleteFile={deleteFile}
-        deleteDirectory={deleteDirectory}
-        openTab={openTab}
-        closeTabs={closeTabs}
-        setIsSettingsOpen={setIsSettingsOpen}
-        isDirectoryOpen={isDirectoryOpen}
-        toggleDirectory={toggleDirectory}
-        activeFileId={activeFileId}
-      />
+      <VZSidebar />
       <VZSettings
-        show={isSettingsOpen}
-        onClose={closeSettings}
-        theme={theme}
-        setTheme={setTheme}
-        username={username}
-        setUsername={setUsername}
         enableUsernameField={enableUsernameField}
       />
+      <CreateFileModal />
     </div>
   );
 };

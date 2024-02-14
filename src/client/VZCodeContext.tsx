@@ -1,4 +1,9 @@
-import { createContext, useReducer } from 'react';
+import {
+  createContext,
+  useCallback,
+  useReducer,
+  useState,
+} from 'react';
 import {
   Files,
   ShareDBDoc,
@@ -25,6 +30,7 @@ import {
   useEditorCache,
 } from './useEditorCache';
 import { useURLSync } from './useURLSync';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -51,6 +57,8 @@ export type VZCodeContextValue = {
 
   activeFileId: string | null;
   setActiveFileId: (fileId: string | null) => void;
+  setActiveFileLeft: () => void;
+  setActiveFileRight: () => void;
 
   tabList: Array<TabState>;
   openTab: ({
@@ -82,6 +90,14 @@ export type VZCodeContextValue = {
   errorMessage: string | null;
 
   typeScriptWorker: Worker | null;
+
+  isCreateFileModalOpen: boolean;
+  handleOpenCreateFileModal: () => void;
+  handleCloseCreateFileModal: () => void;
+  handleCreateFileClick: (newFileName: string) => void;
+  runPrettierRef: React.MutableRefObject<
+    null | (() => void)
+  >;
 };
 
 export const VZCodeProvider = ({
@@ -95,7 +111,7 @@ export const VZCodeProvider = ({
   initialUsername,
   children,
   codeError = null,
-  enableManualPretter = false,
+  enableManualPretter = true,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -114,8 +130,12 @@ export const VZCodeProvider = ({
   // Auto-run Pretter after local changes.
   const {
     prettierError,
+    runPrettierRef,
   }: {
     prettierError: string | null;
+    runPrettierRef: React.MutableRefObject<
+      null | (() => void)
+    >;
   } = usePrettier({
     shareDBDoc,
     submitOperation,
@@ -164,6 +184,8 @@ export const VZCodeProvider = ({
   // Functions for dispatching actions to the reducer.
   const {
     setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
     openTab,
     closeTabs,
     setTheme,
@@ -205,6 +227,34 @@ export const VZCodeProvider = ({
     openTab,
   });
 
+  // State to control the create file modal's visibility
+  const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
+    useState(false);
+
+  const handleOpenCreateFileModal = useCallback(() => {
+    setIsCreateFileModalOpen(true);
+  }, []);
+
+  const handleCloseCreateFileModal = useCallback(() => {
+    setIsCreateFileModalOpen(false);
+  }, []);
+
+  const handleCreateFileClick = useCallback(
+    (newFileName: string) => {
+      createFile(newFileName);
+      setIsCreateFileModalOpen(false);
+    },
+    [createFile, setIsCreateFileModalOpen],
+  );
+
+  useKeyboardShortcuts({
+    closeTabs,
+    activeFileId,
+    handleOpenCreateFileModal,
+    setActiveFileLeft,
+    setActiveFileRight,
+  });
+
   // Isolate the files object from the document.
   const files: Files | null = content
     ? content.files
@@ -226,6 +276,8 @@ export const VZCodeProvider = ({
 
     activeFileId,
     setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
 
     tabList,
     openTab,
@@ -251,6 +303,12 @@ export const VZCodeProvider = ({
     errorMessage,
 
     typeScriptWorker,
+
+    isCreateFileModalOpen,
+    handleOpenCreateFileModal,
+    handleCloseCreateFileModal,
+    handleCreateFileClick,
+    runPrettierRef,
   };
 
   return (

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import {
   FileId,
   ShareDBDoc,
@@ -14,6 +14,8 @@ import {
 import { SparklesSVG, StopSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import './style.scss';
+import { Spinner } from '../Spinner';
+import { VZCodeContext } from '../../VZCodeContext';
 
 const enableStopGeneration = false;
 
@@ -43,6 +45,8 @@ export const AIAssistWidget = ({
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
 
+  const { runPrettierRef } = useContext(VZCodeContext);
+
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
     if (isCurrentlyGenerationg) {
@@ -62,6 +66,12 @@ export const AIAssistWidget = ({
         aiAssistOptions,
       });
 
+      // Trigger a Prettier run after the AI Assist.
+      const runPrettier = runPrettierRef.current;
+      if (runPrettier !== null) {
+        runPrettier();
+      }
+
       // Handles the case that the user has started,
       // stopped, and started again before the first request
       // has finished, bu comparing the current stream ID
@@ -80,30 +90,28 @@ export const AIAssistWidget = ({
     : aiStreamId === null;
 
   return (
-    showWidget && (
-      <div className="vz-code-ai-assist-widget">
-        <OverlayTrigger
-          placement="left"
-          overlay={
-            <Tooltip id="ai-assist-widget-tooltip">
-              {aiAssistTooltipText}
-            </Tooltip>
-          }
-        >
-          <i
-            className="icon-button icon-button-dark"
-            onClick={aiAssistClickOverride || handleClick}
+    <div className="vz-code-ai-assist-widget">
+      {aiStreamId ? (
+        <Spinner /> // Show spinner when aiStreamId is not null
+      ) : (
+        showWidget && (
+          <OverlayTrigger
+            placement="left"
+            overlay={
+              <Tooltip id="ai-assist-widget-tooltip">
+                {aiAssistTooltipText}
+              </Tooltip>
+            }
           >
-            {aiStreamId ? (
-              enableStopGeneration ? (
-                <StopSVG />
-              ) : null
-            ) : (
+            <i
+              className="icon-button icon-button-dark"
+              onClick={aiAssistClickOverride || handleClick}
+            >
               <SparklesSVG />
-            )}
-          </i>
-        </OverlayTrigger>
-      </div>
-    )
+            </i>
+          </OverlayTrigger>
+        )
+      )}
+    </div>
   );
 };

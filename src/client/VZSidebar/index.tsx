@@ -1,16 +1,8 @@
-import {
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  useEffect,
-} from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   FileId,
   FileTree,
   FileTreeFile,
-  FileTreePath,
-  Files,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
@@ -19,7 +11,7 @@ import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { Listing } from './Listing';
-import { CreateFileModal } from './CreateFileModal';
+import { VZCodeContext } from '../VZCodeContext';
 import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
@@ -28,88 +20,31 @@ import './styles.scss';
 const enableConnectionStatus = false;
 
 export const VZSidebar = ({
-  files,
-  createFile,
   createFileTooltipText = 'New File',
-  renameFile,
-  deleteFile,
-  deleteDirectory,
-  openTab,
-  closeTabs,
-  setIsSettingsOpen,
-  isDirectoryOpen,
-  toggleDirectory,
-  activeFileId,
   openSettingsTooltipText = 'Open Settings',
   reportBugTooltipText = 'Report Bug',
 }: {
-  files: Files;
-  createFile: (fileName) => void;
   createFileTooltipText?: string;
-  renameFile: (fileId: FileId, newName: string) => void;
-  deleteFile: (fileId: FileId) => void;
-  deleteDirectory: (path: FileTreePath) => void;
-  openTab: ({
-    fileId,
-    isTransient,
-  }: {
-    fileId: FileId;
-    isTransient?: boolean;
-  }) => void;
-  closeTabs: (fileIds: FileId[]) => void;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
-  activeFileId?: FileId;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
 }) => {
+  const {
+    files,
+    renameFile,
+    deleteFile,
+    deleteDirectory,
+    activeFileId,
+    openTab,
+    setIsSettingsOpen,
+    isDirectoryOpen,
+    toggleDirectory,
+    handleOpenCreateFileModal,
+  } = useContext(VZCodeContext);
+
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal's visibility
-
-  const handleCreateFile = useCallback(() => {
-    setIsModalOpen(true);
-  }, [setIsModalOpen]);
-
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, [setIsModalOpen]);
-
-  const handleRename = useCallback(
-    (newFileName: string) => {
-      createFile(newFileName);
-      setIsModalOpen(false);
-    },
-    [createFile, setIsModalOpen],
-  );
-
-  const handleKeyPress = useCallback(
-    (event: { altKey: boolean; key: string }) => {
-      if (event.altKey == true) {
-        if (event.key == 'w') {
-          closeTabs([activeFileId]);
-        }
-        if (event.key == 'n') {
-          handleCreateFile();
-        }
-      }
-    },
-    [createFile, closeTabs, activeFileId],
-  );
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener(
-        'keydown',
-        handleKeyPress,
-      );
-    };
-  }, [handleKeyPress]);
 
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
@@ -196,7 +131,7 @@ export const VZSidebar = ({
               }
             >
               <i
-                onClick={handleCreateFile}
+                onClick={handleOpenCreateFileModal}
                 className="icon-button icon-button-dark"
               >
                 <NewSVG />
@@ -246,11 +181,6 @@ export const VZSidebar = ({
           </div>
         </div>
       )}
-      <CreateFileModal
-        show={isModalOpen}
-        onClose={handleCloseModal}
-        onRename={handleRename}
-      />
     </div>
   );
 };
