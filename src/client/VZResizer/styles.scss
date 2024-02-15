@@ -4,6 +4,10 @@
   left: 0;
   bottom: 0;
 
+  // Needed in order to make the resizer hoverable
+  // when there is another div on top of it.
+  z-index: 1;
+
   // Useful for debugging:
   // background-color: #ffd0007c;
 }
