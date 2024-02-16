@@ -234,6 +234,10 @@ onmessage = async ({ data }) => {
         // "Cannot find module 'd3' or its corresponding type declarations."
         const LINT_ERROR_CODE_IMPORT = 2307;
 
+        // This code is for errors like:
+        // "Variable 'mic' implicitly has type 'any' in some locations where its type cannot be determined."
+        const LINT_ERROR_CODE_ANY_TYPE = 7034;
+
         if (debug) {
           console.log(tsErrors);
         }
@@ -241,7 +245,8 @@ onmessage = async ({ data }) => {
           (error: { code: number }) =>
             error.code !== LINT_ERROR_CODE_ANY &&
             error.code !== LINT_ERROR_CODE_IMPORT &&
-            error.code !== LINT_ERROR_CODE_ANY_PARAM,
+            error.code !== LINT_ERROR_CODE_ANY_PARAM &&
+            error.code !== LINT_ERROR_CODE_ANY_TYPE,
         );
       }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
