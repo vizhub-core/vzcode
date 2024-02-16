@@ -5,6 +5,7 @@ import { CodeEditor } from './CodeEditor';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
 import { AIAssistWidget } from './AIAssist/AIAssistWidget';
+import { SaveAndRunWidget } from './SaveAndRun/SaveAndRunWidget';
 import { VZCodeContext } from './VZCodeContext';
 
 // The middle portion of the VZCode environment, containing:
@@ -14,12 +15,14 @@ import { VZCodeContext } from './VZCodeContext';
 // * The presence notifications
 // * The UI for AI Assist
 export const VZMiddle = ({
+  saveAndRunTooltipText,
   enableAIAssist = true,
   aiAssistEndpoint,
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
 }: {
+  saveAndRunTooltipText?: string;
   enableAIAssist?: boolean;
   aiAssistEndpoint?: string;
   aiAssistOptions?: { [key: string]: string };
@@ -89,6 +92,15 @@ export const VZMiddle = ({
           }
           username={username}
           typeScriptWorker={typeScriptWorker}
+        />
+      )}
+      {isClient && content && activeFileId && (
+        <SaveAndRunWidget 
+          activeFileId={activeFileId}
+          shareDBDoc={shareDBDoc}
+          editorCache={editorCache}
+          tabList={tabList}
+          saveAndRunTooltipText={saveAndRunTooltipText}
         />
       )}
       {isClient &&
