@@ -3,8 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "noImplicitAny": false
+    "esModuleInterop": true
   },
   "include": ["src/**/*"],
   "//": "TODO - remove this when we have this change: https://github.com/vitest-dev/vitest/issues/3622",
