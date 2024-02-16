@@ -62,6 +62,14 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
+  //TODO::: Renames a directory
+  const renameDirectory = useCallback(
+    (path: FileTreePath, newName: string) => {
+      //Do Functionality Here
+    },
+    [submitOperation, renameFile],
+  );
+
   // Deletes a file
   const deleteFile = useCallback(
     (fileId: FileId) => {
@@ -98,6 +106,7 @@ export const useFileCRUD = ({
     createFile,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
   };
 };

@@ -32,6 +32,7 @@ export const VZSidebar = ({
     files,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
     activeFileId,
     openTab,
@@ -150,6 +151,7 @@ export const VZSidebar = ({
                 entity={entity}
                 renameFile={renameFile}
                 deleteFile={deleteFile}
+                renameDirectory={renameDirectory}
                 deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
                 handleFileDoubleClick={
