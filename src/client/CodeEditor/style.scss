@@ -25,19 +25,21 @@
     max-width: 500px;
   }
 
-    /* Style the completion tooltip container */
+  /* Style the completion tooltip container */
   .cm-tooltip.cm-tooltip-autocomplete {
     border: 1px solid #888;
-    background-color: #1F2022;
+    background-color: #1f2022;
   }
 
   /* Style the individual completion items */
   .cm-tooltip-autocomplete .cm-completionLabel {
-    color: #BDC7DC;
+    color: #bdc7dc;
   }
 
   /* Style the selected completion item */
-  .cm-tooltip-autocomplete .cm-completionLabel .cm-completion-active {
+  .cm-tooltip-autocomplete
+    .cm-completionLabel
+    .cm-completion-active {
     background-color: #0077cc;
     color: white;
   }
