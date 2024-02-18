@@ -7,6 +7,7 @@ import {
 import {
   Files,
   ShareDBDoc,
+  SubmitOperation,
   Username,
   VZCodeContent,
 } from '../types';
@@ -31,6 +32,7 @@ import {
 } from './useEditorCache';
 import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { useRunCode } from './useRunCode';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -98,6 +100,7 @@ export type VZCodeContextValue = {
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
+  runCodeRef: React.MutableRefObject<null | (() => void)>;
 };
 
 export const VZCodeProvider = ({
@@ -115,9 +118,7 @@ export const VZCodeProvider = ({
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
-  submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void;
+  submitOperation: SubmitOperation;
   localPresence: any;
   docPresence: any;
   prettierWorker: Worker;
@@ -142,6 +143,8 @@ export const VZCodeProvider = ({
     prettierWorker,
     enableManualPretter,
   });
+
+  const runCodeRef = useRunCode(submitOperation);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -247,18 +250,20 @@ export const VZCodeProvider = ({
     [createFile, setIsCreateFileModalOpen],
   );
 
+  // Isolate the files object from the document.
+  const files: Files | null = content
+    ? content.files
+    : null;
+
   useKeyboardShortcuts({
     closeTabs,
     activeFileId,
     handleOpenCreateFileModal,
     setActiveFileLeft,
     setActiveFileRight,
+    runPrettierRef,
+    runCodeRef,
   });
-
-  // Isolate the files object from the document.
-  const files: Files | null = content
-    ? content.files
-    : null;
 
   // The value provided by this context.
   const value: VZCodeContextValue = {
@@ -309,6 +314,7 @@ export const VZCodeProvider = ({
     handleCloseCreateFileModal,
     handleCreateFileClick,
     runPrettierRef,
+    runCodeRef,
   };
 
   return (

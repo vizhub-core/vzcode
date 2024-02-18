@@ -6,6 +6,7 @@ import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
 import { AIAssistWidget } from './AIAssist/AIAssistWidget';
 import { VZCodeContext } from './VZCodeContext';
+import { RunCodeWidget } from './RunCodeWidget';
 
 // The middle portion of the VZCode environment, containing:
 // * The list of tabs at the top
@@ -106,6 +107,7 @@ export const VZMiddle = ({
           aiAssistClickOverride={aiAssistClickOverride}
         />
       ) : null}
+      <RunCodeWidget />
       <CodeErrorOverlay
         errorMessage={errorMessage}
         content={content}
