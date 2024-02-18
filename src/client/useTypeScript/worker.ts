@@ -8,8 +8,6 @@ import {
   LinterResponse,
 } from './requestTypes';
 
-let isFileSystemInitialized = false;
-
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
 const debug = false;
@@ -238,6 +236,10 @@ onmessage = async ({ data }) => {
         // "Variable 'mic' implicitly has type 'any' in some locations where its type cannot be determined."
         const LINT_ERROR_CODE_ANY_TYPE = 7034;
 
+        // "Element implicitly has an 'any' type because expression
+        // of type '"test"' can't be used to index type '{}'."
+        const LINT_ERROR_CODE_ANY_TYPE_KEYS = 7053;
+
         if (debug) {
           console.log(tsErrors);
         }
@@ -246,7 +248,8 @@ onmessage = async ({ data }) => {
             error.code !== LINT_ERROR_CODE_ANY &&
             error.code !== LINT_ERROR_CODE_IMPORT &&
             error.code !== LINT_ERROR_CODE_ANY_PARAM &&
-            error.code !== LINT_ERROR_CODE_ANY_TYPE,
+            error.code !== LINT_ERROR_CODE_ANY_TYPE &&
+            error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS,
         );
       }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
