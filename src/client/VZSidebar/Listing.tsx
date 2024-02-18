@@ -26,6 +26,7 @@ export const Listing = ({
   deleteFile: (fileId: FileId) => void;
   renameDirectory: (
     path: FileTreePath,
+    oldName: string,
     newName: string,
   ) => void;
   deleteDirectory: (path: FileTreePath) => void;

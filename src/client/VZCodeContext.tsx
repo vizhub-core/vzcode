@@ -55,6 +55,7 @@ export type VZCodeContextValue = {
   deleteFile: (fileId: string) => void;
   renameDirectory: (
     directoryId: string,
+    directoryOldName: string,
     directoryName: string,
   ) => void;
   deleteDirectory: (directoryId: string) => void;

@@ -29,6 +29,7 @@ export const DirectoryListing = ({
   deleteFile: (fileId: string) => void;
   renameDirectory: (
     path: FileTreePath,
+    oldName: string,
     newName: string,
   ) => void;
   deleteDirectory: (path: FileTreePath) => void;
@@ -48,11 +49,9 @@ export const DirectoryListing = ({
 
   const handleRenameClick = useCallback(
     (newName: string) => {
-      // https://github.com/vizhub-core/vzcode/issues/103
-      console.log('TODO handleRenameDirectoryClick');
-      renameDirectory(path, newName);
+      renameDirectory(path, name, newName);
     },
-    [renameDirectory, path],
+    [renameDirectory, path, name],
   );
 
   const isOpen = useMemo(

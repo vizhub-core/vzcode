@@ -64,8 +64,30 @@ export const useFileCRUD = ({
 
   //TODO::: Renames a directory
   const renameDirectory = useCallback(
-    (path: FileTreePath, newName: string) => {
-      //Do Functionality Here
+    (
+      path: FileTreePath,
+      oldName: string,
+      newName: string,
+    ) => {
+      submitOperation((document: VZCodeContent) => {
+        const updatedFiles = { ...document.files };
+        for (const key in updatedFiles) {
+          const fileName = updatedFiles[key].name;
+          if (fileName.includes(path)) {
+            const oldNamePos = fileName.indexOf(oldName);
+            const fileNewName =
+              fileName.substring(0, oldNamePos) +
+              newName +
+              fileName.substring(
+                oldNamePos + oldName.length,
+              );
+            console.log(fileName);
+            console.log(fileNewName);
+            renameFile(key, fileNewName);
+          }
+        }
+        return { ...document, files: updatedFiles };
+      });
     },
     [submitOperation, renameFile],
   );
