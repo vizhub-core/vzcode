@@ -87,7 +87,8 @@ export const computeInitialDocument = ({ fullPath }) => {
     //    using an interactive code widget such as number dragger.
     //  * When true, the auto-save to the file system is changed to be
     //    more frequent (throttled not debounced).
-    isInteracting: false,
+    // isInteracting: false,
+    // This is `undefined` initially.
   };
 
   /**

@@ -31,14 +31,12 @@ export const usePrettier = ({
   shareDBDoc,
   submitOperation,
   prettierWorker,
-  enableManualPretter,
 }: {
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void;
   prettierWorker: Worker;
-  enableManualPretter: boolean;
 }) => {
   // The set of files that have been modified
   // since the last Prettier run.
@@ -139,114 +137,48 @@ export const usePrettier = ({
     };
     runPrettierRef.current = runPrettier;
 
-    let debouncePrettier;
-    let debounceTimeout;
-    let handleKeyDown;
-    if (enableManualPretter) {
-      handleKeyDown = (event: KeyboardEvent) => {
-        if (shouldTriggerRun(event)) {
-          event.preventDefault();
-          runPrettier();
-        }
-      };
-      document.addEventListener('keydown', handleKeyDown);
-    } else {
-      // Function to debounce running Prettier
+    const handleOpBatch = (op: JSONOp) => {
+      // Only act on changes coming from the client
+      // OR changes coming from the AI Assist that we
+      // if (isLocal) {
+      // If the op is coming from Prettier itself,
+      // then do nothing.
+      if (isApplyingOpRef.current) {
+        // console.log('ignoring op from Prettier');
+        return;
+      }
 
-      debouncePrettier = () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(
-          runPrettier,
-          autoPrettierDebounceTimeMS,
-        );
-      };
-      // Stops prettier from running when you perform a mouse move or a keydown
-      window.addEventListener(
-        'mousemove',
-        debouncePrettier,
-      );
-      window.addEventListener('keydown', debouncePrettier);
-    }
+      // Check if the path of this op is the text content of a file
+      if (
+        op &&
+        op.length === 4 &&
+        op[0] === 'files' &&
+        typeof op[1] === 'string' &&
+        op[2] === 'text'
+      ) {
+        // Get the file id
+        const fileId: FileId = op[1];
+
+        // Add the file id to the set of dirty files
+        dirtyFilesRef.current.add(fileId);
+      }
+    };
 
     // Listen for changes
-    shareDBDoc.on(
-      'op batch',
-      (op: JSONOp, isLocal: boolean) => {
-        // Only act on changes coming from the client
-        // OR changes coming from the AI Assist that we
-        // if (isLocal) {
-        // If the op is coming from Prettier itself,
-        // then do nothing.
-        if (isApplyingOpRef.current) {
-          // console.log('ignoring op from Prettier');
-          return;
-        }
+    shareDBDoc.on('op batch', handleOpBatch);
 
-        // Example op that we want to act on:
-        // op [
-        //   "files",
-        //   "2514857669",
-        //   "text",
-        //   {
-        //     "es": [
-        //       18,
-        //       "d"
-        //     ]
-        //   }
-        // ]
-
-        // Check if the path of this op is the text content of a file
-        if (
-          op &&
-          op.length === 4 &&
-          op[0] === 'files' &&
-          typeof op[1] === 'string' &&
-          op[2] === 'text'
-        ) {
-          // Get the file id
-          const fileId: FileId = op[1];
-
-          // Add the file id to the set of dirty files
-          dirtyFilesRef.current.add(fileId);
-
-          // Debounce running Prettier
-          if (!enableManualPretter) {
-            debouncePrettier();
-          }
-          // console.log('Op is for file', fileId);
-        }
-        // } else {
-        //   // console.log('ignoring op from remote', op, isLocal);
-        // }
-      },
-    );
-
-    // In the event that the component unmounts,
+    // Clean up the event listeners
     return () => {
-      // Remove the event listener
       prettierWorker.removeEventListener(
         'message',
         handleMessage,
       );
-      if (enableManualPretter) {
-        document.removeEventListener(
-          'keydown',
-          handleKeyDown,
-        );
-      } else {
-        window.removeEventListener(
-          'keydown',
-          debouncePrettier,
-        );
-        window.removeEventListener(
-          'mousemove',
-          debouncePrettier,
-        );
 
-        // Clear the timeout
-        clearTimeout(debounceTimeout);
-      }
+      shareDBDoc.removeListener('op batch', handleOpBatch);
     };
   }, [shareDBDoc]);
-  return { prettierError, runPrettierRef }; // Return the errors for use in other files
+
+  // Return the errors and run prettier function ref
+  // for use elsewhere.
+  return { prettierError, runPrettierRef };
 };

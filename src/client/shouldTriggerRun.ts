@@ -1,8 +1,6 @@
 // This module is responsible for checking
 // keyboard events and determining whether
 // a run should be triggered or not.
-//
-// The most common case is when the us
 export const shouldTriggerRun = (event: KeyboardEvent) => {
   const isMac = /Mac|iMac|MacBook/i.test(
     navigator.userAgent,

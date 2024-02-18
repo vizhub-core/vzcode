@@ -80,13 +80,14 @@ export const CodeEditor = ({
       clearTimeout(interactTimeoutRef.current);
     }
 
-    // Set `isInteracting: false` after a delay.
+    // Set `isInteracting: undefined` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
-      submitOperation((document) => ({
-        ...document,
-        isInteracting: false,
-      }));
+
+      // This logic deletes the `isInteracting` property from the document.
+      submitOperation(
+        ({ isInteracting, ...newDocument }) => newDocument,
+      );
     }, 800);
   }, [submitOperation]);
 
