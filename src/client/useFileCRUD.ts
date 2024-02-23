@@ -81,15 +81,13 @@ export const useFileCRUD = ({
               fileName.substring(
                 oldNamePos + oldName.length,
               );
-            console.log(fileName);
-            console.log(fileNewName);
-            renameFile(key, fileNewName);
+            updatedFiles[key].name = fileNewName;
           }
         }
         return { ...document, files: updatedFiles };
       });
     },
-    [submitOperation, renameFile],
+    [submitOperation],
   );
 
   // Deletes a file
