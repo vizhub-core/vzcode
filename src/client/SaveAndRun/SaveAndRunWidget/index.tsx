@@ -1,7 +1,15 @@
 import { useCallback, useContext, useState } from 'react';
+import {
+  FileId,
+  ShareDBDoc,
+  VZCodeContent,
+} from '../../../types';
+import { EditorCache } from '../../useEditorCache';
 import { OverlayTrigger, Tooltip } from '../../bootstrap';
 import { SaveAndRunSVG } from '../../Icons'; 
 import { Spinner } from '../Spinner';
+import { VZCodeContext } from '../../VZCodeContext';
+import { TabState } from '../../vzReducer';
 
 export const SaveAndRunWidget = ({
   activeFileId,
@@ -33,7 +41,7 @@ export const SaveAndRunWidget = ({
           >
             <i
               className="icon-button icon-button-dark"
-              onClick={}
+              onClick={handleClick}
             >
               <SaveAndRunSVG />
             </i>
