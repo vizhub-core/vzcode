@@ -331,31 +331,57 @@ class ColorWidget extends WidgetType {
     svg.appendChild(colorCircle);
 
     parent.appendChild(svg);
-    
- // Add click event listener to trigger color picker
- parent.addEventListener('click', () => {
-  const sel = document.createElement('input');
-  sel.type = 'color';
-  sel.value = this.color.replace(/["']/g, '');
 
-  const updateColor = (e: Event) => {
-    const el = e.target as HTMLInputElement;
-    if (el.value) {
-      // Handle color selection
-      // You can implement your logic here
-      console.log('Selected color:', el.value);
-    }
-    // Cleanup event listener
-    sel.removeEventListener('input', updateColor);
+ // Add mouse down event listener to trigger color dragging
+ parent.addEventListener('mousedown', (event) => {
+  const rect = parent.getBoundingClientRect();
+  const offsetX = event.clientX - rect.left;
+  const offsetY = event.clientY - rect.top;
+
+  const updateColor = (e: MouseEvent) => {
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const percentX = Math.min(1, Math.max(0, x / size));
+    const percentY = Math.min(1, Math.max(0, y / size));
+
+    const newColor = this.calculateColor(percentX, percentY);
+
+    colorCircle.setAttributeNS(
+      null,
+      'fill',
+      newColor.replace(/["']/g, ''),
+    );
+
+    // Dispatch custom event with updated color
+    const colorChangeEvent = new CustomEvent('colorChange', {
+      detail: newColor,
+    });
+    parent.dispatchEvent(colorChangeEvent);
   };
 
-  sel.addEventListener('input', updateColor);
-  sel.click(); // Open color picker
+  document.addEventListener('mousemove', updateColor);
+
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', updateColor);
+  });
 });
+
+return parent;
+}
+
+// Method to calculate color based on position
+calculateColor(percentX: number, percentY: number): string {
+// Assuming color representation based on position
+const r = Math.floor(255 * percentX);
+const g = Math.floor(255 * (1 - percentY));
+const b = Math.floor(255 * (1 - percentX));
+
+// Return the hex representation of the calculated color
+return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+}
     
-    
-    return parent;
-  }
+ 
   ignoreEvent() {
     return false;
   }
