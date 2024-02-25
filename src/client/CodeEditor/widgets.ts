@@ -331,6 +331,29 @@ class ColorWidget extends WidgetType {
     svg.appendChild(colorCircle);
 
     parent.appendChild(svg);
+    
+ // Add click event listener to trigger color picker
+ parent.addEventListener('click', () => {
+  const sel = document.createElement('input');
+  sel.type = 'color';
+  sel.value = this.color.replace(/["']/g, '');
+
+  const updateColor = (e: Event) => {
+    const el = e.target as HTMLInputElement;
+    if (el.value) {
+      // Handle color selection
+      // You can implement your logic here
+      console.log('Selected color:', el.value);
+    }
+    // Cleanup event listener
+    sel.removeEventListener('input', updateColor);
+  };
+
+  sel.addEventListener('input', updateColor);
+  sel.click(); // Open color picker
+});
+    
+    
     return parent;
   }
   ignoreEvent() {

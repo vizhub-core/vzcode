@@ -77,6 +77,7 @@
     "@replit/codemirror-interact": "^6.3.0",
     "@replit/codemirror-lang-svelte": "^6.0.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
+    "@rollup/rollup-win32-x64-msvc": "^4.12.0",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.5.0",
     "@uiw/codemirror-theme-abcdef": "^4.21.22",
