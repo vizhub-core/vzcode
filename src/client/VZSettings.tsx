@@ -2,6 +2,7 @@ import { useCallback, useContext, useRef } from 'react';
 import { Button, Modal, Form } from './bootstrap';
 import { themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
+import { fonts } from './Fonts/fonts';
 
 export const VZSettings = ({
   enableUsernameField = true,
@@ -23,6 +24,21 @@ export const VZSettings = ({
     console.log(selectedValue);
     setTheme(selectedValue);
   }, []);
+
+  const handleFontChange = (event) => {
+    let { body } = document;
+    body.style.setProperty(
+      '--vzcode-font-family',
+      event.target.value,
+    );
+  };
+
+  const fontSizes = ['16px', '18px', '20px', '24px'];
+  const handleFontSize = (event) => {
+    let fontSize = event.target.value;
+    let root = document.documentElement;
+    root.style.setProperty('--vzcode-font-size', fontSize);
+  };
 
   const usernameRef = useRef<HTMLInputElement>(null);
 
@@ -75,6 +91,38 @@ export const VZSettings = ({
 
           <Form.Text className="text-muted">
             Select a color theme for the editor
+          </Form.Text>
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Font</Form.Label>
+          <select
+            className="form-select"
+            onChange={handleFontChange}
+          >
+            {fonts.map((font) => (
+              <option key={font} value={font}>
+                {font}
+              </option>
+            ))}
+          </select>
+          <Form.Text className="text-muted">
+            Select font for the editor
+          </Form.Text>
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Font Size</Form.Label>
+          <select
+            className="form-select"
+            onChange={handleFontSize}
+          >
+            {fontSizes.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+          <Form.Text className="text-muted">
+            Select a font size for the editor
           </Form.Text>
         </Form.Group>
       </Modal.Body>
