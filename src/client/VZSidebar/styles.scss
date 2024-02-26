@@ -131,18 +131,20 @@
     display: flex;
     justify-content: space-between;
     padding: 10px;
-  }
+    font-size: 12px;
 
-  .connection {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
+    .connection-status-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
 
-  .saved {
-    width: 16px;
-    height: 16px;
-    border-radius: 99px;
-    background-color: #34eb52;
+      &.connected {
+        background-color: var(--vh-color-success-01);
+      }
+
+      &.disconnected {
+        background-color: var(--vh-color-warning-01);
+      }
+    }
   }
 }
