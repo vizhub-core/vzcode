@@ -54,7 +54,13 @@ export const useFileCRUD = ({
           ...document.files,
           [fileId]: {
             ...document.files[fileId],
-            name: newName,
+            name:
+              document.files[fileId].name.substring(
+                0,
+                document.files[fileId].name.lastIndexOf(
+                  '/',
+                ) + 1,
+              ) + newName,
           },
         },
       }));
