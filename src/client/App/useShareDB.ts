@@ -28,9 +28,9 @@ export const useShareDB = ({
   const [content, setContent] =
     useState<VZCodeContent | null>(null);
 
-  const [connected, setConnected] = useState<boolean>(false);
+  const [connected, setConnected] =
+    useState<boolean>(false);
   useEffect(() => {
-
     // Listen for connection state changes
     connection.on('connected', () => {
       setConnected(true);
@@ -117,6 +117,6 @@ export const useShareDB = ({
     localPresence,
     docPresence,
     submitOperation,
-    connected
+    connected,
   };
 };
