@@ -101,6 +101,8 @@ export type VZCodeContextValue = {
     null | (() => void)
   >;
   runCodeRef: React.MutableRefObject<null | (() => void)>;
+
+  connected: boolean;
 };
 
 export const VZCodeProvider = ({
@@ -115,6 +117,7 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   enableManualPretter = true,
+  connected,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -127,6 +130,7 @@ export const VZCodeProvider = ({
   children: React.ReactNode;
   codeError?: string | null;
   enableManualPretter?: boolean;
+  connected: boolean;
 }) => {
   // Auto-run Pretter after local changes.
   const {
@@ -315,6 +319,8 @@ export const VZCodeProvider = ({
     handleCreateFileClick,
     runPrettierRef,
     runCodeRef,
+
+    connected,
   };
 
   return (
