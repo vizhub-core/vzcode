@@ -1,8 +1,16 @@
-import { useCallback, useContext, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Modal, Form } from './bootstrap';
-import { themes } from './themes';
+import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 import { fonts } from './Fonts/fonts';
+
+const fontSizes = ['16px', '18px', '20px', '24px'];
 
 export const VZSettings = ({
   enableUsernameField = true,
@@ -19,26 +27,51 @@ export const VZSettings = ({
     setUsername,
   } = useContext(VZCodeContext);
 
-  const handleThemeChange = useCallback((event) => {
-    const selectedValue = event.target.value;
-    console.log(selectedValue);
-    setTheme(selectedValue);
-  }, []);
+  const handleThemeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setTheme(event.target.value as ThemeLabel);
+    },
+    [],
+  );
 
-  const handleFontChange = (event) => {
-    let { body } = document;
-    body.style.setProperty(
+  // Track selected font and font size.
+  // TODO store these in local storage
+  const [selectedFont, setSelectedFont] =
+    useState('Roboto Mono');
+  const [selectedFontSize, setSelectedFontSize] =
+    useState('16px');
+
+  // Called when the user selects a different font
+  const handleFontChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedFont(event.target.value);
+    },
+    [],
+  );
+
+  // Called when the user selects a different font size
+  const handleFontSizeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setSelectedFontSize(event.target.value);
+  };
+
+  useEffect(() => {
+    document.body.style.setProperty(
       '--vzcode-font-family',
-      event.target.value,
+      selectedFont,
     );
-  };
+  }, [selectedFont]);
 
-  const fontSizes = ['16px', '18px', '20px', '24px'];
-  const handleFontSize = (event) => {
-    let fontSize = event.target.value;
-    let root = document.documentElement;
-    root.style.setProperty('--vzcode-font-size', fontSize);
-  };
+  useEffect(() => {
+    // const fontSize = event.target.value;
+    // const root = document.documentElement;
+    // root.style.setProperty('--vzcode-font-size', fontSize);
+    document.body.style.setProperty(
+      '--vzcode-font-size',
+      selectedFontSize,
+    );
+  }, [selectedFontSize]);
 
   const usernameRef = useRef<HTMLInputElement>(null);
 
@@ -100,6 +133,7 @@ export const VZSettings = ({
           <select
             className="form-select"
             onChange={handleFontChange}
+            value={selectedFont}
           >
             {fonts.map((font) => (
               <option key={font} value={font}>
@@ -118,7 +152,8 @@ export const VZSettings = ({
 
           <select
             className="form-select"
-            onChange={handleFontSize}
+            onChange={handleFontSizeChange}
+            value={selectedFontSize}
           >
             {fontSizes.map((size) => (
               <option key={size} value={size}>
