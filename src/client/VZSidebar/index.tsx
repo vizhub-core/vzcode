@@ -17,7 +17,7 @@ import './styles.scss';
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
 // See https://github.com/vizhub-core/vzcode/issues/456
-const enableConnectionStatus = false;
+const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
@@ -39,6 +39,7 @@ export const VZSidebar = ({
     isDirectoryOpen,
     toggleDirectory,
     handleOpenCreateFileModal,
+    connected,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -174,7 +175,7 @@ export const VZSidebar = ({
 
       {enableConnectionStatus && (
         <div className="connection-status">
-          Connection Status
+          {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
             Saved
             <div className="saved" />
