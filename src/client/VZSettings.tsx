@@ -93,8 +93,10 @@ export const VZSettings = ({
             Select a color theme for the editor
           </Form.Text>
         </Form.Group>
+
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font</Form.Label>
+
           <select
             className="form-select"
             onChange={handleFontChange}
@@ -105,12 +107,15 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
+
           <Form.Text className="text-muted">
             Select font for the editor
           </Form.Text>
         </Form.Group>
+
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
+
           <select
             className="form-select"
             onChange={handleFontSize}
@@ -121,6 +126,7 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
+
           <Form.Text className="text-muted">
             Select a font size for the editor
           </Form.Text>
