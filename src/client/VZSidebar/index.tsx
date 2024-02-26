@@ -177,8 +177,11 @@ export const VZSidebar = ({
         <div className="connection-status">
           {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
-            Saved
-            <div className="saved" />
+            <div
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
           </div>
         </div>
       )}
