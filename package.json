@@ -112,7 +112,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.59",
+    "@types/react": "^18.2.60",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
