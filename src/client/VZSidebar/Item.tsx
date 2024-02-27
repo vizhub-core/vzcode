@@ -25,7 +25,9 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
-  renameFileTooltipText = 'Rename File',
+  renameFileTooltipText = isDirectory
+    ? 'Rename Directory'
+    : 'Rename File',
   deleteFileTooltipText = isDirectory
     ? 'Delete Directory'
     : 'Delete File',
