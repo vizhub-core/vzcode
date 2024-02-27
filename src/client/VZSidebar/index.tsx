@@ -1,4 +1,9 @@
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import {
   FileId,
   FileTree,

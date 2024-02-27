@@ -62,7 +62,7 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
-  //TODO::: Renames a directory
+  // Renames a directory
   const renameDirectory = useCallback(
     (
       path: FileTreePath,
@@ -70,9 +70,11 @@ export const useFileCRUD = ({
       newName: string,
     ) => {
       submitOperation((document: VZCodeContent) => {
-        const updatedFiles = { ...document.files };
-        for (const key in updatedFiles) {
-          const fileName = updatedFiles[key].name;
+        const updatedFiles = Object.keys(
+          document.files,
+        ).reduce((acc, key) => {
+          const file = document.files[key];
+          const fileName = file.name;
           if (fileName.includes(path)) {
             const oldNamePos = fileName.indexOf(oldName);
             const fileNewName =
@@ -81,9 +83,13 @@ export const useFileCRUD = ({
               fileName.substring(
                 oldNamePos + oldName.length,
               );
-            updatedFiles[key].name = fileNewName;
+            acc[key] = { ...file, name: fileNewName };
+          } else {
+            acc[key] = file;
           }
-        }
+          return acc;
+        }, {});
+
         return { ...document, files: updatedFiles };
       });
     },
