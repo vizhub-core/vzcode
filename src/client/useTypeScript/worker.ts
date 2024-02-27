@@ -240,6 +240,11 @@ onmessage = async ({ data }) => {
         // of type '"test"' can't be used to index type '{}'."
         const LINT_ERROR_CODE_ANY_TYPE_KEYS = 7053;
 
+        // "Property 'id' does not exist on type { ... }"
+        // Happens on objects with dynamic keys.
+        // Not valid in TypeScript, but common in JavaScript.
+        const LINT_ERROR_CODE_NON_EXISTENT_PROPERTY = 2339;
+
         if (debug) {
           console.log(tsErrors);
         }
@@ -249,7 +254,9 @@ onmessage = async ({ data }) => {
             error.code !== LINT_ERROR_CODE_IMPORT &&
             error.code !== LINT_ERROR_CODE_ANY_PARAM &&
             error.code !== LINT_ERROR_CODE_ANY_TYPE &&
-            error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS,
+            error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS &&
+            error.code !==
+              LINT_ERROR_CODE_NON_EXISTENT_PROPERTY,
         );
       }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
