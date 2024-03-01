@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
+import { isDirectory } from './isDirectory.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -125,9 +126,68 @@ const save = () => {
         fs.writeFileSync(current.name, current.text);
       }
 
+      // // Handle renaming files.
+      // if (previous.name !== current.name) {
+
+      //   const previousPath = previous.name.split('/');
+      //   const currentPath = current.name.split('/');
+
+      //   // - If the path is length 1 for previous and current,
+      //   //   then this should be true.
+      //   // - If the path length is the sane for previous and current,
+      //   //   AND all the entries leading up to the last one are the same
+      //   //   between previous and current, AND the last entry in the arrays
+      //   //   (the file name itself) is different between previous and current
+      //   const onlyFileNameChanged =
+      //     (previousPath.length === 1 &&
+      //       currentPath.length === 1) ||
+      //     (previousPath.length === currentPath.length &&
+      //       previousPath
+      //         .slice(0, -1)
+      //         .every(
+      //           (val, index) => val === currentPath[index],
+      //         ) &&
+      //       previousPath.at(-1) !== currentPath.at(-1));
+
+      //   // This logic works if only the file name itself changes.
+      //   if (onlyFileNameChanged) {
+      //     fs.renameSync(previous.name, current.name);
+      //   }
+      //   {
+      //     // If we get here, then the directory may have been renamed,
+      //     // or the file has been moved between directories.
+      //     // If we get here, then the directory may have been renamed,
+      //     // or the file has been moved between directories.
+      //     const newDir = path.dirname(current.name);
+
+      //     // Check if the new directory exists, if not, create it
+      //     if (!fs.existsSync(newDir)) {
+      //       fs.mkdirSync(newDir, { recursive: true });
+      //     }
+
+      //     // Move the file to the new directory
+      //     fs.renameSync(previous.name, current.name);
+      //   }
+      // }
       // Handle renaming files.
       if (previous.name !== current.name) {
-        fs.renameSync(previous.name, current.name);
+        if (isDirectory(previous.name)) {
+          // If the directory itself is being renamed,
+          // Phase I: Ignore it, and get the files moved
+          // Phase II: Keep track of these, and delete them after
+          //           all the files moved.
+          // directoriesToDelete.push(previous.name)
+        } else {
+          const newDir = path.dirname(current.name);
+
+          // Check if the new directory exists, if not, create it
+          if (!fs.existsSync(newDir)) {
+            fs.mkdirSync(newDir, { recursive: true });
+          }
+
+          // Move the file to the new directory
+          fs.renameSync(previous.name, current.name);
+        }
       }
     }
 
@@ -158,6 +218,7 @@ const save = () => {
       fs.writeFileSync(current.name, current.text);
     }
   }
+  // TODO deleted all directories under directoriesToDelete
   previousDocument = currentDocument;
 };
 
