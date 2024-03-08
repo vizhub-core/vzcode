@@ -16,7 +16,7 @@ const debug = false;
 // to support TypeScript completions on non-TS files.
 const getTSFileName = (fileName: string) => {
   if (fileName.endsWith('.js')) {
-    return fileName.replace('.js', '.ts');
+    return fileName.replace('.js', '.tsx');
   }
   if (fileName.endsWith('.jsx')) {
     return fileName.replace('.jsx', '.tsx');
@@ -38,6 +38,21 @@ const initializeFileSystem = async () => {
   }
   const compilerOptions: ts.CompilerOptions = {
     lib: ['dom', 'esnext'],
+
+    // Disable warnings around "Any type".
+    noImplicitAny: false,
+
+    // Disable warnings around "Implicit any in parameter".
+    noImplicitThis: false,
+
+    // Allow JavaScript files to be processed
+    allowJs: true,
+
+    // Disable type checking for JavaScript files
+    // checkJs: false,
+
+    // Skip type checking of declaration files
+    skipLibCheck: true,
   };
 
   // `true` breaks in a Web Worker because
@@ -219,46 +234,46 @@ onmessage = async ({ data }) => {
 
       // Be less aggressive for non-TS files,
       // e.g. files that end in .js or .jsx.
-      if (!isTS(fileName)) {
-        // This code is for errors like:
-        // "Binding element 'data' implicitly has an 'any' type."
-        const LINT_ERROR_CODE_ANY = 7031;
+      // if (!isTS(fileName)) {
+      // This code is for errors like:
+      // "Binding element 'data' implicitly has an 'any' type."
+      const LINT_ERROR_CODE_ANY = 7031;
 
-        // This code is for errors like:
-        // "Parameter 'selection' implicitly has an 'any' type.""
-        const LINT_ERROR_CODE_ANY_PARAM = 7006;
+      // This code is for errors like:
+      // "Parameter 'selection' implicitly has an 'any' type.""
+      const LINT_ERROR_CODE_ANY_PARAM = 7006;
 
-        // This code is for errors like:
-        // "Cannot find module 'd3' or its corresponding type declarations."
-        const LINT_ERROR_CODE_IMPORT = 2307;
+      // This code is for errors like:
+      // "Cannot find module 'd3' or its corresponding type declarations."
+      const LINT_ERROR_CODE_IMPORT = 2307;
 
-        // This code is for errors like:
-        // "Variable 'mic' implicitly has type 'any' in some locations where its type cannot be determined."
-        const LINT_ERROR_CODE_ANY_TYPE = 7034;
+      // This code is for errors like:
+      // "Variable 'mic' implicitly has type 'any' in some locations where its type cannot be determined."
+      const LINT_ERROR_CODE_ANY_TYPE = 7034;
 
-        // "Element implicitly has an 'any' type because expression
-        // of type '"test"' can't be used to index type '{}'."
-        const LINT_ERROR_CODE_ANY_TYPE_KEYS = 7053;
+      // "Element implicitly has an 'any' type because expression
+      // of type '"test"' can't be used to index type '{}'."
+      const LINT_ERROR_CODE_ANY_TYPE_KEYS = 7053;
 
-        // "Property 'id' does not exist on type { ... }"
-        // Happens on objects with dynamic keys.
-        // Not valid in TypeScript, but common in JavaScript.
-        const LINT_ERROR_CODE_NON_EXISTENT_PROPERTY = 2339;
+      // "Property 'id' does not exist on type { ... }"
+      // Happens on objects with dynamic keys.
+      // Not valid in TypeScript, but common in JavaScript.
+      const LINT_ERROR_CODE_NON_EXISTENT_PROPERTY = 2339;
 
-        if (debug) {
-          console.log(tsErrors);
-        }
-        tsErrors = tsErrors.filter(
-          (error: { code: number }) =>
-            error.code !== LINT_ERROR_CODE_ANY &&
-            error.code !== LINT_ERROR_CODE_IMPORT &&
-            error.code !== LINT_ERROR_CODE_ANY_PARAM &&
-            error.code !== LINT_ERROR_CODE_ANY_TYPE &&
-            error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS &&
-            error.code !==
-              LINT_ERROR_CODE_NON_EXISTENT_PROPERTY,
-        );
+      if (debug) {
+        console.log(tsErrors);
       }
+      tsErrors = tsErrors.filter(
+        (error: { code: number }) =>
+          error.code !== LINT_ERROR_CODE_ANY &&
+          error.code !== LINT_ERROR_CODE_IMPORT &&
+          error.code !== LINT_ERROR_CODE_ANY_PARAM &&
+          error.code !== LINT_ERROR_CODE_ANY_TYPE &&
+          error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS &&
+          error.code !==
+            LINT_ERROR_CODE_NON_EXISTENT_PROPERTY,
+      );
+      // }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
     }
 
