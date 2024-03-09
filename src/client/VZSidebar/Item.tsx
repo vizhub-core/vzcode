@@ -5,7 +5,7 @@ import {
   useEffect,
 } from 'react';
 import { EditSVG, FileSVG, TrashSVG } from '../Icons';
-
+import React from 'react'
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 
 // TODO consider moving this up to a higher level of the component tree
@@ -89,11 +89,11 @@ export const Item = ({
   );
 
   // Focus the input field when renaming
-  useEffect(() => {
-    if (isRenaming) {
-      renameInputRef.current.focus();
-    }
-  }, [isRenaming]);
+  // useEffect(() => {
+  //   if (isRenaming) {
+  //     renameInputRef.current.focus();
+  //   }
+  // }, [isRenaming]);
 
   // Function to open the delete file confirmation modal
   const handleModalOpen = useCallback(
@@ -149,17 +149,22 @@ export const Item = ({
       onMouseLeave={handleMouseLeave}
     >
       <div className="name">
-        {isRenaming ? (
-          <input
-            className="rename-input"
-            ref={renameInputRef}
-            type="text"
-            aria-label="Field name"
-            value={renameValue}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onChange={onChange}
-          />
+       {isRenaming ? (
+         <React.Fragment>
+           <i className="file-icon">
+             <FileSVG />
+           </i>
+           <input
+             className="rename-input"
+             ref={renameInputRef}
+             type="text"
+             aria-label="Field name"
+             value={renameValue}
+             onKeyDown={onKeyDown}
+             onBlur={onBlur}
+             onChange={onChange}
+           />
+         </React.Fragment>
         ) : (
           children
         )}
