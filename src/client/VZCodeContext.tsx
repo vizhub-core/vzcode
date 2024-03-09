@@ -51,6 +51,7 @@ export type VZCodeContextValue = {
 
   files: Files | null;
   createFile: (fileName: string) => void;
+  createFileWithContent: (name: string, content: string) => void
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
   deleteDirectory: (directoryId: string) => void;
@@ -218,6 +219,7 @@ export const VZCodeProvider = ({
   // Handle file CRUD operations (Create, Read, Update, Delete)
   const {
     createFile,
+    createFileWithContent,
     renameFile,
     deleteFile,
     deleteDirectory,
@@ -270,6 +272,7 @@ export const VZCodeProvider = ({
 
     files,
     createFile,
+    createFileWithContent,
     renameFile,
     deleteFile,
     deleteDirectory,

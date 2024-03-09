@@ -145,4 +145,18 @@
     border-radius: 99px;
     background-color: #34eb52;
   }
+
+  .dropZone {
+    border: 3px dashed #BDC7DC;
+    width: auto;
+    padding: 20px;
+    color: #BDC7DC;
+    text-align: center;
+    font-family: var(--vzcode-font-family);
+    font-weight: 500;
+  }
+  
+  .dropZone.dragover {
+    border-color: #009639;
+  }
 }

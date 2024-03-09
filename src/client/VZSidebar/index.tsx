@@ -12,6 +12,7 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
+import { DragAndDrop } from './DragAndDrop';
 import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
@@ -139,6 +140,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
           </div>
         </div>
+        <DragAndDrop />
         {filesExist ? (
           fileTree.children.map((entity) => {
             const { fileId } = entity as FileTreeFile;

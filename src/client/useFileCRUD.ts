@@ -45,6 +45,26 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
+  // Create a file with content
+  const createFileWithContent = useCallback(
+    (name: string, content: string) => {
+      if (name) {
+        const fileId: FileId = randomId();
+        submitOperation((document: VZCodeContent) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name, text: content }, 
+          },
+        }));
+        // When a new file is created with content, 
+        // open it in a new tab and focus the editor on it.
+        openTab({ fileId, isTransient: false });
+      }
+    },
+    [submitOperation, openTab],
+  );
+  
   // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
     (fileId: FileId, newName: string) => {
@@ -96,6 +116,7 @@ export const useFileCRUD = ({
 
   return {
     createFile,
+    createFileWithContent,
     renameFile,
     deleteFile,
     deleteDirectory,
