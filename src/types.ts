@@ -76,6 +76,10 @@ export type ShareDBDoc<T> = {
     event: string,
     callback: (op: JSONOp, source: boolean) => void,
   ) => void;
+  removeListener: (
+    event: string,
+    callback: (op: JSONOp, source: boolean) => void,
+  ) => void;
   submitOp: (
     op: JSONOp,
     options?: any,
@@ -177,3 +181,9 @@ export type PresenceId = string;
 
 // A user name for display in presence.
 export type Username = string;
+
+// The type of a convenience function called `submitOperation`,
+// to submit an operation to ShareDB.
+export type SubmitOperation = (
+  next: (content: VZCodeContent) => VZCodeContent,
+) => void;

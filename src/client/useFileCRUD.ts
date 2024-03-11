@@ -54,10 +54,50 @@ export const useFileCRUD = ({
           ...document.files,
           [fileId]: {
             ...document.files[fileId],
-            name: newName,
+            name:
+              document.files[fileId].name.substring(
+                0,
+                document.files[fileId].name.lastIndexOf(
+                  '/',
+                ) + 1,
+              ) + newName,
           },
         },
       }));
+    },
+    [submitOperation],
+  );
+
+  // Renames a directory
+  const renameDirectory = useCallback(
+    (
+      path: FileTreePath,
+      oldName: string,
+      newName: string,
+    ) => {
+      submitOperation((document: VZCodeContent) => {
+        const updatedFiles = Object.keys(
+          document.files,
+        ).reduce((acc, key) => {
+          const file = document.files[key];
+          const fileName = file.name;
+          if (fileName.includes(path)) {
+            const oldNamePos = fileName.indexOf(oldName);
+            const fileNewName =
+              fileName.substring(0, oldNamePos) +
+              newName +
+              fileName.substring(
+                oldNamePos + oldName.length,
+              );
+            acc[key] = { ...file, name: fileNewName };
+          } else {
+            acc[key] = file;
+          }
+          return acc;
+        }, {});
+
+        return { ...document, files: updatedFiles };
+      });
     },
     [submitOperation],
   );
@@ -98,6 +138,7 @@ export const useFileCRUD = ({
     createFile,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
   };
 };

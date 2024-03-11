@@ -14,6 +14,7 @@ export const DirectoryListing = ({
   children,
   renameFile,
   deleteFile,
+  renameDirectory,
   deleteDirectory,
   handleFileClick,
   handleFileDoubleClick,
@@ -26,6 +27,11 @@ export const DirectoryListing = ({
   children: Array<FileTree | FileTreeFile>;
   renameFile: (fileId: string, newName: string) => void;
   deleteFile: (fileId: string) => void;
+  renameDirectory: (
+    path: FileTreePath,
+    oldName: string,
+    newName: string,
+  ) => void;
   deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: string) => void;
   handleFileDoubleClick: (fileId: string) => void;
@@ -41,10 +47,12 @@ export const DirectoryListing = ({
     deleteDirectory(path);
   }, [deleteDirectory, path]);
 
-  const handleRenameClick = useCallback(() => {
-    // https://github.com/vizhub-core/vzcode/issues/103
-    console.log('TODO handleRenameDirectoryClick');
-  }, []);
+  const handleRenameClick = useCallback(
+    (newName: string) => {
+      renameDirectory(path, name, newName);
+    },
+    [renameDirectory, path, name],
+  );
 
   const isOpen = useMemo(
     () => isDirectoryOpen(path),
@@ -81,6 +89,7 @@ export const DirectoryListing = ({
                 key={fileId || path}
                 renameFile={renameFile}
                 deleteFile={deleteFile}
+                renameDirectory={renameDirectory}
                 deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
                 handleFileDoubleClick={

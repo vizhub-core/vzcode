@@ -28,7 +28,18 @@ export const useShareDB = ({
   const [content, setContent] =
     useState<VZCodeContent | null>(null);
 
+  const [connected, setConnected] =
+    useState<boolean>(false);
   useEffect(() => {
+    // Listen for connection state changes
+    connection.on('connected', () => {
+      setConnected(true);
+    });
+
+    connection.on('disconnected', () => {
+      setConnected(false);
+    });
+
     // Since there is only ever a single document,
     // these things are pretty arbitrary.
     //  * `collection` - the ShareDB collection to use
@@ -106,5 +117,6 @@ export const useShareDB = ({
     localPresence,
     docPresence,
     submitOperation,
+    connected,
   };
 };

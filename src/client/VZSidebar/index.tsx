@@ -1,4 +1,9 @@
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import {
   FileId,
   FileTree,
@@ -18,7 +23,7 @@ import './styles.scss';
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
 // See https://github.com/vizhub-core/vzcode/issues/456
-const enableConnectionStatus = false;
+const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
@@ -33,6 +38,7 @@ export const VZSidebar = ({
     files,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
     activeFileId,
     openTab,
@@ -40,6 +46,7 @@ export const VZSidebar = ({
     isDirectoryOpen,
     toggleDirectory,
     handleOpenCreateFileModal,
+    connected,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -152,6 +159,7 @@ export const VZSidebar = ({
                 entity={entity}
                 renameFile={renameFile}
                 deleteFile={deleteFile}
+                renameDirectory={renameDirectory}
                 deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
                 handleFileDoubleClick={
@@ -176,10 +184,13 @@ export const VZSidebar = ({
 
       {enableConnectionStatus && (
         <div className="connection-status">
-          Connection Status
+          {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
-            Saved
-            <div className="saved" />
+            <div
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
           </div>
         </div>
       )}

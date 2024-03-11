@@ -11,11 +11,11 @@ import {
   RequestId,
   generateRequestId,
 } from '../../generateRequestId';
-import { SparklesSVG, StopSVG } from '../../Icons';
+import { SparklesSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
-import './style.scss';
 import { Spinner } from '../Spinner';
 import { VZCodeContext } from '../../VZCodeContext';
+import './style.scss';
 
 const enableStopGeneration = false;
 
@@ -45,7 +45,8 @@ export const AIAssistWidget = ({
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
 
-  const { runPrettierRef } = useContext(VZCodeContext);
+  const { runPrettierRef, runCodeRef } =
+    useContext(VZCodeContext);
 
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
@@ -70,6 +71,12 @@ export const AIAssistWidget = ({
       const runPrettier = runPrettierRef.current;
       if (runPrettier !== null) {
         runPrettier();
+      }
+
+      // Run the code after the AI Assist.
+      const runCode = runCodeRef.current;
+      if (runCode !== null) {
+        runCode();
       }
 
       // Handles the case that the user has started,

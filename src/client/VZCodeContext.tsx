@@ -7,6 +7,7 @@ import {
 import {
   Files,
   ShareDBDoc,
+  SubmitOperation,
   Username,
   VZCodeContent,
 } from '../types';
@@ -31,6 +32,7 @@ import {
 } from './useEditorCache';
 import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { useRunCode } from './useRunCode';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -53,6 +55,11 @@ export type VZCodeContextValue = {
   createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
+  renameDirectory: (
+    directoryId: string,
+    directoryOldName: string,
+    directoryName: string,
+  ) => void;
   deleteDirectory: (directoryId: string) => void;
 
   activeFileId: string | null;
@@ -98,6 +105,9 @@ export type VZCodeContextValue = {
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
+  runCodeRef: React.MutableRefObject<null | (() => void)>;
+
+  connected: boolean;
 };
 
 export const VZCodeProvider = ({
@@ -112,12 +122,11 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   enableManualPretter = true,
+  connected,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
-  submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void;
+  submitOperation: SubmitOperation;
   localPresence: any;
   docPresence: any;
   prettierWorker: Worker;
@@ -126,6 +135,7 @@ export const VZCodeProvider = ({
   children: React.ReactNode;
   codeError?: string | null;
   enableManualPretter?: boolean;
+  connected: boolean;
 }) => {
   // Auto-run Pretter after local changes.
   const {
@@ -142,6 +152,8 @@ export const VZCodeProvider = ({
     prettierWorker,
     enableManualPretter,
   });
+
+  const runCodeRef = useRunCode(submitOperation);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -220,6 +232,7 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
   } = useFileCRUD({
     submitOperation,
@@ -247,18 +260,20 @@ export const VZCodeProvider = ({
     [createFile, setIsCreateFileModalOpen],
   );
 
+  // Isolate the files object from the document.
+  const files: Files | null = content
+    ? content.files
+    : null;
+
   useKeyboardShortcuts({
     closeTabs,
     activeFileId,
     handleOpenCreateFileModal,
     setActiveFileLeft,
     setActiveFileRight,
+    runPrettierRef,
+    runCodeRef,
   });
-
-  // Isolate the files object from the document.
-  const files: Files | null = content
-    ? content.files
-    : null;
 
   // The value provided by this context.
   const value: VZCodeContextValue = {
@@ -272,6 +287,7 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    renameDirectory,
     deleteDirectory,
 
     activeFileId,
@@ -309,6 +325,9 @@ export const VZCodeProvider = ({
     handleCloseCreateFileModal,
     handleCreateFileClick,
     runPrettierRef,
+    runCodeRef,
+
+    connected,
   };
 
   return (

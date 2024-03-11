@@ -13,7 +13,7 @@ import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
-const enableRenameDirectory = false;
+const enableRenameDirectory = true;
 
 // A file or directory in the sidebar.
 export const Item = ({
@@ -25,7 +25,9 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
-  renameFileTooltipText = 'Rename File',
+  renameFileTooltipText = isDirectory
+    ? 'Rename Directory'
+    : 'Rename File',
   deleteFileTooltipText = isDirectory
     ? 'Delete Directory'
     : 'Delete File',

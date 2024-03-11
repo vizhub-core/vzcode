@@ -13,6 +13,7 @@ export const Listing = ({
   entity,
   renameFile,
   deleteFile,
+  renameDirectory,
   deleteDirectory,
   handleFileClick,
   handleFileDoubleClick,
@@ -23,6 +24,11 @@ export const Listing = ({
   entity: FileTree | FileTreeFile;
   renameFile: (fileId: FileId, newName: string) => void;
   deleteFile: (fileId: FileId) => void;
+  renameDirectory: (
+    path: FileTreePath,
+    oldName: string,
+    newName: string,
+  ) => void;
   deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
@@ -49,6 +55,7 @@ export const Listing = ({
       children={children}
       renameFile={renameFile}
       deleteFile={deleteFile}
+      renameDirectory={renameDirectory}
       deleteDirectory={deleteDirectory}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
