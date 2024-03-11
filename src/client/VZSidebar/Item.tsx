@@ -5,7 +5,6 @@ import {
   useEffect,
 } from 'react';
 import { EditSVG, FileSVG, TrashSVG } from '../Icons';
-
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 
 // TODO consider moving this up to a higher level of the component tree
@@ -150,16 +149,21 @@ export const Item = ({
     >
       <div className="name">
         {isRenaming ? (
-          <input
-            className="rename-input"
-            ref={renameInputRef}
-            type="text"
-            aria-label="Field name"
-            value={renameValue}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onChange={onChange}
-          />
+          <React.Fragment>
+            <i className="file-icon">
+              <FileSVG />
+            </i>
+            <input
+              className="rename-input"
+              ref={renameInputRef}
+              type="text"
+              aria-label="Field name"
+              value={renameValue}
+              onKeyDown={onKeyDown}
+              onBlur={onBlur}
+              onChange={onChange}
+            />
+          </React.Fragment>
         ) : (
           children
         )}
