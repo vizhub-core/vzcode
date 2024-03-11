@@ -52,7 +52,7 @@ export type VZCodeContextValue = {
   docPresence: any;
 
   files: Files | null;
-  createFile: (fileName: string) => void;
+  createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
   renameDirectory: (

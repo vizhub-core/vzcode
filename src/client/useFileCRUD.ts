@@ -27,14 +27,14 @@ export const useFileCRUD = ({
 }) => {
   // Create a new file
   const createFile = useCallback(
-    (name: string) => {
+    (name: string, text = '') => {
       if (name) {
         const fileId: FileId = randomId();
         submitOperation((document: VZCodeContent) => ({
           ...document,
           files: {
             ...document.files,
-            [fileId]: { name, text: '' },
+            [fileId]: { name, text },
           },
         }));
         // When a new file is created, open it in a new tab
