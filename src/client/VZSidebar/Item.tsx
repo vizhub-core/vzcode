@@ -149,7 +149,7 @@ export const Item = ({
     >
       <div className="name">
         {isRenaming ? (
-          <React.Fragment>
+          <>
             <i className="file-icon">
               <FileSVG />
             </i>
@@ -163,7 +163,7 @@ export const Item = ({
               onBlur={onBlur}
               onChange={onChange}
             />
-          </React.Fragment>
+          </>
         ) : (
           children
         )}
