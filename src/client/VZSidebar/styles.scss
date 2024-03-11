@@ -89,16 +89,17 @@
   }
 
   .rename-input {
+    width: 100%;
     border: 0px;
     outline: none;
     background: transparent;
     color: var(--vh-color-neutral-04);
     font-family: var(--vzcode-font-family);
     font-size: inherit;
+    font-weight: inherit;
     padding: 0px;
     margin: 0px;
   }
- 
 
   .indentation {
     margin-left: 20px;
