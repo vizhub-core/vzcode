@@ -146,17 +146,17 @@
     background-color: #34eb52;
   }
 
-  .dropZone {
-    border: 3px dashed #BDC7DC;
+  .drop-zone {
+    border: 3px dashed #bdc7dc;
     width: auto;
     padding: 20px;
-    color: #BDC7DC;
+    color: #bdc7dc;
     text-align: center;
     font-family: var(--vzcode-font-family);
     font-weight: 500;
   }
-  
-  .dropZone.dragover {
+
+  .drop-zone.dragover {
     border-color: #009639;
   }
 }
