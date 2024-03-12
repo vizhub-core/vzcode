@@ -9,6 +9,10 @@ const initialData = [
   { x: 482, y: 307, r: 147, fill: '#7300FF' },
   { x: 781, y: 91, r: 61, fill: '#0FFB33' },
   { x: 668, y: 229, r: 64, fill: '#D400FF' },
+  // TODO add more circles
+  { x: 356, y: 145, r: 33, fill: '#FFF700' },
+  { x: 510, y: 298, r: 80, fill: '#BA00FF' },
+  { x: 270, y: 390, r: 44, fill: '#00F7FA' },
 ];
 // Add IDs to each datum
 for (let i = 0; i < initialData.length; i++) {
