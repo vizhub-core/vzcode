@@ -6,7 +6,7 @@ const { editOp, type } = json1Presence;
 const debug = false;
 
 // Feature flag to slow down AI for development/testing
-const slowdown = true;
+const slowdown = false;
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
