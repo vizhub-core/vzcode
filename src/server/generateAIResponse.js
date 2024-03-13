@@ -6,7 +6,7 @@ const { editOp, type } = json1Presence;
 const debug = false;
 
 // Feature flag to slow down AI for development/testing
-const slowdown = false;
+const slowdown = true;
 
 let openai;
 if (process.env.OPENAI_API_KEY !== undefined) {
@@ -100,10 +100,9 @@ export const generateAIResponse = async ({
 
     shareDBDoc.submitOp(op, { source: AISourceName });
 
-    // Wait for 500ms
     if (slowdown) {
       await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
+        setTimeout(resolve, 2000);
       });
     }
 
