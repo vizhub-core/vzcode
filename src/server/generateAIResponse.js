@@ -100,10 +100,9 @@ export const generateAIResponse = async ({
 
     shareDBDoc.submitOp(op, { source: AISourceName });
 
-    // Wait for 500ms
     if (slowdown) {
       await new Promise((resolve) => {
-        setTimeout(resolve, 1000);
+        setTimeout(resolve, 2000);
       });
     }
 

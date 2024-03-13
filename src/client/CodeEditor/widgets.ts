@@ -1,15 +1,14 @@
-import interact from '@replit/codemirror-interact';
+// TODO move back to this way of importing when this PR is merged:
+// https://github.com/replit/codemirror-interact/pull/19/files
+// import interact from '@replit/codemirror-interact';
+import interact from './codemirror-interact';
 
 import {
   ViewPlugin,
   Decoration,
   WidgetType,
 } from '@codemirror/view';
-import {
-  Annotation,
-  Extension,
-  RangeSet,
-} from '@codemirror/state';
+import { Extension, RangeSet } from '@codemirror/state';
 import { EditorView } from 'codemirror';
 
 // Interactive code widgets.
