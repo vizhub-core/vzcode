@@ -155,17 +155,17 @@
     }
   }
 
-  .drop-zone {
-    border: 3px dashed #bdc7dc;
-    width: auto;
-    padding: 20px;
-    color: #bdc7dc;
-    text-align: center;
-    font-family: var(--vzcode-font-family);
-    font-weight: 500;
-  }
+}
 
-  .drop-zone.dragover {
-    border-color: #009639;
-  }
+.drop-zone {
+  border: 3px solid #0a1731;
+  width: auto;
+  color: #bdc7dc;
+  text-align: center;
+  font-family: var(--vzcode-font-family);
+  font-weight: 500;
+}
+
+.drop-zone.dragover {
+  border-color: #009639;
 }
