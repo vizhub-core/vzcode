@@ -115,6 +115,9 @@ const save = () => {
     ...currentDocument.files,
     ...previousDocument.files,
   });
+
+  const directoriesToDelete = [];
+
   for (const key of allKeys) {
     const previous = previousDocument.files[key];
     const current = currentDocument.files[key];
@@ -177,6 +180,7 @@ const save = () => {
           // Phase II: Keep track of these, and delete them after
           //           all the files moved.
           // directoriesToDelete.push(previous.name)
+          directoriesToDelete.push(previous.name);
         } else {
           const newDir = path.dirname(current.name);
 
@@ -219,6 +223,22 @@ const save = () => {
     }
   }
   // TODO deleted all directories under directoriesToDelete
+
+  for(const dir of directoriesToDelete){
+    //Performs directory deletion.
+    fs.rm(
+      dir,
+      {
+        recursive: true, //Makes sure that all files in directory are deleted.
+      },
+      (error) => {
+        if (error) {
+          console.log(error);
+        }
+      },
+    );
+  }
+
   previousDocument = currentDocument;
 };
 
