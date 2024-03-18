@@ -65,6 +65,6 @@ export const useDragAndDrop = () => {
     handleDragEnter,
     handleDragOver,
     handleDragLeave,
-    handleDrop
+    handleDrop,
   };
 };
