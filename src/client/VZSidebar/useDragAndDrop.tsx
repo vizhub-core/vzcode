@@ -4,7 +4,7 @@ import './styles.scss';
 
 const debug = false;
 
-export const DragAndDrop = () => {
+export const useDragAndDrop = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const { createFile } = useContext(VZCodeContext);
 
@@ -60,15 +60,11 @@ export const DragAndDrop = () => {
     [createFile],
   );
 
-  return (
-    <div
-      className={`drop-zone ${isDragOver ? 'dragover' : ''}`}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      Drag files here
-    </div>
-  );
+  return {
+    isDragOver,
+    handleDragEnter,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop
+  };
 };
