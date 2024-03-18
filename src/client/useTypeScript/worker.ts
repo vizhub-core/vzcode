@@ -260,6 +260,10 @@ onmessage = async ({ data }) => {
       // Not valid in TypeScript, but common in JavaScript.
       const LINT_ERROR_CODE_NON_EXISTENT_PROPERTY = 2339;
 
+      // "Type 'Set<unknown>' can only be iterated through when using the '--downlevelIteration'
+      // flag or with a '--target' of 'es2015' or higher."
+      const LINT_ERROR_CODE_ITERATED_THROUGH = 2802;
+
       if (debug) {
         console.log(tsErrors);
       }
@@ -271,7 +275,8 @@ onmessage = async ({ data }) => {
           error.code !== LINT_ERROR_CODE_ANY_TYPE &&
           error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS &&
           error.code !==
-            LINT_ERROR_CODE_NON_EXISTENT_PROPERTY,
+            LINT_ERROR_CODE_NON_EXISTENT_PROPERTY &&
+          error.code !== LINT_ERROR_CODE_ITERATED_THROUGH,
       );
       // }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
