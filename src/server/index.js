@@ -224,7 +224,7 @@ const save = () => {
   }
   // TODO deleted all directories under directoriesToDelete
 
-  for(const dir of directoriesToDelete){
+  for (const dir of directoriesToDelete) {
     //Performs directory deletion.
     fs.rm(
       dir,
