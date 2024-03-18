@@ -75,20 +75,30 @@ export const useFileCRUD = ({
       oldName: string,
       newName: string,
     ) => {
+      console.log(path);
+      console.log(oldName);
       submitOperation((document: VZCodeContent) => {
         const updatedFiles = Object.keys(
           document.files,
         ).reduce((acc, key) => {
           const file = document.files[key];
           const fileName = file.name;
-          if (fileName.includes(path)) {
-            const oldNamePos = fileName.indexOf(oldName);
+          //See if it's actually in directory
+          if (fileName.includes(path + '/')) {
+            //Create New Name for System
+            const pathPart = fileName.substring(
+              0,
+              fileName.indexOf(path) + path.length,
+            );
+            const oldNamePos =
+              pathPart.lastIndexOf(oldName);
             const fileNewName =
               fileName.substring(0, oldNamePos) +
               newName +
               fileName.substring(
                 oldNamePos + oldName.length,
               );
+            //Return with new names
             acc[key] = { ...file, name: fileNewName };
           } else {
             acc[key] = file;

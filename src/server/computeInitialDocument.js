@@ -8,8 +8,7 @@ import {
 } from './featureFlags.js';
 import createIgnore from 'ignore';
 import { ignoreFilePattern, baseIgnore } from './config.js';
-
-const isDirectory = (file) => file.endsWith('/');
+import { isDirectory } from './isDirectory.js';
 
 /**
  * @param {string} fullPath - absolut path of the workspace root
