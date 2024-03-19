@@ -121,7 +121,6 @@ export const VZCodeProvider = ({
   initialUsername,
   children,
   codeError = null,
-  enableManualPretter = true,
   connected,
 }: {
   content: VZCodeContent;
@@ -134,7 +133,6 @@ export const VZCodeProvider = ({
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
-  enableManualPretter?: boolean;
   connected: boolean;
 }) => {
   // Auto-run Pretter after local changes.
@@ -150,7 +148,6 @@ export const VZCodeProvider = ({
     shareDBDoc,
     submitOperation,
     prettierWorker,
-    enableManualPretter,
   });
 
   const runCodeRef = useRunCode(submitOperation);
