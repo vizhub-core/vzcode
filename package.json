@@ -95,12 +95,12 @@
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
-    "express": "^4.18.3",
+    "express": "^4.19.0",
     "ignore": "^5.3.1",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
-    "openai": "^4.29.1",
+    "openai": "^4.29.2",
     "prettier-plugin-svelte": "^3.2.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
@@ -119,7 +119,7 @@
     "prettier": "^3.2.5",
     "sass": "^1.72.0",
     "typescript": "^5.4.2",
-    "vite": "^5.1.6",
+    "vite": "^5.2.2",
     "vitest": "^1.4.0"
   }
 }
