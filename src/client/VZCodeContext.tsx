@@ -91,7 +91,10 @@ export type VZCodeContextValue = {
   toggleDirectory: (path: string) => void;
 
   editorCache: EditorCache;
+
+  // Whether the editor should be focused.
   editorWantsFocus: boolean;
+  // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
 
   errorMessage: string | null;
