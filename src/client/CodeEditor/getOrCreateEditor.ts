@@ -80,6 +80,7 @@ const getAtPath = (obj, path) => {
 export const getOrCreateEditor = ({
   fileId,
   shareDBDoc,
+  content,
   filesPath,
   localPresence,
   docPresence,
@@ -98,7 +99,13 @@ export const getOrCreateEditor = ({
   //    based on the file extension.
   // It's also passed into the `json1Sync` extension,
   // which is used for multiplayer editing.
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  // This can be `undefined` in the case where we are
+  // viewing files read-only, in which case multiplayer
+  // editing is not enabled.
+  shareDBDoc: ShareDBDoc<VZCodeContent> | undefined;
+
+  // The initial content to present.
+  content: VZCodeContent;
 
   filesPath: string[];
   localPresence: any;
@@ -118,11 +125,10 @@ export const getOrCreateEditor = ({
   // Cache miss
 
   // Compute `text` and `fileExtension` from the ShareDB document.
-  const data = shareDBDoc.data;
   const textPath = [...filesPath, fileId, 'text'];
   const namePath = [...filesPath, fileId, 'name'];
-  const text = getAtPath(data, textPath);
-  const name = getAtPath(data, namePath);
+  const text = getAtPath(content, textPath);
+  const name = getAtPath(content, namePath);
   const fileExtension = name.split('.').pop();
 
   // Create a compartment for the theme so that it can be changed dynamically.
@@ -135,14 +141,16 @@ export const getOrCreateEditor = ({
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
   // Does not deal with showing others' cursors.
-  extensions.push(
-    json1Sync({
-      shareDBDoc,
-      path: textPath,
-      json1: json1Presence,
-      textUnicode,
-    }),
-  );
+  if (shareDBDoc) {
+    extensions.push(
+      json1Sync({
+        shareDBDoc,
+        path: textPath,
+        json1: json1Presence,
+        textUnicode,
+      }),
+    );
+  }
 
   // Deals with broadcasting changes in cursor location and selection.
   if (localPresence) {
@@ -247,7 +255,7 @@ export const getOrCreateEditor = ({
       }),
     );
   }
-  if (enableTypeScriptLinter) {
+  if (shareDBDoc && enableTypeScriptLinter) {
     extensions.push(
       linter(
         typeScriptLinter({

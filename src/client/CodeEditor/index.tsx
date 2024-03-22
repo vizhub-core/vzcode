@@ -18,6 +18,7 @@ export const CodeEditor = () => {
   const {
     activeFileId,
     shareDBDoc,
+    content,
     submitOperation,
     localPresence,
     docPresence,
@@ -69,6 +70,7 @@ export const CodeEditor = () => {
       getOrCreateEditor({
         fileId: activeFileId,
         shareDBDoc,
+        content,
         filesPath,
         localPresence,
         docPresence,
