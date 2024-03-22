@@ -132,27 +132,24 @@ const interactTheme = EditorView.theme({
   },
 });
 
-/**
- * A rule that defines a type of value and its interaction.
- *
- * @example
- * ```
- * // a number dragger
- * interactRule.of({
- *     // the regexp matching the value
- *     regexp: /-?\b\d+\.?\d*\b/g,
- *     // set cursor to 'ew-resize'on hover
- *     cursor: 'ew-resize'
- *     // change number value based on mouse X movement on drag
- *     onDrag: (text, setText, e) => {
- *         const newVal = Number(text) + e.movementX;
- *         if (isNaN(newVal)) return;
- *         setText(newVal.toString());
- *     },
- * })
- * ```
- */
-export const interactRule = Facet.define<InteractRule>();
+
+  // A rule that defines a type of value and its interaction.
+  //  @example
+  // a number dragger
+  export const interactRule = Facet.define<InteractRule>();
+
+  interactRule.of({
+    // the regexp matching the value
+    regexp: /-?\b\d+\.?\d*\b/g,
+    // set cursor to 'ew-resize'on hover
+    cursor: 'ew-resize', // <-- Add a comma here
+    // change number value based on mouse X movement on drag
+    onDrag: (text, setText, e) => {
+      const newVal = Number(text) + e.movementX;
+      if (isNaN(newVal)) return;
+      setText(newVal.toString());
+    },
+  });
 
 export const interactModKey = Facet.define<ModKey, ModKey>({
   combine: (values) => values[values.length - 1],
