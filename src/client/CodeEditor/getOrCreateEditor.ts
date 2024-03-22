@@ -150,24 +150,32 @@ export const getOrCreateEditor = ({
         textUnicode,
       }),
     );
-  }
 
-  // Deals with broadcasting changes in cursor location and selection.
-  if (localPresence) {
-    extensions.push(
-      json1PresenceBroadcast({
-        path: textPath,
-        localPresence,
-        usernameRef,
-      }),
-    );
-  }
+    // Deals with broadcasting changes in cursor location and selection.
+    if (localPresence) {
+      extensions.push(
+        json1PresenceBroadcast({
+          path: textPath,
+          localPresence,
+          usernameRef,
+        }),
+      );
+    }
 
-  // Deals with receiving the broadcas from other clients and displaying them.
-  if (docPresence)
-    extensions.push(
-      json1PresenceDisplay({ path: textPath, docPresence }),
-    );
+    // Deals with receiving the broadcas from other clients and displaying them.
+    if (docPresence) {
+      extensions.push(
+        json1PresenceDisplay({
+          path: textPath,
+          docPresence,
+        }),
+      );
+    }
+  } else {
+    // If the ShareDB document is not provided,
+    // then we do not allow editing.
+    extensions.push(EditorView.editable.of(false));
+  }
 
   extensions.push(colorsInTextPlugin);
 

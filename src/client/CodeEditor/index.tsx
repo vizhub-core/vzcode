@@ -100,7 +100,7 @@ export const CodeEditor = () => {
   useLayoutEffect(() => {
     // Guard against cases where page is still loading.
     if (!ref.current) return;
-    if (!shareDBDoc) return;
+    if (!content) return;
 
     // Add the editor to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);
