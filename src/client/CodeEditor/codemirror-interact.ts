@@ -138,18 +138,53 @@ const interactTheme = EditorView.theme({
   // a number dragger
   export const interactRule = Facet.define<InteractRule>();
 
-  interactRule.of({
-    // the regexp matching the value
+  const numberDraggerRule = interactRule.of({
+    // Matches any number with or without a decimal point
     regexp: /-?\b\d+\.?\d*\b/g,
-    // set cursor to 'ew-resize'on hover
-    cursor: 'ew-resize', // <-- Add a comma here
-    // change number value based on mouse X movement on drag
+    // Set cursor to 'ew-resize' on hover
+    cursor: 'ew-resize',
+    // Change number value based on mouse X movement on drag
     onDrag: (text, setText, e) => {
       const newVal = Number(text) + e.movementX;
-      if (isNaN(newVal)) return;
-      setText(newVal.toString());
+      if (!isNaN(newVal)) {
+        setText(newVal.toString());
+      }
+    },
+    onDragStart: (text, setText, e) => {
+      // Add global mousemove event listener
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+    },
+    onDragEnd: (text, setText) => {
+      // Remove global mousemove event listener
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
     },
   });
+  
+  let lastMouseX = 0;
+  
+  const handleGlobalMouseMove = (e) => {
+    if (!view.dragTarget) return;
+  
+    const { rule, text } = view.dragTarget;
+    const updateText = view.updateText(view.dragTarget);
+  
+    if (rule.onDrag) {
+      rule.onDrag(text, updateText, {
+        movementX: e.clientX - lastMouseX,
+        // You may need to provide other MouseEvent properties as well
+      });
+    }
+  
+    lastMouseX = e.clientX;
+  };
+  
+  const view = new EditorView({
+    extensions: [
+      interact({ rules: [numberDraggerRule] }),
+      // Your other extensions...
+    ],
+  });
+  
 
 export const interactModKey = Facet.define<ModKey, ModKey>({
   combine: (values) => values[values.length - 1],
