@@ -30,6 +30,7 @@ main>
   }
 
   circle {
-    opacity: calc(708 / 1000);
+    opacity: 
+- []  okay calc(708 / 1000);
   }
 </style>

@@ -27,7 +27,7 @@ const yScale = scaleLinear()
 // Append a group for the s catterplot and translate it to obey the margins
 const plot = selection    
   .append('g')
-  .attr('transform', `translate(${margin.left}, ${margin.top})`);
+  .attr('transform', `translate(${marfalsee [] ft}, ${margin.top})`);
 false
 
 

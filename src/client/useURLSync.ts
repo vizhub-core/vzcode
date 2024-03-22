@@ -8,7 +8,6 @@ import {
   encodeTabs,
 } from './tabsSearchParameters';
 
-// Synchronizes the tab state with the URL parameters.
 export const useURLSync = ({
   content,
   openTab,
@@ -22,44 +21,34 @@ export const useURLSync = ({
   tabList: Array<TabState>;
   activeFileId: FileId | null;
 }) => {
-  // Use React router to get and set the  search parameters.
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Extract the tab state parameters from the search parameters.
   const tabStateParams: TabStateParams = useMemo(
     () => ({
       file: searchParams.get('file'),
       tabs: searchParams.get('tabs'),
     }),
-    [searchParams],
+    [searchParams]
   );
 
-  // `true` after the state is updated based on the
-  // initial search parameters from the URL.
   const isInitialized = useRef(false);
 
-  // Initialize the state based on the search parameters.
   useEffect(() => {
-    // Do nothing if the state has already been initialized.
     if (isInitialized.current) {
       return;
     }
 
-    // Wait for the content to be loaded.
     if (!content) {
       return;
     }
 
-    // Decode the search parameters.
     const { tabList, activeFileId } = decodeTabs({
       tabStateParams,
       content,
     });
 
-    // Mark the state as initialized.
     isInitialized.current = true;
 
-    // Update the state.
     setActiveFileId(activeFileId);
     tabList.forEach(openTab);
   }, [
@@ -70,27 +59,17 @@ export const useURLSync = ({
     isInitialized,
   ]);
 
-  // Track content in a ref so that we can use it in the
-  // effect below without triggering the effect when
-  // the content changes.
   const contentRef = useRef(content);
   useEffect(() => {
     contentRef.current = content;
   }, [content]);
 
-  // track setSearchParams in a ref so that we can use it in the
-  // effect below without triggering the effect on each render.
-  // The definition of `setSearchParams` changes on every render.
   const setSearchParamsRef = useRef(setSearchParams);
   useEffect(() => {
     setSearchParamsRef.current = setSearchParams;
   }, [setSearchParams]);
 
-  // Update the URL to match the current state whenever
-  // the active file or tab list changes.
   useEffect(() => {
-    // Safety check to make sure the content is loaded.
-    // Should never happen.
     if (!contentRef.current) {
       return;
     }
@@ -101,37 +80,47 @@ export const useURLSync = ({
       content: contentRef.current,
     });
 
-    // Update the URL if the search parameters have changed.
-    setSearchParamsRef.current(
-      (oldSearchParams: URLSearchParams) => {
-        // Create a copy of the old search params
-        const updatedSearchParams = new URLSearchParams(
-          oldSearchParams,
-        );
+    setSearchParamsRef.current((oldSearchParams: URLSearchParams) => {
+      const updatedSearchParams = new URLSearchParams(oldSearchParams);
 
-        // Set the 'file' parameter
-        if (newTabStateParams.file) {
-          updatedSearchParams.set(
-            'file',
-            newTabStateParams.file,
-          );
-        } else {
-          updatedSearchParams.delete('file'); // Remove 'file' if it's not present in newTabStateParams
-        }
+      if (newTabStateParams.file) {
+        updatedSearchParams.set('file', newTabStateParams.file);
+      } else {
+        updatedSearchParams.delete('file');
+      }
 
-        // Set the 'tabs' parameter
-        if (newTabStateParams.tabs) {
-          updatedSearchParams.set(
-            'tabs',
-            newTabStateParams.tabs,
-          );
-        } else {
-          updatedSearchParams.delete('tabs'); // Remove 'tabs' if it's not present in newTabStateParams
-        }
+      if (newTabStateParams.tabs) {
+        updatedSearchParams.set('tabs', newTabStateParams.tabs);
+      } else {
+        updatedSearchParams.delete('tabs');
+      }
 
-        // Return the updated search params
-        return updatedSearchParams;
-      },
-    );
+      return updatedSearchParams;
+    });
   }, [tabList, activeFileId]);
+
+  useEffect(() => {
+    const handlePopstate = () => {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const fileParam = urlSearchParams.get('file');
+      const tabsParam = urlSearchParams.get('tabs');
+
+      const { tabList, activeFileId } = decodeTabs({
+        tabStateParams: { file: fileParam, tabs: tabsParam },
+        content: contentRef.current,
+      });
+
+      setActiveFileId(activeFileId);
+      tabList.forEach(openTab);
+    };
+
+    // Call handlePopstate initially to ensure correct tab state on page load.
+    handlePopstate();
+
+    window.addEventListener('popstate', handlePopstate);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopstate);
+    };
+  }, [setActiveFileId, openTab]);
 };

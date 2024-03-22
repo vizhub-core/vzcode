@@ -82,6 +82,21 @@ export const widgets = ({
           setText(newVal.toString());
         },
       },
+          // Toggle checkbox
+ // Toggle checkbox
+  {
+  regexp: /\[[ x]\]/g, // Matches [ ], [x], [X]
+  cursor: 'pointer',
+  onClick: (text, setText) => {
+    if (onInteract) onInteract();
+    switch (text) {
+      case '[ ]':
+        return setText('[x]');
+      case '[x]':
+        return setText('[ ]');
+    }
+  },
+},
       // bool toggler
       {
         regexp: /true|false/g,
@@ -96,6 +111,7 @@ export const widgets = ({
           }
         },
       },
+    
       // vec2 slider
       // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
       {
