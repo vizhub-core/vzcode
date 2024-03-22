@@ -3,66 +3,33 @@ import {
   useLayoutEffect,
   useCallback,
   useMemo,
+  useContext,
 } from 'react';
-import {
-  FileId,
-  ShareDBDoc,
-  Username,
-  VZCodeContent,
-} from '../../types';
-import { ThemeLabel, defaultTheme } from '../themes';
-import {
-  EditorCache,
-  EditorCacheValue,
-} from '../useEditorCache';
+import { Username } from '../../types';
+import { EditorCacheValue } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
+import { VZCodeContext } from '../VZCodeContext';
 import './style.scss';
 
-export const CodeEditor = ({
-  activeFileId,
-  shareDBDoc,
-  submitOperation,
-  localPresence,
-  docPresence,
-  theme = defaultTheme,
-  filesPath = ['files'],
-  editorCache,
-  editorWantsFocus,
-  editorNoLongerWantsFocus,
-  username,
-  typeScriptWorker,
-}: {
-  activeFileId: FileId;
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
-  submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
-  ) => void;
-  localPresence?: any;
-  docPresence?: any;
-  theme?: ThemeLabel;
+// The path in the ShareDB document where the files live.
+const filesPath = ['files'];
 
-  // The path of the files object in the ShareDB document.
-  // Defaults to `files` if not provided.
-  filesPath?: string[];
-  editorCache: EditorCache;
+export const CodeEditor = () => {
+  const {
+    activeFileId,
+    shareDBDoc,
+    content,
+    submitOperation,
+    localPresence,
+    docPresence,
+    username,
+    editorCache,
+    editorWantsFocus,
+    editorNoLongerWantsFocus,
+    typeScriptWorker,
+    theme,
+  } = useContext(VZCodeContext);
 
-  // Whether the editor should be focused.
-  editorWantsFocus: boolean;
-
-  // Signals that the editor no longer wants focus.
-  editorNoLongerWantsFocus: () => void;
-  username: Username;
-
-  // The server endpoint for the AI Assist service.
-  aiAssistEndpoint?: string;
-
-  // Additional options to pass to the AI Assist service,
-  // an object with string values.
-  aiAssistOptions?: {
-    [key: string]: string;
-  };
-  typeScriptWorker: Worker;
-}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
@@ -103,6 +70,7 @@ export const CodeEditor = ({
       getOrCreateEditor({
         fileId: activeFileId,
         shareDBDoc,
+        content,
         filesPath,
         localPresence,
         docPresence,
@@ -132,7 +100,7 @@ export const CodeEditor = ({
   useLayoutEffect(() => {
     // Guard against cases where page is still loading.
     if (!ref.current) return;
-    if (!shareDBDoc) return;
+    if (!content) return;
 
     // Add the editor to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);

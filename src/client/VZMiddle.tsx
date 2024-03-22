@@ -76,21 +76,7 @@ export const VZMiddle = ({
         createFile={createFile}
       />
       {isClient && content && activeFileId && (
-        <CodeEditor
-          shareDBDoc={shareDBDoc}
-          submitOperation={submitOperation}
-          localPresence={localPresence}
-          docPresence={docPresence}
-          activeFileId={activeFileId}
-          theme={theme}
-          editorCache={editorCache}
-          editorWantsFocus={editorWantsFocus}
-          editorNoLongerWantsFocus={
-            editorNoLongerWantsFocus
-          }
-          username={username}
-          typeScriptWorker={typeScriptWorker}
-        />
+        <CodeEditor />
       )}
       {isClient &&
       enableAIAssist &&
