@@ -132,7 +132,7 @@ export const useFileCRUD = ({
       submitOperation((document: VZCodeContent) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
-          if (updatedFiles[key].name.includes(path)) {
+          if (updatedFiles[key].name.includes(path + '/')) {
             tabsToClose.push(key);
             delete updatedFiles[key];
           }
