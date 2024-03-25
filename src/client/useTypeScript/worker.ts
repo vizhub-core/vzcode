@@ -53,6 +53,9 @@ const initializeFileSystem = async () => {
 
     // Skip type checking of declaration files
     skipLibCheck: true,
+
+    // Support React JSX
+    jsx: ts.JsxEmit.React,
   };
 
   // `true` breaks in a Web Worker because
