@@ -127,11 +127,17 @@
     padding: 20px;
     border: 1px dashed rgba(255, 255, 255, 0.5); /* White dashed outline */
     border-radius: 10px;
-  }
 
-  .empty-text {
-    margin-bottom: 10px;
-    font-size: 14px;
+    /*
+     * This fixes some issues where the drop zone for files
+     * was flickering when dragging files over the sidebar.
+     */
+    pointer-events: none;
+
+    .empty-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
   }
 
   .connection-status {
@@ -154,18 +160,4 @@
       }
     }
   }
-}
-
-.drop-zone {
-  height: 100%;
-  border: 3px solid #0a1731;
-  width: auto;
-  color: #bdc7dc;
-  text-align: center;
-  font-family: var(--vzcode-font-family);
-  font-weight: 500;
-}
-
-.drop-zone.dragover {
-  border-color: #009639;
 }
