@@ -174,17 +174,10 @@ export const VZSidebar = ({
               <Listing
                 key={key}
                 entity={entity}
-                renameFile={renameFile}
-                deleteFile={deleteFile}
-                renameDirectory={renameDirectory}
-                deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
                 handleFileDoubleClick={
                   handleFileDoubleClick
                 }
-                isDirectoryOpen={isDirectoryOpen}
-                toggleDirectory={toggleDirectory}
-                activeFileId={activeFileId}
               />
             );
           })
