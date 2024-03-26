@@ -48,6 +48,7 @@ export const DirectoryListing = ({
   return (
     <>
       <Item
+        id={path}
         name={name}
         handleClick={handleClick}
         handleDeleteClick={handleDeleteClick}
