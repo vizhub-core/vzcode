@@ -13,6 +13,9 @@ import {
 import { Extension, RangeSet } from '@codemirror/state';
 import { EditorView } from 'codemirror';
 
+// Regular expression for hex colors.
+const colorRegex = /#[0-9A-Fa-f]{6}/g;
+
 // Interactive code widgets.
 //  * Number dragger
 //  * Boolean toggler
@@ -31,37 +34,33 @@ export const widgets = ({
   const rules: Array<InteractRule> = [
     // hex color picker
     // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
-    // Extended to support single and double quotes
+    // Works without quotes to support CSS.
     {
-      regexp: /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
+      regexp: colorRegex,
       cursor: 'pointer',
-      onClick(text, setText, e) {
-        const res =
-          /(?<quote>["'])(?<hex>\#([0-9]|[A-F]|[a-f]){6})\k<quote>/.exec(
-            text,
-          );
-        const startingColor = res.groups?.hex;
-        const quoteType = res.groups?.quote;
+      onClick(
+        text: string,
+        setText: (newText: string) => void,
+      ) {
+        const startingColor: string = text;
 
-        const sel = document.createElement('input');
+        const sel: HTMLInputElement =
+          document.createElement('input');
         sel.type = 'color';
-
         sel.value = startingColor.toLowerCase();
 
-        //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
-        const valueIsUpper =
+        // valueIsUpper maintains the style of the user's code. It keeps the case of a-f the same case as the original.
+        const valueIsUpper: boolean =
           startingColor.toUpperCase() === startingColor;
 
         const updateHex = (e: Event) => {
-          const el = e.target as HTMLInputElement;
-          if (onInteract) onInteract();
+          const el: HTMLInputElement =
+            e.target as HTMLInputElement;
           if (el.value) {
             setText(
-              `${quoteType}${
-                valueIsUpper
-                  ? el.value.toUpperCase()
-                  : el.value
-              }${quoteType}`,
+              valueIsUpper
+                ? el.value.toUpperCase()
+                : el.value,
             );
           }
         };
@@ -250,7 +249,8 @@ export const colorsInTextPlugin: Extension = [
           }
           const hexColorOccurences = line.value.matchAll(
             // /\"\#([0-9]|[A-F]|[a-f]){6}\"/g,
-            /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
+            // /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
+            colorRegex,
           );
           let hexOccurance = hexColorOccurences.next();
           while (!hexOccurance.done) {
@@ -266,9 +266,9 @@ export const colorsInTextPlugin: Extension = [
         return Decoration.set(
           colorInfos.map((colorInfo) => {
             return {
-              // 9 is the length of the hex color string including quotation marks
-              from: colorInfo.index + 9,
-              to: colorInfo.index + 9,
+              // 7 is the length of the hex color string
+              from: colorInfo.index + 7,
+              to: colorInfo.index + 7,
               value: Decoration.widget({
                 side: -1,
                 widget: new ColorWidget(colorInfo[0]),
@@ -294,10 +294,10 @@ class ColorWidget extends WidgetType {
     return widget.color === this.color;
   }
 
-  toDOM(view: EditorView): HTMLElement {
+  toDOM(): HTMLElement {
     const parent = document.createElement('div');
     const size = 20;
-    const innerSize = 16;
+    const innerSize = 14;
 
     parent.setAttribute(
       'style',
@@ -317,7 +317,7 @@ class ColorWidget extends WidgetType {
       'fill',
       this.color.replace(/["']/g, ''),
     );
-    colorCircle.setAttributeNS(null, 'stroke', 'black');
+    // colorCircle.setAttributeNS(null, 'stroke', 'black');
     colorCircle.setAttributeNS(
       null,
       'r',
