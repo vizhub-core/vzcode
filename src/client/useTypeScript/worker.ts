@@ -10,7 +10,7 @@ import {
 
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
-const debug = true;
+const debug = false;
 
 // replace .js or .jsx with .ts or .tsx,
 // to support TypeScript completions on non-TS files.

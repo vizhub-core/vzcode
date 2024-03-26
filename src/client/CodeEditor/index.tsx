@@ -10,11 +10,16 @@ import { EditorCacheValue } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import { VZCodeContext } from '../VZCodeContext';
 import './style.scss';
+import { InteractRule } from '@replit/codemirror-interact';
 
 // The path in the ShareDB document where the files live.
 const filesPath = ['files'];
 
-export const CodeEditor = () => {
+export const CodeEditor = ({
+  customInteractRules,
+}: {
+  customInteractRules?: Array<InteractRule>;
+}) => {
   const {
     activeFileId,
     shareDBDoc,
@@ -79,6 +84,7 @@ export const CodeEditor = () => {
         editorCache,
         usernameRef,
         typeScriptWorker,
+        customInteractRules,
       }),
     [
       activeFileId,

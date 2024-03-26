@@ -1,7 +1,9 @@
 // TODO move back to this way of importing when this PR is merged:
 // https://github.com/replit/codemirror-interact/pull/19/files
 // import interact from '@replit/codemirror-interact';
-import interact from './codemirror-interact';
+import interact, {
+  InteractRule,
+} from './codemirror-interact';
 
 import {
   ViewPlugin,
@@ -21,181 +23,185 @@ import { EditorView } from 'codemirror';
 // `onInteract` is called when the user interacts with a widget.
 export const widgets = ({
   onInteract,
+  customInteractRules,
 }: {
   onInteract?: () => void;
-}) =>
-  interact({
-    rules: [
-      // hex color picker
-      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
-      // Extended to support single and double quotes
-      {
-        regexp: /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
-        cursor: 'pointer',
-        onClick(text, setText, e) {
-          const res =
-            /(?<quote>["'])(?<hex>\#([0-9]|[A-F]|[a-f]){6})\k<quote>/.exec(
-              text,
+  customInteractRules?: Array<InteractRule>;
+}) => {
+  const rules: Array<InteractRule> = [
+    // hex color picker
+    // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
+    // Extended to support single and double quotes
+    {
+      regexp: /["']\#([0-9]|[A-F]|[a-f]){6}["']/g,
+      cursor: 'pointer',
+      onClick(text, setText, e) {
+        const res =
+          /(?<quote>["'])(?<hex>\#([0-9]|[A-F]|[a-f]){6})\k<quote>/.exec(
+            text,
+          );
+        const startingColor = res.groups?.hex;
+        const quoteType = res.groups?.quote;
+
+        const sel = document.createElement('input');
+        sel.type = 'color';
+
+        sel.value = startingColor.toLowerCase();
+
+        //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
+        const valueIsUpper =
+          startingColor.toUpperCase() === startingColor;
+
+        const updateHex = (e: Event) => {
+          const el = e.target as HTMLInputElement;
+          if (onInteract) onInteract();
+          if (el.value) {
+            setText(
+              `${quoteType}${
+                valueIsUpper
+                  ? el.value.toUpperCase()
+                  : el.value
+              }${quoteType}`,
             );
-          const startingColor = res.groups?.hex;
-          const quoteType = res.groups?.quote;
-
-          const sel = document.createElement('input');
-          sel.type = 'color';
-
-          sel.value = startingColor.toLowerCase();
-
-          //valueIsUpper maintains style of user's code. It keeps the case of a-f the same case as the original."
-          const valueIsUpper =
-            startingColor.toUpperCase() === startingColor;
-
-          const updateHex = (e: Event) => {
-            const el = e.target as HTMLInputElement;
-            if (onInteract) onInteract();
-            if (el.value) {
-              setText(
-                `${quoteType}${
-                  valueIsUpper
-                    ? el.value.toUpperCase()
-                    : el.value
-                }${quoteType}`,
-              );
-            }
-          };
-          sel.addEventListener('input', updateHex);
-          sel.click();
-        },
-      },
-
-      // a rule for a number dragger
-      {
-        // the regexp matching the value
-        regexp: /(?<!\#)-?\b\d+\.?\d*\b/g,
-        // set cursor to "ew-resize" on hover
-        cursor: 'ew-resize',
-        // change number value based on mouse X movement on drag
-        onDrag: (text, setText, e) => {
-          if (onInteract) onInteract();
-          const newVal = Number(text) + e.movementX;
-          if (isNaN(newVal)) return;
-          setText(newVal.toString());
-        },
-      },
-      // bool toggler
-      {
-        regexp: /true|false/g,
-        cursor: 'pointer',
-        onClick: (text, setText) => {
-          if (onInteract) onInteract();
-          switch (text) {
-            case 'true':
-              return setText('false');
-            case 'false':
-              return setText('true');
           }
-        },
+        };
+        sel.addEventListener('input', updateHex);
+        sel.click();
       },
-      // vec2 slider
-      // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
-      {
-        regexp:
-          /vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)/g,
-        cursor: 'move',
+    },
 
-        onDrag: (text, setText, e) => {
-          const res =
-            /vec2\((?<x>-?\b\d+\.?\d*\b)\s*(,\s*(?<y>-?\b\d+\.?\d*\b))?\)/.exec(
-              text,
-            );
-          const x = Number(res?.groups?.x);
-          let y = Number(res?.groups?.y);
-          if (isNaN(x)) return;
-          if (isNaN(y)) y = x;
-          setText(
-            `vec2(${x + e.movementX}, ${y - e.movementY})`,
+    // a rule for a number dragger
+    {
+      // the regexp matching the value
+      regexp: /(?<!\#)-?\b\d+\.?\d*\b/g,
+      // set cursor to "ew-resize" on hover
+      cursor: 'ew-resize',
+      // change number value based on mouse X movement on drag
+      onDrag: (text, setText, e) => {
+        if (onInteract) onInteract();
+        const newVal = Number(text) + e.movementX;
+        if (isNaN(newVal)) return;
+        setText(newVal.toString());
+      },
+    },
+    // bool toggler
+    {
+      regexp: /true|false/g,
+      cursor: 'pointer',
+      onClick: (text, setText) => {
+        if (onInteract) onInteract();
+        switch (text) {
+          case 'true':
+            return setText('false');
+          case 'false':
+            return setText('true');
+        }
+      },
+    },
+    // vec2 slider
+    // Inspired by: https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L61
+    {
+      regexp:
+        /vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)/g,
+      cursor: 'move',
+
+      onDrag: (text, setText, e) => {
+        const res =
+          /vec2\((?<x>-?\b\d+\.?\d*\b)\s*(,\s*(?<y>-?\b\d+\.?\d*\b))?\)/.exec(
+            text,
           );
-        },
+        const x = Number(res?.groups?.x);
+        let y = Number(res?.groups?.y);
+        if (isNaN(x)) return;
+        if (isNaN(y)) y = x;
+        setText(
+          `vec2(${x + e.movementX}, ${y - e.movementY})`,
+        );
       },
-      // rgb color picker
-      // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
-      //TODO: create color picker for hsl colors
-      {
-        regexp: /rgb\(.*\)/g,
-        cursor: 'pointer',
-        onClick: (text, setText, e) => {
-          const res =
-            /rgb\((?<r>\d+)\s*,\s*(?<g>\d+)\s*,\s*(?<b>\d+)\)/.exec(
-              text,
-            );
-          const r = Number(res?.groups?.r);
-          const g = Number(res?.groups?.g);
-          const b = Number(res?.groups?.b);
-
-          //sel will open the color picker when sel.click is called.
-          const sel = document.createElement('input');
-          sel.type = 'color';
-
-          if (!isNaN(r + g + b))
-            sel.value = rgb2Hex(r, g, b);
-
-          const updateRGB = (e: Event) => {
-            const el = e.target as HTMLInputElement;
-            if (onInteract) onInteract();
-
-            if (el.value) {
-              const [r, g, b] = hex2RGB(el.value);
-              setText(`rgb(${r}, ${g}, ${b})`);
-            }
-            sel.removeEventListener('change', updateRGB);
-          };
-
-          sel.addEventListener('change', updateRGB);
-          sel.click();
-        },
-      },
-      // url clicker
-      {
-        regexp: /https?:\/\/[^ "]+/g,
-        cursor: 'pointer',
-        onClick: (text) => {
-          window.open(text);
-        },
-      },
-
-      //Set rotation to the angle between the x-axis and a line from the word "rotate" to the mouse pointer  (while dragging).
-      //The rotation is in range (-180,180]
-      {
-        regexp: /rotate\(-?\d*\.?\d*\)/g,
-        cursor: 'move',
-        onDragStart(text, setText, e) {
-          rotationOrigin = { x: e.clientX, y: e.clientY };
-        },
-
-        onDrag(text, setText, e) {
-          if (rotationOrigin == null) return;
-          const rotationDegree = Math.round(
-            (Math.atan2(
-              rotationOrigin.y - e.clientY,
-              e.clientX - rotationOrigin.x,
-            ) *
-              180) /
-              Math.PI,
+    },
+    // rgb color picker
+    // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
+    //TODO: create color picker for hsl colors
+    {
+      regexp: /rgb\(.*\)/g,
+      cursor: 'pointer',
+      onClick: (text, setText, e) => {
+        const res =
+          /rgb\((?<r>\d+)\s*,\s*(?<g>\d+)\s*,\s*(?<b>\d+)\)/.exec(
+            text,
           );
-          //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
-          setText(`rotate(${rotationDegree})`);
-          const updateDragEvent = new CustomEvent(
-            'updateRotateDrag',
-            { detail: rotationDegree },
-          );
+        const r = Number(res?.groups?.r);
+        const g = Number(res?.groups?.g);
+        const b = Number(res?.groups?.b);
 
-          document.dispatchEvent(updateDragEvent);
-        },
-        onDragEnd(text, setText) {
-          rotationOrigin = null;
-        },
+        //sel will open the color picker when sel.click is called.
+        const sel = document.createElement('input');
+        sel.type = 'color';
+
+        if (!isNaN(r + g + b)) sel.value = rgb2Hex(r, g, b);
+
+        const updateRGB = (e: Event) => {
+          const el = e.target as HTMLInputElement;
+          if (onInteract) onInteract();
+
+          if (el.value) {
+            const [r, g, b] = hex2RGB(el.value);
+            setText(`rgb(${r}, ${g}, ${b})`);
+          }
+          sel.removeEventListener('change', updateRGB);
+        };
+
+        sel.addEventListener('change', updateRGB);
+        sel.click();
       },
-    ],
-  });
+    },
+    // url clicker
+    {
+      regexp: /https?:\/\/[^ ")]+/g,
+      cursor: 'pointer',
+      onClick: (text) => {
+        window.open(text);
+      },
+    },
+
+    //Set rotation to the angle between the x-axis and a line from the word "rotate" to the mouse pointer  (while dragging).
+    //The rotation is in range (-180,180]
+    {
+      regexp: /rotate\(-?\d*\.?\d*\)/g,
+      cursor: 'move',
+      onDragStart(text, setText, e) {
+        rotationOrigin = { x: e.clientX, y: e.clientY };
+      },
+
+      onDrag(text, setText, e) {
+        if (rotationOrigin == null) return;
+        const rotationDegree = Math.round(
+          (Math.atan2(
+            rotationOrigin.y - e.clientY,
+            e.clientX - rotationOrigin.x,
+          ) *
+            180) /
+            Math.PI,
+        );
+        //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
+        setText(`rotate(${rotationDegree})`);
+        const updateDragEvent = new CustomEvent(
+          'updateRotateDrag',
+          { detail: rotationDegree },
+        );
+
+        document.dispatchEvent(updateDragEvent);
+      },
+      onDragEnd() {
+        rotationOrigin = null;
+      },
+    },
+  ];
+  if (customInteractRules) {
+    rules.push(...customInteractRules);
+  }
+  return interact({ rules });
+};
 
 let rotationOrigin: { x: number; y: number } = null;
 
