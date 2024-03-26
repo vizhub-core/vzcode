@@ -36,10 +36,8 @@ export const VZSettings = ({
 
   // Track selected font and font size.
   // TODO store these in local storage
-  const [selectedFont, setSelectedFont] =
-    useState('Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] =
-    useState('16px');
+  const [selectedFont, setSelectedFont] = useState('Roboto Mono');
+  const [selectedFontSize, setSelectedFontSize] = useState('16px');
 
   // Called when the user selects a different font
   const handleFontChange = useCallback(
@@ -57,20 +55,11 @@ export const VZSettings = ({
   };
 
   useEffect(() => {
-    document.body.style.setProperty(
-      '--vzcode-font-family',
-      selectedFont,
-    );
+    document.body.style.setProperty('--vzcode-font-family', selectedFont);
   }, [selectedFont]);
 
   useEffect(() => {
-    // const fontSize = event.target.value;
-    // const root = document.documentElement;
-    // root.style.setProperty('--vzcode-font-size', fontSize);
-    document.body.style.setProperty(
-      '--vzcode-font-size',
-      selectedFontSize,
-    );
+    document.body.style.setProperty('--vzcode-font-size', selectedFontSize);
   }, [selectedFontSize]);
 
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -101,15 +90,13 @@ export const VZSettings = ({
               value={username}
             />
             <Form.Text className="text-muted">
-              Enter a username to be displayed on your
-              cursor
+              Enter a username to be displayed on your cursor
             </Form.Text>
           </Form.Group>
         ) : null}
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Theme</Form.Label>
-
           <select
             className="form-select"
             value={theme}
@@ -121,7 +108,6 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select a color theme for the editor
           </Form.Text>
@@ -129,7 +115,6 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font</Form.Label>
-
           <select
             className="form-select"
             onChange={handleFontChange}
@@ -141,7 +126,6 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select font for the editor
           </Form.Text>
@@ -149,7 +133,6 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
-
           <select
             className="form-select"
             onChange={handleFontSizeChange}
@@ -161,11 +144,41 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select a font size for the editor
           </Form.Text>
         </Form.Group>
+
+        {/* Keyboard Shortcuts Documentation */}
+        <Form.Group className="mb-3" controlId="formFork">
+  <Form.Label>Keyboard Shortcuts</Form.Label>
+  <ul>
+    <li>
+      <strong>Alt-w</strong> <span>⌥W</span><br />
+      <span>Close the current tab</span>
+    </li>
+    <li>
+      <strong>Alt-n</strong> <span>⌥N</span><br />
+      <span>Open the create file modal</span>
+    </li>
+    <li>
+      <strong>Alt-PageUp</strong> <span>⌥⇞</span><br />
+      <span>Change the active tab to the previous one</span>
+    </li>
+    <li>
+      <strong>Alt-PageDown</strong> <span>⌥⇟</span><br />
+      <span>Change the active tab to the next one</span>
+    </li>
+    <li>
+      <strong>Ctrl-s</strong> or <strong>Shift-Enter</strong> <span>⌘S</span> or <span>⇧↩</span><br />
+      <span>Run the code and format it with Prettier</span>
+    </li>
+  </ul>
+  <Form.Text className="text-muted">
+    Keyboard shortcuts for quick actions
+  </Form.Text>
+</Form.Group>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={closeSettings}>
