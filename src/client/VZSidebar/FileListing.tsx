@@ -1,25 +1,25 @@
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import { Item } from './Item';
 import { FileId } from '../../types';
 import { FileSVG } from '../Icons';
+import { VZCodeContext } from '../VZCodeContext';
 
 export const FileListing = ({
   name,
   fileId,
-  renameFile,
-  deleteFile,
   handleFileClick,
   handleFileDoubleClick,
   isActive,
 }: {
   name: string;
   fileId: FileId;
-  renameFile: (fileId: FileId, newName: string) => void;
-  deleteFile: (fileId: FileId) => void;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
   isActive: boolean;
 }) => {
+  const { renameFile, deleteFile } =
+    useContext(VZCodeContext);
+
   const handleClick = useCallback(() => {
     handleFileClick(fileId);
   }, [fileId, handleFileClick]);
