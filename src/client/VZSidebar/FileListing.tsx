@@ -41,6 +41,7 @@ export const FileListing = ({
 
   return (
     <Item
+      id={fileId}
       name={name}
       handleClick={handleClick}
       handleDoubleClick={handleDoubleClick}

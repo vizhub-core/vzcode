@@ -5,7 +5,9 @@ import {
   useState,
 } from 'react';
 import {
+  FileId,
   Files,
+  ItemId,
   ShareDBDoc,
   SubmitOperation,
   Username,
@@ -111,6 +113,9 @@ export type VZCodeContextValue = {
   runCodeRef: React.MutableRefObject<null | (() => void)>;
 
   connected: boolean;
+
+  hoveredItemId: ItemId | null;
+  setHoveredItemId: (itemId: ItemId | null) => void;
 };
 
 export const VZCodeProvider = ({
@@ -275,6 +280,10 @@ export const VZCodeProvider = ({
     runCodeRef,
   });
 
+  // Track the currently hovered file id.
+  const [hoveredItemId, setHoveredItemId] =
+    useState<ItemId | null>(null);
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -328,6 +337,9 @@ export const VZCodeProvider = ({
     runCodeRef,
 
     connected,
+
+    hoveredItemId,
+    setHoveredItemId,
   };
 
   return (
