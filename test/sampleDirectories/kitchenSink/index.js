@@ -18,3 +18,22 @@ const initialData = [
 for (let i = 0; i < initialData.length; i++) {
   initialData[i].id = i + 1;
 }
+const text = 'foo';
+// Split the text into lines
+const lines = text.trim().split('\n');
+
+// Initialize an empty array to store the data
+const data = [];
+
+for (let i = 1; i < lines.length; i++) {
+  const [Month, High, Temp, Low] = lines[i].split(',');
+  console.log(Month, High, Temp, Low); // Debugging
+  data.push({
+    Month: Month.trim(),
+    High: +High.replace('°F', '').trim(),
+    Temp: +Temp.replace('°F', '').trim(),
+    Low: +Low.replace('°F', '').trim(),
+  });
+}
+// Ensure data parsing
+console.log(data); // Debugging

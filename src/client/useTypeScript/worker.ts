@@ -10,7 +10,7 @@ import {
 
 let env: tsvfs.VirtualTypeScriptEnvironment = null;
 
-const debug = false;
+const debug = true;
 
 // replace .js or .jsx with .ts or .tsx,
 // to support TypeScript completions on non-TS files.
@@ -267,7 +267,12 @@ onmessage = async ({ data }) => {
       // flag or with a '--target' of 'es2015' or higher."
       const LINT_ERROR_CODE_ITERATED_THROUGH = 2802;
 
+      // Argument of type '{ Month: string; High: number; Temp: number; Low: number; }'
+      // is not assignable to parameter of type 'never'.
+      const LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER = 2345;
+
       if (debug) {
+        console.log('tsErrors');
         console.log(tsErrors);
       }
       tsErrors = tsErrors.filter(
@@ -279,7 +284,9 @@ onmessage = async ({ data }) => {
           error.code !== LINT_ERROR_CODE_ANY_TYPE_KEYS &&
           error.code !==
             LINT_ERROR_CODE_NON_EXISTENT_PROPERTY &&
-          error.code !== LINT_ERROR_CODE_ITERATED_THROUGH,
+          error.code !== LINT_ERROR_CODE_ITERATED_THROUGH &&
+          error.code !==
+            LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER,
       );
       // }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);
