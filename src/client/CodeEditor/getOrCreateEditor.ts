@@ -39,6 +39,7 @@ import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
+import { InteractRule } from '@replit/codemirror-interact';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -89,6 +90,7 @@ export const getOrCreateEditor = ({
   editorCache,
   usernameRef,
   typeScriptWorker,
+  customInteractRules,
 }: {
   fileId: FileId;
 
@@ -116,6 +118,7 @@ export const getOrCreateEditor = ({
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
   typeScriptWorker: Worker;
+  customInteractRules?: Array<InteractRule>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -234,7 +237,9 @@ export const getOrCreateEditor = ({
   // the boolean checkboxes. The color pickers are also tricky,
   // as they would also need to be able to handle `onInteractEnd`.
   // See https://github.com/replit/codemirror-interact/issues/14
-  extensions.push(widgets({ onInteract }));
+  extensions.push(
+    widgets({ onInteract, customInteractRules }),
+  );
 
   extensions.push(highlightWidgets);
 

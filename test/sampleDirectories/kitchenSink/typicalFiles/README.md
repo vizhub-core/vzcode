@@ -4,6 +4,14 @@ An example showing the capabilities of VizHub:
 - Demonstrates use of `import` from `"d3"`.
 - Demonstrates use of `import` from local ES6 modules.
 
+This page
+https://vizhub.com/curran/parallel-coordinates-with-brushing
+should open with Alt+click.
+
+This
+[link](https://vizhub.com/curran/parallel-coordinates-with-brushing)
+should open.
+
 ## Communication Platform
 
 - **Platform:** Discord

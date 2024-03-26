@@ -1,12 +1,6 @@
 import { useCallback, useContext, useState } from 'react';
-import {
-  FileId,
-  ShareDBDoc,
-  VZCodeContent,
-} from '../../../types';
 import { OverlayTrigger, Tooltip } from '../../bootstrap';
-import { EditorCache } from '../../useEditorCache';
-import { TabState } from '../../vzReducer';
+import { VZCodeContext } from '../../VZCodeContext';
 import {
   RequestId,
   generateRequestId,
@@ -14,30 +8,24 @@ import {
 import { SparklesSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import { Spinner } from '../Spinner';
-import { VZCodeContext } from '../../VZCodeContext';
 import './style.scss';
 
 const enableStopGeneration = false;
 
 export const AIAssistWidget = ({
-  activeFileId,
-  shareDBDoc,
-  editorCache,
-  tabList,
   aiAssistEndpoint,
   aiAssistOptions,
   aiAssistTooltipText = 'Start AI Assist',
   aiAssistClickOverride,
 }: {
-  activeFileId: FileId;
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
-  editorCache: EditorCache;
-  tabList: Array<TabState>;
   aiAssistEndpoint: string;
   aiAssistOptions: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
 }) => {
+  const { shareDBDoc, activeFileId, tabList, editorCache } =
+    useContext(VZCodeContext);
+
   // The stream ID of the most recent request.
   //  * If `null`, no request has been made yet.
   //  * If non-null, a request has been made, and the

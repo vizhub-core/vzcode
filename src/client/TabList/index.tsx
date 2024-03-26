@@ -1,26 +1,20 @@
-import type { TabState } from '../vzReducer';
-import type { FileId, Files } from '../../types';
+import { useContext } from 'react';
+import { VZCodeContext } from '../VZCodeContext';
+import { TabState } from '../vzReducer';
 import { Tab } from './Tab';
 import './style.scss';
 
 // Displays the list of tabs above the code editor.
-export const TabList = ({
-  files,
-  tabList,
-  activeFileId,
-  setActiveFileId,
-  openTab,
-  closeTabs,
-  createFile,
-}: {
-  files: Files;
-  tabList: Array<TabState>;
-  activeFileId: FileId;
-  setActiveFileId: (fileId: FileId) => void;
-  openTab: (tabState: TabState) => void;
-  closeTabs: (fileIds: FileId[]) => void;
-  createFile: (fileName: string) => void;
-}) => {
+export const TabList = () => {
+  const {
+    files,
+    activeFileId,
+    setActiveFileId,
+    tabList,
+    openTab,
+    closeTabs,
+  } = useContext(VZCodeContext);
+
   return (
     <div className="vz-tab-list">
       {files &&
