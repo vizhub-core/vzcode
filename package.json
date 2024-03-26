@@ -95,7 +95,7 @@
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "ignore": "^5.3.1",
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
@@ -112,7 +112,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.69",
+    "@types/react": "^18.2.71",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",

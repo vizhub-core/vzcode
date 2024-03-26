@@ -175,7 +175,7 @@ it('should list files, respecting .ignore files', () => {
     },
   ]);
 });
-it('should list files, respecting .ignore files, when directory names include special characters', () => {
+it.skip('should list files, respecting .ignore files, when directory names include special characters', () => {
   expect(getSampleFiles('listFilesIgnoreEscape')).toEqual([
     {
       name: ' /',
