@@ -12,4 +12,4 @@ const scatterPlot;
 
 // Test what happens when you go from 100 to 99, or 999 to 1000.
 const number = 150;
-const color = '#461EB3';
+const color = '#1EB39A';

@@ -12,7 +12,7 @@ const initialData = [
   { x: 340, y: 238, r: 52, fill: '#FF0AAE' },
   { x: 531, y: 151, r: 20, fill: '#00FF88' },
   { x: 482, y: 307, r: 147, fill: '#00FFBF' },
-  { x: 781, y: 91, r: 61, fill: '#0FFB33' },
+  { x: 781, y: 91, r: 61, fill: '#0E3DFB' },
   { x: 668, y: 229, r: 64, fill: '#7300FF' },
   // TODO add more circles
   { x: 447, y: 350, r: 70, fill: '#007AFF' },
@@ -20,6 +20,7 @@ const initialData = [
   { x: 510, y: 298, r: 80, fill: '#001EFF' },
   { x: 270, y: 390, r: 44, fill: '#00F7FA' },
 ];
+
 // Add IDs to each datum
 for (let i = 0; i < initialData.length; i++) {
   initialData[i].id = i + 1;

@@ -92,7 +92,7 @@ function App() {
       >
         <div className="app">
           <VZLeft />
-          <VZMiddle />
+          <VZMiddle allowGlobals={true} />
           {enableRightPanel ? <VZRight /> : null}
           <VZResizer side="left" />
           {enableRightPanel ? (
