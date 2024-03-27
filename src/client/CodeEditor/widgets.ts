@@ -1,11 +1,6 @@
-// TODO move back to this way of importing when this PR is merged:
-// https://github.com/replit/codemirror-interact/pull/19/files
 import interact, {
   InteractRule,
 } from '@replit/codemirror-interact';
-// import interact, {
-//   InteractRule,
-// } from './codemirror-interact';
 
 import {
   ViewPlugin,
@@ -58,6 +53,7 @@ export const widgets = ({
         const updateHex = (e: Event) => {
           const el: HTMLInputElement =
             e.target as HTMLInputElement;
+          if (onInteract) onInteract();
           if (el.value) {
             setText(
               valueIsUpper
