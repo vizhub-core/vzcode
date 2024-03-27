@@ -55,6 +55,17 @@ export const AIAssistWidget = ({
         aiAssistOptions,
       });
 
+      // Introduce a delay before running Prettier
+      // and the code, to give the ShareDB ops a chance
+      // to be applied and to propagate via WebSockets
+      // to the client. This is necessary because sometimes
+      // the ShareDB ops from the AI assist actually don't
+      // reach the client until AFTER the response comes back
+      // from `await startAIAssist`.
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000),
+      );
+
       // Trigger a Prettier run after the AI Assist.
       const runPrettier = runPrettierRef.current;
       if (runPrettier !== null) {
@@ -69,7 +80,7 @@ export const AIAssistWidget = ({
 
       // Handles the case that the user has started,
       // stopped, and started again before the first request
-      // has finished, bu comparing the current stream ID
+      // has finished, by comparing the current stream ID
       // with the stream ID that was active when the request
       // was started.
       setAiStreamId((currentAIStreamId) =>
