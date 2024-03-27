@@ -74,7 +74,7 @@
     "@codemirror/view": "^6.26.0",
     "@lezer/highlight": "^1.2.0",
     "@replit/codemirror-indentation-markers": "^6.5.1",
-    "@replit/codemirror-interact": "^6.3.0",
+    "@replit/codemirror-interact": "^6.3.1",
     "@replit/codemirror-lang-svelte": "^6.0.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@teamwork/websocket-json-stream": "^2.0.0",
@@ -112,7 +112,7 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.71",
+    "@types/react": "^18.2.72",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",

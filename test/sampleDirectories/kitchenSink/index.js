@@ -13,10 +13,11 @@ const initialData = [
   { x: 531, y: 151, r: 20, fill: '#00FF88' },
   { x: 482, y: 307, r: 147, fill: '#00FFBF' },
   { x: 781, y: 91, r: 61, fill: '#0FFB33' },
-  { x: 668, y: 229, r: 64, fill: '#D400FF' },
+  { x: 668, y: 229, r: 64, fill: '#7300FF' },
   // TODO add more circles
-  { x: 356, y: 145, r: 33, fill: '#00FFFB' },
-  { x: 510, y: 298, r: 80, fill: '#BA00FF' },
+  { x: 447, y: 350, r: 70, fill: '#007AFF' },
+  { x: 724, y: 400, r: 30, fill: '#34BA78' },
+  { x: 510, y: 298, r: 80, fill: '#001EFF' },
   { x: 270, y: 390, r: 44, fill: '#00F7FA' },
 ];
 // Add IDs to each datum

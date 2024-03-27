@@ -1,9 +1,11 @@
 // TODO move back to this way of importing when this PR is merged:
 // https://github.com/replit/codemirror-interact/pull/19/files
-// import interact from '@replit/codemirror-interact';
 import interact, {
   InteractRule,
-} from './codemirror-interact';
+} from '@replit/codemirror-interact';
+// import interact, {
+//   InteractRule,
+// } from './codemirror-interact';
 
 import {
   ViewPlugin,
