@@ -20,6 +20,9 @@ export type LinterRequest = {
   fileName: string;
   fileContent: string;
   requestId: string;
+
+  // If true, linting will not show errors for global variables.
+  allowGlobals?: boolean;
 };
 
 export type LinterResponse = {

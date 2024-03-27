@@ -217,8 +217,12 @@ onmessage = async ({ data }) => {
       console.log('Lint Request');
     }
     const linterRequest: LinterRequest = data;
-    const { fileName, fileContent, requestId } =
-      linterRequest;
+    const {
+      fileName,
+      fileContent,
+      requestId,
+      allowGlobals,
+    } = linterRequest;
 
     const tsFileName = getTSFileName(fileName);
     let tsErrors = [];
@@ -271,6 +275,9 @@ onmessage = async ({ data }) => {
       // is not assignable to parameter of type 'never'.
       const LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER = 2345;
 
+      // Cannot find name 'd3'.
+      const LINT_ERROR_CODE_CANNOT_FIND_NAME = 2304;
+
       if (debug) {
         console.log('tsErrors');
         console.log(tsErrors);
@@ -286,7 +293,13 @@ onmessage = async ({ data }) => {
             LINT_ERROR_CODE_NON_EXISTENT_PROPERTY &&
           error.code !== LINT_ERROR_CODE_ITERATED_THROUGH &&
           error.code !==
-            LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER,
+            LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER &&
+          // If allowGlobals is true, we will allow
+          // global variables to be used without error.
+          allowGlobals
+            ? error.code !==
+              LINT_ERROR_CODE_CANNOT_FIND_NAME
+            : true,
       );
       // }
       tsErrors = convertToCodeMirrorDiagnostic(tsErrors);

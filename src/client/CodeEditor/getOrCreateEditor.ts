@@ -91,6 +91,7 @@ export const getOrCreateEditor = ({
   usernameRef,
   typeScriptWorker,
   customInteractRules,
+  allowGlobals,
 }: {
   fileId: FileId;
 
@@ -119,6 +120,7 @@ export const getOrCreateEditor = ({
   aiAssistEndpoint?: string;
   typeScriptWorker: Worker;
   customInteractRules?: Array<InteractRule>;
+  allowGlobals: boolean;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -276,6 +278,7 @@ export const getOrCreateEditor = ({
           fileName: name,
           shareDBDoc,
           fileId,
+          allowGlobals,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),
