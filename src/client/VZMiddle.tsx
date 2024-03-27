@@ -22,6 +22,7 @@ export const VZMiddle = ({
   aiAssistTooltipText,
   aiAssistClickOverride,
   customInteractRules,
+  allowGlobals = false,
 }: {
   enableAIAssist?: boolean;
   aiAssistEndpoint?: string;
@@ -29,6 +30,7 @@ export const VZMiddle = ({
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
   customInteractRules?: Array<InteractRule>;
+  allowGlobals?: boolean;
 }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
@@ -58,6 +60,7 @@ export const VZMiddle = ({
       {isClient && content && activeFileId && (
         <CodeEditor
           customInteractRules={customInteractRules}
+          allowGlobals={allowGlobals}
         />
       )}
       {isClient &&

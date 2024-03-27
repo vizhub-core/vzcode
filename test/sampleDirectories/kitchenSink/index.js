@@ -1,5 +1,7 @@
 console.log('This is a test file to edit');
 
+d3.select('body');
+
 // Link test:
 // https://vizhub.com/curran/parallel-coordinates-with-brushing
 //

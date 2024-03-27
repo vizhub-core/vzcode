@@ -10,6 +10,7 @@ export const typeScriptLinter = ({
   fileName,
   shareDBDoc,
   fileId,
+  allowGlobals,
 }) => {
   return async () => {
     const requestId = generateRequestId();
@@ -20,6 +21,7 @@ export const typeScriptLinter = ({
       fileName,
       fileContent,
       requestId,
+      allowGlobals,
     };
     typeScriptWorker.postMessage(linterRequest);
 
