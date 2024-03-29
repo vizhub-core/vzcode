@@ -51,6 +51,8 @@ export interface InteractRule {
   ) => void;
 }
 
+
+
 const interactField = StateField.define<Target | null>({
   create: () => null,
   update: (value, tr) => {
@@ -259,7 +261,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>(
       }
     },
 
-    startDrag(e: MouseEvent) {
+    /*startDrag(e: MouseEvent) {
       if (this.dragging) return;
       if (!this.target) return;
       this.dragging = true;
@@ -279,11 +281,35 @@ const interactViewPlugin = ViewPlugin.define<ViewState>(
         this.target.text,
         this.updateText(this.target),
       );
+    },*/
+    startDrag(e) {
+      if (this.dragging) return;
+      if (!this.target) return;
+  
+      this.dragging = true;
+  
+      // Call onDragStart if it exists
+      this.target.rule.onDragStart?.(
+        this.target.text,
+        this.updateText(this.target),
+        e,
+      );
+    },
+  
+    endDrag() {
+      if (!this.dragging) return;
+      this.dragging = false;
+  
+      // Call onDragEnd if it exists
+      this.target?.rule.onDragEnd?.(
+        this.target.text,
+        this.updateText(this.target),
+      );
     },
   }),
   {
     eventHandlers: {
-      mousedown(e, _view) {
+      /*mousedown(e, _view) {
         if (!this.isModKeyDown(e)) return;
         if (!this.target) return;
 
@@ -310,6 +336,12 @@ const interactViewPlugin = ViewPlugin.define<ViewState>(
 
         if (this.target.rule.onDrag) {
           this.startDrag(e);
+        }
+      },*/
+      mousedown(e, view) {
+        const viewState = view.plugin(interactViewPlugin);
+        if (viewState) {
+          viewState.startDrag(e);
         }
       },
 
@@ -396,7 +428,7 @@ let lastMouseX = 0;
 let lastMouseY = 0;
 let view: EditorView; // Declare view variable
 
-const handleGlobalMouseMove = (e: MouseEvent) => {
+/*const handleGlobalMouseMove = (e: MouseEvent) => {
   const viewState = view.plugin(interactViewPlugin);
   if (!viewState?.target) return;
 
@@ -416,7 +448,29 @@ const handleGlobalMouseMove = (e: MouseEvent) => {
 
   lastMouseX = e.clientX;
   lastMouseY = e.clientY;
-};
+};*/
+
+window.addEventListener('mousemove', handleGlobalMouseMove);
+window.addEventListener('mouseup', handleGlobalMouseUp);
+
+function handleGlobalMouseMove(e) {
+  const viewState = view.plugin(interactViewPlugin);
+  if (!viewState?.dragging) return;
+
+  const { rule, text } = viewState.target;
+  const updateText = viewState.updateText(viewState.target);
+
+  if (rule.onDrag) {
+    rule.onDrag(text, updateText, e);
+  }
+}
+
+function handleGlobalMouseUp(e) {
+  const viewState = view.plugin(interactViewPlugin);
+  if (viewState) {
+    viewState.endDrag();
+  }
+}
 
 const numberDraggerRule: InteractRule = {
   // Matches any number with or without a decimal point
