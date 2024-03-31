@@ -19,7 +19,7 @@ const initialData = [
   { x: 724, y: 400, r: 30, fill: '#34BA78' },
   { x: 510, y: 298, r: 80, fill: '#001EFF' },
   { x: 270, y: 390, r: 44, fill: '#00F7FA' },
-
+];
 
 // Add IDs to each datum
 for (let i = 0; i < initialData.length; i++) {

@@ -328,23 +328,6 @@ export const getOrCreateEditor = ({
     ),
   );
 
-  // Theme matching and non-matching brackets.
-  extensions.push(
-    EditorView.theme(
-      {
-        '&.cm-focused .cm-matchingBracket': {
-          backgroundColor: 'transparent',
-          outline: '1px solid #888888',
-        },
-        '&.cm-focused .cm-nonmatchingBracket': {
-          backgroundColor: 'transparent',
-          outline: '1px solid #ff2222',
-        },
-      },
-      { dark: true },
-    ),
-  );
-
   const editor = new EditorView({
     state: EditorState.create({
       doc: text,
