@@ -42,6 +42,8 @@ import { basicSetup } from './basicSetup';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
+const enableCSSCompletions = true;
+
 const enableTypeScriptLinter = true;
 
 // Enables TypeScript +JSX support in CodeMirror.
