@@ -164,6 +164,16 @@ function vizhubThemeInit(
         textDecoration: 'underline',
       },
       { tag: t.invalid, color: PANIC },
+      // {
+      //   class: 'cm-nonmatchingBracket',
+      //   // color: "rede",
+      //   backgroundColor: 'red', // Optional: set background color for matching brackets
+      // },
+      // {
+      //   tag: t.nonmatchingBracket,
+      //   color: nonMatchingBracketColor,
+      //   backgroundColor: 'transparent', // Optional: set background color for non-matching brackets
+      // },
       ...styles,
     ],
   });
