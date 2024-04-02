@@ -3,6 +3,8 @@ import {
   useCallback,
   useReducer,
   useState,
+  useEffect,
+  useRef,
 } from 'react';
 import {
   FileId,
@@ -93,10 +95,7 @@ export type VZCodeContextValue = {
   toggleDirectory: (path: string) => void;
 
   editorCache: EditorCache;
-
-  // Whether the editor should be focused.
   editorWantsFocus: boolean;
-  // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
 
   errorMessage: string | null;
@@ -107,6 +106,7 @@ export type VZCodeContextValue = {
   handleOpenCreateFileModal: () => void;
   handleCloseCreateFileModal: () => void;
   handleCreateFileClick: (newFileName: string) => void;
+  handleRenameInputOpen: () => void;
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
@@ -196,6 +196,7 @@ export const VZCodeProvider = ({
     isSettingsOpen,
     editorWantsFocus,
     username,
+    name,
   } = state;
 
   // Functions for dispatching actions to the reducer.
@@ -248,6 +249,28 @@ export const VZCodeProvider = ({
   // State to control the create file modal's visibility
   const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
     useState(false);
+  
+  // Tracks whether the file is being renamed (inline text input)
+  const [isRenaming, setIsRenaming] = useState(false);
+
+  // Tracks the value of the input field when renaming
+  const [renameValue, setRenameValue] = useState('');
+
+  const renameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isRenaming) {
+      renameInputRef.current.focus();
+    }
+  }, [isRenaming]);
+
+  const handleRenameInputOpen = useCallback(() => {
+    setIsRenaming(!isRenaming);
+    setRenameValue(name);
+  },
+    [name, isRenaming],
+  );
+
 
   const handleOpenCreateFileModal = useCallback(() => {
     setIsCreateFileModalOpen(true);
@@ -278,6 +301,7 @@ export const VZCodeProvider = ({
     setActiveFileRight,
     runPrettierRef,
     runCodeRef,
+    handleRenameInputOpen,
   });
 
   // Track the currently hovered file id.
@@ -333,6 +357,7 @@ export const VZCodeProvider = ({
     handleOpenCreateFileModal,
     handleCloseCreateFileModal,
     handleCreateFileClick,
+    handleRenameInputOpen,
     runPrettierRef,
     runCodeRef,
 

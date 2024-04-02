@@ -10,6 +10,7 @@ import { VZCodeContext } from './VZCodeContext';
 // * Alt-PageUp: Change the active tab to the previous one
 // * Alt-PageDown: Change the active tab to the next one
 // * Ctrl-s or Shift-Enter: Run the code and format it with Prettier
+// * F2 Rename File
 export const useKeyboardShortcuts = ({
   closeTabs,
   activeFileId,
@@ -18,6 +19,7 @@ export const useKeyboardShortcuts = ({
   setActiveFileRight,
   runPrettierRef,
   runCodeRef,
+  handleRenameInputOpen,
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -38,6 +40,11 @@ export const useKeyboardShortcuts = ({
         return;
       }
 
+      if (event.key === 'F2'){
+        handleRenameInputOpen();
+        return;
+      }
+      
       if (event.altKey === true) {
         // Alt-w: Close the current tab
         if (event.key === 'w') {
