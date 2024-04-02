@@ -49,6 +49,7 @@ export const CreateDirModal = ({
     (e) => {
       if (
         e.key === 'Enter' &&
+        validateFileName(newName) &&
         (e.ctrlKey ||
           e.shiftKey ||
           (!e.altKey && !e.metaKey))
@@ -56,7 +57,7 @@ export const CreateDirModal = ({
         onCreateClick();
       }
     },
-    [onCreateClick],
+    [onCreateClick, validateFileName, newName],
   );
 
   return isCreateDirModalOpen ? (
