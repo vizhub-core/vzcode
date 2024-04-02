@@ -34,6 +34,9 @@ export type VZState = {
 
   // The username of the current user.
   username: Username;
+
+  // Name of the file
+  name: string;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
