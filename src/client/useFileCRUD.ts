@@ -172,6 +172,7 @@ export const useFileCRUD = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
     renameDirectory,
     deleteDirectory,
   };

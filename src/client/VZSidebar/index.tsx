@@ -14,7 +14,7 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
-import { BugSVG, GearSVG, NewSVG } from '../Icons';
+import { BugSVG, GearSVG, NewSVG, FileSVG } from '../Icons';
 import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -48,6 +48,7 @@ export const VZSidebar = ({
     isDirectoryOpen,
     toggleDirectory,
     handleOpenCreateFileModal,
+    handleOpenCreateDirModal,
     connected,
   } = useContext(VZCodeContext);
 
@@ -170,14 +171,12 @@ export const VZSidebar = ({
               }
             >
               <i
-                onClick={handleOpenCreateFileModal}
+                onClick={handleOpenCreateDirModal}
                 className="icon-button icon-button-dark"
               >
-                <NewSVG />
+                <FileSVG />
               </i>
             </OverlayTrigger>
-
-
           </div>
         </div>
         {isDragOver ? (

@@ -218,13 +218,12 @@ const save = () => {
     }
 
     // Handle creating files and Directories.
-    if (!previous && current && !isDirectory(current.name)) {
+    if (!previous && current) {
       //File Creation
       if(!isDirectory(current.name)){
         fs.writeFileSync(current.name, current.text);
       }else{
-        const newDir = path.dirname(current.name);
-        fs.mkdirSync(newDir, { recursive: true });
+        fs.mkdirSync(current.name, { recursive: true });
       }
     }
 
