@@ -10,6 +10,8 @@ import { VZCodeContext } from '../VZCodeContext';
 
 export const CreateFileModal = ({
   initialFileName = '',
+  createDirectory = false,
+  itemText = createDirectory ? 'Directory' : 'File',
 }) => {
   const [newName, setNewName] = useState(initialFileName);
   const inputRef = useRef(null);
@@ -62,17 +64,17 @@ export const CreateFileModal = ({
 
   return isCreateFileModalOpen ? (
     <Modal
-      show={isCreateFileModalOpen}
+      show={isCreateFileModalOpen && !createDirectory}
       onHide={handleCloseCreateFileModal}
       animation={false}
       onKeyDown={handleKeyDown}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Create File</Modal.Title>
+        <Modal.Title>Create {itemText}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group className="mb-3" controlId="fileName">
-          <Form.Label>File Name</Form.Label>
+          <Form.Label>{itemText} Name</Form.Label>
           <Form.Control
             type="text"
             value={newName}
@@ -81,7 +83,7 @@ export const CreateFileModal = ({
             spellCheck="false"
           />
           <Form.Text className="text-muted">
-            Enter the name for your file
+            Enter the name for your {itemText}
           </Form.Text>
         </Form.Group>
       </Modal.Body>
@@ -91,7 +93,7 @@ export const CreateFileModal = ({
           onClick={onCreateClick}
           disabled={!validateFileName(newName)}
         >
-          Create File
+          Create {itemText}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -27,10 +27,12 @@ const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
+  createDirTooltipText = 'New Directory',
   openSettingsTooltipText = 'Open Settings',
   reportBugTooltipText = 'Report Bug',
 }: {
   createFileTooltipText?: string;
+  createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
 }) => {
@@ -157,6 +159,25 @@ export const VZSidebar = ({
                 <NewSVG />
               </i>
             </OverlayTrigger>
+
+            {/*Directory Rename*/}
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="create-dir-tooltip">
+                  {createDirTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleOpenCreateFileModal}
+                className="icon-button icon-button-dark"
+              >
+                <NewSVG />
+              </i>
+            </OverlayTrigger>
+
+
           </div>
         </div>
         {isDragOver ? (

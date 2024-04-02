@@ -45,6 +45,30 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
+
+
+
+
+  const createDirectory = useCallback(
+    (name: string, text = '') => {
+      if (name) {
+        name += '/';
+        const fileId: FileId = randomId();
+        submitOperation((document: VZCodeContent) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name, text },
+          },
+        }));
+      }
+    },
+    [submitOperation],
+  );
+
+
+
+
   // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
     (fileId: FileId, newName: string) => {
