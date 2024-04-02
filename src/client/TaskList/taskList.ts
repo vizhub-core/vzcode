@@ -36,3 +36,5 @@ class TaskList {
         return this.tasks;
     }
 }
+
+export default TaskList;
