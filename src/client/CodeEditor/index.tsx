@@ -3,6 +3,7 @@ import {
   useLayoutEffect,
   useCallback,
   useMemo,
+  useEffect, // Added useEffect
 } from 'react';
 import {
   FileId,
@@ -155,6 +156,39 @@ export const CodeEditor = ({
     editorCacheValue,
     editorNoLongerWantsFocus,
   ]);
+
+  useEffect(() => { // Add useEffect for mounting and unmounting global event listeners
+    const handleGlobalMouseMove = (e) => {
+      if (!editorCacheValue?.view) return;
+
+      const viewState = editorCacheValue.view.plugin(interactViewPlugin);
+      if (!viewState?.dragging) return;
+
+      const { rule, text } = viewState.target;
+      const updateText = viewState.updateText(viewState.target);
+
+      if (rule.onDrag) {
+        rule.onDrag(text, updateText, e);
+      }
+    };
+
+    const handleGlobalMouseUp = (e) => {
+      if (!editorCacheValue?.view) return;
+
+      const viewState = editorCacheValue.view.plugin(interactViewPlugin);
+      if (viewState) {
+        viewState.endDrag();
+      }
+    };
+
+    window.addEventListener('mousemove', handleGlobalMouseMove);
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [editorCacheValue]);
 
   return <div className="vz-code-editor" ref={ref}></div>;
 };
