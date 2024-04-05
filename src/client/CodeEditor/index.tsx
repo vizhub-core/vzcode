@@ -99,33 +99,46 @@ export const CodeEditor = ({
 
   // Get the editor corresponding to the active file.
   // Looks in `editorCache` first, and if not found, creates a new editor.
-  const editorCacheValue: EditorCacheValue = useMemo(
-    () =>
-      getOrCreateEditor({
-        fileId: activeFileId,
-        shareDBDoc,
-        filesPath,
-        localPresence,
-        docPresence,
-        theme,
-        onInteract,
-        editorCache,
-        usernameRef,
-        typeScriptWorker,
-      }),
-    [
-      activeFileId,
-      shareDBDoc,
-      filesPath,
-      localPresence,
-      docPresence,
-      theme,
-      onInteract,
-      editorCache,
-      usernameRef,
-      typeScriptWorker,
-    ],
-  );
+  interface GetOrCreateEditorOptions {
+    fileId: FileId;
+    shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+    filesPath: string[];
+    localPresence?: any;
+    docPresence?: any;
+    theme?: ThemeLabel;
+    onInteract: () => void;
+    editorCache: EditorCache;
+    usernameRef: React.MutableRefObject<Username>;
+    typeScriptWorker: Worker;
+    onViewReady: (view: YourViewType) => void; // Define callback type
+  }
+  
+  export const getOrCreateEditor = ({
+    fileId,
+    shareDBDoc,
+    filesPath,
+    localPresence,
+    docPresence,
+    theme,
+    onInteract,
+    editorCache,
+    usernameRef,
+    typeScriptWorker,
+    onViewReady, // Pass callback to getOrCreateEditor
+  }: GetOrCreateEditorOptions): EditorCacheValue => {
+    // Your existing logic to create or retrieve the editor
+    const editor = // Logic to create or retrieve the editor
+    const view = // Logic to get or create the view
+  
+    // Call the onViewReady callback with the view instance
+    onViewReady(view);
+  
+    return {
+      editor,
+      // Other properties...
+    };
+  };
+  
 
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
