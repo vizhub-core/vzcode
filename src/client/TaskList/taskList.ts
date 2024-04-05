@@ -1,4 +1,4 @@
-interface Task {
+class Task {
     id: number;
     name: string;
     description: string;
@@ -13,6 +13,10 @@ class TaskList {
         this.tasks = [];
     }
 
+    length(): number {
+        return this.tasks.length;
+    }
+    
     // Method to add a new task
     addTask(task: Task): void {
         this.tasks.push(task);
@@ -37,4 +41,4 @@ class TaskList {
     }
 }
 
-export default TaskList;
+export default {TaskList, Task}
