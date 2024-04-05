@@ -45,12 +45,8 @@ export const useFileCRUD = ({
     [submitOperation],
   );
 
-
-
-
-
   const createDirectory = useCallback(
-    (name: string, text = '') => {
+    (name: string, text = null) => {
       if (name) {
         name += '/';
         const fileId: FileId = randomId();
@@ -65,9 +61,6 @@ export const useFileCRUD = ({
     },
     [submitOperation],
   );
-
-
-
 
   // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
