@@ -1,28 +1,38 @@
-// Function to get a specific URL parameter more concisely
-const getQueryParam = param => new URLSearchParams(window.location.search).get(param);
-
-// Streamlined function to open folders leading to the file
-function openFoldersForFile(filePath) {
-  // Use filter() and reduce() to open each folder in the path
-  filePath.split('/').filter(part => part).reduce((cumulativePath, currentPart) => {
-    const folderPath = `${cumulativePath}/${currentPart}`;
-    openFolder(folderPath);
-    return folderPath;
-  }, '');
+interface IAIProvider {
+  generate(input: string): Promise<string>;
 }
+class CodeLlamaService implements IAIProvider {
+  async generate(input: string): Promise<string> {
+    const Replicate = require("replicate");
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
+    });
 
-// Enhanced folder opening logic with added robustness
-function openFolder(folderPath) {
-  // Use querySelector to find the folder and open it if it exists
-  const folderElement = document.querySelector(`[data-path="${folderPath}"]`);
-  folderElement?.classList.add('open'); // Optional chaining ensures error-free execution
-}
+    const output = await replicate.run(
+      "meta/codellama-13b:cc618fca92404570b9c10d1a4fb5321f4faff54a514189751ee8d6543db64c8f",
+      {
+        input: {
+          prompt: input,
+        },
+      }
+    );
 
-// On page load, simplified logic to open the specified file's folders
-document.addEventListener('DOMContentLoaded', () => {
-  const openFilePath = getQueryParam('openFile');
-  if (openFilePath) {
-    openFoldersForFile(openFilePath);
+    return output;
   }
-});
+}
 
+class OpenAIService implements IAIProvider {
+  async generate(input: string): Promise<string> {
+    // OpenAI API call with `input`
+    return ""; // Placeholder for the response from OpenAI
+  }
+}
+
+async function generateText(prompt: string, provider: IAIProvider): Promise<string> {
+  return await provider.generate(prompt);
+}
+
+// Example usage
+const aiService = new CodeLlamaService(); // Or new OpenAIService() or any other AI service
+const text = await generateText("Describe a sunset.", aiService);
+console.log(text);
