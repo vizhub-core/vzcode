@@ -57,6 +57,10 @@ export type VZCodeContextValue = {
   createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
+  createDirectory: (
+    fileName: string,
+    text?: string,
+  ) => void;
   renameDirectory: (
     directoryId: string,
     directoryOldName: string,
@@ -107,6 +111,12 @@ export type VZCodeContextValue = {
   handleOpenCreateFileModal: () => void;
   handleCloseCreateFileModal: () => void;
   handleCreateFileClick: (newFileName: string) => void;
+
+  isCreateDirModalOpen: boolean;
+  handleOpenCreateDirModal: () => void;
+  handleCloseCreateDirModal: () => void;
+  handleCreateDirClick: (newFileName: string) => void;
+
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
@@ -237,6 +247,7 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
     renameDirectory,
     deleteDirectory,
   } = useFileCRUD({
@@ -263,6 +274,26 @@ export const VZCodeProvider = ({
       setIsCreateFileModalOpen(false);
     },
     [createFile, setIsCreateFileModalOpen],
+  );
+
+  // State to control the create directory modal's visibility
+  const [isCreateDirModalOpen, setIsCreateDirModalOpen] =
+    useState(false);
+
+  const handleOpenCreateDirModal = useCallback(() => {
+    setIsCreateDirModalOpen(true);
+  }, []);
+
+  const handleCloseCreateDirModal = useCallback(() => {
+    setIsCreateDirModalOpen(false);
+  }, []);
+
+  const handleCreateDirClick = useCallback(
+    (newDirName: string) => {
+      createDirectory(newDirName);
+      setIsCreateDirModalOpen(false);
+    },
+    [createDirectory, setIsCreateDirModalOpen],
   );
 
   // Isolate the files object from the document.
@@ -296,6 +327,7 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
     renameDirectory,
     deleteDirectory,
 
@@ -333,6 +365,10 @@ export const VZCodeProvider = ({
     handleOpenCreateFileModal,
     handleCloseCreateFileModal,
     handleCreateFileClick,
+    isCreateDirModalOpen,
+    handleOpenCreateDirModal,
+    handleCloseCreateDirModal,
+    handleCreateDirClick,
     runPrettierRef,
     runCodeRef,
 

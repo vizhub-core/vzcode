@@ -14,7 +14,7 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
-import { BugSVG, GearSVG, NewSVG } from '../Icons';
+import { BugSVG, GearSVG, NewSVG, FileSVG } from '../Icons';
 import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -27,10 +27,12 @@ const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
+  createDirTooltipText = 'New Directory',
   openSettingsTooltipText = 'Open Settings',
   reportBugTooltipText = 'Report Bug',
 }: {
   createFileTooltipText?: string;
+  createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
 }) => {
@@ -46,6 +48,7 @@ export const VZSidebar = ({
     isDirectoryOpen,
     toggleDirectory,
     handleOpenCreateFileModal,
+    handleOpenCreateDirModal,
     connected,
   } = useContext(VZCodeContext);
 
@@ -155,6 +158,23 @@ export const VZSidebar = ({
                 className="icon-button icon-button-dark"
               >
                 <NewSVG />
+              </i>
+            </OverlayTrigger>
+
+            {/*Directory Rename*/}
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="create-dir-tooltip">
+                  {createDirTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleOpenCreateDirModal}
+                className="icon-button icon-button-dark"
+              >
+                <FileSVG />
               </i>
             </OverlayTrigger>
           </div>

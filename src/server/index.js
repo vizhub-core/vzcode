@@ -217,10 +217,16 @@ const save = () => {
       }
     }
 
-    // Handle creating files.
+    // Handle creating files and Directories.
     if (!previous && current) {
-      fs.writeFileSync(current.name, current.text);
+      //File Creation
+      if(!isDirectory(current.name)){
+        fs.writeFileSync(current.name, current.text);
+      }else{
+        fs.mkdirSync(current.name, { recursive: true });
+      }
     }
+
   }
   // TODO deleted all directories under directoriesToDelete
 
