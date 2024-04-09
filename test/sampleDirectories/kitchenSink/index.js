@@ -5,13 +5,16 @@ d3.select('body');
 const citiesURL =
   'https://raw.githubusercontent.com/vspatel927/CS573-Final-Project/main/parks.csv';
 
+const bool = false;
+
+const num = 451;
 // Link test:
 // https://vizhub.com/curran/parallel-coordinates-with-brushing
 //
 let cyberData = {};
 cyberData['test'] = 'foo';
 const initialData = [
-  { x: 155, y: 386, r: 20, fill: '#319B78' },
+  { x: 155, y: 386, r: 20, fill: '#5B9B31' },
   { x: 340, y: 238, r: 52, fill: '#99156D' },
   { x: 531, y: 151, r: 20, fill: '#00FF88' },
   { x: 482, y: 307, r: 147, fill: '#00FFBF' },
@@ -26,7 +29,7 @@ const initialData = [
   { x: 510, y: 298, r: 80, fill: '#00FF88' },
   { x: 510, y: 298, r: 80, fill: '#001EFF' },
   { x: 510, y: 298, r: 80, fill: '#001EFF' },
-  
+
   { x: 270, y: 390, r: 44, fill: '#00F7FA' },
 ];
 
@@ -51,7 +54,5 @@ for (let i = 1; i < lines.length; i++) {
     Low: +Low.replace('°F', '').trim(),
   });
 }
-// Ensure d
-
--[ ]ata parsing
+// Ensure data is correct
 console.log(data); // Debugging

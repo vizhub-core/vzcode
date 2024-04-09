@@ -6,5 +6,4 @@ const App = () => (
 );
 
 const root = createRoot(document.getElementById('root'));
-root.render(<A
-[]pp />);
+root.render(<App />);
