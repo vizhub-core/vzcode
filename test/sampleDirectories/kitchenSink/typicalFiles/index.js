@@ -5,5 +5,4 @@ import { select } from 'd3';
 import { message } from './myMessage';
 
 // This line uses D3 to set the text of the message div.
-select('#message').text(mes[]
-sage);
+select('#message').text(message);

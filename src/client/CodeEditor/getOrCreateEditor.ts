@@ -26,10 +26,9 @@ import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
   colorsInTextPlugin,
-  highlightWidgets,
   rotationIndicator,
   widgets,
-} from './widgets';
+} from './InteractiveWidgets';
 import {
   EditorCache,
   EditorCacheValue,
@@ -243,7 +242,9 @@ export const getOrCreateEditor = ({
     widgets({ onInteract, customInteractRules }),
   );
 
-  extensions.push(highlightWidgets);
+  // TODO fix the bugginess in this one where
+  // the highlight persists after the mouse leaves.
+  // extensions.push(highlightWidgets);
 
   extensions.push(rotationIndicator);
 
