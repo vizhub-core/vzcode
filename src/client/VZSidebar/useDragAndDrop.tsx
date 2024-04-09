@@ -37,9 +37,9 @@ export const useDragAndDrop = () => {
       event.preventDefault();
       event.stopPropagation();
       setIsDragOver(false);
-  
+
       const items = event.dataTransfer.items;
-  
+
       const processEntry = (entry, path) => {
         if (entry.isFile) {
           entry.file((file) => {
