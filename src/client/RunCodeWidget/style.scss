@@ -2,6 +2,18 @@
   position: absolute;
   right: 16px;
   top: 9px;
-  // color: var(--vh-color-caution-01);
   color: var(--vh-color-neutral-04);
+
+  .rotate-icon {
+    animation: spin 1s linear;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
