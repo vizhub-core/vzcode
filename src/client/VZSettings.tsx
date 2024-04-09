@@ -35,23 +35,37 @@ export const VZSettings = ({
   );
 
   // Initialize font and size from localStorage or defaults
-  const [selectedFont, setSelectedFont] = useState(localStorage.getItem('vzcodeSelectedFont') || 'Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] = useState(localStorage.getItem('vzcodeSelectedFontSize') || '16px');
+  const [selectedFont, setSelectedFont] = useState(
+    localStorage.getItem('vzcodeSelectedFont') ||
+      'Roboto Mono',
+  );
+  const [selectedFontSize, setSelectedFontSize] = useState(
+    localStorage.getItem('vzcodeSelectedFontSize') ||
+      '16px',
+  );
 
   // Called when the user selects a different font
-  const handleFontChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newFont = event.target.value;
-    localStorage.setItem('vzcodeSelectedFont', newFont);
-    setSelectedFont(newFont);
-  }, []);
+  const handleFontChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newFont = event.target.value;
+      localStorage.setItem('vzcodeSelectedFont', newFont);
+      setSelectedFont(newFont);
+    },
+    [],
+  );
 
   // Called when the user selects a different font size
-  const handleFontSizeChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSize = event.target.value;
-    localStorage.setItem('vzcodeSelectedFontSize', newSize);
-    setSelectedFontSize(newSize);
-  }, []);
-
+  const handleFontSizeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newSize = event.target.value;
+      localStorage.setItem(
+        'vzcodeSelectedFontSize',
+        newSize,
+      );
+      setSelectedFontSize(newSize);
+    },
+    [],
+  );
 
   useEffect(() => {
     document.body.style.setProperty(

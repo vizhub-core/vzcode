@@ -1,8 +1,8 @@
 An example showing the capabilities of VizHub:
 
-- Loads D3 via UNPKG.
-- Demonstrates use of `import` from `"d3"`.
-- Demonstrates use of `import` from local ES6 modules.
+- [x] Loads D3 via UNPKG.
+- [x] Demonstrates use of `import` from `"d3"`.
+- [x] Demonstrates use of `import` from local ES6 modules.
 
 This page
 https://vizhub.com/curran/parallel-coordinates-with-brushing
