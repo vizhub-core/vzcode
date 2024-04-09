@@ -12,9 +12,9 @@ export const numberDragger = (
   cursor: 'ew-resize',
   // change number value based on mouse X movement on drag
   onDrag: (text, setText, e) => {
-    if (onInteract) onInteract();
     const newVal = Number(text) + e.movementX;
     if (isNaN(newVal)) return;
     setText(newVal.toString());
+    if (onInteract) onInteract();
   },
 });

@@ -7,6 +7,7 @@ import { numberDragger } from './numberDragger';
 import { boolToggler } from './boolToggler';
 import { vec2Slider } from './vec2Slider';
 import { rotateWidget } from './rotateWidget';
+import { markdownCheckboxToggler } from './markdownCheckboxToggler';
 
 // Additional supporting CodeMirror plugins.
 export { colorsInTextPlugin } from './colorsInTextPlugin';
@@ -30,10 +31,11 @@ export const widgets = ({
   const rules: Array<InteractRule> = [
     colorPicker(onInteract),
     numberDragger(onInteract),
-    boolToggler,
-    vec2Slider,
+    markdownCheckboxToggler(onInteract),
+    boolToggler(onInteract),
+    vec2Slider(onInteract),
+    rotateWidget(onInteract),
     urlClicker,
-    rotateWidget,
   ];
   if (customInteractRules) {
     rules.push(...customInteractRules);

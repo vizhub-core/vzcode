@@ -30,12 +30,12 @@ export const colorPicker = (
     const updateHex = (e: Event) => {
       const el: HTMLInputElement =
         e.target as HTMLInputElement;
-      if (onInteract) onInteract();
       if (el.value) {
         setText(
           valueIsUpper ? el.value.toUpperCase() : el.value,
         );
       }
+      if (onInteract) onInteract();
     };
     sel.addEventListener('input', updateHex);
     sel.click();

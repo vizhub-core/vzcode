@@ -7,40 +7,43 @@ import {
 import { InteractRule } from '@replit/codemirror-interact';
 
 let rotationOrigin: { x: number; y: number } = null;
+// Set rotation to the angle between the x-axis and a line
+// from the word "rotate" to the mouse pointer (while dragging).
+// The rotation is in range (-180,180]
+export const rotateWidget = (
+  onInteract?: () => void,
+): InteractRule => ({
+  regexp: /rotate\(-?\d*\.?\d*\)/g,
+  cursor: 'move',
+  onDragStart(text, setText, e) {
+    rotationOrigin = { x: e.clientX, y: e.clientY };
+  },
 
-export const rotateWidget: InteractRule =
-  //Set rotation to the angle between the x-axis and a line from the word "rotate" to the mouse pointer  (while dragging).
-  //The rotation is in range (-180,180]
-  {
-    regexp: /rotate\(-?\d*\.?\d*\)/g,
-    cursor: 'move',
-    onDragStart(text, setText, e) {
-      rotationOrigin = { x: e.clientX, y: e.clientY };
-    },
+  onDrag(text, setText, e) {
+    if (rotationOrigin == null) return;
+    const rotationDegree = Math.round(
+      (Math.atan2(
+        rotationOrigin.y - e.clientY,
+        e.clientX - rotationOrigin.x,
+      ) *
+        180) /
+        Math.PI,
+    );
+    //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
+    setText(`rotate(${rotationDegree})`);
+    const updateDragEvent = new CustomEvent(
+      'updateRotateDrag',
+      { detail: rotationDegree },
+    );
 
-    onDrag(text, setText, e) {
-      if (rotationOrigin == null) return;
-      const rotationDegree = Math.round(
-        (Math.atan2(
-          rotationOrigin.y - e.clientY,
-          e.clientX - rotationOrigin.x,
-        ) *
-          180) /
-          Math.PI,
-      );
-      //Calculate the angle between the x axis and a line from where the user first clicks to the current location of the mouse.
-      setText(`rotate(${rotationDegree})`);
-      const updateDragEvent = new CustomEvent(
-        'updateRotateDrag',
-        { detail: rotationDegree },
-      );
+    document.dispatchEvent(updateDragEvent);
 
-      document.dispatchEvent(updateDragEvent);
-    },
-    onDragEnd() {
-      rotationOrigin = null;
-    },
-  };
+    if (onInteract) onInteract();
+  },
+  onDragEnd() {
+    rotationOrigin = null;
+  },
+});
 
 export const rotationIndicator = ViewPlugin.fromClass(
   class {

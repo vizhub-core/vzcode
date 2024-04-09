@@ -1,12 +1,12 @@
 import { InteractRule } from '@replit/codemirror-interact';
-export const boolTogglerRegex = /true|false/g;
-export const boolToggler = (
+
+export const markdownCheckboxToggler = (
   onInteract?: () => void,
 ): InteractRule => ({
-  regexp: boolTogglerRegex,
+  regexp: /\[[ x]\]/g, // Matches [ ], [x], [X]
   cursor: 'pointer',
   onClick: (text, setText) => {
-    setText(text === 'true' ? 'false' : 'true');
+    setText(text === '[ ]' ? '[x]' : '[ ]');
     if (onInteract) onInteract();
   },
 });

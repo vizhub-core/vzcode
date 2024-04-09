@@ -51,5 +51,7 @@ for (let i = 1; i < lines.length; i++) {
     Low: +Low.replace('°F', '').trim(),
   });
 }
-// Ensure data parsing
+// Ensure d
+
+-[ ]ata parsing
 console.log(data); // Debugging

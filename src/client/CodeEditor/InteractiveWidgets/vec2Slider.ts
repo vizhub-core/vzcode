@@ -3,7 +3,9 @@
 
 import { InteractRule } from '@replit/codemirror-interact';
 
-export const vec2Slider: InteractRule = {
+export const vec2Slider = (
+  onInteract?: () => void,
+): InteractRule => ({
   regexp:
     /vec2\(-?\b\d+\.?\d*\b\s*(,\s*-?\b\d+\.?\d*\b)?\)/g,
   cursor: 'move',
@@ -18,5 +20,6 @@ export const vec2Slider: InteractRule = {
     if (isNaN(x)) return;
     if (isNaN(y)) y = x;
     setText(`vec2(${x + e.movementX}, ${y - e.movementY})`);
+    if (onInteract) onInteract();
   },
-};
+});
