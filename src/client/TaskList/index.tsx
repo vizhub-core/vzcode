@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { assert } from 'vitest';
-import TaskList from './taskList'; // Assuming Task interface is defined in Task.ts
-import {Task} from './taskList'
+import Task from "./task.schema";
+import TaskList from "./taskList.schema";
 
 interface NewTaskFormProps {
-  onCreateTask: (task: Task) => void;
+  onCreateTask: (task) => void;
 }
 
 const NewTaskForm: React.FC<NewTaskFormProps> = ({ onCreateTask }) => {
