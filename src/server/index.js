@@ -220,13 +220,12 @@ const save = () => {
     // Handle creating files and Directories.
     if (!previous && current) {
       //File Creation
-      if(!isDirectory(current.name)){
+      if (!isDirectory(current.name)) {
         fs.writeFileSync(current.name, current.text);
-      }else{
+      } else {
         fs.mkdirSync(current.name, { recursive: true });
       }
     }
-
   }
   // TODO deleted all directories under directoriesToDelete
 
