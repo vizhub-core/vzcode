@@ -47,7 +47,7 @@ export const CreateDirModal = ({
 
       //Check for Duplicate Filename
       for (const key in files) {
-        if (fileName === files[key].name) {
+        if (fileName + '/' === files[key].name) {
           valid = false;
         }
       }
