@@ -1,89 +1,52 @@
-import React, { useState } from 'react';
+import express from 'express';
+import mongoose from 'mongoose';
 import { assert } from 'vitest';
-import Task from "./task.schema";
-import TaskList from "./taskList.schema";
+import TaskList from './taskList.schema';  
 
-interface NewTaskFormProps {
-  onCreateTask: (task) => void;
-}
+const app = express();
+const PORT = 3000; 
 
-const NewTaskForm: React.FC<NewTaskFormProps> = ({ onCreateTask }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [completed, setCompleted] = useState(false);
-  const [collaborators, setCollaborators] = useState<string[]>([]);
+app.use(express.json());
 
-  //Just returns a random number, will have to fix this later
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/EXAMPLE', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('Connected to MongoDB');
+})
+.catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
 
-  const generateUniqueId() {
-    return Math.floor(Math.random() * 100000) + 1;
+//Create a new tasklist
+app.post('/tasklists', async (req, res) => {
+  try {
+    //Basically what we want to do is 
+    //get the body data from a form that we will create
+    //and create a task from it, then add it to an existing tasklist
+
+    //Get the one and only existing tasklist
+    const taskList = await TaskList.find();
+
+    //TODO: create a task and figure out how to append it to thsi taask
+  } catch (error) {
   }
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newTask: Task = {
-      id: generateUniqueId(),  
-      name,
-      description,
-      completed,
-      collaborators,
-    };
-    onCreateTask(newTask);
-    setName('');
-    setDescription('');
-    setCompleted(false);
-    setCollaborators([]);
-  };
+});
 
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Description:
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Completed:
-        <input
-          type="checkbox"
-          checked={completed}
-          onChange={(e) => setCompleted(e.target.checked)}
-        />
-      </label>
-      <label>
-        Collaborators (comma-separated):
-        <input
-          type="text"
-          value={collaborators.join(',')}
-          onChange={(e) => setCollaborators(e.target.value.split(','))}
-        />
-      </label>
-      <button type="submit">Create Task</button>
-    </form>
-  );
-};
+// Get the only existing tasklist
+app.get('/tasklist', async (req, res) => {
+  try {
+    const taskList = await TaskList.find();
+    assert(taskList != null && typeof(taskList) != undefined);
+    res.send(taskList);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
-//Adds a newly creaetd task to the tasklist
-const appendTask(task) {
-  const taskList = getTaskList(); //will have to implement getTaskList soon
-
-  const prev_length = taskList.length;
-
-  //add it
-  taskList.addTask(task);
-
-  const new_length = taskList.length;
-  assert(new_length - 1 == prev_length);
-}
-export default NewTaskForm;
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
