@@ -83,6 +83,10 @@ export type VZCodeContextValue = {
   setIsSettingsOpen: (isSettingsOpen: boolean) => void;
   closeSettings: () => void;
 
+  isDocOpen: boolean;
+  setIsDocOpen: (isDocOpen: boolean) => void;
+  closeDoc: () => void;
+
   theme: ThemeLabel;
   setTheme: (theme: ThemeLabel) => void;
 
@@ -194,6 +198,7 @@ export const VZCodeProvider = ({
     activeFileId,
     theme,
     isSettingsOpen,
+    isDocOpen,
     editorWantsFocus,
     username,
   } = state;
@@ -207,7 +212,9 @@ export const VZCodeProvider = ({
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    setIsDocOpen,
     closeSettings,
+    closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
@@ -311,6 +318,10 @@ export const VZCodeProvider = ({
     isSettingsOpen,
     setIsSettingsOpen,
     closeSettings,
+
+    isDocOpen,
+    setIsDocOpen,
+    closeDoc,
 
     theme,
     setTheme,

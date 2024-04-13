@@ -15,6 +15,7 @@ import { sortFileTree } from '../sortFileTree';
 import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
+import { QuestionMarkSVG } from '../Icons';
 import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -28,11 +29,13 @@ const enableConnectionStatus = true;
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
   openSettingsTooltipText = 'Open Settings',
+  openKeyboardShortcuts = 'Open Document',
   reportBugTooltipText = 'Report Bug',
 }: {
   createFileTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
+  openKeyboardShortcuts?: string;
 }) => {
   const {
     files,
@@ -43,6 +46,7 @@ export const VZSidebar = ({
     activeFileId,
     openTab,
     setIsSettingsOpen,
+    setIsDocOpen,
     isDirectoryOpen,
     toggleDirectory,
     handleOpenCreateFileModal,
@@ -53,7 +57,9 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-
+const handleQuestionMarkClick = useCallback(() => {
+    setIsDocOpen(true);
+  }, []);
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
@@ -125,7 +131,8 @@ export const VZSidebar = ({
                 </i>
               </a>
             </OverlayTrigger>
-            {disableSettings ? null : (
+            
+            {/* {disableSettings ? null : ( */}
               <OverlayTrigger
                 placement="left"
                 overlay={
@@ -139,6 +146,24 @@ export const VZSidebar = ({
                   className="icon-button icon-button-dark"
                 >
                   <GearSVG />
+                </i>
+              </OverlayTrigger>
+            {/* )} */}
+            
+            {disableSettings ? null : (
+              <OverlayTrigger
+                placement="left"
+                overlay={
+                  <Tooltip id="open-keyboard-shortcuts">
+                    {openKeyboardShortcuts}
+                  </Tooltip>
+                }
+              >
+                <i
+                  onClick={handleQuestionMarkClick}
+                  className="icon-button icon-button-dark"
+                >
+                  <QuestionMarkSVG />
                 </i>
               </OverlayTrigger>
             )}

@@ -68,9 +68,23 @@ export const useActions = (
     [dispatch],
   );
 
+  const setIsDocOpen = useCallback(
+    (value: boolean) => {
+      dispatch({
+        type: 'set_is_doc_open',
+        value: value,
+      });
+    },
+    [dispatch],
+  );
+
   const closeSettings = useCallback(() => {
     setIsSettingsOpen(false);
   }, [setIsSettingsOpen]);
+
+  const closeDoc = useCallback(() => {
+    setIsDocOpen(false);
+  }, [setIsDocOpen]);
 
   const editorNoLongerWantsFocus = useCallback(() => {
     dispatch({
@@ -96,7 +110,9 @@ export const useActions = (
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    setIsDocOpen,
     closeSettings,
+    closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
   };

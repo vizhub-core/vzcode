@@ -9,3 +9,4 @@ export { BugSVG } from './BugSVG';
 export { FileSVG } from './FileSVG';
 export { DirectoryArrowSVG } from './DirectoryArrowSVG';
 export { PlaySVG } from './PlaySVG';
+export { QuestionMarkSVG } from './QuestionMarkSVG'

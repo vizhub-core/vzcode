@@ -30,7 +30,7 @@ const localStorageWriteDebounceMS = 800;
 const sidebarWidthProperty = 'vzCodeSidebarWidth';
 const codeEditorWidthProperty = 'vzCodeCodeEditorWidth';
 
-const initialSidebarWidthDefault = 220;
+const initialSidebarWidthDefault = 250;
 let initialSidebarWidth: number =
   initialSidebarWidthDefault;
 

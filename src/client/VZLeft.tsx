@@ -1,4 +1,5 @@
 import { VZSettings } from './VZSettings';
+import { VZKeyboardShortcutsDoc } from './VZKeyboardShortcutsDoc';
 import { VZSidebar } from './VZSidebar';
 import { CreateFileModal } from './VZSidebar/CreateFileModal';
 
@@ -11,6 +12,9 @@ export const VZLeft = ({ enableUsernameField = true }) => {
     <div className="left">
       <VZSidebar />
       <VZSettings
+        enableUsernameField={enableUsernameField}
+      />
+       <VZKeyboardShortcutsDoc
         enableUsernameField={enableUsernameField}
       />
       <CreateFileModal />
