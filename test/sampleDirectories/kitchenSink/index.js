@@ -1,6 +1,28 @@
 interface IAIProvider {
   generate(input: string): Promise<string>;
 }
+import { Configuration, OpenAIApi } from "openai";
+
+class OpenAIService implements IAIProvider {
+  private client: OpenAIApi;
+
+  constructor() {
+    const configuration = new Configuration({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    this.client = new OpenAIApi(configuration);
+  }
+
+  async generate(input: string): Promise<string> {
+    const response = await this.client.createCompletion({
+      model: "text-davinci-003",
+      prompt: input,
+      max_tokens: 150,
+    });
+    return response.data.choices[0].text.trim();
+  }
+}
+
 class CodeLlamaService implements IAIProvider {
   async generate(input: string): Promise<string> {
     const Replicate = require("replicate");
