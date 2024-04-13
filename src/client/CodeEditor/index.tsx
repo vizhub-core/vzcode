@@ -1,15 +1,7 @@
 import React, { useRef, useLayoutEffect, useCallback, useEffect } from 'react';
-import {
-  FileId,
-  ShareDBDoc,
-  Username,
-  VZCodeContent,
-} from '../../types';
+import { FileId, ShareDBDoc, Username, VZCodeContent } from '../../types';
 import { ThemeLabel, defaultTheme } from '../themes';
-import {
-  EditorCache,
-  EditorCacheValue,
-} from '../useEditorCache';
+import { EditorCache } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import './style.scss';
 
@@ -32,7 +24,7 @@ export const CodeEditor = ({
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
   submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
+    next: (content: VZCodeContent) => VZCodeContent
   ) => void;
   localPresence?: any;
   docPresence?: any;
@@ -71,7 +63,7 @@ export const CodeEditor = ({
   usernameRef.current = username;
 
   useLayoutEffect(() => {
-    if (!ref.current || !shareDBDoc) return;
+    if (!ref.current || !shareDBDoc || !editorCache.editor.dom) return;
 
     ref.current.appendChild(editorCache.editor.dom);
 
@@ -89,7 +81,7 @@ export const CodeEditor = ({
 
   useEffect(() => {
     const handleGlobalMouseMove = (e) => {
-      if (!editorCache.editor.view) return;
+      if (!editorCache.editor.view || !editorCache.editor.view.plugin) return;
 
       const viewState = editorCache.editor.view.plugin(interactViewPlugin);
       if (!viewState?.dragging) return;
@@ -103,7 +95,7 @@ export const CodeEditor = ({
     };
 
     const handleGlobalMouseUp = (e) => {
-      if (!editorCache.editor.view) return;
+      if (!editorCache.editor.view || !editorCache.editor.view.plugin) return;
 
       const viewState = editorCache.editor.view.plugin(interactViewPlugin);
       if (viewState) {
@@ -118,7 +110,7 @@ export const CodeEditor = ({
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [editorCache]);
+  }, [editorCache, interactViewPlugin]);
 
   return <div className="vz-code-editor" ref={ref}></div>;
 };
