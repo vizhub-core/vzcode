@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useLayoutEffect,
-  useCallback,
-  useMemo,
-  useEffect, // Added useEffect
-} from 'react';
+import React, { useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import {
   FileId,
   ShareDBDoc,
@@ -32,6 +26,8 @@ export const CodeEditor = ({
   editorNoLongerWantsFocus,
   username,
   typeScriptWorker,
+  aiAssistEndpoint,
+  aiAssistOptions,
 }: {
   activeFileId: FileId;
   shareDBDoc: ShareDBDoc<VZCodeContent> | null;
@@ -41,37 +37,21 @@ export const CodeEditor = ({
   localPresence?: any;
   docPresence?: any;
   theme?: ThemeLabel;
-
-  // The path of the files object in the ShareDB document.
-  // Defaults to `files` if not provided.
   filesPath?: string[];
   editorCache: EditorCache;
-
-  // Whether the editor should be focused.
   editorWantsFocus: boolean;
-
-  // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
   username: Username;
-
-  // The server endpoint for the AI Assist service.
   aiAssistEndpoint?: string;
-
-  // Additional options to pass to the AI Assist service,
-  // an object with string values.
   aiAssistOptions?: {
     [key: string]: string;
   };
   typeScriptWorker: Worker;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-
-  // Set `doc.data.isInteracting` to `true` when the user is interacting
-  // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
-  const interactTimeoutRef = useRef(null);
+  const interactTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const onInteract = useCallback(() => {
-    // Set `isInteracting: true` if not already set.
     if (!interactTimeoutRef.current) {
       submitOperation((document) => ({
         ...document,
@@ -81,100 +61,37 @@ export const CodeEditor = ({
       clearTimeout(interactTimeoutRef.current);
     }
 
-    // Set `isInteracting: undefined` after a delay.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
-
-      // This logic deletes the `isInteracting` property from the document.
-      submitOperation(
-        ({ isInteracting, ...newDocument }) => newDocument,
-      );
+      submitOperation(({ isInteracting, ...newDocument }) => newDocument);
     }, 800);
   }, [submitOperation]);
 
-  // Track username on a ref, so that we can use it in the
-  // presence object's `username` property.
   const usernameRef = useRef<Username>(username);
   usernameRef.current = username;
 
-  // Get the editor corresponding to the active file.
-  // Looks in `editorCache` first, and if not found, creates a new editor.
-  interface GetOrCreateEditorOptions {
-    fileId: FileId;
-    shareDBDoc: ShareDBDoc<VZCodeContent> | null;
-    filesPath: string[];
-    localPresence?: any;
-    docPresence?: any;
-    theme?: ThemeLabel;
-    onInteract: () => void;
-    editorCache: EditorCache;
-    usernameRef: React.MutableRefObject<Username>;
-    typeScriptWorker: Worker;
-    onViewReady: (view: YourViewType) => void; // Define callback type
-  }
-  
-  export const getOrCreateEditor = ({
-    fileId,
-    shareDBDoc,
-    filesPath,
-    localPresence,
-    docPresence,
-    theme,
-    onInteract,
-    editorCache,
-    usernameRef,
-    typeScriptWorker,
-    onViewReady, // Pass callback to getOrCreateEditor
-  }: GetOrCreateEditorOptions): EditorCacheValue => {
-    // Your existing logic to create or retrieve the editor
-    const editor = // Logic to create or retrieve the editor
-    const view = // Logic to get or create the view
-  
-    // Call the onViewReady callback with the view instance
-    onViewReady(view);
-  
-    return {
-      editor,
-      // Other properties...
-    };
-  };
-  
-
-  // Every time the active file switches from one file to another,
-  // the editor corresponding to the old file is removed from the DOM,
-  // and the editor corresponding to the new file is added to the DOM.
   useLayoutEffect(() => {
-    // Guard against cases where page is still loading.
-    if (!ref.current) return;
-    if (!shareDBDoc) return;
+    if (!ref.current || !shareDBDoc) return;
 
-    // Add the editor to the DOM.
-    ref.current.appendChild(editorCacheValue.editor.dom);
+    ref.current.appendChild(editorCache.editor.dom);
 
     return () => {
-      // Remove the old editor from the DOM.
-      // This happens every time `activeFileId` changes.
-      ref.current.removeChild(editorCacheValue.editor.dom);
+      ref.current.removeChild(editorCache.editor.dom);
     };
-  }, [shareDBDoc, editorCacheValue]);
+  }, [shareDBDoc, editorCache]);
 
-  // Focus the editor
   useLayoutEffect(() => {
     if (editorWantsFocus) {
-      editorCacheValue.editor.focus();
+      editorCache.editor.focus();
       editorNoLongerWantsFocus();
     }
-  }, [
-    editorWantsFocus,
-    editorCacheValue,
-    editorNoLongerWantsFocus,
-  ]);
+  }, [editorWantsFocus, editorCache, editorNoLongerWantsFocus]);
 
-  useEffect(() => { // Add useEffect for mounting and unmounting global event listeners
+  useEffect(() => {
     const handleGlobalMouseMove = (e) => {
-      if (!editorCacheValue?.view) return;
+      if (!editorCache.editor.view) return;
 
-      const viewState = editorCacheValue.view.plugin(interactViewPlugin);
+      const viewState = editorCache.editor.view.plugin(interactViewPlugin);
       if (!viewState?.dragging) return;
 
       const { rule, text } = viewState.target;
@@ -186,9 +103,9 @@ export const CodeEditor = ({
     };
 
     const handleGlobalMouseUp = (e) => {
-      if (!editorCacheValue?.view) return;
+      if (!editorCache.editor.view) return;
 
-      const viewState = editorCacheValue.view.plugin(interactViewPlugin);
+      const viewState = editorCache.editor.view.plugin(interactViewPlugin);
       if (viewState) {
         viewState.endDrag();
       }
@@ -201,7 +118,7 @@ export const CodeEditor = ({
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [editorCacheValue]);
+  }, [editorCache]);
 
   return <div className="vz-code-editor" ref={ref}></div>;
 };
