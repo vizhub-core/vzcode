@@ -8,6 +8,7 @@ import {
 import { TabState } from '../vzReducer';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
+import Anthropic from '@anthropic-ai/sdk';
 
 const debug = false;
 
@@ -95,26 +96,19 @@ export const startAIAssist = async ({
     // );
   }
 
-  const response = await fetch(aiAssistEndpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...aiAssistOptions,
-      inputText,
-      fileId,
-      insertionCursor,
-      aiStreamId,
-    }),
+  const anthropic = new Anthropic({
+    apiKey: 'THE_API_KEY', 
   });
 
-  const responseJson = await response.json();
+  try {
+    const response = await anthropic.completions.create({
+      model: 'claude-3',
+      max_tokens_to_sample: 1024,
+      prompt: `${Anthropic.HUMAN_PROMPT} ${inputText}${Anthropic.AI_PROMPT}`,
+    });
 
-  if (responseJson.error) {
-    console.error(
-      '[startAIAssist] error from server:',
-      responseJson.error,
-    );
+    console.log('Completion:', response.completion);
+  } catch (error) {
+    console.error('[startAIAssist] error:', error);
   }
 };
