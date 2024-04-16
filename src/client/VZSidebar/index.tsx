@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import {
   FileId,
   FileTree,
@@ -12,7 +7,6 @@ import {
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
-import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import { QuestionMarkSVG } from '../Icons';
@@ -29,7 +23,7 @@ const enableConnectionStatus = true;
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
   openSettingsTooltipText = 'Open Settings',
-  openKeyboardShortcuts = 'Open Document',
+  openKeyboardShortcuts = 'Keyboard Shortcuts',
   reportBugTooltipText = 'Report Bug',
 }: {
   createFileTooltipText?: string;
@@ -39,16 +33,9 @@ export const VZSidebar = ({
 }) => {
   const {
     files,
-    renameFile,
-    deleteFile,
-    renameDirectory,
-    deleteDirectory,
-    activeFileId,
     openTab,
     setIsSettingsOpen,
     setIsDocOpen,
-    isDirectoryOpen,
-    toggleDirectory,
     handleOpenCreateFileModal,
     connected,
   } = useContext(VZCodeContext);
@@ -57,7 +44,7 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-const handleQuestionMarkClick = useCallback(() => {
+  const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
   const handleSettingsClick = useCallback(() => {
@@ -109,12 +96,26 @@ const handleQuestionMarkClick = useCallback(() => {
     >
       <div className="files">
         <div className="full-box">
-          <div className="sidebar-section-hint">
-            Project Files
-          </div>
+          <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
             <OverlayTrigger
-              placement="left"
+              placement="right"
+              overlay={
+                <Tooltip id="open-keyboard-shortcuts">
+                  {openKeyboardShortcuts}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleQuestionMarkClick}
+                className="icon-button icon-button-dark"
+              >
+                <QuestionMarkSVG />
+              </i>
+            </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="right"
               overlay={
                 <Tooltip id="report-bug-tooltip">
                   {reportBugTooltipText}
@@ -131,42 +132,23 @@ const handleQuestionMarkClick = useCallback(() => {
                 </i>
               </a>
             </OverlayTrigger>
-            
-            {/* {disableSettings ? null : ( */}
-              <OverlayTrigger
-                placement="left"
-                overlay={
-                  <Tooltip id="open-settings-tooltip">
-                    {openSettingsTooltipText}
-                  </Tooltip>
-                }
+
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="open-settings-tooltip">
+                  {openSettingsTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleSettingsClick}
+                className="icon-button icon-button-dark"
               >
-                <i
-                  onClick={handleSettingsClick}
-                  className="icon-button icon-button-dark"
-                >
-                  <GearSVG />
-                </i>
-              </OverlayTrigger>
-            {/* )} */}
-            
-            {disableSettings ? null : (
-              <OverlayTrigger
-                placement="left"
-                overlay={
-                  <Tooltip id="open-keyboard-shortcuts">
-                    {openKeyboardShortcuts}
-                  </Tooltip>
-                }
-              >
-                <i
-                  onClick={handleQuestionMarkClick}
-                  className="icon-button icon-button-dark"
-                >
-                  <QuestionMarkSVG />
-                </i>
-              </OverlayTrigger>
-            )}
+                <GearSVG />
+              </i>
+            </OverlayTrigger>
+
             <OverlayTrigger
               placement="left"
               overlay={
