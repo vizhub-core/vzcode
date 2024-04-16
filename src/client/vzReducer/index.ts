@@ -8,6 +8,7 @@ import {
   setActiveFileRightReducer,
 } from './setActiveFileLeftRightReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
+import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
@@ -28,6 +29,8 @@ export type VZState = {
 
   // True to show the settings modal.
   isSettingsOpen: boolean;
+
+  isDocOpen: boolean;
 
   // True if the editor should focus on the next render.
   editorWantsFocus: boolean;
@@ -68,6 +71,7 @@ export type VZAction =
   // `set_is_settings_open`
   //  * Sets whether the settings modal is open.
   | { type: 'set_is_settings_open'; value: boolean }
+  | { type: 'set_is_doc_open'; value: boolean }
 
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
@@ -104,6 +108,7 @@ const reducers = [
   closeTabsReducer,
   setThemeReducer,
   setIsSettingsOpenReducer,
+  setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
 ];

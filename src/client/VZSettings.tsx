@@ -164,6 +164,7 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font</Form.Label>
+
           <select
             className="form-select"
             onChange={handleFontChange}
@@ -175,6 +176,7 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
+
           <Form.Text className="text-muted">
             Select font for the editor
           </Form.Text>
@@ -182,6 +184,7 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
+
           <select
             className="form-select"
             onChange={handleFontSizeChange}
@@ -193,51 +196,9 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
+
           <Form.Text className="text-muted">
             Select a font size for the editor
-          </Form.Text>
-        </Form.Group>
-
-        {/* Keyboard Shortcuts Documentation */}
-        <Form.Group className="mb-3" controlId="formFork">
-          <Form.Label>Keyboard Shortcuts</Form.Label>
-          <ul>
-            <li>
-              <strong>Alt-w</strong> <span>⌥W</span>
-              <br />
-              <span>Close the current tab</span>
-            </li>
-            <li>
-              <strong>Alt-n</strong> <span>⌥N</span>
-              <br />
-              <span>Open the create file modal</span>
-            </li>
-            <li>
-              <strong>Alt-PageUp</strong> <span>⌥⇞</span>
-              <br />
-              <span>
-                Change the active tab to the previous one
-              </span>
-            </li>
-            <li>
-              <strong>Alt-PageDown</strong> <span>⌥⇟</span>
-              <br />
-              <span>
-                Change the active tab to the next one
-              </span>
-            </li>
-            <li>
-              <strong>Ctrl-s</strong> or{' '}
-              <strong>Shift-Enter</strong> <span>⌘S</span>{' '}
-              or <span>⇧↩</span>
-              <br />
-              <span>
-                Run the code and format it with Prettier
-              </span>
-            </li>
-          </ul>
-          <Form.Text className="text-muted">
-            Keyboard shortcuts for quick actions
           </Form.Text>
         </Form.Group>
       </Modal.Body>
