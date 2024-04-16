@@ -23,15 +23,27 @@ mongoose.connect('mongodb://localhost:27017/EXAMPLE', {
 //Create a new tasklist
 app.post('/tasklists', async (req, res) => {
   try {
-    //Basically what we want to do is 
-    //get the body data from a form that we will create
-    //and create a task from it, then add it to an existing tasklist
+    // Parse data from request body to create a new task
+    const { id, name, description, completed, collaborators } = req.body.taskData;
+    const newTask = { id, name, description, completed, collaborators };
 
-    //Get the one and only existing tasklist
-    const taskList = await TaskList.find();
+    // Get the one and only existing tasklist
+    let taskList = await TaskList.findOne();
 
-    //TODO: create a task and figure out how to append it to thsi taask
+    if (!taskList) {
+      // If no task list exists, create a new one
+      taskList = new TaskList({ tasks: [] });
+    }
+
+    // Add the new task to the task list
+    taskList.tasks.push(newTask);
+
+    // Save the updated task list back to the database
+    await taskList.save();
+
+    res.status(201).send(taskList);
   } catch (error) {
+    res.status(400).send(error);
   }
 });
 
