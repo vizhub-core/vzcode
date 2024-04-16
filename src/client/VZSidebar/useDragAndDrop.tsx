@@ -37,24 +37,35 @@ export const useDragAndDrop = () => {
       event.preventDefault();
       event.stopPropagation();
       setIsDragOver(false);
-      const files = event.dataTransfer.files;
 
-      if (debug) {
-        console.log(files);
-      }
+      const items = event.dataTransfer.items;
 
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (readEvent) => {
-          createFile(
-            file.name,
-            readEvent.target.result as string,
-          );
-        };
-        reader.onerror = (error) => {
-          console.error('Error reading file:', error);
-        };
-        reader.readAsText(file);
+      const processEntry = (entry, path) => {
+        if (entry.isFile) {
+          entry.file((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const content = e.target.result as string;
+              createFile(`${path}${file.name}`, content);
+            };
+            reader.readAsText(file);
+          });
+        } else if (entry.isDirectory) {
+          const dirReader = entry.createReader();
+          dirReader.readEntries((entries) => {
+            const newPath = `${path}${entry.name}/`;
+            for (const entry of entries) {
+              processEntry(entry, newPath);
+            }
+          });
+        }
+      };
+      const itemsArray = Array.from(items);
+      itemsArray.forEach((item) => {
+        const entry = item.webkitGetAsEntry();
+        if (entry) {
+          processEntry(entry, '');
+        }
       });
     },
     [createFile],

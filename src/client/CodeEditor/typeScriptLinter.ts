@@ -1,9 +1,9 @@
 import type { Diagnostic } from 'typescript';
-import {
-  LinterResponse,
-  LinterRequest,
-} from '../useTypeScript/requestTypes';
 import { generateRequestId } from '../generateRequestId';
+import {
+  LinterRequest,
+  LinterResponse,
+} from '../useTypeScript/worker/requestTypes';
 
 export const typeScriptLinter = ({
   typeScriptWorker,

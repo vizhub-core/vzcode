@@ -8,7 +8,7 @@ import {
 import { Modal, Form, Button } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
 
-export const CreateFileModal = ({
+export const CreateDirModal = ({
   initialFileName = '',
 }) => {
   const [newName, setNewName] = useState(initialFileName);
@@ -16,25 +16,25 @@ export const CreateFileModal = ({
 
   const {
     files,
-    isCreateFileModalOpen,
-    handleCloseCreateFileModal,
-    handleCreateFileClick,
+    isCreateDirModalOpen,
+    handleCloseCreateDirModal,
+    handleCreateDirClick,
   } = useContext(VZCodeContext);
 
   useEffect(() => {
-    if (isCreateFileModalOpen && inputRef.current) {
+    if (isCreateDirModalOpen && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isCreateFileModalOpen]);
+  }, [isCreateDirModalOpen]);
 
   const handleNameChange = useCallback((event) => {
     setNewName(event.target.value);
   }, []);
 
   const onCreateClick = useCallback(() => {
-    handleCreateFileClick(newName);
+    handleCreateDirClick(newName);
     setNewName('');
-  }, [newName, handleCreateFileClick]);
+  }, [newName, handleCreateDirClick]);
 
   // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback(
@@ -47,7 +47,7 @@ export const CreateFileModal = ({
 
       //Check for Duplicate Filename
       for (const key in files) {
-        if (fileName === files[key].name) {
+        if (fileName + '/' === files[key].name) {
           valid = false;
         }
       }
@@ -72,19 +72,19 @@ export const CreateFileModal = ({
     [onCreateClick, validateFileName, newName],
   );
 
-  return isCreateFileModalOpen ? (
+  return isCreateDirModalOpen ? (
     <Modal
-      show={isCreateFileModalOpen}
-      onHide={handleCloseCreateFileModal}
+      show={isCreateDirModalOpen}
+      onHide={handleCloseCreateDirModal}
       animation={false}
       onKeyDown={handleKeyDown}
     >
       <Modal.Header closeButton>
-        <Modal.Title>Create File</Modal.Title>
+        <Modal.Title>Create Directory</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form.Group className="mb-3" controlId="fileName">
-          <Form.Label>File Name</Form.Label>
+          <Form.Label>Directory Name</Form.Label>
           <Form.Control
             type="text"
             value={newName}
@@ -103,7 +103,7 @@ export const CreateFileModal = ({
           onClick={onCreateClick}
           disabled={!validateFileName(newName)}
         >
-          Create File
+          Create Directory
         </Button>
       </Modal.Footer>
     </Modal>

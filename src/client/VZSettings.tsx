@@ -34,27 +34,67 @@ export const VZSettings = ({
     [],
   );
 
-  // Track selected font and font size.
-  // TODO store these in local storage
+  // Initialize font and size from localStorage or defaults
+  // const [selectedFont, setSelectedFont] = useState(
+  //   localStorage.getItem('vzcodeSelectedFont') ||
+  //     'Roboto Mono',
+  // );
+  // const [selectedFontSize, setSelectedFontSize] = useState(
+  //   localStorage.getItem('vzcodeSelectedFontSize') ||
+  //     '16px',
+  // );
   const [selectedFont, setSelectedFont] =
     useState('Roboto Mono');
   const [selectedFontSize, setSelectedFontSize] =
     useState('16px');
 
+  useEffect(() => {
+    // If we're in the browser,
+    if (typeof window !== 'undefined') {
+      const selectedFontFromLocalStorage: string | null =
+        window.localStorage.getItem('vzcodeSelectedFont');
+
+      const selectedFontSizeFromLocalStorage:
+        | string
+        | null = window.localStorage.getItem(
+        'vzcodeSelectedFontSize',
+      );
+
+      if (selectedFontFromLocalStorage !== null) {
+        setSelectedFont(selectedFontFromLocalStorage);
+      }
+      if (selectedFontSizeFromLocalStorage !== null) {
+        setSelectedFontSize(
+          selectedFontSizeFromLocalStorage,
+        );
+      }
+    } else {
+      // If we're not in the browser, use the default initial width.
+    }
+  }, []);
+
   // Called when the user selects a different font
   const handleFontChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedFont(event.target.value);
+      const newFont = event.target.value;
+      localStorage.setItem('vzcodeSelectedFont', newFont);
+      setSelectedFont(newFont);
     },
     [],
   );
 
   // Called when the user selects a different font size
-  const handleFontSizeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setSelectedFontSize(event.target.value);
-  };
+  const handleFontSizeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newSize = event.target.value;
+      localStorage.setItem(
+        'vzcodeSelectedFontSize',
+        newSize,
+      );
+      setSelectedFontSize(newSize);
+    },
+    [],
+  );
 
   useEffect(() => {
     document.body.style.setProperty(
