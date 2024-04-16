@@ -150,7 +150,6 @@ VZCode is inspired by [VizHub v2](https://github.com/vizhub-core/vizhub/). VizHu
 
 ![Prior Work Image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
 
-
 ## Spaces
 
 - [VizHub Discord](https://discord.com/invite/wbtJ7SCtYr)

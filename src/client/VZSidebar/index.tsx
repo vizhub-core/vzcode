@@ -9,7 +9,13 @@ import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { BugSVG, GearSVG, NewSVG } from '../Icons';
-import { BugSVG, GearSVG, NewSVG, FileSVG, QuestionMarkSVG } from '../Icons';
+import {
+  BugSVG,
+  GearSVG,
+  NewSVG,
+  FileSVG,
+  QuestionMarkSVG,
+} from '../Icons';
 import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
 import { useDragAndDrop } from './useDragAndDrop';
