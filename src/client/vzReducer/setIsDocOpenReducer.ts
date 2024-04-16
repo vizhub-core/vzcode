@@ -7,7 +7,3 @@ export const setIsDocOpenReducer = (
   action.type === 'set_is_doc_open'
     ? { ...state, isDocOpen: action.value }
     : state;
-
-
-   
-    

@@ -141,7 +141,7 @@ export const VZSettings = ({
             Select font for the editor
           </Form.Text>
         </Form.Group>
-        
+
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
 
@@ -156,7 +156,7 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-          
+
           <Form.Text className="text-muted">
             Select a font size for the editor
           </Form.Text>

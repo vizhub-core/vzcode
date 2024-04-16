@@ -71,7 +71,6 @@ export type VZAction =
   // `set_is_settings_open`
   //  * Sets whether the settings modal is open.
   | { type: 'set_is_settings_open'; value: boolean }
-
   | { type: 'set_is_doc_open'; value: boolean }
 
   // `editor_no_longer_wants_focus`
