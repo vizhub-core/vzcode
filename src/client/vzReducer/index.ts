@@ -36,7 +36,7 @@ export type VZState = {
   username: Username;
 
   // Name of the file
-  name: string;
+  fileIdBeingRenamed: string;
 };
 
 // The shape of the actions that can be dispatched to the reducer.

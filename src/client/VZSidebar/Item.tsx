@@ -63,12 +63,8 @@ export const Item = ({
     [id, setHoveredItemId],
   );
 
-  // Tracks whether the file is being renamed (inline text input)
-  const [isRenaming, setIsRenaming] = useState(false);
-
-  // Tracks the value of the input field when renaming
-  const [renameValue, setRenameValue] = useState('');
-
+  const { isRenaming, setIsRenaming } = useContext(VZCodeContext);
+  const { renameValue, setRenameValue } = useContext(VZCodeContext);
   // Tracks whether the delete confirmation modal is open
   const [showModal, setShowModal] = useState(false);
 

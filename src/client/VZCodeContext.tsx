@@ -66,6 +66,14 @@ export type VZCodeContextValue = {
   ) => void;
   deleteDirectory: (directoryId: string) => void;
 
+  isRenaming: boolean;            // state indicating if renaming is in process
+  renameValue: string;            // the current value of the renaming input
+
+    // Methods or other states can be added here
+  setIsRenaming: (value: boolean) => void; // function to update isRenaming
+  setRenameValue: (value: string) => void;
+
+
   activeFileId: string | null;
   setActiveFileId: (fileId: string | null) => void;
   setActiveFileLeft: () => void;
@@ -196,7 +204,7 @@ export const VZCodeProvider = ({
     isSettingsOpen,
     editorWantsFocus,
     username,
-    name,
+    fileIdBeingRenamed,
   } = state;
 
   // Functions for dispatching actions to the reducer.
@@ -266,9 +274,9 @@ export const VZCodeProvider = ({
 
   const handleRenameInputOpen = useCallback(() => {
     setIsRenaming(!isRenaming);
-    setRenameValue(name);
+    setRenameValue(fileIdBeingRenamed);
   },
-    [name, isRenaming],
+    [fileIdBeingRenamed, isRenaming],
   );
 
 
@@ -341,6 +349,12 @@ export const VZCodeProvider = ({
 
     username,
     setUsername,
+
+    isRenaming,
+    setIsRenaming,
+
+    renameValue,
+    setRenameValue,
 
     isDirectoryOpen,
     toggleDirectory,
