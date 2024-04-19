@@ -8,7 +8,6 @@ import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
-import { BugSVG, GearSVG, NewSVG } from '../Icons';
 import {
   BugSVG,
   GearSVG,
@@ -16,8 +15,8 @@ import {
   FileSVG,
   QuestionMarkSVG,
 } from '../Icons';
-import { Listing } from './Listing';
 import { VZCodeContext } from '../VZCodeContext';
+import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
 
