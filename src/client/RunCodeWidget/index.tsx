@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { PlaySVG } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { OverlayTrigger, Tooltip } from '../bootstrap';
@@ -14,10 +14,12 @@ export const RunCodeWidget = ({
 }: {
   runCodeWidgetTooltipText?: JSX.Element;
 }) => {
-  const { runCodeRef, runPrettierRef } =
-    useContext(VZCodeContext);
+  const { runCodeRef, runPrettierRef } = useContext(VZCodeContext);
+  const [isRunning, setIsRunning] = useState(false);
 
   const handleClick = useCallback(() => {
+    setIsRunning(true); // Set the running state to true
+
     // Run Prettier
     const runPrettier = runPrettierRef.current;
     if (runPrettier !== null) {
@@ -29,6 +31,9 @@ export const RunCodeWidget = ({
     if (runCode !== null) {
       runCode();
     }
+
+    // Optional: reset the icon state after animation completes (e.g., 1 second)
+    setTimeout(() => setIsRunning(false), 1000);
   }, []);
 
   return (
@@ -42,7 +47,7 @@ export const RunCodeWidget = ({
         }
       >
         <i
-          className="icon-button icon-button-dark"
+          className={`icon-button icon-button-dark ${isRunning ? 'rotate-icon' : ''}`}
           onClick={handleClick}
         >
           <PlaySVG />
@@ -51,3 +56,4 @@ export const RunCodeWidget = ({
     </div>
   );
 };
+
