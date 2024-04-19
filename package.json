@@ -104,7 +104,7 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
-    "openai": "^4.36.0",
+    "openai": "^4.38.2",
     "prettier-plugin-svelte": "^3.2.3",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.2",
