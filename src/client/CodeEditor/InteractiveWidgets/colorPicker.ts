@@ -8,39 +8,54 @@ export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 // Works without quotes to support CSS.
 export const colorPicker = (
   onInteract?: () => void,
-): InteractRule => ({
-  regexp: colorPickerRegex,
-  cursor: 'pointer',
-  onClick(
-    text: string,
-    setText: (newText: string) => void,
-  ) {
-    const startingColor: string = text;
+): InteractRule => {
+  // Create the color picker element when the page loads
+  const sel: HTMLInputElement = document.createElement('input');
+  sel.type = 'color';
+  sel.style.position = 'fixed'; 
+  sel.style.left = '-9999px'; // Position off-screen initially
+  sel.style.top = '-9999px';
+  document.body.appendChild(sel);
 
-    const sel: HTMLInputElement =
-      document.createElement('input');
-    sel.type = 'color';
-    sel.value = startingColor.toLowerCase();
+  return {
+    regexp: colorPickerRegex,
+    cursor: 'pointer',
+    
+    onClick(
+      text: string,
+      setText: (newText: string) => void,
+      event: MouseEvent // Capture the event object
+    ) {
+      const startingColor: string = text;
 
-    // `valueIsUpper` maintains the style of the user's code.
-    // It keeps the case of a-f the same case as the original.
-    const valueIsUpper: boolean =
-      startingColor.toUpperCase() === startingColor;
+      // Set the initial value of the color picker
+      sel.value = startingColor.toLowerCase();
 
-    const updateHex = (e: Event) => {
-      const el: HTMLInputElement =
-        e.target as HTMLInputElement;
-      if (el.value) {
-        setText(
-          valueIsUpper ? el.value.toUpperCase() : el.value,
-        );
-      }
-      if (onInteract) onInteract();
-    };
-    sel.addEventListener('input', updateHex);
-    sel.click();
-  },
-});
+      // Calculate the position of the cursor within the document
+      const cursorX = event.clientX;
+      const cursorY = event.clientY;
+
+      // Position the color picker relative to the cursor position
+      sel.style.left = cursorX + 'px';
+      sel.style.top = cursorY + 'px';
+
+      const updateHex = (e: Event) => {
+        const el: HTMLInputElement =
+          e.target as HTMLInputElement;
+        if (el.value) {
+          setText(el.value.toUpperCase()); // Always use upper case
+        }
+        if (onInteract) onInteract();
+      };
+
+      // Add input event listener to handle color selection
+      sel.addEventListener('input', updateHex);
+
+      // Trigger click event on the color picker to display it
+      sel.click();
+    },
+  };
+};
 
 // TODO get this working
 // rgb color picker
