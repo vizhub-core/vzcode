@@ -38,6 +38,10 @@ const LINT_ERROR_CODE_ANY_PARAM = 7006;
 const LINT_ERROR_CODE_IMPORT = 2307;
 
 // This code is for errors like:
+// "Object is of type 'unknown'."
+const LINT_ERROR_CODE_UNKNOWN = 2571;
+
+// This code is for errors like:
 // "Variable 'mic' implicitly has type 'any' in some locations where its type cannot be determined."
 const LINT_ERROR_CODE_ANY_TYPE = 7034;
 
@@ -64,6 +68,7 @@ export const LINT_ERROR_CODE_CANNOT_FIND_NAME = 2304;
 export const excludedErrorCodes = new Set([
   LINT_ERROR_CODE_ANY,
   LINT_ERROR_CODE_IMPORT,
+  LINT_ERROR_CODE_UNKNOWN,
   LINT_ERROR_CODE_ANY_PARAM,
   LINT_ERROR_CODE_ANY_TYPE,
   LINT_ERROR_CODE_ANY_TYPE_KEYS,
