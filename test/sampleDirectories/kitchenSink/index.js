@@ -6,30 +6,48 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
+      const room = 'Room1'; // Hardcoded for demonstration
+      const user = prompt('Enter your username');
 
-      // Function to send local cursor position to the server
+      socket.emit('joinRoom', { room, user });
+
       function sendCursorPosition(x, y) {
-        socket.emit('cursorMove', { x, y });
+        socket.emit('cursorMove', { room, user, x, y });
       }
 
-      // Listen for cursor updates from the server
       socket.on('cursorUpdate', (data) => {
-        moveRemoteCursor(data.x, data.y);
+        moveRemoteCursor(data.user, data.x, data.y);
+      });
+
+      socket.on('userJoined', (data) => {
+        const area = document.getElementById('cursors');
+        if (!document.getElementById(data.id)) {
+          const cursor = document.createElement('div');
+          cursor.id = data.id;
+          cursor.textContent = data.user;
+          cursor.style.position = 'absolute';
+          cursor.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+          cursor.style.color = 'white';
+          cursor.style.padding = '5px';
+          area.appendChild(cursor);
+        }
       });
 
       document.addEventListener('mousemove', (event) => {
         sendCursorPosition(event.clientX, event.clientY);
       });
 
-      // Function to update cursor position visually
-      function moveRemoteCursor(x, y) {
-        const follower = document.getElementById('follower');
-        follower.style.left = x + 'px';
-        follower.style.top = y + 'px';
+      function moveRemoteCursor(user, x, y) {
+        const cursor = document.getElementById(user);
+        if (cursor) {
+          cursor.style.left = x + 'px';
+          cursor.style.top = y + 'px';
+        }
       }
     </script>
 </head>
 <body>
-    <div id="follower" style="position: absolute; width: 10px; height: 10px; background-color: red;"></div>
+    <div id="cursors"></div>
 </body>
 </html>
+
