@@ -2,7 +2,7 @@
   "name": "vzcode",
   "version": "0.89.0",
   "description": "Multiplayer code editor system",
-  "main": "src/index.ts",
+  "main": "electron-main.mjs",
   "type": "module",
   "bin": "src/server/index.js",
   "files": [
@@ -14,11 +14,12 @@
     "test-interactive": "cd test/sampleDirectories/kitchenSink && node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
-    "dev": "concurrently \"npm run test-interactive\" \"vite\"",
+    "dev": "concurrently \"npm run test-interactive\" \"vite\" \"electron .\"",
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
-    "prepublishOnly": "npm run build-release"
+    "prepublishOnly": "npm run build-release",
+    "electron": "electron ."
   },
   "repository": {
     "type": "git",
@@ -96,6 +97,7 @@
     "codemirror": "^6.0.1",
     "codemirror-ot": "^4.4.0",
     "color-hash": "^2.0.2",
+    "cors": "^2.8.5",
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.5",
@@ -120,6 +122,7 @@
     "@types/react-dom": "^18.2.25",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
+    "electron": "^30.0.1",
     "prettier": "^3.2.5",
     "sass": "^1.75.0",
     "typescript": "^5.4.5",
