@@ -3,6 +3,20 @@ import {
     CompletionSource,
   } from '@codemirror/autocomplete';
   
+  const PREVENT_COMPLETIONS_CHARACTERS = [
+    '"',
+    "'",
+    ';',
+    '(',
+    ')',
+    '{',
+    ',',
+    ' ',
+    '=',
+    '<',
+    '>',
+];
+
   export const htmlCompletions = (): CompletionSource => {
     const htmlComplete: CompletionSource = async (
       completionContext: CompletionContext,
@@ -11,20 +25,7 @@ import {
   
       //Prevent completions from appearing on certain characters
       const lastCharacter = fileContent[completionContext.pos - 1];
-      if (
-        [
-          '"',
-          "'",
-          ';',
-          '(',
-          ')',
-          '{',
-          ',',
-          ' ',
-          '=',
-          '<',
-          '>',
-        ].includes(lastCharacter)
+      if (PREVENT_COMPLETIONS_CHARACTERS.includes(lastCharacter)
       ) {
         return { from: completionContext.pos, options: [] };
       }
