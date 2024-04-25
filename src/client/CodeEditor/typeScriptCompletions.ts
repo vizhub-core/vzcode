@@ -8,6 +8,20 @@ import {
 } from '../useTypeScript/requestTypes';
 import { generateRequestId } from '../generateRequestId';
 
+const PREVENT_COMPLETIONS_CHARACTERS = [
+  '"',
+  "'",
+  ';',
+  '(',
+  ')',
+  '{',
+  ',',
+  ' ',
+  '=',
+  '<',
+  '>',
+];
+
 export const typeScriptCompletions = ({
   typeScriptWorker,
   fileName,
