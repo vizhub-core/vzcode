@@ -36,6 +36,7 @@ import {
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { typeScriptCompletions } from './typeScriptCompletions';
+import { cssCompletions } from './cssCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
@@ -243,6 +244,18 @@ export const getOrCreateEditor = ({
       autocompletion({
         override: [
           typeScriptCompletions({
+            typeScriptWorker,
+            fileName: name,
+          }),
+        ],
+      }),
+    );
+  }
+  if (enableCSSCompletions) {
+    extensions.push(
+      autocompletion({
+        override: [
+          CSSCompletions({
             typeScriptWorker,
             fileName: name,
           }),
