@@ -17,6 +17,17 @@ import {
     '>',
 ];
 
+const HTML_TAGS = [
+  'div',
+  'span',
+  'p',
+  'a',
+  'img',
+  'script',
+  'style',
+  // ... add more HTML tags here
+];
+
   export const htmlCompletions = (): CompletionSource => {
     const htmlComplete: CompletionSource = async (
       completionContext: CompletionContext,
@@ -29,18 +40,6 @@ import {
       ) {
         return { from: completionContext.pos, options: [] };
       }
-  
-      // HTML tags for autocompletion
-      const htmlTags = [
-        'div',
-        'span',
-        'p',
-        'a',
-        'img',
-        'script',
-        'style',
-        // ... add more HTML tags here
-      ];
   
       // `lastWord` represents the word that the user has partially typed
       // and is currently at the end of the text, immediately before
