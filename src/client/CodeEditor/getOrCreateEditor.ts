@@ -42,6 +42,7 @@ import { basicSetup } from './basicSetup';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
+const enableHTMLCompletions = true;
 const enableCSSCompletions = true;
 
 const enableTypeScriptLinter = true;
