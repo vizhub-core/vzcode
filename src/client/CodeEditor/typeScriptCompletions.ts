@@ -96,6 +96,7 @@ export const typeScriptCompletions = ({
     const lastWord =
       completionContext.matchBefore(/\w*/).text;
     if (lastWord) {
+      // @ts-ignore
       tsCompletions.entries = tsCompletions.entries.filter(
         (completion) =>
           completion.name.startsWith(lastWord),
@@ -103,6 +104,7 @@ export const typeScriptCompletions = ({
     }
     return {
       from: completionContext.pos,
+      // @ts-ignore
       options: tsCompletions.entries.map((completion) => ({
         label: completion.name,
         // Applies autocompletions to be seen in the code Editor
