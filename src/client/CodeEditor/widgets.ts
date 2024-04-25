@@ -71,7 +71,7 @@ export const widgets = ({
       // a rule for a number dragger
       {
         // the regexp matching the value
-        regexp: /(?<!\#)-?\b\d+\.?\d*\b/g,
+        regexp: /-?\b\d+\.?\d*(px|em|rem|%|s|ms)?\b/g,
         // set cursor to "ew-resize" on hover
         cursor: 'ew-resize',
         // change number value based on mouse X movement on drag
