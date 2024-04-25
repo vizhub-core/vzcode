@@ -54,7 +54,7 @@ export const typeScriptCompletions = ({
     //Prevent completions from appearing on certain characters
     const lastCharacter =
       fileContent[completionContext.pos - 1];
-      if (PREVENT_COMPLETIONS_CHARACTERS.includes(lastCharacter)) {
+    if (PREVENT_COMPLETIONS_CHARACTERS.includes(lastCharacter)) {
       return { from: completionContext.pos, options: [] };
     }
 
@@ -96,7 +96,6 @@ export const typeScriptCompletions = ({
     const lastWord =
       completionContext.matchBefore(/\w*/).text;
     if (lastWord) {
-      // @ts-ignore
       tsCompletions.entries = tsCompletions.entries.filter(
         (completion) =>
           completion.name.startsWith(lastWord),
@@ -104,7 +103,6 @@ export const typeScriptCompletions = ({
     }
     return {
       from: completionContext.pos,
-      // @ts-ignore
       options: tsCompletions.entries.map((completion) => ({
         label: completion.name,
         // Applies autocompletions to be seen in the code Editor
