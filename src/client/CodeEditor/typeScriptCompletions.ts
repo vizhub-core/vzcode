@@ -54,21 +54,7 @@ export const typeScriptCompletions = ({
     //Prevent completions from appearing on certain characters
     const lastCharacter =
       fileContent[completionContext.pos - 1];
-    if (
-      [
-        '"',
-        "'",
-        ';',
-        '(',
-        ')',
-        '{',
-        ',',
-        ' ',
-        '=',
-        '<',
-        '>',
-      ].includes(lastCharacter)
-    ) {
+      if (PREVENT_COMPLETIONS_CHARACTERS.includes(lastCharacter)) {
       return { from: completionContext.pos, options: [] };
     }
 
