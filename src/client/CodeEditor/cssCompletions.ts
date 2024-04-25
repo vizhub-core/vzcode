@@ -3,7 +3,10 @@ import {
     CompletionSource,
 } from '@codemirror/autocomplete';
 
-export const cssCompletions = (): CompletionSource => {
+export const cssCompletions = ({
+    cssWorker,
+    fileName,
+  }): CompletionSource => {
     const cssComplete: CompletionSource = async (
         completionContext: CompletionContext,
     ) => {

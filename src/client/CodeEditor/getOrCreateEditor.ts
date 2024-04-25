@@ -256,7 +256,12 @@ export const getOrCreateEditor = ({
     extensions.push(
       autocompletion({
         override: [
-          cssCompletions(),
+          cssCompletions(
+            {
+              cssWorker,
+              fileName: name,
+            },
+          ),
         ],
       }),
     );
