@@ -48,7 +48,7 @@ const HTML_TAGS = [
   
       let completions = [];
       if (lastWord) {
-        completions = htmlTags.filter((tag) =>
+        completions = HTML_TAGS.filter((tag) =>
           tag.startsWith(lastWord),
         );
       }
