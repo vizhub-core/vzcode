@@ -28,7 +28,10 @@ const HTML_TAGS = [
   // ... add more HTML tags here
 ];
 
-  export const htmlCompletions = (): CompletionSource => {
+  export const htmlCompletions = ({
+    htmlWorker,
+    fileName,
+  }): CompletionSource => {
     const htmlComplete: CompletionSource = async (
       completionContext: CompletionContext,
     ) => {

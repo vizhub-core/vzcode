@@ -270,7 +270,12 @@ export const getOrCreateEditor = ({
     extensions.push(
       autocompletion({
         override: [
-          htmlCompletions(),
+          htmlCompletions(
+            {
+              htmlWorker,
+              fileName: name,
+            },
+          ),
         ],
       }),
     );
