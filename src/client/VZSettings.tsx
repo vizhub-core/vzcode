@@ -116,27 +116,24 @@ export const VZSettings = ({
     setUsername(usernameRef.current?.value || '');
   }, [setUsername]);
 
-    // Function to handle pressing Enter key
-    const handleEnterKey = useCallback(
-      (event: KeyboardEvent) => {
+  // Function to handle pressing Enter key
+  useEffect(() => {
+    if (isSettingsOpen) {
+      const handleEnterKey = (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
           closeSettings();
         }
-      },
-      [closeSettings],
-    );
-  
-    useEffect(() => {
-      if (isSettingsOpen) {
-        window.addEventListener('keydown', handleEnterKey);
-      } else {
-        window.removeEventListener('keydown', handleEnterKey);
-      }
-  
-      return () => {
-        window.removeEventListener('keydown', handleEnterKey);
       };
-    }, [isSettingsOpen, handleEnterKey]);
+
+      window.addEventListener('keydown', handleEnterKey);
+      return () => {
+        window.removeEventListener(
+          'keydown',
+          handleEnterKey,
+        );
+      };
+    }
+  }, [isSettingsOpen, closeSettings]);
 
   return isSettingsOpen ? (
     <Modal
