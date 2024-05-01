@@ -14,7 +14,8 @@ export const RunCodeWidget = ({
 }: {
   runCodeWidgetTooltipText?: JSX.Element;
 }) => {
-  const { runCodeRef, runPrettierRef } = useContext(VZCodeContext);
+  const { runCodeRef, runPrettierRef } =
+    useContext(VZCodeContext);
   const [isRunning, setIsRunning] = useState(false);
 
   const handleClick = useCallback(() => {
@@ -56,4 +57,3 @@ export const RunCodeWidget = ({
     </div>
   );
 };
-
