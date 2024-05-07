@@ -1,4 +1,4 @@
-import { generateAIResponse } from './generateAIResponse.js';
+//import { generateAIResponse } from './generateAIResponse.js';
 
 const debug = false;
 
@@ -15,13 +15,13 @@ export const handleAIAssist =
       console.log('[handleAIAssist] fileId:', fileId);
     }
 
-    try {
-      await generateAIResponse({
-        inputText,
-        insertionCursor,
-        fileId,
-        shareDBDoc,
-      });
+    try { //@@ ignore it 
+      // await generateAIResponse({
+      //   inputText,
+      //   insertionCursor,
+      //   fileId,
+      //   shareDBDoc,
+      // });
 
       res
         .status(200)

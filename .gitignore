@@ -4,3 +4,8 @@ dist-ssr
 *.swp
 .env
 .DS_Store
+
+dist_server
+dist_bin
+
+timeline.md

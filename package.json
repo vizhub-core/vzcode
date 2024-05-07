@@ -4,7 +4,10 @@
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
-  "bin": "src/server/index.js",
+  "bin_web": "src/server/index.js",
+  "bin_build_server": "dist_server/server/index.js",
+  "bin": "dist_server/server/index.js",
+
   "files": [
     "dist/**",
     "src/**"
@@ -18,7 +21,18 @@
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
-    "prepublishOnly": "npm run build-release"
+    "prepublishOnly": "npm run build-release",
+    "start-server": "node  src/server/index.js --space=./space --site=./dist",
+    "build-server": "npx babel ./src --out-dir dist_server",
+    "pkg": "pkg . "
+  },
+  "pkg": {
+    "scripts": "dist_server/server/index.js",
+    "assert": [
+      "space/**",
+      "dist/**"
+    ],
+    "outputPath": "dist_bin"
   },
   "repository": {
     "type": "git",
@@ -122,9 +136,11 @@
     "express": "^4.19.2",
     "ignore": "^5.3.1",
     "json0-ot-diff": "^1.1.2",
+    "jssha": "^3.3.1",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
-    "openai": "^4.40.0",
+    "openai": "^4.42.0",
+    "pkg": "^5.8.1",
     "prettier-plugin-svelte": "^3.2.3",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.2",
@@ -136,9 +152,14 @@
     "ws": "^8.17.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.5",
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
+    "@babel/preset-env": "^7.24.5",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "babel-plugin-transform-import-meta": "^2.2.1",
     "concurrently": "^8.2.2",
     "prettier": "^3.2.5",
     "sass": "^1.76.0",
