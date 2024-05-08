@@ -3,7 +3,7 @@ import fs from 'fs';
 
 export const myLogger ={ 
     debug(msg){
-        console.log(`🧐 ${msg}`);
+        console.log(`✍️ ${msg}`);
     }
 }  
 

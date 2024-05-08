@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { randomId } from '../../randomId';
 import { ShareDBDoc, VZCodeContent } from '../../types';
 import { useSubmitOperation } from '../useSubmitOperation';
+import { Request }  from "../utils/Request.js";
+
+// get the docId from the current url request paramter 
+function getDocId(){
+  const args = Request.getParameters();
+  const docId = args['docId'];
+  
+  return docId ? docId : '1';
+}
 
 // Set up the connection to ShareDB.
 export const useShareDB = ({
@@ -45,7 +54,7 @@ export const useShareDB = ({
     //  * `collection` - the ShareDB collection to use
     //  * `id` - the id of the ShareDB document to use
     const collection = 'documents';
-    const id = '1';
+    const id = getDocId();
 
     // Initialize the ShareDB document.
     const shareDBDoc = connection.get(collection, id);

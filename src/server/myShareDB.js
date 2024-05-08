@@ -211,7 +211,7 @@ export const myShareDB ={
             if (previous.text !== current.text) {
                 //@@ fs.writeFileSync(current.name, current.text);
             
-                myLogger.debug(`🧐 save change file: ${current.name}`); 
+                myLogger.debug(`save change file: ${current.name}`); 
                 fs.writeFileSync(to, current.text);
             }
 

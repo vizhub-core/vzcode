@@ -21,7 +21,7 @@ import { isDirectory } from './isDirectory.js';
 import { myLogger,FileSys } from './utils.js';
 import { myShareDB } from './myShareDB.js';
 import { getPortFromArgs, getWebsiteSpaceFromArgs, getDocumentSpaceFromArgs } from "./cmdArg.js"
-
+import { setupApiService } from './apiService.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -107,6 +107,7 @@ app.post(
  // handleAIAssist(shareDBDoc),
 );
  
+setupApiService(app,myShareDB);
 
 server.listen(port, async () => {
   if (process.env.NGROK_TOKEN) {
