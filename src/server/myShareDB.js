@@ -10,8 +10,8 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 //import { handleAIAssist } from './handleAIAssist.js';
 import { isDirectory } from './isDirectory.js';
 import { myLogger } from './utils.js';
-
 import jsSHA  from "jssha";
+import { Constants } from './constants.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -19,10 +19,7 @@ const autoSaveDebounceTimeMS = 800;
 // The time in milliseconds by which auto-saving is throttled
 // when the user is interacting with the widgets in the editor.
 const throttleTimeMS = 100;
- 
-
-
-
+  
 
 function getFullPath(basePath, shortName){  
   let result =  path.normalize(`${basePath}/${shortName}`);
@@ -34,59 +31,127 @@ ShareDB.types.register(json1Presence.type);
 
 
 export const myShareDB ={
+
     // Use ShareDB over WebSocket
-    shareDBBackend: null, 
-    shareDBConnection: null,
+    _shareDBBackend: null, 
+    _wss: null,
+
+    _shareDBConnection: null,
    
  
-    defaultKey : null, // set once 
-    docSet:{},
-    docPathSet:{},
+    _defaultSpaceKey : null, // set once 
+    _defaultSpacePath: null,
 
+    _docSet:{},
+    _docPathSet:{},
+    
     toString(){
-        const info={
-            docPathSet:this.docPathSet
+        const info={ 
+            docPathSet:this._docPathSet
         }
         return JSON.stringify(info);
     },
-    _getDocKey(path){
+    
+    init(keyOfSpace,pathOfSpace){
+        this._defaultSpaceKey = keyOfSpace;
+        this._defaultSpacePath = pathOfSpace;
+    },
+
+    getDocPathSet(){
+        return this._docPathSet;
+    },
+
+    bindWss(shareDBBackend,wss){
+       this.freeWss();
+       this._shareDBBackend = shareDBBackend;
+       this._wss = wss; 
+    },
+
+    freeWss(){
+        this.cleanupDocSet();
+        if (this._shareDBConnection){
+            this._shareDBConnection = null;
+        }
+        if (this._shareDBBackend){
+            this._shareDBBackend.close()
+            this._shareDBBackend = null;
+        }
+        if (this._wss){
+            this._wss.close()
+            this._wss = null;
+        }
+    },
+
+    cleanupDocSet(){
+        for (const [key, value] of Object.entries(this._docPathSet)) {
+            myLogger.debug(`cleanupDocSet, by key:${key},value:${value}`);
+            this._cleanDocFromSet(value); 
+        } 
+    },
+    _toDocKey(path){
+        if (path === this._defaultSpacePath ){
+            return this._defaultSpaceKey;
+        }
         const shaObj = new jsSHA("SHA-256", "TEXT", { encoding: "UTF8" });
         shaObj.update(path);
         const hashKey = shaObj.getHash("HEX");
         return hashKey;
     },
+    getDocPathById(docId){
+        const path = this._docPathSet[docId];
+        return path;
+    },
+    
+    
     /*
     @return {
              key:
             }
     */
-    openDoc(path){ 
-       const docSpacePath = path;
+    openDoc(path,forceReload=false){  
         // Create the initial "document",
         // which is a representation of files on disk.
-        if (!this.shareDBConnection){
-            this.shareDBConnection = this.shareDBBackend.connect();
+        if (!this._shareDBConnection){
+            this._shareDBConnection = this._shareDBBackend.connect();
         } 
-       
-        let key = this._getDocKey(docSpacePath)
-        const existDoc = this.docSet[key];
+        // forceReload 
+        if (forceReload){
+            myLogger.debug('openDoc,forceReload')
+            this._cleanDocFromSet(path)
+        }
+        let key = this._toDocKey(path)
+        const existDoc = this._docSet[key];
         if (existDoc){
             return { id: key} ;
         }
-
-        if (!this.defaultKey ){
-            key = "1";
-            this.defaultKey = key;
-        } 
-
-        const shareDBDoc = this._createShareDoc(key, docSpacePath);
-        this.docSet[key] = shareDBDoc;
-        this.docPathSet[key] = docSpacePath;
+ 
+        const shareDBDoc = this._createShareDoc(key, path);
+        this._docSet[key] = shareDBDoc;
+        this._docPathSet[key] = path;
 
         return  { id: key} ;
     },
+
+    _cleanDocFromSet(path){
+        let key = this._toDocKey(path)
+        const shareDBDoc = this._docSet[key];
+        if (!shareDBDoc){
+            return ; 
+        }
+        myLogger.debug(`_cleanDocFromSet, path:${path}`);
+        shareDBDoc.unsubscribe();
+        shareDBDoc.del();
+        shareDBDoc.destroy();
+        
+        delete this._docSet[key]
+        delete this._docPathSet[key]
+    },
+
     _createShareDoc(key,docSpacePath){
-        const shareDBDoc = this.shareDBConnection.get('documents', key ); 
+        
+        myLogger.debug(`_createShareDoc: ${docSpacePath}`);
+
+        const shareDBDoc = this._shareDBConnection.get('documents', key );  
 
         let initialDocument = computeInitialDocument({
             // Use the current working directory to look for files.
@@ -95,8 +160,6 @@ export const myShareDB ={
         });
 
         shareDBDoc.create(initialDocument, json1Presence.type.uri);
-
-        //const shareDBDoc = this.shareDBDoc;
 
         // The state of the document when files were last auto-saved.
         let previousDocument = initialDocument;

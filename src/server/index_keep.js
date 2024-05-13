@@ -20,9 +20,8 @@ import { isDirectory } from './isDirectory.js';
 
 import { myLogger,FileSys } from './utils.js';
 import { myShareDB } from './myShareDB.js';
-import { getPortFromArgs, getWebsiteSpaceFromArgs, getDocumentSpaceFromArgs,prepareSpaceByAsset } from "./cmdArg.js"
-import { createShareDbServerBindWss,setupApiService } from './apiService.js';
-import { Constants } from './constants.js';
+import { getPortFromArgs, getWebsiteSpaceFromArgs, getDocumentSpaceFromArgs } from "./cmdArg.js"
+import { setupApiService } from './apiService.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -36,22 +35,17 @@ const port = getPortFromArgs();
  
 //------  Express website path   
 const websitePath = getWebsiteSpaceFromArgs();
-if (!FileSys.validateDir(websitePath)){
-  FileSys.validateDir(websitePath,true)
-  //#TODO
-  prepareSpaceByAsset('dist',websitePath)
+if (FileSys.isDir(websitePath,true)){
+
 } 
 
 //------  Document space path  
-var docSpacePath = getDocumentSpaceFromArgs(); 
-if (!FileSys.validateDir(docSpacePath)){
-  FileSys.validateDir(docSpacePath,true)
-  //#TODO
-  prepareSpaceByAsset('space',docSpacePath)
-} 
+var docSpacePath = getDocumentSpaceFromArgs();
 myLogger.debug(`document space path:${docSpacePath}`);
-myShareDB.init(Constants.homeSpace,docSpacePath);
+if (FileSys.isDir(docSpacePath,true)){
 
+} 
+// Register our custom OT type,
 // because it does not ship with ShareDB.
 ShareDB.types.register(json1Presence.type);
 
@@ -65,33 +59,33 @@ app.post('/saveTime', (req, res) => {
 });
 
 // Use ShareDB over WebSocket
-// const shareDBBackend = new ShareDB({
-//   // Enable presence
-//   // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
-//   presence: true,
-//   doNotForwardSendPresenceErrorsToClient: false,
-// });
+const shareDBBackend = new ShareDB({
+  // Enable presence
+  // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/server.js#L9
+  presence: true,
+  doNotForwardSendPresenceErrorsToClient: false,
+});
 const server = http.createServer(app);
-// const wss = new WebSocketServer({ server });
-// wss.on('connection', (ws) => {
-//   const clientStream = new WebSocketJSONStream(ws);
-//   shareDBBackend.listen(clientStream);
+const wss = new WebSocketServer({ server });
+wss.on('connection', (ws) => {
+  const clientStream = new WebSocketJSONStream(ws);
+  shareDBBackend.listen(clientStream);
 
-//   // Prevent server crashes on errors.
-//   clientStream.on('error', (error) => {
-//     console.log('clientStream error: ' + error.message);
-//   });
+  // Prevent server crashes on errors.
+  clientStream.on('error', (error) => {
+    console.log('clientStream error: ' + error.message);
+  });
 
-//   // Handle errors
-//   ws.on('error', (error) => {
-//     console.log('ws error: ' + error.message);
-//   });
+  // Handle errors
+  ws.on('error', (error) => {
+    console.log('ws error: ' + error.message);
+  });
 
-//   // Handle disconnections
-//   ws.on('close', (code) => {
-//     clientStream.end();
-//   });
-// });
+  // Handle disconnections
+  ws.on('close', (code) => {
+    clientStream.end();
+  });
+});
 
 // Serve static files
 // const filename = fileURLToPath(import.meta.url);
@@ -102,14 +96,9 @@ let dir = websitePath;
 myLogger.debug(`express website root:${dir}`);
 app.use(express.static(dir));
 
-// myShareDB.shareDBBackend = shareDBBackend;
-// myShareDB.openDoc(docSpacePath);
-// setupApiService(app,myShareDB);
- 
-createShareDbServerBindWss(server); 
-setupApiService(app,myShareDB,server);
-
+myShareDB.shareDBBackend = shareDBBackend;
 myShareDB.openDoc(docSpacePath);
+ 
 
 // Handle AI Assist requests.
 app.post(
@@ -118,7 +107,7 @@ app.post(
  // handleAIAssist(shareDBDoc),
 );
  
-
+setupApiService(app,myShareDB);
 
 server.listen(port, async () => {
   if (process.env.NGROK_TOKEN) {
@@ -130,7 +119,7 @@ server.listen(port, async () => {
     })();
   } else {
     console.log(
-      `🚀 Code Editor is live at http://localhost:${port}`,
+      `🚀 Editor is live at http://localhost:${port}`,
     );
     openBrowser(`http://localhost:${port}`);
   }

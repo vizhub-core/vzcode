@@ -23,16 +23,17 @@ export const  openBrowser = function (url) {
 
 export const FileSys ={
 
-    isDir(path,forceCreate=false){
+    validateDir(path,forceCreate=false){
         const target_directory = path;
-        if (!fs.existsSync(target_directory)) {
-            if (forceCreate){
-                fs.mkdirSync(target_directory);
-                return true
-            }else{
-                return false;
-            }
-            
+        if (fs.existsSync(target_directory)) {
+            return true;
         }
+        if (forceCreate){
+            fs.mkdirSync(target_directory);
+            return true
+        } 
+            
+        return false;
+      
     }
 } 

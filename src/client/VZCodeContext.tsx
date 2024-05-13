@@ -35,6 +35,7 @@ import {
 import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useRunCode } from './useRunCode';
+import { wrapUnderSelectedFolder } from "./utils/Helper.js";
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -98,7 +99,7 @@ export type VZCodeContextValue = {
   setUsername: (username: Username) => void;
 
   isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
+  toggleDirectory: (path: string) => boolean;
 
   editorCache: EditorCache;
 
@@ -277,6 +278,7 @@ export const VZCodeProvider = ({
 
   const handleCreateFileClick = useCallback(
     (newFileName: string) => {
+      newFileName = wrapUnderSelectedFolder(newFileName); 
       createFile(newFileName);
       setIsCreateFileModalOpen(false);
     },
@@ -297,6 +299,7 @@ export const VZCodeProvider = ({
 
   const handleCreateDirClick = useCallback(
     (newDirName: string) => {
+      newDirName = wrapUnderSelectedFolder(newDirName); 
       createDirectory(newDirName);
       setIsCreateDirModalOpen(false);
     },

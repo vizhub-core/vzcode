@@ -19,6 +19,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import { backgroundColor } from '../themes/vizhubTheme/colors';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -191,6 +192,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
           </div>
         </div>
+        <div >xx</div>
         {isDragOver ? (
           <div className="empty">
             <div className="empty-text">

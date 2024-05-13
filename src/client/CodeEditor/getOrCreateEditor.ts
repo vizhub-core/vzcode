@@ -9,6 +9,10 @@ import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
+
+import { xml } from '@codemirror/lang-xml';
+import { python } from '@codemirror/lang-python';
+
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
@@ -62,6 +66,8 @@ const languageExtensions = {
   css,
   md: markdown,
   svelte,
+  xml,
+  py: python, 
 };
 
 // Gets a value at a path in an object.

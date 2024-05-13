@@ -29,7 +29,7 @@ export const Listing = ({
       name={name}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
-      isActive={fileId === activeFileId}
+      isActive={fileId === globalThis.activeFileId }
     />
   ) : (
     <DirectoryListing
@@ -38,6 +38,7 @@ export const Listing = ({
       children={children}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
+      isActive={path === globalThis.activeFolderId}
     />
   );
 };

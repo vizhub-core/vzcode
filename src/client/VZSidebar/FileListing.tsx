@@ -3,6 +3,7 @@ import { Item } from './Item';
 import { FileId } from '../../types';
 import { FileSVG } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
+import {onSelectedFileNode} from '../utils/Helper.js'
 
 export const FileListing = ({
   name,
@@ -22,10 +23,12 @@ export const FileListing = ({
 
   const handleClick = useCallback(() => {
     handleFileClick(fileId);
+    onSelectedFileNode(fileId);
   }, [fileId, handleFileClick]);
 
   const handleDoubleClick = useCallback(() => {
     handleFileDoubleClick(fileId);
+    onSelectedFileNode(fileId);
   }, [fileId, handleFileDoubleClick]);
 
   const handleDeleteClick = useCallback(() => {

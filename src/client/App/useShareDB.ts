@@ -5,11 +5,11 @@ import { useSubmitOperation } from '../useSubmitOperation';
 import { Request }  from "../utils/Request.js";
 
 // get the docId from the current url request paramter 
-function getDocId(){
+export const getRequestDocId = function(){
   const args = Request.getParameters();
   const docId = args['docId'];
-  
-  return docId ? docId : '1';
+ 
+  return docId ? docId : 'homeSpace';
 }
 
 // Set up the connection to ShareDB.
@@ -54,8 +54,8 @@ export const useShareDB = ({
     //  * `collection` - the ShareDB collection to use
     //  * `id` - the id of the ShareDB document to use
     const collection = 'documents';
-    const id = getDocId();
-
+    const id = getRequestDocId();
+    
     // Initialize the ShareDB document.
     const shareDBDoc = connection.get(collection, id);
 

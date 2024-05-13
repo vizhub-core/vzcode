@@ -21,6 +21,35 @@ const groupParamsByKey = (params) => [...params.entries()].reduce((acc, tuple) =
    return acc;
    }, {});
 
+   function _updateQueryStringParameter(key, value) {
+    var uri = window.location.href
+    if(!value) {
+      //return uri;
+    }
+    var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+    var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+    if (uri.match(re)) {
+      if (!value){
+        return uri.replace(re, '$1'  + "=" + '$2');
+      }
+      return uri.replace(re, '$1' + key + "=" + value + '$2');
+    }
+    else {
+      if (!value){
+        return uri 
+      }
+      return uri + separator + key + "=" + value;
+    }
+  }
+  function updateUrlParameter( key, value){
+    var newurl = _updateQueryStringParameter(key, value)
+    //向当前url添加参数，没有历史记录
+    window.history.replaceState({
+      path: newurl
+    }, '', newurl);
+  }
+
+  
 class Request 
 {  
 
@@ -34,6 +63,10 @@ class Request
         const output = groupParamsByKey(params)  
         return output;
     }
+    static updateUrlParameter(key,value)
+    { 
+      updateUrlParameter(key,value)
+    } 
 }
 
 export {Request};

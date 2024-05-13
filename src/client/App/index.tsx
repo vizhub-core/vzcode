@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext,Suspense } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../../ot';
 import { Username } from '../../types';
@@ -12,7 +12,7 @@ import {
   useInitialUsername,
   usePersistUsername,
 } from '../usernameLocalStorage';
-import { useShareDB } from './useShareDB';
+import { useShareDB} from './useShareDB';
 import { VZLeft } from '../VZLeft';
 import { VZMiddle } from '../VZMiddle';
 import { VZRight } from '../VZRight';
@@ -20,7 +20,7 @@ import {
   VZCodeContext,
   VZCodeProvider,
 } from '../VZCodeContext';
-import './style.scss';
+import './style.scss'; 
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -28,21 +28,41 @@ const prettierWorker = new PrettierWorker();
 // Instantiate the TypeScript worker.
 const typeScriptWorker = new TypeScriptWorker();
 
-// Register our custom JSON1 OT type that supports presence.
-// See https://github.com/vizhub-core/json1-presence
-ShareDBClient.types.register(json1Presence.type);
+const createShareDBClient = function(){
+  if ( globalThis.wss){
+    return ;
+    try{
+      globalThis.connection.close();
+      globalThis.connection = null;
 
-// Establish the singleton ShareDB connection over WebSockets.
-// TODO consider using reconnecting WebSocket
-const { Connection } = ShareDBClient;
-const wsProtocol =
-  window.location.protocol === 'https:'
-    ? 'wss://'
-    : 'ws://';
-const socket = new WebSocket(
-  wsProtocol + window.location.host + '/ws',
-);
-const connection = new Connection(socket);
+      const wss = globalThis.wss;
+      wss.close();
+      globalThis.wss = null;
+ 
+    }catch(ex){
+
+    }
+  }
+  // Register our custom JSON1 OT type that supports presence.
+  // See https://github.com/vizhub-core/json1-presence
+  ShareDBClient.types.register(json1Presence.type);
+  console.log('🔥 App init ShareDBClient')
+  // Establish the singleton ShareDB connection over WebSockets.
+  // TODO consider using reconnecting WebSocket
+  const { Connection } = ShareDBClient;
+  const wsProtocol =
+    window.location.protocol === 'https:'
+      ? 'wss://'
+      : 'ws://';
+  const socket = new WebSocket(
+    wsProtocol + window.location.host + '/ws',
+  );
+  const connection = new Connection(socket);
+  globalThis.wss = socket;
+  globalThis.connection = Connection;
+
+  return connection;
+}
 
 // Stores the username to local storage.
 // TODO consider if there's a cleaner pattern for this.
@@ -54,7 +74,8 @@ const PersistUsername = () => {
   return null;
 };
 
-function App() {
+function App() {   
+  const connection = createShareDBClient(); 
   const {
     shareDBDoc,
     content,

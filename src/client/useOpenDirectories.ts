@@ -22,7 +22,7 @@ type VZPath = string;
 // TODO move this into reducer
 export const useOpenDirectories = (): {
   isDirectoryOpen: (path: VZPath) => boolean;
-  toggleDirectory: (path: VZPath) => void;
+  toggleDirectory: (path: VZPath) => boolean;
 } => {
   // The set of open directories by path/
   const [openDirectories, setOpenDirectories] = useState<
@@ -60,6 +60,8 @@ export const useOpenDirectories = (): {
 
       // Update the state with the modified set of open directories
       setOpenDirectories(updatedOpenDirectories);
+
+      return directoryIsOpen;
     },
     [openDirectories, isDirectoryOpen],
   );

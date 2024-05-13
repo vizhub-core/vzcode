@@ -4,6 +4,7 @@ import { DirectoryArrowSVG } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { Item } from './Item';
 import { Listing } from './Listing';
+import {onToggleFolderNode} from '../utils/Helper.js'
 
 export const DirectoryListing = ({
   name,
@@ -11,22 +12,31 @@ export const DirectoryListing = ({
   children,
   handleFileClick,
   handleFileDoubleClick,
+  isActive,
 }: {
   name: string;
   path: string;
   children: Array<FileTree | FileTreeFile>;
   handleFileClick: (fileId: string) => void;
   handleFileDoubleClick: (fileId: string) => void;
+  isActive: boolean;
 }) => {
   const {
     renameDirectory,
     deleteDirectory,
     isDirectoryOpen,
-    toggleDirectory,
+    toggleDirectory, 
   } = useContext(VZCodeContext);
 
   const handleClick = useCallback(() => {
-    toggleDirectory(path);
+    const collapse = toggleDirectory(path);
+    if (collapse){
+      console.log(`🧐 collapse setActiveFolderId:`)
+      onToggleFolderNode(null)  
+    }else{
+      console.log(`🧐 open setActiveFolderId  ${path}`)
+      onToggleFolderNode(path) 
+    }
   }, [toggleDirectory, path]);
 
   const handleDeleteClick = useCallback(() => {
@@ -54,6 +64,7 @@ export const DirectoryListing = ({
         handleDeleteClick={handleDeleteClick}
         handleRenameClick={handleRenameClick}
         isDirectory={true}
+        isActive={isActive}
       >
         <div
           className="arrow-wrapper"

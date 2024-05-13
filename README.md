@@ -1,3 +1,32 @@
+#forked purpose
+<details>
+
+<summary>Tips for forked</summary>
+
+### pkg as execute program 
+
+1) build web page out to folder 'dist' :
+```
+npm run build 
+```
+ 
+2) build socket server out to folder 'dist_server' :
+```
+npm run build-server
+```
+
+2) pkg  out to folder 'dist_bin' :
+
+```
+npm run pkg-go
+ 
+```
+
+then all executeable program was build in folder 'dist_bin'
+ 
+
+</details>
+
 # VZCode: Multiplayer Code Editor
 
 VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. It's the code editor component of [VizHub](https://vizhub.com/), and can also be used independently from VizHub.

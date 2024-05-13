@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { Modal, Form, Button } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
+import { wrapUnderSelectedFolder } from "../utils/Helper.js";
 
 export const CreateDirModal = ({
   initialFileName = '',
@@ -46,6 +47,7 @@ export const CreateDirModal = ({
       valid = regex.test(fileName);
 
       //Check for Duplicate Filename
+      fileName = wrapUnderSelectedFolder(fileName);
       for (const key in files) {
         if (fileName + '/' === files[key].name) {
           valid = false;
