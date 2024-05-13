@@ -1,4 +1,4 @@
-#forked purpose
+# forked purpose 🔨
 <details>
 
 <summary>Tips for forked</summary>
@@ -9,20 +9,24 @@
 ```
 npm run build 
 ```
- 
+1.1) dev start server
+```
+npm run start-server
+```
+
 2) build socket server out to folder 'dist_server' :
 ```
 npm run build-server
 ```
 
-2) pkg  out to folder 'dist_bin' :
+2) pkg  out to folder 'dist_server_bin' :
 
 ```
 npm run pkg-go
  
 ```
 
-then all executeable program was build in folder 'dist_bin'
+then all executeable program was build in folder 'dist_server_bin'
  
 
 </details>

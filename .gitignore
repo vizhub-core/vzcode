@@ -5,7 +5,9 @@ dist-ssr
 .env
 .DS_Store
 
+package-lock.json
+
 dist_server
-dist_bin
+dist_server_bin
 
 timeline.md

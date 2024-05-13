@@ -36,4 +36,31 @@ export const FileSys ={
         return false;
       
     }
+
+    
 } 
+
+const cp = function(from, to){
+    try {
+      console.log(`try cp: ${from} => ${to} `)
+      fs.cpSync(from, to, {
+        recursive: true,
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+}
+  
+   
+const ls = async (dirName) => {
+    console.log('try ls:' + dirName);
+    const getFileList = async (dirName) => {
+        const files = await fs.readdir(dirName);
+
+        return files;
+    };
+
+    getFileList(dirName).then((files) => {
+        console.log(files);
+    });
+};
