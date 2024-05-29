@@ -147,6 +147,7 @@
     "vitest": "^1.6.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.18.0"
+    "@rollup/rollup-win32-x64-msvc": "^4.18.0",
+    "@rollup/rollup-darwin-arm64": "^4.18.0"
   }
 }
