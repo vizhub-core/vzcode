@@ -1,4 +1,4 @@
-# VZCode: Multiplayer Code Editor
+# VZCode: Mob Programming Code Editor
 
 VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. It's the code editor component of [VizHub](https://vizhub.com/), and can also be used independently from VizHub.
 
