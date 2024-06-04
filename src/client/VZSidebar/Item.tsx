@@ -151,8 +151,6 @@ export const Item = ({
     setRenameValue(renameInputRef.current.value);
   }, []);
 
-  //test
-  
   return (
     <div
       className={`file-or-directory user-select-none ${
