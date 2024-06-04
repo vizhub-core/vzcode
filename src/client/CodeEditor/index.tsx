@@ -5,6 +5,7 @@ import {
   useMemo,
   useContext,
 } from 'react';
+import { EditorView } from 'codemirror';
 import { Username } from '../../types';
 import { EditorCacheValue } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
@@ -114,6 +115,18 @@ export const CodeEditor = ({
     // Add the editor to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);
 
+    // Set the prior line position of the non-active document
+    const editor = editorCacheValue.editor;
+    const cursor = editor.state.selection.main.head;
+    const line = editor.state.doc.lineAt(cursor).number;
+
+    editor.dispatch({
+      effects: EditorView.scrollIntoView(editor.state.doc.line(line).from, {
+        y: 'center',
+        x: 'center'
+      })
+    });
+    
     return () => {
       // Remove the old editor from the DOM.
       // This happens every time `activeFileId` changes.
