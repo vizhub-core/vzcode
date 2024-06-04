@@ -309,10 +309,10 @@ server.listen(port, async () => {
       console.log(`Editor is live at ${url}`);
       open(url);
     })();
-  } else {
-    console.log(
-      `Editor is live at http://localhost:${port}`,
-    );
-    open(`http://localhost:${port}`);
-  }
+  // } else {
+  //   console.log(
+  //     `Editor is live at http://localhost:${port}`,
+  //   );
+  //   open(`http://localhost:${port}`);
+  // }
 });

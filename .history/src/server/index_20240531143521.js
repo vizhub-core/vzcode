@@ -313,6 +313,6 @@ server.listen(port, async () => {
     console.log(
       `Editor is live at http://localhost:${port}`,
     );
-    open(`http://localhost:${port}`);
+    // open(`http://localhost:${port}`);
   }
 });
