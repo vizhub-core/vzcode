@@ -104,8 +104,7 @@ export const VZSidebar = ({
       onDrop={handleDrop}
     >
       <div className="files" ref={sidebarRef}
-        tabIndex={-1} // Makes the div focusable
-        style={{ outline: 'none', border: '1px solid black', padding: '20px' }}>
+        tabIndex={-1} style = {{outline: 'none'}}>
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
