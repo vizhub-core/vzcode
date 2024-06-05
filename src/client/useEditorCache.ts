@@ -5,7 +5,7 @@ import { EditorView } from 'codemirror';
 export type EditorCacheValue = {
   editor: EditorView;
   themeCompartment: any;
-  position?: number;
+  scrollPosition?: number;
 };
 
 export type EditorCache = Map<FileId, EditorCacheValue>;
