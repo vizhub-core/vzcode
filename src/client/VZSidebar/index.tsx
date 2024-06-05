@@ -104,7 +104,7 @@ export const VZSidebar = ({
       onDrop={handleDrop}
     >
       <div className="files" ref={sidebarRef}
-        tabIndex={-1} style = {{outline: 'none'}}>
+        tabIndex={-1}>
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
