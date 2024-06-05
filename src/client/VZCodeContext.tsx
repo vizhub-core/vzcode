@@ -126,8 +126,8 @@ export type VZCodeContextValue = {
     null | (() => void)
   >;
   runCodeRef: React.MutableRefObject<null | (() => void)>;
-  
-  sidebarRef: React.MutableRefObject<HTMLDivElement | null>
+
+  sidebarRef: React.RefObject<HTMLDivElement>;
 
   connected: boolean;
 
@@ -177,7 +177,7 @@ export const VZCodeProvider = ({
 
   const runCodeRef = useRunCode(submitOperation);
 
-  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const sidebarRef = useRef(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
