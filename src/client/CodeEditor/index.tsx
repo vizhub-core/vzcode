@@ -112,24 +112,14 @@ export const CodeEditor = ({
     if (!ref.current) return;
     if (!content) return;
 
-    // Add the editor to the DOM.
+    // Add the editor and apply the prior scroll position to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);
-
-    // Set the prior line position of the non-active document
-    const editor = editorCacheValue.editor;
-    const cursor = editor.state.selection.main.head;
-    const line = editor.state.doc.lineAt(cursor).number;
-
-    editor.dispatch({
-      effects: EditorView.scrollIntoView(editor.state.doc.line(line).from, {
-        y: 'center',
-        x: 'center'
-      })
-    });
+    editorCacheValue.editor.scrollDOM.scrollTo({top: editorCacheValue.position ?? 0});
     
     return () => {
-      // Remove the old editor from the DOM.
+      // Remove the old editor from the DOM and store the current scroll position.
       // This happens every time `activeFileId` changes.
+      editorCacheValue.position = editorCacheValue.editor.scrollDOM.scrollTop;
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, editorCacheValue]);
