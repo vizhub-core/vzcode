@@ -70,11 +70,12 @@ export const useKeyboardShortcuts = ({
         
       }
 
-      
-      if (event.ctrlKey && event.key === '0') {
-        if (sidebarRef.current) {
-          alert("focused");
-          sidebarRef.current.focus();
+
+      if (event.ctrlKey == true){
+        if (event.key === '0'){
+          if (sidebarRef.current) {
+            sidebarRef.current.focus();
+          }
         }
       }
       
