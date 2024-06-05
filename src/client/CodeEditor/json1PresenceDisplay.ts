@@ -56,7 +56,9 @@ export const json1PresenceDisplay = ({
             const { start, end } = presence;
             const from = start[start.length - 1];
             const to = end[end.length - 1];
-            const userColor = new ColorHash({lightness: 0.75}).rgb(id);
+            const userColor = new ColorHash({
+              lightness: 0.75,
+            }).rgb(id);
             const { username } = presence;
 
             presenceDecorations.push({
