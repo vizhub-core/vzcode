@@ -113,12 +113,15 @@ export const CodeEditor = ({
 
     // Add the editor and apply the prior scroll position to the DOM.
     ref.current.appendChild(editorCacheValue.editor.dom);
-    editorCacheValue.editor.scrollDOM.scrollTo({top: editorCacheValue.scrollPosition ?? 0});
-    
+    editorCacheValue.editor.scrollDOM.scrollTo({
+      top: editorCacheValue.scrollPosition ?? 0,
+    });
+
     return () => {
       // Remove the old editor from the DOM and store the current scroll position.
       // This happens every time `activeFileId` changes.
-      editorCacheValue.scrollPosition = editorCacheValue.editor.scrollDOM.scrollTop;
+      editorCacheValue.scrollPosition =
+        editorCacheValue.editor.scrollDOM.scrollTop;
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, editorCacheValue]);
