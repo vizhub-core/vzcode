@@ -39,6 +39,7 @@ import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
+import rainbowBrackets from './rainbowBrackets';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -328,6 +329,8 @@ export const getOrCreateEditor = ({
       }),
     ),
   );
+  // adds rainbow brackets
+  extensions.push(rainbowBrackets())
 
   const editor = new EditorView({
     state: EditorState.create({
