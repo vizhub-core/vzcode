@@ -166,7 +166,7 @@ export const getOrCreateEditor = ({
       );
     }
 
-    // Deals with receiving the broadcas from other clients and displaying them.
+    // Deals with receiving the broadcast from other clients and displaying them.
     if (docPresence) {
       extensions.push(
         json1PresenceDisplay({
