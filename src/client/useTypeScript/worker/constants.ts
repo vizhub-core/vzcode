@@ -70,7 +70,7 @@ const LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER = 2322;
 
 // This code is for errors like:
 // "Object is of type 'unknown'."
-const LINT_ERROR_CODE_UNKNOWN = 2571;
+const LINT_ERROR_CODE_UNKNOWN = 18046;
 
 
 export const excludedErrorCodes = new Set([
