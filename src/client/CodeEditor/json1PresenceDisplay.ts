@@ -27,6 +27,10 @@ export const json1PresenceDisplay = ({
       // See https://codemirror.net/6/docs/ref/#view.Decoration
       decorations: RangeSet<Decoration>;
 
+      //Added variable for cursor position
+      cursorPosition = {};
+
+
       constructor(view: EditorView) {
         // Initialize decorations to empty array so CodeMirror doesn't crash.
         this.decorations = RangeSet.of([]);
@@ -36,8 +40,14 @@ export const json1PresenceDisplay = ({
         //  * Values are presence objects as defined by ot-json1-presence
         const presenceState = {};
 
+        // Add the scroll event listener
+        //This runs for the arrow key scrolling, it should result in the users scrolling to eachother's location.
+        view.dom.addEventListener('scroll', () => {
+          this.scrollToCursor(view);
+        });
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
+          console.log(`Received presence for id ${id}`, presence); // Debug statement
           // If presence === null, the user has disconnected / exited
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
@@ -97,6 +107,12 @@ export const json1PresenceDisplay = ({
                 }),
               });
             }
+            if (view.state.doc.length >= from) { // Ensure position is valid
+              this.cursorPosition[id] = from; // Store the cursor position, important to run if we cant get the regular scroll to work
+              console.log(`Stored cursor position for id ${id}: ${from}`); // Debug statement
+            } else {
+              console.warn(`Invalid cursor position for id ${id}: ${from}`); // Debug statement
+            }
           }
 
           this.decorations = Decoration.set(
@@ -116,15 +132,50 @@ export const json1PresenceDisplay = ({
               annotations: [presenceAnnotation.of(true)],
             });
           }, 0);
+          //call to scroll to the cursor of the other user
+          this.scrollToCursor(view);
         });
       }
-    },
-    {
-      decorations: (v) => v.decorations,
-    },
-  ),
-  presenceTheme,
-];
+            // Method to scroll the view to keep the cursor in view
+            scrollToCursor(view) {
+              //console.log('Scrolling to keep cursor in view'); // Debug statement
+              for (const id in this.cursorPosition) {
+                const cursorPos = this.cursorPosition[id];
+                //fetch coordinates of user
+                const rect = view.coordsAtPos(cursorPos);
+                
+                if (!rect) {
+                  //console.log(`Could not get coordinates for position ${cursorPos}, scrolling directly`); // Debug statement
+                  view.dispatch({
+                    //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
+                    effects: EditorView.scrollIntoView(cursorPos)
+                  });
+                  continue; // Skip to next cursor
+                }
+      
+                const editorRect = view.dom.getBoundingClientRect();
+                //console.log(`Cursor position for id ${id}:`, cursorPos, rect, editorRect); // Debug statement
+      
+                if (
+                  //bounds
+                  rect.top < editorRect.top ||
+                  rect.bottom > editorRect.bottom ||
+                  rect.left < editorRect.left ||
+                  rect.right > editorRect.right
+                ) {
+                  //console.log(`Scrolling to cursor position for id ${id}: ${cursorPos}`); // Debug statement
+                  //scroll to cursor (smooth). Runs if the cursor hasnt jumped off screen, but instead has slow-scrolled off.
+                  view.dispatch({effects: EditorView.scrollIntoView(cursorPos)});
+                }
+              }
+            }
+          },
+          {
+            decorations: (v) => v.decorations,
+          },
+        ),
+        presenceTheme,
+      ];
 
 const presenceAnnotation = Annotation.define();
 
