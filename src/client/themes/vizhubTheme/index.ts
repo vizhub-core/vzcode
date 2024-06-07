@@ -190,6 +190,27 @@ function vizhubThemeInit(
           backgroundColor: 'transparent',
           outline: '1px solid #ff2222',
         },
+        '.rainbow-bracket-red > span': {
+          color: 'white',
+        },
+        '.rainbow-bracket-orange > span': {
+          color: 'violet',
+        },
+        '.rainbow-bracket-yellow > span': {
+          color: 'deepskyblue',
+        },
+        '.rainbow-bracket-green > span': {
+          color: 'lime',
+        },
+        '.rainbow-bracket-blue > span': {
+          color: 'yellow',
+        },
+        '.rainbow-bracket-indigo > span': {
+          color: 'orange',
+        },
+        '.rainbow-bracket-violet > span': {
+          color: 'red',
+        },
       },
       { dark: true },
     ),

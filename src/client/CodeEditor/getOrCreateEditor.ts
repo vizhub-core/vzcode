@@ -39,7 +39,7 @@ import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
-import rainbowBrackets from './rainbowBrackets';
+import rainbowBrackets from 'rainbowbrackets'
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
