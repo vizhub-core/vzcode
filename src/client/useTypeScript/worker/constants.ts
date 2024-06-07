@@ -65,6 +65,9 @@ export const LINT_ERROR_CODE_CANNOT_FIND_NAME = 2304;
 //Ignore specific TypeScript warning on object reassignment
 const LINT_ERROR_CODE_OBJ_REASSINGMENT = 2739;
 
+// Type 'any' is not assignable to type 'never'.
+const LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER = 2322;
+
 export const excludedErrorCodes = new Set([
   LINT_ERROR_CODE_ANY,
   LINT_ERROR_CODE_IMPORT,
@@ -75,4 +78,5 @@ export const excludedErrorCodes = new Set([
   LINT_ERROR_CODE_ITERATED_THROUGH,
   LINT_ERROR_CODE_ASSIGNABLE_TO_NEVER,
   LINT_ERROR_CODE_OBJ_REASSINGMENT,
+  LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER,
 ]);

@@ -46,6 +46,7 @@ export const VZSidebar = ({
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
+    sidebarRef
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -102,7 +103,8 @@ export const VZSidebar = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="files">
+      <div className="files" ref={sidebarRef}
+        tabIndex={-1}>
         <div className="full-box">
           <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
