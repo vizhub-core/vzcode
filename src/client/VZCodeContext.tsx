@@ -3,6 +3,7 @@ import {
   useCallback,
   useReducer,
   useState,
+  useRef
 } from 'react';
 import {
   FileId,
@@ -126,6 +127,8 @@ export type VZCodeContextValue = {
   >;
   runCodeRef: React.MutableRefObject<null | (() => void)>;
 
+  sidebarRef: React.RefObject<HTMLDivElement>;
+
   connected: boolean;
 
   hoveredItemId: ItemId | null;
@@ -173,6 +176,8 @@ export const VZCodeProvider = ({
   });
 
   const runCodeRef = useRunCode(submitOperation);
+
+  const sidebarRef = useRef(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -316,6 +321,7 @@ export const VZCodeProvider = ({
     setActiveFileRight,
     runPrettierRef,
     runCodeRef,
+    sidebarRef
   });
 
   // Track the currently hovered file id.
@@ -382,6 +388,7 @@ export const VZCodeProvider = ({
     handleCreateDirClick,
     runPrettierRef,
     runCodeRef,
+    sidebarRef,
 
     connected,
 
