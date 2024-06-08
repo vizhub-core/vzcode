@@ -67,18 +67,15 @@ export const useKeyboardShortcuts = ({
           setActiveFileRight();
           return;
         }
-        
-      }
 
-
-      if (event.ctrlKey == true){
-        if (event.key === '0'){
+        if (event.key === '1'){
+          event.preventDefault();
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }
         }
+        
       }
-      
      
     };
 
