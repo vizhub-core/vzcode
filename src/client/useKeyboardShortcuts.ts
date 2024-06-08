@@ -3,40 +3,90 @@ import { shouldTriggerRun } from './shouldTriggerRun';
 import { EditorView } from 'codemirror';
 import { syntaxTree } from "@codemirror/language";
 
-function jumpToDef(editor : EditorView) {
-  let found = false;
+function getLevel(token) {
+  let current = token;
+  let levels = 0;
 
+  // Nesting types for the specific language
+  const nestingTypes = new Set([
+    'FunctionDeclaration', 
+    'ClassDeclaration', 
+    'MethodDeclaration', 
+    'Block', 
+    'IfStatement',
+    'ForStatement',
+    'WhileStatement',
+    'SwitchStatement',
+    'TryStatement',
+    'CatchClause',
+    'WithStatement',
+    'ArrowFunction'
+  ]);
+
+  // Traverse up the tree to find the total depth
+  while (current && current.type) {
+    const parentType = current.type.name;
+
+    if (nestingTypes.has(parentType)) {
+      levels++;
+    }
+
+    current = current.parent;
+  }
+
+  return levels;
+}
+
+function jumpToDef(editor) {
   const state = editor.state;
   const location = state.selection.main;
 
   // Fetch the current token or syntax node information at current cursor position
-  const token = syntaxTree(state).resolveInner(location.from, 1);
+  const token = syntaxTree(state).resolveInner(location.from, -1);
   const tokenName = state.doc.sliceString(token.from, token.to);
+  const context = getLevel(token);
+  const definitions = [];
 
-  // Valid non-null and non-empty token name
   if (tokenName) {
     syntaxTree(state).iterate({
-        enter(tree) {
-            // Traverse syntax tree in attempt to find position of variable definition with current scope
-            if (!(found) && ((tree.name === 'FunctionDeclaration' || tree.name === 'VariableDeclaration'))) {
-                const node = tree.node;
-                const identifier = node.getChild('VariableDefinition') || node.getChild('Identifier');
+      enter(tree) {
+        // Traverse syntax tree to find positions of variable definitions within the current context
+        if (tree.name === 'VariableDeclaration' || tree.name === 'FunctionDeclaration') {
+          const node = tree.node;
+          const identifier = node.getChild('VariableDefinition') || node.getChild('Identifier');
 
-                if (identifier && state.doc.sliceString(identifier.from, identifier.to) === tokenName) {
-                  // Set the cursor position to the valid declaration in current scope and center the line, if possible
-                  found = true;
-
-                  editor.dispatch({
-                      selection: { anchor: identifier.from, head: identifier.to },
-                      scrollIntoView: true,
-                      effects: EditorView.scrollIntoView(identifier.from, {
-                        y: "center"
-                      })
-                  });
-                }
+          if (identifier && state.doc.sliceString(identifier.from, identifier.to) === tokenName) {
+            const currentContext = getLevel(node);
+            
+            if (currentContext <= context) {
+              definitions.push({ node, level: getLevel(node) });
             }
+          }
         }
+      }
     });
+
+    if (definitions.length > 0) {
+      // Sort definitions by their level to find the closest based on current context
+      definitions.sort((a, b) => a.level - b.level);
+      let closestDefinition = definitions[0].node;
+        
+      for (let i = definitions.length - 1; i >= 0; i--) {
+        if (definitions[i].level <= context) {
+          closestDefinition = definitions[i].node;
+          break;
+        }
+      }
+
+      // Set the cursor position to the valid declaration in current scope and center the line, if possible
+      editor.dispatch({
+        selection: { anchor: closestDefinition.from, head: closestDefinition.to },
+        scrollIntoView: true,
+        effects: EditorView.scrollIntoView(closestDefinition.from, {
+          y: "center"
+        })
+      });
+    }
   }
 }
 
