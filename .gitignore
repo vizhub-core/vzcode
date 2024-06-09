@@ -4,3 +4,4 @@ dist-ssr
 *.swp
 .env
 .DS_Store
+.history

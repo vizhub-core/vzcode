@@ -1,43 +1,32 @@
-import { DirectoryListing } from './DirectoryListing';
-import {
+import { useContext } from 'react';
+import type {
   FileId,
   FileTree,
   FileTreeFile,
-  FileTreePath,
 } from '../../types';
+import { VZCodeContext } from '../VZCodeContext';
+import { DirectoryListing } from './DirectoryListing';
 import { FileListing } from './FileListing';
 
 // A "Listing" is a "FileListing" or a "DirectoryListing"
 // that appears in the Sidebar.
 export const Listing = ({
   entity,
-  renameFile,
-  deleteFile,
-  deleteDirectory,
   handleFileClick,
   handleFileDoubleClick,
-  isDirectoryOpen,
-  toggleDirectory,
-  activeFileId,
 }: {
   entity: FileTree | FileTreeFile;
-  renameFile: (fileId: FileId, newName: string) => void;
-  deleteFile: (fileId: FileId) => void;
-  deleteDirectory: (path: FileTreePath) => void;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
-  activeFileId: FileId;
 }) => {
+  const { activeFileId } = useContext(VZCodeContext);
   const { name, file, fileId } = entity as FileTreeFile;
   const { path, children } = entity as FileTree;
+
   return file ? (
     <FileListing
       fileId={fileId}
       name={name}
-      renameFile={renameFile}
-      deleteFile={deleteFile}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
       isActive={fileId === activeFileId}
@@ -47,14 +36,8 @@ export const Listing = ({
       name={name}
       path={path}
       children={children}
-      renameFile={renameFile}
-      deleteFile={deleteFile}
-      deleteDirectory={deleteDirectory}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
-      isDirectoryOpen={isDirectoryOpen}
-      toggleDirectory={toggleDirectory}
-      activeFileId={activeFileId}
     />
   );
 };

@@ -27,19 +27,36 @@ export const useFileCRUD = ({
 }) => {
   // Create a new file
   const createFile = useCallback(
-    (name: string) => {
+    (name: string, text = '') => {
       if (name) {
         const fileId: FileId = randomId();
         submitOperation((document: VZCodeContent) => ({
           ...document,
           files: {
             ...document.files,
-            [fileId]: { name, text: '' },
+            [fileId]: { name, text },
           },
         }));
         // When a new file is created, open it in a new tab
         // and focus the editor on it.
         openTab({ fileId, isTransient: false });
+      }
+    },
+    [submitOperation],
+  );
+
+  const createDirectory = useCallback(
+    (name: string, text = null) => {
+      if (name) {
+        name += '/';
+        const fileId: FileId = randomId();
+        submitOperation((document: VZCodeContent) => ({
+          ...document,
+          files: {
+            ...document.files,
+            [fileId]: { name, text },
+          },
+        }));
       }
     },
     [submitOperation],
@@ -54,10 +71,60 @@ export const useFileCRUD = ({
           ...document.files,
           [fileId]: {
             ...document.files[fileId],
-            name: newName,
+            name:
+              document.files[fileId].name.substring(
+                0,
+                document.files[fileId].name.lastIndexOf(
+                  '/',
+                ) + 1,
+              ) + newName,
           },
         },
       }));
+    },
+    [submitOperation],
+  );
+
+  // Renames a directory
+  const renameDirectory = useCallback(
+    (
+      path: FileTreePath,
+      oldName: string,
+      newName: string,
+    ) => {
+      console.log(path);
+      console.log(oldName);
+      submitOperation((document: VZCodeContent) => {
+        const updatedFiles = Object.keys(
+          document.files,
+        ).reduce((acc, key) => {
+          const file = document.files[key];
+          const fileName = file.name;
+          //See if it's actually in directory
+          if (fileName.includes(path + '/')) {
+            //Create New Name for System
+            const pathPart = fileName.substring(
+              0,
+              fileName.indexOf(path) + path.length,
+            );
+            const oldNamePos =
+              pathPart.lastIndexOf(oldName);
+            const fileNewName =
+              fileName.substring(0, oldNamePos) +
+              newName +
+              fileName.substring(
+                oldNamePos + oldName.length,
+              );
+            //Return with new names
+            acc[key] = { ...file, name: fileNewName };
+          } else {
+            acc[key] = file;
+          }
+          return acc;
+        }, {});
+
+        return { ...document, files: updatedFiles };
+      });
     },
     [submitOperation],
   );
@@ -82,7 +149,7 @@ export const useFileCRUD = ({
       submitOperation((document: VZCodeContent) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
-          if (updatedFiles[key].name.includes(path)) {
+          if (updatedFiles[key].name.includes(path + '/')) {
             tabsToClose.push(key);
             delete updatedFiles[key];
           }
@@ -98,6 +165,8 @@ export const useFileCRUD = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
+    renameDirectory,
     deleteDirectory,
   };
 };

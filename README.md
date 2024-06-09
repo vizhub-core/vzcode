@@ -1,6 +1,6 @@
-# VZCode: Multiplayer Code Editor
+# VZCode: Mob Programming Code Editor
 
-VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience.
+VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. It's the code editor component of [VizHub](https://vizhub.com/), and can also be used independently from VizHub.
 
 ![VZCode Interface](https://github.com/vizhub-core/vzcode/assets/68416/1812f25c-66b4-49bb-a04f-4474eb30e32b)
 
@@ -150,26 +150,8 @@ VZCode is inspired by [VizHub v2](https://github.com/vizhub-core/vizhub/). VizHu
 
 ![Prior Work Image](https://user-images.githubusercontent.com/68416/213894278-51c7c9a9-dc11-42bc-ba10-c23109c473cd.png)
 
-## Milestones
-
-For detailed progress, visit the [VZCode Kanban Board](https://github.com/orgs/vizhub-core/projects/2/views/1)
-
-- **February 2023**: Initial setup, server, and basic features
-- **March 2023**: Enhancements, UX improvements, and NPM release
-- **April 2023**: Directory support, feedback iterations, and promotion
-- **May - August 2023**: Themes, overhaul CSS, adopt TypeScript, interactive widgets
-- **September 2023**: Auto-run Prettier, AI-Assisted coding, TypeScript Autocomplete
-- **October 2023**: Draggable split pane, deep linking, presence enhancements
-- **November 2023**: Directory manipulation UX, implementing VSCode features
-
-## Team
-
-- **Curran Kelleher**
-- **Anooj Pai** from [RPI RCOS](https://rcos.io/)
-
-  We welcome contributions!
-
 ## Spaces
 
+- [VizHub Discord](https://discord.com/invite/wbtJ7SCtYr)
 - [GitHub Repository](https://github.com/vizhub-core/vzcode)
 - [Discord Channel within RCOS](https://discord.com/channels/738593165438746634/1066068656045441044)

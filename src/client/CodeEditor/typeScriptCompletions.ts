@@ -2,11 +2,11 @@ import {
   CompletionContext,
   CompletionSource,
 } from '@codemirror/autocomplete';
+import { generateRequestId } from '../generateRequestId';
 import {
   AutocompleteRequest,
   AutocompleteResponse,
-} from '../useTypeScript/requestTypes';
-import { generateRequestId } from '../generateRequestId';
+} from '../useTypeScript/worker/requestTypes';
 
 const PREVENT_COMPLETIONS_CHARACTERS = [
   '"',

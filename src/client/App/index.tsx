@@ -61,6 +61,7 @@ function App() {
     localPresence,
     docPresence,
     submitOperation,
+    connected,
   } = useShareDB({
     connection,
   });
@@ -87,10 +88,11 @@ function App() {
         prettierWorker={prettierWorker}
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
+        connected={connected}
       >
         <div className="app">
           <VZLeft />
-          <VZMiddle />
+          <VZMiddle allowGlobals={true} />
           {enableRightPanel ? <VZRight /> : null}
           <VZResizer side="left" />
           {enableRightPanel ? (

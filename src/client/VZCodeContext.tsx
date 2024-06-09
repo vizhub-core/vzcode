@@ -3,9 +3,12 @@ import {
   useCallback,
   useReducer,
   useState,
+  useRef
 } from 'react';
 import {
+  FileId,
   Files,
+  ItemId,
   ShareDBDoc,
   SubmitOperation,
   Username,
@@ -52,9 +55,18 @@ export type VZCodeContextValue = {
   docPresence: any;
 
   files: Files | null;
-  createFile: (fileName: string) => void;
+  createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
+  createDirectory: (
+    fileName: string,
+    text?: string,
+  ) => void;
+  renameDirectory: (
+    directoryId: string,
+    directoryOldName: string,
+    directoryName: string,
+  ) => void;
   deleteDirectory: (directoryId: string) => void;
 
   activeFileId: string | null;
@@ -76,6 +88,10 @@ export type VZCodeContextValue = {
   setIsSettingsOpen: (isSettingsOpen: boolean) => void;
   closeSettings: () => void;
 
+  isDocOpen: boolean;
+  setIsDocOpen: (isDocOpen: boolean) => void;
+  closeDoc: () => void;
+
   theme: ThemeLabel;
   setTheme: (theme: ThemeLabel) => void;
 
@@ -86,7 +102,10 @@ export type VZCodeContextValue = {
   toggleDirectory: (path: string) => void;
 
   editorCache: EditorCache;
+
+  // Whether the editor should be focused.
   editorWantsFocus: boolean;
+  // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
 
   errorMessage: string | null;
@@ -97,10 +116,23 @@ export type VZCodeContextValue = {
   handleOpenCreateFileModal: () => void;
   handleCloseCreateFileModal: () => void;
   handleCreateFileClick: (newFileName: string) => void;
+
+  isCreateDirModalOpen: boolean;
+  handleOpenCreateDirModal: () => void;
+  handleCloseCreateDirModal: () => void;
+  handleCreateDirClick: (newFileName: string) => void;
+
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
   runCodeRef: React.MutableRefObject<null | (() => void)>;
+
+  sidebarRef: React.RefObject<HTMLDivElement>;
+
+  connected: boolean;
+
+  hoveredItemId: ItemId | null;
+  setHoveredItemId: (itemId: ItemId | null) => void;
 };
 
 export const VZCodeProvider = ({
@@ -114,7 +146,7 @@ export const VZCodeProvider = ({
   initialUsername,
   children,
   codeError = null,
-  enableManualPretter = true,
+  connected,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -126,7 +158,7 @@ export const VZCodeProvider = ({
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
-  enableManualPretter?: boolean;
+  connected: boolean;
 }) => {
   // Auto-run Pretter after local changes.
   const {
@@ -141,10 +173,11 @@ export const VZCodeProvider = ({
     shareDBDoc,
     submitOperation,
     prettierWorker,
-    enableManualPretter,
   });
 
   const runCodeRef = useRunCode(submitOperation);
+
+  const sidebarRef = useRef(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -180,6 +213,7 @@ export const VZCodeProvider = ({
     activeFileId,
     theme,
     isSettingsOpen,
+    isDocOpen,
     editorWantsFocus,
     username,
   } = state;
@@ -193,7 +227,9 @@ export const VZCodeProvider = ({
     closeTabs,
     setTheme,
     setIsSettingsOpen,
+    setIsDocOpen,
     closeSettings,
+    closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
   } = useActions(dispatch);
@@ -223,6 +259,8 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
+    renameDirectory,
     deleteDirectory,
   } = useFileCRUD({
     submitOperation,
@@ -250,6 +288,26 @@ export const VZCodeProvider = ({
     [createFile, setIsCreateFileModalOpen],
   );
 
+  // State to control the create directory modal's visibility
+  const [isCreateDirModalOpen, setIsCreateDirModalOpen] =
+    useState(false);
+
+  const handleOpenCreateDirModal = useCallback(() => {
+    setIsCreateDirModalOpen(true);
+  }, []);
+
+  const handleCloseCreateDirModal = useCallback(() => {
+    setIsCreateDirModalOpen(false);
+  }, []);
+
+  const handleCreateDirClick = useCallback(
+    (newDirName: string) => {
+      createDirectory(newDirName);
+      setIsCreateDirModalOpen(false);
+    },
+    [createDirectory, setIsCreateDirModalOpen],
+  );
+
   // Isolate the files object from the document.
   const files: Files | null = content
     ? content.files
@@ -263,7 +321,12 @@ export const VZCodeProvider = ({
     setActiveFileRight,
     runPrettierRef,
     runCodeRef,
+    sidebarRef
   });
+
+  // Track the currently hovered file id.
+  const [hoveredItemId, setHoveredItemId] =
+    useState<ItemId | null>(null);
 
   // The value provided by this context.
   const value: VZCodeContextValue = {
@@ -277,6 +340,8 @@ export const VZCodeProvider = ({
     createFile,
     renameFile,
     deleteFile,
+    createDirectory,
+    renameDirectory,
     deleteDirectory,
 
     activeFileId,
@@ -291,6 +356,10 @@ export const VZCodeProvider = ({
     isSettingsOpen,
     setIsSettingsOpen,
     closeSettings,
+
+    isDocOpen,
+    setIsDocOpen,
+    closeDoc,
 
     theme,
     setTheme,
@@ -313,8 +382,18 @@ export const VZCodeProvider = ({
     handleOpenCreateFileModal,
     handleCloseCreateFileModal,
     handleCreateFileClick,
+    isCreateDirModalOpen,
+    handleOpenCreateDirModal,
+    handleCloseCreateDirModal,
+    handleCreateDirClick,
     runPrettierRef,
     runCodeRef,
+    sidebarRef,
+
+    connected,
+
+    hoveredItemId,
+    setHoveredItemId,
   };
 
   return (

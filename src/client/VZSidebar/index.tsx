@@ -7,45 +7,55 @@ import {
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
-import { disableSettings } from '../featureFlags';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
-import { BugSVG, GearSVG, NewSVG } from '../Icons';
-import { Listing } from './Listing';
+import {
+  BugSVG,
+  GearSVG,
+  NewSVG,
+  FileSVG,
+  QuestionMarkSVG,
+} from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
+import { Listing } from './Listing';
+import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
 // See https://github.com/vizhub-core/vzcode/issues/456
-const enableConnectionStatus = false;
+const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = 'New File',
+  createDirTooltipText = 'New Directory',
   openSettingsTooltipText = 'Open Settings',
+  openKeyboardShortcuts = 'Keyboard Shortcuts',
   reportBugTooltipText = 'Report Bug',
 }: {
   createFileTooltipText?: string;
+  createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
+  openKeyboardShortcuts?: string;
 }) => {
   const {
     files,
-    renameFile,
-    deleteFile,
-    deleteDirectory,
-    activeFileId,
     openTab,
     setIsSettingsOpen,
-    isDirectoryOpen,
-    toggleDirectory,
+    setIsDocOpen,
     handleOpenCreateFileModal,
+    handleOpenCreateDirModal,
+    connected,
+    sidebarRef
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-
+  const handleQuestionMarkClick = useCallback(() => {
+    setIsDocOpen(true);
+  }, []);
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
@@ -76,19 +86,46 @@ export const VZSidebar = ({
     fileTree.children &&
     fileTree.children.length > 0;
 
+  const {
+    isDragOver,
+    handleDragEnter,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useDragAndDrop();
+
   return (
     <div
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
-      <div className="files">
+      <div className="files" ref={sidebarRef}
+        tabIndex={-1}>
         <div className="full-box">
-          <div className="sidebar-section-hint">
-            Project Files
-          </div>
+          <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
             <OverlayTrigger
-              placement="left"
+              placement="right"
+              overlay={
+                <Tooltip id="open-keyboard-shortcuts">
+                  {openKeyboardShortcuts}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleQuestionMarkClick}
+                className="icon-button icon-button-dark"
+              >
+                <QuestionMarkSVG />
+              </i>
+            </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="right"
               overlay={
                 <Tooltip id="report-bug-tooltip">
                   {reportBugTooltipText}
@@ -105,23 +142,23 @@ export const VZSidebar = ({
                 </i>
               </a>
             </OverlayTrigger>
-            {disableSettings ? null : (
-              <OverlayTrigger
-                placement="left"
-                overlay={
-                  <Tooltip id="open-settings-tooltip">
-                    {openSettingsTooltipText}
-                  </Tooltip>
-                }
+
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="open-settings-tooltip">
+                  {openSettingsTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleSettingsClick}
+                className="icon-button icon-button-dark"
               >
-                <i
-                  onClick={handleSettingsClick}
-                  className="icon-button icon-button-dark"
-                >
-                  <GearSVG />
-                </i>
-              </OverlayTrigger>
-            )}
+                <GearSVG />
+              </i>
+            </OverlayTrigger>
+
             <OverlayTrigger
               placement="left"
               overlay={
@@ -137,9 +174,32 @@ export const VZSidebar = ({
                 <NewSVG />
               </i>
             </OverlayTrigger>
+
+            {/*Directory Rename*/}
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="create-dir-tooltip">
+                  {createDirTooltipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleOpenCreateDirModal}
+                className="icon-button icon-button-dark"
+              >
+                <FileSVG />
+              </i>
+            </OverlayTrigger>
           </div>
         </div>
-        {filesExist ? (
+        {isDragOver ? (
+          <div className="empty">
+            <div className="empty-text">
+              Drop files here!
+            </div>
+          </div>
+        ) : filesExist ? (
           fileTree.children.map((entity) => {
             const { fileId } = entity as FileTreeFile;
             const { path } = entity as FileTree;
@@ -148,16 +208,10 @@ export const VZSidebar = ({
               <Listing
                 key={key}
                 entity={entity}
-                renameFile={renameFile}
-                deleteFile={deleteFile}
-                deleteDirectory={deleteDirectory}
                 handleFileClick={handleFileClick}
                 handleFileDoubleClick={
                   handleFileDoubleClick
                 }
-                isDirectoryOpen={isDirectoryOpen}
-                toggleDirectory={toggleDirectory}
-                activeFileId={activeFileId}
               />
             );
           })
@@ -174,10 +228,13 @@ export const VZSidebar = ({
 
       {enableConnectionStatus && (
         <div className="connection-status">
-          Connection Status
+          {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
-            Saved
-            <div className="saved" />
+            <div
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
           </div>
         </div>
       )}

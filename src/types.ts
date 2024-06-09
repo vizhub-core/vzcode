@@ -1,8 +1,12 @@
 // FileId
 //   * A unique ID for a file.
-
 //   * This is a random string.
 export type FileId = string;
+
+// ItemId
+//   * A unique ID for an item in the sidebar.
+//   * This could be either a file ID or a directory path.
+export type ItemId = FileId | FileTreePath;
 
 // Files
 //  * A collection of files.

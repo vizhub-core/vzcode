@@ -1,15 +1,16 @@
 import type { Diagnostic } from 'typescript';
-import {
-  LinterResponse,
-  LinterRequest,
-} from '../useTypeScript/requestTypes';
 import { generateRequestId } from '../generateRequestId';
+import {
+  LinterRequest,
+  LinterResponse,
+} from '../useTypeScript/worker/requestTypes';
 
 export const typeScriptLinter = ({
   typeScriptWorker,
   fileName,
   shareDBDoc,
   fileId,
+  allowGlobals,
 }) => {
   return async () => {
     const requestId = generateRequestId();
@@ -20,6 +21,7 @@ export const typeScriptLinter = ({
       fileName,
       fileContent,
       requestId,
+      allowGlobals,
     };
     typeScriptWorker.postMessage(linterRequest);
 

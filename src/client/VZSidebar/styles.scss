@@ -20,6 +20,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    outline: none;
   }
 
   .file-or-directory {
@@ -89,8 +90,15 @@
   }
 
   .rename-input {
-    padding: 0px;
+    width: 100%;
     border: 0px;
+    outline: none;
+    background: transparent;
+    color: var(--vh-color-neutral-04);
+    font-family: var(--vzcode-font-family);
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0px;
     margin: 0px;
   }
 
@@ -120,29 +128,37 @@
     padding: 20px;
     border: 1px dashed rgba(255, 255, 255, 0.5); /* White dashed outline */
     border-radius: 10px;
-  }
 
-  .empty-text {
-    margin-bottom: 10px;
-    font-size: 14px;
+    /*
+     * This fixes some issues where the drop zone for files
+     * was flickering when dragging files over the sidebar.
+     */
+    pointer-events: none;
+
+    .empty-text {
+      font-size: 16px;
+      font-weight: 500;
+    }
   }
 
   .connection-status {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-  }
+    font-size: 12px;
 
-  .connection {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
+    .connection-status-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
 
-  .saved {
-    width: 16px;
-    height: 16px;
-    border-radius: 99px;
-    background-color: #34eb52;
+      &.connected {
+        background-color: var(--vh-color-success-01);
+      }
+
+      &.disconnected {
+        background-color: var(--vh-color-warning-01);
+      }
+    }
   }
 }

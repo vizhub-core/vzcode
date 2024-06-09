@@ -1,1 +1,3 @@
-let color1 = rgb(225, 223, 221);
+function testingFunction(column) {
+  console.log(this);
+}

@@ -60,8 +60,8 @@ export const useURLSync = ({
     isInitialized.current = true;
 
     // Update the state.
-    setActiveFileId(activeFileId);
     tabList.forEach(openTab);
+    setActiveFileId(activeFileId);
   }, [
     content,
     searchParams,

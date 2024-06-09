@@ -26,10 +26,9 @@ import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
   colorsInTextPlugin,
-  highlightWidgets,
   rotationIndicator,
   widgets,
-} from './widgets';
+} from './InteractiveWidgets';
 import {
   EditorCache,
   EditorCacheValue,
@@ -41,6 +40,7 @@ import { htmlCompletions } from './htmlCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
+import { InteractRule } from '@replit/codemirror-interact';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -85,6 +85,7 @@ const getAtPath = (obj, path) => {
 export const getOrCreateEditor = ({
   fileId,
   shareDBDoc,
+  content,
   filesPath,
   localPresence,
   docPresence,
@@ -93,6 +94,8 @@ export const getOrCreateEditor = ({
   editorCache,
   usernameRef,
   typeScriptWorker,
+  customInteractRules,
+  allowGlobals,
 }: {
   fileId: FileId;
 
@@ -103,7 +106,13 @@ export const getOrCreateEditor = ({
   //    based on the file extension.
   // It's also passed into the `json1Sync` extension,
   // which is used for multiplayer editing.
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  // This can be `undefined` in the case where we are
+  // viewing files read-only, in which case multiplayer
+  // editing is not enabled.
+  shareDBDoc: ShareDBDoc<VZCodeContent> | undefined;
+
+  // The initial content to present.
+  content: VZCodeContent;
 
   filesPath: string[];
   localPresence: any;
@@ -114,6 +123,8 @@ export const getOrCreateEditor = ({
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
   typeScriptWorker: Worker;
+  customInteractRules?: Array<InteractRule>;
+  allowGlobals: boolean;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -123,11 +134,10 @@ export const getOrCreateEditor = ({
   // Cache miss
 
   // Compute `text` and `fileExtension` from the ShareDB document.
-  const data = shareDBDoc.data;
   const textPath = [...filesPath, fileId, 'text'];
   const namePath = [...filesPath, fileId, 'name'];
-  const text = getAtPath(data, textPath);
-  const name = getAtPath(data, namePath);
+  const text = getAtPath(content, textPath);
+  const name = getAtPath(content, namePath);
   const fileExtension = name.split('.').pop();
 
   // Create a compartment for the theme so that it can be changed dynamically.
@@ -140,31 +150,41 @@ export const getOrCreateEditor = ({
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
   // Does not deal with showing others' cursors.
-  extensions.push(
-    json1Sync({
-      shareDBDoc,
-      path: textPath,
-      json1: json1Presence,
-      textUnicode,
-    }),
-  );
-
-  // Deals with broadcasting changes in cursor location and selection.
-  if (localPresence) {
+  if (shareDBDoc) {
     extensions.push(
-      json1PresenceBroadcast({
+      json1Sync({
+        shareDBDoc,
         path: textPath,
-        localPresence,
-        usernameRef,
+        json1: json1Presence,
+        textUnicode,
       }),
     );
-  }
 
-  // Deals with receiving the broadcas from other clients and displaying them.
-  if (docPresence)
-    extensions.push(
-      json1PresenceDisplay({ path: textPath, docPresence }),
-    );
+    // Deals with broadcasting changes in cursor location and selection.
+    if (localPresence) {
+      extensions.push(
+        json1PresenceBroadcast({
+          path: textPath,
+          localPresence,
+          usernameRef,
+        }),
+      );
+    }
+
+    // Deals with receiving the broadcas from other clients and displaying them.
+    if (docPresence) {
+      extensions.push(
+        json1PresenceDisplay({
+          path: textPath,
+          docPresence,
+        }),
+      );
+    }
+  } else {
+    // If the ShareDB document is not provided,
+    // then we do not allow editing.
+    extensions.push(EditorView.editable.of(false));
+  }
 
   extensions.push(colorsInTextPlugin);
 
@@ -223,9 +243,13 @@ export const getOrCreateEditor = ({
   // the boolean checkboxes. The color pickers are also tricky,
   // as they would also need to be able to handle `onInteractEnd`.
   // See https://github.com/replit/codemirror-interact/issues/14
-  extensions.push(widgets({ onInteract }));
+  extensions.push(
+    widgets({ onInteract, customInteractRules }),
+  );
 
-  extensions.push(highlightWidgets);
+  // TODO fix the bugginess in this one where
+  // the highlight persists after the mouse leaves.
+  // extensions.push(highlightWidgets);
 
   extensions.push(rotationIndicator);
 
@@ -252,35 +276,7 @@ export const getOrCreateEditor = ({
       }),
     );
   }
-  if (enableCSSCompletions) {
-    extensions.push(
-      autocompletion({
-        override: [
-          cssCompletions(
-            {
-              cssWorker,
-              fileName: name,
-            },
-          ),
-        ],
-      }),
-    );
-  }
-  if (enableHTMLCompletions) {
-    extensions.push(
-      autocompletion({
-        override: [
-          htmlCompletions(
-            {
-              htmlWorker,
-              fileName: name,
-            },
-          ),
-        ],
-      }),
-    );
-  }
-  if (enableTypeScriptLinter) {
+  if (shareDBDoc && enableTypeScriptLinter) {
     extensions.push(
       linter(
         typeScriptLinter({
@@ -288,6 +284,7 @@ export const getOrCreateEditor = ({
           fileName: name,
           shareDBDoc,
           fileId,
+          allowGlobals,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),

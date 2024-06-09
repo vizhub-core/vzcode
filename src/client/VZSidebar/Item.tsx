@@ -3,20 +3,23 @@ import {
   useCallback,
   useRef,
   useEffect,
+  useContext,
 } from 'react';
 import { EditSVG, FileSVG, TrashSVG } from '../Icons';
-
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
+import { VZCodeContext } from '../VZCodeContext';
+import { ItemId } from '../../types';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
-const enableRenameDirectory = false;
+const enableRenameDirectory = true;
 
 // A file or directory in the sidebar.
 export const Item = ({
+  id,
   name,
   children,
   handleClick,
@@ -25,11 +28,14 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
-  renameFileTooltipText = 'Rename File',
+  renameFileTooltipText = isDirectory
+    ? 'Rename Directory'
+    : 'Rename File',
   deleteFileTooltipText = isDirectory
     ? 'Delete Directory'
     : 'Delete File',
 }: {
+  id: ItemId;
   name: string;
   children: React.ReactNode;
   handleClick: (event: React.MouseEvent) => void;
@@ -41,8 +47,21 @@ export const Item = ({
   renameFileTooltipText?: string;
   deleteFileTooltipText?: string;
 }) => {
-  // Tracks whether the mouse is hovering over the file or directory
-  const [isHovered, setIsHovered] = useState(false);
+  const { hoveredItemId, setHoveredItemId } =
+    useContext(VZCodeContext);
+  // // Tracks whether the mouse is hovering over the file or directory
+  // const [isHovered, setIsHovered] = useState(false);
+  const isHovered = hoveredItemId === id;
+  const setIsHovered = useCallback(
+    (isHovered: boolean) => {
+      if (isHovered) {
+        setHoveredItemId(id);
+      } else {
+        setHoveredItemId(null);
+      }
+    },
+    [id, setHoveredItemId],
+  );
 
   // Tracks whether the file is being renamed (inline text input)
   const [isRenaming, setIsRenaming] = useState(false);
@@ -148,16 +167,21 @@ export const Item = ({
     >
       <div className="name">
         {isRenaming ? (
-          <input
-            className="rename-input"
-            ref={renameInputRef}
-            type="text"
-            aria-label="Field name"
-            value={renameValue}
-            onKeyDown={onKeyDown}
-            onBlur={onBlur}
-            onChange={onChange}
-          />
+          <>
+            <i className="file-icon">
+              <FileSVG />
+            </i>
+            <input
+              className="rename-input"
+              ref={renameInputRef}
+              type="text"
+              aria-label="Field name"
+              value={renameValue}
+              onKeyDown={onKeyDown}
+              onBlur={onBlur}
+              onChange={onChange}
+            />
+          </>
         ) : (
           children
         )}
@@ -201,14 +225,16 @@ export const Item = ({
           </OverlayTrigger>
         </div>
       ) : null}
-
-      <DeleteConfirmationModal
-        show={showModal}
-        onClose={handleModalClose}
-        onConfirm={handleConfirmModal}
-        isDirectory={isDirectory}
-        name={name}
-      />
+      {/* TODO Move this up to a higher level of the tree */}
+      {showModal && (
+        <DeleteConfirmationModal
+          show={showModal}
+          onClose={handleModalClose}
+          onConfirm={handleConfirmModal}
+          isDirectory={isDirectory}
+          name={name}
+        />
+      )}
     </div>
   );
 };

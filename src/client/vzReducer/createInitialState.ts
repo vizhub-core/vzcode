@@ -13,6 +13,7 @@ export const createInitialState = ({
   activeFileId: null,
   theme: defaultTheme,
   isSettingsOpen: false,
+  isDocOpen: false,
   editorWantsFocus: false,
   username: initialUsername,
 });

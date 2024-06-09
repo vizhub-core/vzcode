@@ -1,5 +1,4 @@
 import ts from 'typescript';
-import { VZCodeContent } from '../../types';
 
 export type AutocompleteRequest = {
   event: 'autocomplete-request';
@@ -20,6 +19,9 @@ export type LinterRequest = {
   fileName: string;
   fileContent: string;
   requestId: string;
+
+  // If true, linting will not show errors for global variables.
+  allowGlobals?: boolean;
 };
 
 export type LinterResponse = {

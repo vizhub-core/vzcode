@@ -1,6 +1,8 @@
 import { VZSettings } from './VZSettings';
+import { VZKeyboardShortcutsDoc } from './VZKeyboardShortcutsDoc';
 import { VZSidebar } from './VZSidebar';
 import { CreateFileModal } from './VZSidebar/CreateFileModal';
+import { CreateDirModal } from './VZSidebar/CreateDirModal';
 
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
@@ -13,7 +15,11 @@ export const VZLeft = ({ enableUsernameField = true }) => {
       <VZSettings
         enableUsernameField={enableUsernameField}
       />
+      <VZKeyboardShortcutsDoc
+        enableUsernameField={enableUsernameField}
+      />
       <CreateFileModal />
+      <CreateDirModal />
     </div>
   );
 };

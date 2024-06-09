@@ -6,6 +6,7 @@
 
   .cm-editor {
     flex: 1;
+    width: 100%;
   }
 
   .cm-scroller {
@@ -42,5 +43,9 @@
     .cm-completion-active {
     background-color: #0077cc;
     color: white;
+  }
+
+  .cm-line {
+    font-family: var(--vzcode-font-family);
   }
 }

@@ -15,6 +15,7 @@ export const CreateFileModal = ({
   const inputRef = useRef(null);
 
   const {
+    files,
     isCreateFileModalOpen,
     handleCloseCreateFileModal,
     handleCreateFileClick,
@@ -38,17 +39,29 @@ export const CreateFileModal = ({
   // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback(
     (fileName: string) => {
+      let valid;
+      //General Character Check
       const regex =
         /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
-      return regex.test(fileName);
+      valid = regex.test(fileName);
+
+      //Check for Duplicate Filename
+      for (const key in files) {
+        if (fileName === files[key].name) {
+          valid = false;
+        }
+      }
+
+      return valid;
     },
-    [],
+    [files],
   );
 
   const handleKeyDown = useCallback(
     (e) => {
       if (
         e.key === 'Enter' &&
+        validateFileName(newName) &&
         (e.ctrlKey ||
           e.shiftKey ||
           (!e.altKey && !e.metaKey))
@@ -56,7 +69,7 @@ export const CreateFileModal = ({
         onCreateClick();
       }
     },
-    [onCreateClick],
+    [onCreateClick, validateFileName, newName],
   );
 
   return isCreateFileModalOpen ? (
