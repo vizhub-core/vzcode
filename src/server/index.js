@@ -310,9 +310,12 @@ server.listen(port, async () => {
       open(url);
     })();
   } else {
+    // Sets the port to the one specified in the environment 
+    // variable (for development) or the default port.
+    let livePort = process.env.EDITOR_PORT || port;
     console.log(
-      `Editor is live at http://localhost:${port}`,
+      `Editor is live at http://localhost:${livePort}`,
     );
-    open(`http://localhost:${port}`);
+    open(`http://localhost:${livePort}`);
   }
 });
