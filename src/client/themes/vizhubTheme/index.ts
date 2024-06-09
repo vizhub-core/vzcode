@@ -210,7 +210,7 @@ function vizhubThemeInit(
         },
         '.rainbow-bracket-violet > span': {
           color: 'red',
-        },
+        }
       },
       { dark: true },
     ),
