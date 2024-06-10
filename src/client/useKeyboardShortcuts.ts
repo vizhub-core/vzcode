@@ -2,30 +2,56 @@ import { useEffect } from 'react';
 import { shouldTriggerRun } from './shouldTriggerRun';
 import { EditorView } from 'codemirror';
 import { syntaxTree } from "@codemirror/language";
+import { SyntaxNode } from '@lezer/common';
+import { EditorState, SelectionRange } from '@codemirror/state';
 
-function getLevel(token) {
-  let current = token;
+// Nesting types for the specific language
+const nestingTypes = new Set<string>([
+  'FunctionDeclaration', 
+  'ClassDeclaration', 
+  'MethodDeclaration', 
+  'Block', 
+  'IfStatement',
+  'ForStatement',
+  'WhileStatement',
+  'SwitchStatement',
+  'TryStatement',
+  'CatchClause',
+  'WithStatement',
+  'ArrowFunction',
+  'ImportGroup'
+]);
+
+// Definitions types for the specific language
+const definitionTypes = new Set<string>([
+  'VariableDeclaration',
+  'VariableDefinition',
+  'FunctionDeclaration',
+  'Identifier',
+  'PropertyDefinition',
+  'ImportDeclaration',
+  'ExportDeclaration',
+  'ArrayPattern',
+  'ObjectPattern',
+  'ArgList',
+  'TypeArgList',
+  'ParamList',
+  'MemberExpression',
+  'NewExpression',
+  'FunctionDefinition',
+  'ClassDefinition',
+  'TypeAlias',
+  'NamespaceDefinition',
+  'EnumDefinition',
+]);
+
+function getIdentifierLevel(identifier: SyntaxNode) {
+  let current = identifier;
   let levels = 0;
-
-  // Nesting types for the specific language
-  const nestingTypes = new Set([
-    'FunctionDeclaration', 
-    'ClassDeclaration', 
-    'MethodDeclaration', 
-    'Block', 
-    'IfStatement',
-    'ForStatement',
-    'WhileStatement',
-    'SwitchStatement',
-    'TryStatement',
-    'CatchClause',
-    'WithStatement',
-    'ArrowFunction'
-  ]);
 
   // Traverse up the tree to find the total depth
   while (current && current.type) {
-    const parentType = current.type.name;
+    const parentType: string = current.type.name;
 
     if (nestingTypes.has(parentType)) {
       levels++;
@@ -37,31 +63,34 @@ function getLevel(token) {
   return levels;
 }
 
-function jumpToDef(editor) {
-  const state = editor.state;
-  const location = state.selection.main;
+function jumpToDefinition(editor: EditorView) {
+  // Use current editor state and selection range to find a potential variable
+  const state: EditorState = editor.state;
+  const location: SelectionRange = state.selection.main;
 
-  // Fetch the current token or syntax node information at current cursor position
-  const token = syntaxTree(state).resolveInner(location.from, -1);
-  const tokenName = state.doc.sliceString(token.from, token.to);
-  const context = getLevel(token);
-  const definitions = [];
+  // Fetch the current syntax node information using cursor position
+  const identifier: SyntaxNode = syntaxTree(state).resolveInner(location.from, -1);
+  const identifierName: string = state.doc.sliceString(identifier.from, identifier.to);
+  const context: number = getIdentifierLevel(identifier);
+  const definitions: Array<{identifier: SyntaxNode, level: number}> = [];
 
-  if (tokenName) {
+  if (identifier) {
     syntaxTree(state).iterate({
       enter(tree) {
-        // Traverse syntax tree to find positions of variable definitions within the current context
-        if (tree.name === 'VariableDeclaration' || tree.name === 'FunctionDeclaration') {
-          const node = tree.node;
-          const identifier = node.getChild('VariableDefinition') || node.getChild('Identifier');
+        // Traverse syntax tree to find positions of respective identifier definitions within context
+        if (definitionTypes.has(tree.name) || nestingTypes.has(tree.name)) {
+          const identifier: SyntaxNode = tree.node;
 
-          if (identifier && state.doc.sliceString(identifier.from, identifier.to) === tokenName) {
-            const currentContext = getLevel(node);
-            
-            if (currentContext <= context) {
-              definitions.push({ node, level: getLevel(node) });
+          definitionTypes.forEach((definition: string) => {
+            const identifierChild: SyntaxNode = identifier.getChild(definition);
+
+            if (identifierChild && state.doc.sliceString(identifierChild.from, identifierChild.to) === identifierName) {
+              const currentContext = getIdentifierLevel(identifier);
+              definitions.push({ identifier: identifier, level: currentContext });
             }
-          }
+          });
+
+          
         }
       }
     });
@@ -69,16 +98,17 @@ function jumpToDef(editor) {
     if (definitions.length > 0) {
       // Sort definitions by their level to find the closest based on current context
       definitions.sort((a, b) => a.level - b.level);
-      let closestDefinition = definitions[0].node;
+
+      let closestDefinition: SyntaxNode = definitions[0].identifier;
         
       for (let i = definitions.length - 1; i >= 0; i--) {
         if (definitions[i].level <= context) {
-          closestDefinition = definitions[i].node;
+          closestDefinition = definitions[i].identifier;
           break;
         }
       }
 
-      // Set the cursor position to the valid declaration in current scope and center the line, if possible
+      // Set the cursor position to the valid declaration in current scope
       editor.dispatch({
         selection: { anchor: closestDefinition.from, head: closestDefinition.to },
         scrollIntoView: true,
@@ -128,13 +158,11 @@ export const useKeyboardShortcuts = ({
       }
       
       if (event.ctrlKey) {
-        // Basic jumpToDef() setup for testing
         const editor: EditorView = editorCache.get(activeFileId).editor;
-        const handler = ()=> {jumpToDef(editor); };
-        document.addEventListener("mousedown", handler);
-        setTimeout(()=> {
-          document.removeEventListener("mousedown", handler);
-        }, 2000);
+        const jumpToDefinitionHandler = () => { jumpToDefinition(editor); };
+
+        // CTRL + Click: Jump to relative definition
+        document.addEventListener("mousedown", jumpToDefinitionHandler, { once: true });
       }
 
       if (event.altKey === true) {
