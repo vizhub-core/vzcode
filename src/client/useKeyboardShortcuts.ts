@@ -18,34 +18,29 @@ const nestingTypes = new Set<string>([
   'TryStatement',
   'CatchClause',
   'WithStatement',
-  'ArrowFunction',
-  'ImportGroup'
+  'ArrowFunction'
 ]);
 
-// Definitions types for the specific language
-const definitionTypes = new Set<string>([
+// Declaration types for the specific language
+const declarationTypes = new Set<string>([
   'VariableDeclaration',
-  'VariableDefinition',
   'FunctionDeclaration',
-  'Identifier',
-  'PropertyDefinition',
+  'ClassDeclaration',
+  'MethodDeclaration',
+  'PropertyDeclaration',
   'ImportDeclaration',
   'ExportDeclaration',
+  'CallExpression',
   'ArrayPattern',
   'ObjectPattern',
+  'PatternProperty',
   'ArgList',
   'TypeArgList',
   'ParamList',
-  'MemberExpression',
-  'NewExpression',
-  'FunctionDefinition',
-  'ClassDefinition',
-  'TypeAlias',
-  'NamespaceDefinition',
-  'EnumDefinition',
+  'ForOfSpec',
 ]);
 
-function getIdentifierLevel(identifier: SyntaxNode) {
+function getIdentifierContext(identifier: SyntaxNode) {
   let current = identifier;
   let levels = 0;
 
@@ -56,7 +51,7 @@ function getIdentifierLevel(identifier: SyntaxNode) {
     if (nestingTypes.has(parentType)) {
       levels++;
     }
-
+    
     current = current.parent;
   }
 
@@ -64,45 +59,46 @@ function getIdentifierLevel(identifier: SyntaxNode) {
 }
 
 function jumpToDefinition(editor: EditorView) {
-  // Use current editor state and selection range to find a potential variable
+  // Use current editor state and selection range to find a potential definition
   const state: EditorState = editor.state;
   const location: SelectionRange = state.selection.main;
+  const definitions: Array<{identifier: SyntaxNode, context: number}> = [];
 
   // Fetch the current syntax node information using cursor position
   const identifier: SyntaxNode = syntaxTree(state).resolveInner(location.from, -1);
   const identifierName: string = state.doc.sliceString(identifier.from, identifier.to);
-  const context: number = getIdentifierLevel(identifier);
-  const definitions: Array<{identifier: SyntaxNode, level: number}> = [];
+  const context: number = getIdentifierContext(identifier);
+  
 
   if (identifier) {
     syntaxTree(state).iterate({
       enter(tree) {
         // Traverse syntax tree to find positions of respective identifier definitions within context
-        if (definitionTypes.has(tree.name) || nestingTypes.has(tree.name)) {
-          const identifier: SyntaxNode = tree.node;
+        if (declarationTypes.has(tree.name) || nestingTypes.has(tree.name)) {
+          const parent: SyntaxNode = tree.node;
+          const children: Array<SyntaxNode> = [...parent.getChildren('VariableDefinition'), 
+            ...parent.getChildren('Identifier'), ...parent.getChildren('PropertyDefinition'),
+            ...parent.getChildren('PropertyName')];
 
-          definitionTypes.forEach((definition: string) => {
-            const identifierChild: SyntaxNode = identifier.getChild(definition);
-
-            if (identifierChild && state.doc.sliceString(identifierChild.from, identifierChild.to) === identifierName) {
-              const currentContext = getIdentifierLevel(identifier);
-              definitions.push({ identifier: identifier, level: currentContext });
+          children.forEach((child: SyntaxNode) => {
+            const nodeName: string = state.doc.sliceString(child.from, child.to);
+            if (nodeName === identifierName && child !== identifier) {
+              const currentContext = getIdentifierContext(child);
+              definitions.push({ identifier: child, context: currentContext });
             }
           });
-
-          
         }
       }
     });
 
     if (definitions.length > 0) {
-      // Sort definitions by their level to find the closest based on current context
-      definitions.sort((a, b) => a.level - b.level);
+      // Sort definitions by their context
+      definitions.sort((a, b) => a.context - b.context);
 
       let closestDefinition: SyntaxNode = definitions[0].identifier;
         
       for (let i = definitions.length - 1; i >= 0; i--) {
-        if (definitions[i].level <= context) {
+        if (definitions[i].context <= context) {
           closestDefinition = definitions[i].identifier;
           break;
         }
