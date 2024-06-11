@@ -132,6 +132,7 @@ export const useKeyboardShortcuts = ({
   setActiveFileRight,
   runPrettierRef,
   runCodeRef,
+  sidebarRef,
   editorCache
 }) => {
   useEffect(() => {
@@ -147,6 +148,7 @@ export const useKeyboardShortcuts = ({
 
         // Run the code
         const runCode = runCodeRef.current;
+
         if (runCode !== null) {
           runCode();
         }
@@ -188,7 +190,19 @@ export const useKeyboardShortcuts = ({
           setActiveFileRight();
           return;
         }
+        
       }
+
+
+      if (event.ctrlKey == true){
+        if (event.key === '0'){
+          if (sidebarRef.current) {
+            sidebarRef.current.focus();
+          }
+        }
+      }
+      
+     
     };
 
     document.addEventListener('keydown', handleKeyPress);

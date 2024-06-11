@@ -14,7 +14,7 @@
     "test-interactive": "cd test/sampleDirectories/kitchenSink && node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
-    "dev": "concurrently \"npm run test-interactive\" \"vite\"",
+    "dev": "EDITOR_PORT=5173 concurrently \"npm run test-interactive\" \"vite\"",
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
@@ -79,6 +79,18 @@
     {
       "name": "Nghia Minh Huynh",
       "url": "https://github.com/NghiaMinhHuynh"
+    },
+    {
+      "name": "Michael Halpern",
+      "url": "https://github.com/michaelhelper"
+    },
+    {
+      "name": "Pratheet Joshi",
+      "url": "https://github.com/DaCatDude"
+    },
+    {
+      "name": "Philip Park",
+      "url": "https://github.com/philippark"
     }
   ],
   "license": "MIT",

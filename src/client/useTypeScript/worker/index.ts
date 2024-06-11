@@ -1,17 +1,6 @@
 import * as tsvfs from '@typescript/vfs';
 import ts from 'typescript';
-import { File, Files, VZCodeContent } from '../../../types';
-import {
-  AutocompleteRequest,
-  AutocompleteResponse,
-  LinterRequest,
-  LinterResponse,
-} from './requestTypes';
-import {
-  LINT_ERROR_CODE_CANNOT_FIND_NAME,
-  compilerOptions,
-  excludedErrorCodes,
-} from './constants';
+import { compilerOptions } from './constants';
 import { handleMessageUpdateContent } from './handleMessageUpdateContent';
 import { handleMessageAutocompleteRequest } from './handleMessageAutocompleteRequest';
 import { handleMessageLintRequest } from './handleMessageLintRequest';
