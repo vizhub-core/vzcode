@@ -40,9 +40,9 @@ const declarationTypes = new Set<string>([
   'ForOfSpec',
 ]);
 
-function getIdentifierContext(identifier: SyntaxNode) {
-  let current = identifier;
+function getIdentifierContext(identifier: SyntaxNode): number {
   let levels = 0;
+  let current: SyntaxNode = identifier;
 
   // Traverse up the tree to find the total depth
   while (current && current.type) {
@@ -68,7 +68,6 @@ function jumpToDefinition(editor: EditorView) {
   const identifier: SyntaxNode = syntaxTree(state).resolveInner(location.from, -1);
   const identifierName: string = state.doc.sliceString(identifier.from, identifier.to);
   const context: number = getIdentifierContext(identifier);
-  
 
   if (identifier) {
     syntaxTree(state).iterate({
@@ -76,15 +75,15 @@ function jumpToDefinition(editor: EditorView) {
         // Traverse syntax tree to find positions of respective identifier definitions within context
         if (declarationTypes.has(tree.name) || nestingTypes.has(tree.name)) {
           const parent: SyntaxNode = tree.node;
-          const children: Array<SyntaxNode> = [...parent.getChildren('VariableDefinition'), 
-            ...parent.getChildren('Identifier'), ...parent.getChildren('PropertyDefinition'),
-            ...parent.getChildren('PropertyName')];
+          const children: Array<SyntaxNode> = [...parent.getChildren('VariableDefinition'),
+            ...parent.getChildren('PropertyDefinition'), ...parent.getChildren('PropertyName'),
+            ...parent.getChildren('Identifier')];
 
           children.forEach((child: SyntaxNode) => {
-            const nodeName: string = state.doc.sliceString(child.from, child.to);
-            if (nodeName === identifierName && child !== identifier) {
-              const currentContext = getIdentifierContext(child);
-              definitions.push({ identifier: child, context: currentContext });
+            const name: string = state.doc.sliceString(child.from, child.to);
+
+            if (name === identifierName && child !== identifier) {
+              definitions.push({ identifier: child, context: getIdentifierContext(child) });
             }
           });
         }
@@ -92,7 +91,7 @@ function jumpToDefinition(editor: EditorView) {
     });
 
     if (definitions.length > 0) {
-      // Sort definitions by their context
+      // Sort definitions by their context in the syntax tree
       definitions.sort((a, b) => a.context - b.context);
 
       let closestDefinition: SyntaxNode = definitions[0].identifier;
