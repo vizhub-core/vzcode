@@ -35,10 +35,12 @@ export const CodeEditor = ({
     editorNoLongerWantsFocus,
     typeScriptWorker,
     theme,
+    middleRef
   } = useContext(VZCodeContext);
 
-  const ref = useRef<HTMLDivElement>(null);
-
+  //const ref = useRef<HTMLDivElement>(null);
+  const ref = middleRef;
+  
   // Set `doc.data.isInteracting` to `true` when the user is interacting
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
@@ -125,7 +127,7 @@ export const CodeEditor = ({
       ref.current.removeChild(editorCacheValue.editor.dom);
     };
   }, [shareDBDoc, editorCacheValue]);
-
+  
   // Focus the editor
   useLayoutEffect(() => {
     if (editorWantsFocus) {
@@ -138,5 +140,5 @@ export const CodeEditor = ({
     editorNoLongerWantsFocus,
   ]);
 
-  return <div className="vz-code-editor" ref={ref}></div>;
+  return <div className="vz-code-editor" ref = {ref} tabIndex={-1}></div>;
 };

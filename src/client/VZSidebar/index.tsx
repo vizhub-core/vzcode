@@ -19,6 +19,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import {ListBox, ListBoxItem} from 'react-aria-components';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -103,6 +104,7 @@ export const VZSidebar = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      <ListBox></ListBox>
       <div className="files" ref={sidebarRef}
         tabIndex={-1}>
         <div className="full-box">
@@ -200,21 +202,38 @@ export const VZSidebar = ({
             </div>
           </div>
         ) : filesExist ? (
+          /*
+            <ListBox aria-label="Animals" items={fileTree.children} selectionMode="single">
+              {(entity) => <ListBoxItem>{entity.name}</ListBoxItem>}
+              const { fileId } = entity as FileTreeFile;
+              const { path } = entity as FileTree;
+              const key = fileId ? fileId : path;
+
+            </ListBox>
+          */
+        
+            
           fileTree.children.map((entity) => {
             const { fileId } = entity as FileTreeFile;
             const { path } = entity as FileTree;
             const key = fileId ? fileId : path;
             return (
-              <Listing
-                key={key}
-                entity={entity}
-                handleFileClick={handleFileClick}
-                handleFileDoubleClick={
-                  handleFileDoubleClick
-                }
-              />
+              <div>
+                <p>Test</p>
+                <Listing
+                  key={key}
+                  entity={entity}
+                  handleFileClick={handleFileClick}
+                  handleFileDoubleClick={
+                    handleFileDoubleClick
+                  }
+                />
+              </div>
             );
           })
+            
+          
+
         ) : (
           <div className="empty">
             <div className="empty-text">

@@ -41,7 +41,7 @@ export const VZMiddle = ({
     localPresence,
     docPresence,
     activeFileId,
-    errorMessage,
+    errorMessage
   } = useContext(VZCodeContext);
 
   // This prevents the CodeEditor from rendering
@@ -54,7 +54,7 @@ export const VZMiddle = ({
   return activeFileId !== null ? (
     <div
       className="middle"
-      style={{ width: codeEditorWidth + 'px' }}
+      style={{ width: codeEditorWidth + 'px'}}
     >
       <TabList />
       {isClient && content && activeFileId && (

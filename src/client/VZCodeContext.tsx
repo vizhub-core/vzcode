@@ -180,7 +180,7 @@ export const VZCodeProvider = ({
   const runCodeRef = useRunCode(submitOperation);
 
   const sidebarRef = useRef(null);
-  const middleRef = useRef(null);
+  const middleRef = useRef<HTMLDivElement>(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
