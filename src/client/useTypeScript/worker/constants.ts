@@ -72,7 +72,6 @@ const LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER = 2322;
 // "Object is of type 'unknown'."
 const LINT_ERROR_CODE_UNKNOWN = 18046;
 
-
 export const excludedErrorCodes = new Set([
   LINT_ERROR_CODE_ANY,
   LINT_ERROR_CODE_IMPORT,

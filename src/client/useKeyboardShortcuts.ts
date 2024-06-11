@@ -1,16 +1,19 @@
 import { useEffect } from 'react';
 import { shouldTriggerRun } from './shouldTriggerRun';
 import { EditorView } from 'codemirror';
-import { syntaxTree } from "@codemirror/language";
+import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode } from '@lezer/common';
-import { EditorState, SelectionRange } from '@codemirror/state';
+import {
+  EditorState,
+  SelectionRange,
+} from '@codemirror/state';
 
 // Nesting types for the specific language
 const nestingTypes = new Set<string>([
-  'FunctionDeclaration', 
-  'ClassDeclaration', 
-  'MethodDeclaration', 
-  'Block', 
+  'FunctionDeclaration',
+  'ClassDeclaration',
+  'MethodDeclaration',
+  'Block',
   'IfStatement',
   'ForStatement',
   'WhileStatement',
@@ -18,7 +21,7 @@ const nestingTypes = new Set<string>([
   'TryStatement',
   'CatchClause',
   'WithStatement',
-  'ArrowFunction'
+  'ArrowFunction',
 ]);
 
 // Declaration types for the specific language
@@ -40,7 +43,9 @@ const declarationTypes = new Set<string>([
   'ForOfSpec',
 ]);
 
-function getIdentifierContext(identifier: SyntaxNode): number {
+function getIdentifierContext(
+  identifier: SyntaxNode,
+): number {
   let levels = 0;
   let current: SyntaxNode = identifier;
 
@@ -51,7 +56,7 @@ function getIdentifierContext(identifier: SyntaxNode): number {
     if (nestingTypes.has(parentType)) {
       levels++;
     }
-    
+
     current = current.parent;
   }
 
@@ -62,40 +67,64 @@ function jumpToDefinition(editor: EditorView) {
   // Use current editor state and selection range to find a potential definition
   const state: EditorState = editor.state;
   const location: SelectionRange = state.selection.main;
-  const definitions: Array<{identifier: SyntaxNode, context: number}> = [];
+  const definitions: Array<{
+    identifier: SyntaxNode;
+    context: number;
+  }> = [];
 
   // Fetch the current syntax node information using cursor position
-  const identifier: SyntaxNode = syntaxTree(state).resolveInner(location.from, -1);
-  const identifierName: string = state.doc.sliceString(identifier.from, identifier.to);
+  const identifier: SyntaxNode = syntaxTree(
+    state,
+  ).resolveInner(location.from, -1);
+  const identifierName: string = state.doc.sliceString(
+    identifier.from,
+    identifier.to,
+  );
   const context: number = getIdentifierContext(identifier);
 
   if (identifier) {
     syntaxTree(state).iterate({
       enter(tree) {
         // Traverse syntax tree to find positions of respective identifier definitions within context
-        if (declarationTypes.has(tree.name) || nestingTypes.has(tree.name)) {
+        if (
+          declarationTypes.has(tree.name) ||
+          nestingTypes.has(tree.name)
+        ) {
           const parent: SyntaxNode = tree.node;
-          const children: Array<SyntaxNode> = [...parent.getChildren('VariableDefinition'),
-            ...parent.getChildren('PropertyDefinition'), ...parent.getChildren('PropertyName'),
-            ...parent.getChildren('Identifier')];
+          const children: Array<SyntaxNode> = [
+            ...parent.getChildren('VariableDefinition'),
+            ...parent.getChildren('PropertyDefinition'),
+            ...parent.getChildren('PropertyName'),
+            ...parent.getChildren('Identifier'),
+          ];
 
           children.forEach((child: SyntaxNode) => {
-            const name: string = state.doc.sliceString(child.from, child.to);
+            const name: string = state.doc.sliceString(
+              child.from,
+              child.to,
+            );
 
-            if (name === identifierName && child !== identifier) {
-              definitions.push({ identifier: child, context: getIdentifierContext(child) });
+            if (
+              name === identifierName &&
+              child !== identifier
+            ) {
+              definitions.push({
+                identifier: child,
+                context: getIdentifierContext(child),
+              });
             }
           });
         }
-      }
+      },
     });
 
     if (definitions.length > 0) {
       // Sort definitions by their context in the syntax tree
       definitions.sort((a, b) => a.context - b.context);
 
-      let closestDefinition: SyntaxNode = definitions[0].identifier;
-        
+      let closestDefinition: SyntaxNode =
+        definitions[0].identifier;
+
       for (let i = definitions.length - 1; i >= 0; i--) {
         if (definitions[i].context <= context) {
           closestDefinition = definitions[i].identifier;
@@ -105,11 +134,17 @@ function jumpToDefinition(editor: EditorView) {
 
       // Set the cursor position to the valid declaration in current scope
       editor.dispatch({
-        selection: { anchor: closestDefinition.from, head: closestDefinition.to },
+        selection: {
+          anchor: closestDefinition.from,
+          head: closestDefinition.to,
+        },
         scrollIntoView: true,
-        effects: EditorView.scrollIntoView(closestDefinition.from, {
-          y: "center"
-        })
+        effects: EditorView.scrollIntoView(
+          closestDefinition.from,
+          {
+            y: 'center',
+          },
+        ),
       });
     }
   }
@@ -132,7 +167,7 @@ export const useKeyboardShortcuts = ({
   runPrettierRef,
   runCodeRef,
   sidebarRef,
-  editorCache
+  editorCache,
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -153,13 +188,20 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
-      
+
       if (event.ctrlKey) {
-        const editor: EditorView = editorCache.get(activeFileId).editor;
-        const jumpToDefinitionHandler = () => { jumpToDefinition(editor); };
+        const editor: EditorView =
+          editorCache.get(activeFileId).editor;
+        const jumpToDefinitionHandler = () => {
+          jumpToDefinition(editor);
+        };
 
         // CTRL + Click: Jump to relative definition
-        document.addEventListener("mousedown", jumpToDefinitionHandler, { once: true });
+        document.addEventListener(
+          'mousedown',
+          jumpToDefinitionHandler,
+          { once: true },
+        );
       }
 
       if (event.altKey === true) {
@@ -189,19 +231,15 @@ export const useKeyboardShortcuts = ({
           setActiveFileRight();
           return;
         }
-        
       }
 
-
-      if (event.ctrlKey == true){
-        if (event.key === '0'){
+      if (event.ctrlKey == true) {
+        if (event.key === '0') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }
         }
       }
-      
-     
     };
 
     document.addEventListener('keydown', handleKeyPress);
