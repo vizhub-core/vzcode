@@ -18,7 +18,8 @@ export const useKeyboardShortcuts = ({
   setActiveFileRight,
   runPrettierRef,
   runCodeRef,
-  sidebarRef
+  sidebarRef,
+  middleRef
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -75,6 +76,12 @@ export const useKeyboardShortcuts = ({
           }
         }
         
+        if (event.key === '2'){
+          event.preventDefault();
+          if (middleRef.current){
+            middleRef.current.focus();
+          }
+        }
       }
      
     };
