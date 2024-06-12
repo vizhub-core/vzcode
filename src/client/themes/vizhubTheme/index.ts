@@ -217,7 +217,6 @@ function vizhubThemeInit(
           // purple
           color: '#DAB2FF',
         }
-
       },
       { dark: true },
     ),

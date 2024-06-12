@@ -3,7 +3,7 @@ import {
   useCallback,
   useReducer,
   useState,
-  useRef
+  useRef,
 } from 'react';
 import {
   FileId,
@@ -321,7 +321,8 @@ export const VZCodeProvider = ({
     setActiveFileRight,
     runPrettierRef,
     runCodeRef,
-    sidebarRef
+    sidebarRef,
+    editorCache,
   });
 
   // Track the currently hovered file id.
