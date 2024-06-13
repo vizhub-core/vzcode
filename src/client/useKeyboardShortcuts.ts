@@ -18,10 +18,10 @@ let definingNode: SyntaxNode = null;
 
 // Example nesting types for the specific language to find level in the syntax tree
 const nestingTypes = new Set<string>([
-  'FunctionDeclaration', 
-  'ClassDeclaration', 
-  'MethodDeclaration', 
-  'Block', 
+  'FunctionDeclaration',
+  'ClassDeclaration',
+  'MethodDeclaration',
+  'Block',
   'IfStatement',
   'ForStatement',
   'WhileStatement',
@@ -52,7 +52,9 @@ const declarationTypes = new Set<string>([
   'ForOfSpec',
 ]);
 
-function getIdentifierContext(identifier: SyntaxNode): number {
+function getIdentifierContext(
+  identifier: SyntaxNode,
+): number {
   let current: SyntaxNode = identifier;
   let levels: number = 0;
 
@@ -63,7 +65,7 @@ function getIdentifierContext(identifier: SyntaxNode): number {
     if (nestingTypes.has(parentType)) {
       levels++;
     }
-    
+
     current = current.parent;
   }
 
@@ -83,13 +85,19 @@ function jumpToDefinition(editor: EditorView, node: SyntaxNode): SyntaxNode {
     syntaxTree(state).iterate({
       enter(tree: SyntaxNodeRef) {
         // Traverse syntax tree to find positions of respective identifier definitions within context
-        if (declarationTypes.has(tree.name) || nestingTypes.has(tree.name)) {
+        if (
+          declarationTypes.has(tree.name) ||
+          nestingTypes.has(tree.name)
+        ) {
           const parent: SyntaxNode = tree.node;
           
           // Fetch a host of potential identifiers in an attempt to find the defining syntax node
-          const children: Array<SyntaxNode> = [...parent.getChildren('VariableDefinition'),
-            ...parent.getChildren('PropertyDefinition'), ...parent.getChildren('PropertyName'),
-            ...parent.getChildren('Identifier')];
+          const children: Array<SyntaxNode> = [
+            ...parent.getChildren('VariableDefinition'),
+            ...parent.getChildren('PropertyDefinition'),
+            ...parent.getChildren('PropertyName'),
+            ...parent.getChildren('Identifier'),
+          ];
 
           children.forEach((child: SyntaxNode) => {
             const name: string = state.doc.sliceString(child.from, child.to);
@@ -100,15 +108,16 @@ function jumpToDefinition(editor: EditorView, node: SyntaxNode): SyntaxNode {
             }
           });
         }
-      }
+      },
     });
 
     if (definitions.length > 0) {
       // Sort definitions by their context in the syntax tree
       definitions.sort((a, b) => a.context - b.context);
 
-      let closestDefinition: SyntaxNode = definitions[0].identifier;
-        
+      let closestDefinition: SyntaxNode =
+        definitions[0].identifier;
+
       for (let i = definitions.length - 1; i >= 0; i--) {
         if (definitions[i].context <= context) {
           closestDefinition = definitions[i].identifier;
@@ -141,7 +150,7 @@ export const useKeyboardShortcuts = ({
   runPrettierRef,
   runCodeRef,
   sidebarRef,
-  editorCache
+  editorCache,
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -195,12 +204,10 @@ export const useKeyboardShortcuts = ({
           setActiveFileRight();
           return;
         }
-        
       }
 
-
-      if (event.ctrlKey == true){
-        if (event.key === '0'){
+      if (event.ctrlKey == true) {
+        if (event.key === '0') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }

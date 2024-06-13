@@ -194,22 +194,28 @@ function vizhubThemeInit(
           color: 'white',
         },
         '.rainbow-bracket-orange > span': {
-          color: 'violet',
+          // red
+          color: '#FFB2B2',
         },
         '.rainbow-bracket-yellow > span': {
-          color: 'deepskyblue',
+          // orange
+          color: '#FFB2DA',
         },
         '.rainbow-bracket-green > span': {
-          color: 'lime',
+          // yellow
+          color: '#FFFFB2',
         },
         '.rainbow-bracket-blue > span': {
-          color: 'yellow',
+          // green
+          color: '#B2FFB2',
         },
         '.rainbow-bracket-indigo > span': {
-          color: 'orange',
+          // blue
+          color: '#B2FFFF',
         },
         '.rainbow-bracket-violet > span': {
-          color: 'red',
+          // purple
+          color: '#DAB2FF',
         }
       },
       { dark: true },
