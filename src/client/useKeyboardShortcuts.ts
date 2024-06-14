@@ -238,6 +238,12 @@ export const useKeyboardShortcuts = ({
             sidebarRef.current.focus();
           }
         }
+
+        if (event.key === '2'){
+          if (codeeditorRef.current){
+            codeeditorRef.current.focus();
+          }
+        }
       }
     };
 
