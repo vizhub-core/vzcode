@@ -168,6 +168,7 @@ export const useKeyboardShortcuts = ({
   runCodeRef,
   sidebarRef,
   editorCache,
+  codeeditorRef
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -231,10 +232,8 @@ export const useKeyboardShortcuts = ({
           setActiveFileRight();
           return;
         }
-      }
 
-      if (event.ctrlKey == true) {
-        if (event.key === '0') {
+        if (event.key === '1'){
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }
