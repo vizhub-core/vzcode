@@ -181,7 +181,7 @@ export const VZCodeProvider = ({
 
   const sidebarRef = useRef(null);
 
-  const codeeditorRef = useRef(null);
+  const codeEditorRef = useRef(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
