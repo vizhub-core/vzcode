@@ -111,7 +111,7 @@ export const json1PresenceDisplay = ({
               this.cursorPosition[id] = from; // Store the cursor position, important to run if we cant get the regular scroll to work
               // console.log(`Stored cursor position for id ${id}: ${from}`); // Debug statement
             } else {
-              console.warn(`Invalid cursor position for id ${id}: ${from}`); // Debug statement
+              // console.warn(`Invalid cursor position for id ${id}: ${from}`); // Debug statement
             }
           }
 
