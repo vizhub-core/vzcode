@@ -213,7 +213,7 @@ export const useKeyboardShortcuts = ({
         }
 
         if (event.key === '2'){
-          if (codeeditorRef.current){
+          if (codeEditorRef.current){
             codeEditorRef.current.focus();
           }
         }
