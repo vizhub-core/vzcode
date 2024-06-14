@@ -47,7 +47,7 @@ export const json1PresenceDisplay = ({
         });
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
-          console.log(`Received presence for id ${id}`, presence); // Debug statement
+          if(debug) console.log(`Received presence for id ${id}`, presence); // Debug statement
           // If presence === null, the user has disconnected / exited
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
