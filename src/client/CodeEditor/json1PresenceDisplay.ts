@@ -138,35 +138,13 @@ export const json1PresenceDisplay = ({
       }
             // Method to scroll the view to keep the cursor in view
             scrollToCursor(view) {
-              //console.log('Scrolling to keep cursor in view'); // Debug statement
               for (const id in this.cursorPosition) {
+                //getting the cursor position of the other cursor
                 const cursorPos = this.cursorPosition[id];
-                //fetch coordinates of user
-                const rect = view.coordsAtPos(cursorPos);
-                
-                if (!rect) {
-                  //console.log(`Could not get coordinates for position ${cursorPos}, scrolling directly`); // Debug statement
                   view.dispatch({
                     //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
                     effects: EditorView.scrollIntoView(cursorPos)
                   });
-                  continue; // Skip to next cursor
-                }
-      
-                const editorRect = view.dom.getBoundingClientRect();
-                //console.log(`Cursor position for id ${id}:`, cursorPos, rect, editorRect); // Debug statement
-      
-                if (
-                  //bounds
-                  rect.top < editorRect.top ||
-                  rect.bottom > editorRect.bottom ||
-                  rect.left < editorRect.left ||
-                  rect.right > editorRect.right
-                ) {
-                  //console.log(`Scrolling to cursor position for id ${id}: ${cursorPos}`); // Debug statement
-                  //scroll to cursor (smooth). Runs if the cursor hasnt jumped off screen, but instead has slow-scrolled off.
-                  view.dispatch({effects: EditorView.scrollIntoView(cursorPos)});
-                }
               }
             }
           },
