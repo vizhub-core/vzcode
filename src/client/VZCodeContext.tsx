@@ -395,7 +395,7 @@ export const VZCodeProvider = ({
     runPrettierRef,
     runCodeRef,
     sidebarRef,
-    codeeditorRef,
+    codeEditorRef,
 
     connected,
 
