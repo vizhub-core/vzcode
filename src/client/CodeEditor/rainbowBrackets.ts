@@ -1,5 +1,4 @@
 import { EditorView, Decoration, ViewPlugin } from '@codemirror/view';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 
 function generateColors() {
   return [
