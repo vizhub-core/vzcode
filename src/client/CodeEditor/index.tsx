@@ -35,7 +35,7 @@ export const CodeEditor = ({
     editorNoLongerWantsFocus,
     typeScriptWorker,
     theme,
-    codeeditorRef
+    codeEditorRef
   } = useContext(VZCodeContext);
 
   const ref = codeeditorRef;
