@@ -129,6 +129,8 @@ export type VZCodeContextValue = {
 
   sidebarRef: React.RefObject<HTMLDivElement>;
 
+  codeEditorRef: React.RefObject<HTMLDivElement>;
+
   connected: boolean;
 
   hoveredItemId: ItemId | null;
@@ -178,6 +180,8 @@ export const VZCodeProvider = ({
   const runCodeRef = useRunCode(submitOperation);
 
   const sidebarRef = useRef(null);
+
+  const codeEditorRef = useRef(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -323,6 +327,7 @@ export const VZCodeProvider = ({
     runCodeRef,
     sidebarRef,
     editorCache,
+    codeEditorRef
   });
 
   // Track the currently hovered file id.
@@ -390,6 +395,7 @@ export const VZCodeProvider = ({
     runPrettierRef,
     runCodeRef,
     sidebarRef,
+    codeEditorRef,
 
     connected,
 
