@@ -38,7 +38,7 @@ export const CodeEditor = ({
     codeEditorRef
   } = useContext(VZCodeContext);
 
-  const ref = codeeditorRef;
+  const ref = codeEditorRef;
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
