@@ -168,7 +168,7 @@ export const useKeyboardShortcuts = ({
   runCodeRef,
   sidebarRef,
   editorCache,
-  codeeditorRef
+  codeEditorRef
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
