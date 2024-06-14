@@ -129,7 +129,7 @@ export type VZCodeContextValue = {
 
   sidebarRef: React.RefObject<HTMLDivElement>;
 
-  codeeditorRef: React.RefObject<HTMLDivElement>;
+  codeEditorRef: React.RefObject<HTMLDivElement>;
 
   connected: boolean;
 
