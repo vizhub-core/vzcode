@@ -35,7 +35,7 @@ export const CodeEditor = ({
     editorNoLongerWantsFocus,
     typeScriptWorker,
     theme,
-    codeEditorRef
+    codeEditorRef,
   } = useContext(VZCodeContext);
 
   const ref = codeEditorRef;
@@ -139,5 +139,11 @@ export const CodeEditor = ({
     editorNoLongerWantsFocus,
   ]);
 
-  return <div className="vz-code-editor" ref={ref} tabIndex={-1}></div>;
+  return (
+    <div
+      className="vz-code-editor"
+      ref={ref}
+      tabIndex={-1}
+    ></div>
+  );
 };

@@ -327,7 +327,7 @@ export const VZCodeProvider = ({
     runCodeRef,
     sidebarRef,
     editorCache,
-    codeEditorRef
+    codeEditorRef,
   });
 
   // Track the currently hovered file id.
