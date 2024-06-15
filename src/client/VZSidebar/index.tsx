@@ -5,15 +5,18 @@ import {
   FileTreeFile,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
+import { Search} from "./Search";
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import {
+  FolderSVG,
+  SearchSVG,
   BugSVG,
   GearSVG,
   NewSVG,
   FileSVG,
-  QuestionMarkSVG,
+  QuestionMarkSVG
 } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
@@ -31,18 +34,25 @@ export const VZSidebar = ({
   openSettingsTooltipText = 'Open Settings',
   openKeyboardShortcuts = 'Keyboard Shortcuts',
   reportBugTooltipText = 'Report Bug',
+  searchToolTipText = 'Search',
+  filesToolTipText = 'Files'
 }: {
   createFileTooltipText?: string;
   createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
   openKeyboardShortcuts?: string;
+  searchToolTipText?: string;
+  filesToolTipText?: string;
 }) => {
   const {
     files,
     openTab,
     setIsSettingsOpen,
     setIsDocOpen,
+    isFilesToggled,
+    handleToggleFiles,
+    handleToggleSearch,
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
@@ -106,10 +116,41 @@ export const VZSidebar = ({
       <div className="files" ref={sidebarRef}
         tabIndex={-1}>
         <div className="full-box">
-          <div className="sidebar-section-hint">Files</div>
           <div className="sidebar-section-buttons">
             <OverlayTrigger
-              placement="right"
+                placement="bottom"
+                overlay={
+                  <Tooltip id="files-tooltip">
+                    {filesToolTipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  onClick={handleToggleFiles}
+                  className="icon-button icon-button-dark"
+                >
+                  <FolderSVG />
+                </i>
+              </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="bottom"
+              overlay={
+                <Tooltip id="search-tooltip">
+                  {searchToolTipText}
+                </Tooltip>
+              }
+            >
+              <i
+                onClick={handleToggleSearch}
+                className="icon-button icon-button-dark"
+              >
+                <SearchSVG />
+              </i>
+            </OverlayTrigger>
+
+            <OverlayTrigger
+              placement="bottom"
               overlay={
                 <Tooltip id="open-keyboard-shortcuts">
                   {openKeyboardShortcuts}
@@ -125,7 +166,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
 
             <OverlayTrigger
-              placement="right"
+              placement="bottom"
               overlay={
                 <Tooltip id="report-bug-tooltip">
                   {reportBugTooltipText}
@@ -144,7 +185,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
 
             <OverlayTrigger
-              placement="left"
+              placement="bottom"
               overlay={
                 <Tooltip id="open-settings-tooltip">
                   {openSettingsTooltipText}
@@ -160,7 +201,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
 
             <OverlayTrigger
-              placement="left"
+              placement="bottom"
               overlay={
                 <Tooltip id="create-file-tooltip">
                   {createFileTooltipText}
@@ -177,7 +218,7 @@ export const VZSidebar = ({
 
             {/*Directory Rename*/}
             <OverlayTrigger
-              placement="left"
+              placement="bottom"
               overlay={
                 <Tooltip id="create-dir-tooltip">
                   {createDirTooltipText}
@@ -192,38 +233,47 @@ export const VZSidebar = ({
               </i>
             </OverlayTrigger>
           </div>
+
+          { isFilesToggled ? (
+            <div className='sidebar-files'>
+              {isDragOver ? (
+                <div className="empty">
+                  <div className="empty-text">
+                    Drop files here!
+                  </div>
+                </div>
+              ) : filesExist ? (
+                fileTree.children.map((entity) => {
+                  const { fileId } = entity as FileTreeFile;
+                  const { path } = entity as FileTree;
+                  const key = fileId ? fileId : path;
+                  return (
+                    <Listing
+                      key={key}
+                      entity={entity}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+                  );
+                })
+              ) : (
+                <div className="empty">
+                  <div className="empty-text">
+                    It looks like you don't have any files yet!
+                    Click the "Create file" button above to create
+                    your first file.
+                  </div>
+                </div>
+              )}
+          </div>
+          ) : (
+            <div className='sidebar-search'>
+              <Search />
+            </div>
+          )}
         </div>
-        {isDragOver ? (
-          <div className="empty">
-            <div className="empty-text">
-              Drop files here!
-            </div>
-          </div>
-        ) : filesExist ? (
-          fileTree.children.map((entity) => {
-            const { fileId } = entity as FileTreeFile;
-            const { path } = entity as FileTree;
-            const key = fileId ? fileId : path;
-            return (
-              <Listing
-                key={key}
-                entity={entity}
-                handleFileClick={handleFileClick}
-                handleFileDoubleClick={
-                  handleFileDoubleClick
-                }
-              />
-            );
-          })
-        ) : (
-          <div className="empty">
-            <div className="empty-text">
-              It looks like you don't have any files yet!
-              Click the "Create file" button above to create
-              your first file.
-            </div>
-          </div>
-        )}
       </div>
 
       {enableConnectionStatus && (

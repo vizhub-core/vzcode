@@ -6,7 +6,6 @@ import {
   useRef
 } from 'react';
 import {
-  FileId,
   Files,
   ItemId,
   ShareDBDoc,
@@ -111,6 +110,11 @@ export type VZCodeContextValue = {
   errorMessage: string | null;
 
   typeScriptWorker: Worker | null;
+
+  isFilesToggled: boolean;
+  handleToggleFiles: () => void;
+  handleToggleSearch: () => void;
+  handleSearch: (pattern: string) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -256,6 +260,7 @@ export const VZCodeProvider = ({
 
   // Handle file CRUD operations (Create, Read, Update, Delete)
   const {
+    searchFile,
     createFile,
     renameFile,
     deleteFile,
@@ -267,6 +272,24 @@ export const VZCodeProvider = ({
     closeTabs,
     openTab,
   });
+
+  // State to control the search modal's visibility
+  const [isFilesToggled, setFilesToggled] =
+    useState(true);
+
+  const handleToggleFiles = useCallback(() => {
+    setFilesToggled(true);
+  }, []);
+
+  const handleToggleSearch = useCallback(() => {
+    setFilesToggled(false);
+  }, []);
+
+  const handleSearch = useCallback(
+      (pattern:string) => {
+        searchFile(pattern);
+    }, 
+    [searchFile, isFilesToggled])
 
   // State to control the create file modal's visibility
   const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
@@ -377,6 +400,11 @@ export const VZCodeProvider = ({
     errorMessage,
 
     typeScriptWorker,
+
+    isFilesToggled,
+    handleToggleFiles,
+    handleToggleSearch,
+    handleSearch,
 
     isCreateFileModalOpen,
     handleOpenCreateFileModal,
