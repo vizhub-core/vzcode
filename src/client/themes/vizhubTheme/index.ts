@@ -189,8 +189,7 @@ function vizhubThemeInit(
         '&.cm-focused .cm-nonmatchingBracket': {
           backgroundColor: 'transparent',
           outline: '1px solid #ff2222',
-        }
-
+        },
       },
       { dark: true },
     ),

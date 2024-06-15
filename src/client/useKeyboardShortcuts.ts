@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { shouldTriggerRun } from './shouldTriggerRun';
-import { syntaxTree } from "@codemirror/language";
+import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
-import { EditorView } from "@codemirror/view";
+import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
 
 /*
@@ -30,7 +30,7 @@ const nestingTypes = new Set<string>([
   'CatchClause',
   'WithStatement',
   'ArrowFunction',
-  'ImportGroup'
+  'ImportGroup',
 ]);
 
 // Example declaration types for the specific language to find definitions in the syntax tree
@@ -72,13 +72,22 @@ function getIdentifierContext(
   return levels;
 }
 
-function jumpToDefinition(editor: EditorView, node: SyntaxNode): SyntaxNode {
+function jumpToDefinition(
+  editor: EditorView,
+  node: SyntaxNode,
+): SyntaxNode {
   const state: EditorState = editor.state;
-  const definitions: Array<{identifier: SyntaxNode, context: number}> = [];
-  
+  const definitions: Array<{
+    identifier: SyntaxNode;
+    context: number;
+  }> = [];
+
   // From an identifier in the syntax tree, fetch the name and context to find closest defining syntax node
   const identifier: SyntaxNode = node;
-  const identifierName: string = state.doc.sliceString(identifier.from, identifier.to);
+  const identifierName: string = state.doc.sliceString(
+    identifier.from,
+    identifier.to,
+  );
   const context: number = getIdentifierContext(identifier);
 
   if (identifier) {
@@ -90,7 +99,7 @@ function jumpToDefinition(editor: EditorView, node: SyntaxNode): SyntaxNode {
           nestingTypes.has(tree.name)
         ) {
           const parent: SyntaxNode = tree.node;
-          
+
           // Fetch a host of potential identifiers in an attempt to find the defining syntax node
           const children: Array<SyntaxNode> = [
             ...parent.getChildren('VariableDefinition'),
@@ -100,11 +109,20 @@ function jumpToDefinition(editor: EditorView, node: SyntaxNode): SyntaxNode {
           ];
 
           children.forEach((child: SyntaxNode) => {
-            const name: string = state.doc.sliceString(child.from, child.to);
-            
+            const name: string = state.doc.sliceString(
+              child.from,
+              child.to,
+            );
+
             // Ensure no jump to self by comparing syntax node id's
-            if (name === identifierName && child.type.id !== identifier.type.id) {
-              definitions.push({ identifier: child, context: getIdentifierContext(child) });
+            if (
+              name === identifierName &&
+              child.type.id !== identifier.type.id
+            ) {
+              definitions.push({
+                identifier: child,
+                context: getIdentifierContext(child),
+              });
             }
           });
         }
@@ -151,7 +169,7 @@ export const useKeyboardShortcuts = ({
   runCodeRef,
   sidebarRef,
   editorCache,
-  codeEditorRef
+  codeEditorRef,
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -172,10 +190,13 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
-      
+
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
-        document.addEventListener("mouseover", handleMouseOver);
+        document.addEventListener(
+          'mouseover',
+          handleMouseOver,
+        );
       }
 
       if (event.altKey === true) {
@@ -206,14 +227,14 @@ export const useKeyboardShortcuts = ({
           return;
         }
 
-        if (event.key === '1'){
+        if (event.key === '1') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }
         }
 
-        if (event.key === '2'){
-          if (codeEditorRef.current){
+        if (event.key === '2') {
+          if (codeEditorRef.current) {
             codeEditorRef.current.focus();
           }
         }
@@ -222,78 +243,119 @@ export const useKeyboardShortcuts = ({
 
     const resetActiveJumpingElement = (): void => {
       if (activeJumpingElement) {
-        activeJumpingElement.style.cursor = "initial";
-        activeJumpingElement.style.textDecoration = "none";
+        activeJumpingElement.style.cursor = 'initial';
+        activeJumpingElement.style.textDecoration = 'none';
         activeJumpingElement = definingNode = null;
       }
-      
-      document.removeEventListener("mouseover", handleMouseOver);
-      document.removeEventListener("mousedown", jumpToDefinitionHandler);
-    }
 
-    const jumpToDefinitionHandler = (event: MouseEvent): void => { 
+      document.removeEventListener(
+        'mouseover',
+        handleMouseOver,
+      );
+      document.removeEventListener(
+        'mousedown',
+        jumpToDefinitionHandler,
+      );
+    };
+
+    const jumpToDefinitionHandler = (
+      event: MouseEvent,
+    ): void => {
       // Ensure the current destination node is defined and current cursor position matches highlighted element
-      if (!(definingNode) || event.target as HTMLSpanElement !== activeJumpingElement) {
+      if (
+        !definingNode ||
+        (event.target as HTMLSpanElement) !==
+          activeJumpingElement
+      ) {
         return;
       }
 
       // Move current cursor and center view in the editor to destination node
-      const editor: EditorView = editorCache.get(activeFileId).editor;
-      const closestDefinition: SyntaxNode = definingNode;      
+      const editor: EditorView =
+        editorCache.get(activeFileId).editor;
+      const closestDefinition: SyntaxNode = definingNode;
 
       editor.dispatch({
-        selection: { anchor: closestDefinition.from, head: closestDefinition.to },
+        selection: {
+          anchor: closestDefinition.from,
+          head: closestDefinition.to,
+        },
         scrollIntoView: true,
-        effects: EditorView.scrollIntoView(closestDefinition.from, {
-          y: "center"
-        })
+        effects: EditorView.scrollIntoView(
+          closestDefinition.from,
+          {
+            y: 'center',
+          },
+        ),
       });
 
-      resetActiveJumpingElement();      
+      resetActiveJumpingElement();
     };
 
     const handleKeyRelease = (event: KeyboardEvent) => {
       // On releasing CTRL key, reset all active definition jumping elements and listeners
-      if (!(event.ctrlKey)) {
+      if (!event.ctrlKey) {
         resetActiveJumpingElement();
       }
-    }
+    };
 
     const handleMouseOver = (event: MouseEvent) => {
-      const editor: EditorView = editorCache.get(activeFileId).editor;
+      const editor: EditorView =
+        editorCache.get(activeFileId).editor;
       const tree = syntaxTree(editor.state);
       const element = event.target as HTMLSpanElement;
 
       // Ensure the identifier element can be found and is within the current editor DOM
-      if (element == null || !(editor.dom.contains(element))) {
+      if (
+        element == null ||
+        !editor.dom.contains(element)
+      ) {
         return;
-      } 
+      }
 
       const position: number = editor.posAtDOM(element);
-      const identifier: SyntaxNode = tree.resolveInner(position, 1);
+      const identifier: SyntaxNode = tree.resolveInner(
+        position,
+        1,
+      );
 
       // All valid identifiers must be span elements to find a potential defining jump in editor
-      if (identifier && element instanceof HTMLSpanElement) {
-        const potentialJump: SyntaxNode = jumpToDefinition(editor, identifier);
+      if (
+        identifier &&
+        element instanceof HTMLSpanElement
+      ) {
+        const potentialJump: SyntaxNode = jumpToDefinition(
+          editor,
+          identifier,
+        );
 
         // Only allowing to jump to other definition nodes
-        if (potentialJump && identifier.type.id !== potentialJump.type.id) {
+        if (
+          potentialJump &&
+          identifier.type.id !== potentialJump.type.id
+        ) {
           if (activeJumpingElement) {
-            activeJumpingElement.style.cursor = "initial";
-            activeJumpingElement.style.textDecoration = "none";
+            activeJumpingElement.style.cursor = 'initial';
+            activeJumpingElement.style.textDecoration =
+              'none';
           }
 
           activeJumpingElement = element;
           definingNode = potentialJump;
 
-          activeJumpingElement.style.cursor = "pointer";
-          activeJumpingElement.style.textDecoration = "underline";
+          activeJumpingElement.style.cursor = 'pointer';
+          activeJumpingElement.style.textDecoration =
+            'underline';
 
           // CTRL + Click: Jump to relative definition, which is removed on CTRL key release
-          document.addEventListener("mousedown", jumpToDefinitionHandler, { once: true });
+          document.addEventListener(
+            'mousedown',
+            jumpToDefinitionHandler,
+            { once: true },
+          );
         }
-      } 
-    }
+      }
+    };
 
     document.addEventListener('keydown', handleKeyPress);
     document.addEventListener('keyup', handleKeyRelease);

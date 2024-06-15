@@ -30,7 +30,6 @@ export const json1PresenceDisplay = ({
       //Added variable for cursor position
       cursorPosition = {};
 
-
       constructor(view: EditorView) {
         // Initialize decorations to empty array so CodeMirror doesn't crash.
         this.decorations = RangeSet.of([]);
@@ -47,7 +46,11 @@ export const json1PresenceDisplay = ({
         });
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
-          if(debug) console.log(`Received presence for id ${id}`, presence); // Debug statement
+          if (debug)
+            console.log(
+              `Received presence for id ${id}`,
+              presence,
+            ); // Debug statement
           // If presence === null, the user has disconnected / exited
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
@@ -107,7 +110,8 @@ export const json1PresenceDisplay = ({
                 }),
               });
             }
-            if (view.state.doc.length >= from) { // Ensure position is valid
+            if (view.state.doc.length >= from) {
+              // Ensure position is valid
               this.cursorPosition[id] = from; // Store the cursor position, important to run if we cant get the regular scroll to work
               // console.log(`Stored cursor position for id ${id}: ${from}`); // Debug statement
             } else {
@@ -136,24 +140,24 @@ export const json1PresenceDisplay = ({
           this.scrollToCursor(view);
         });
       }
-            // Method to scroll the view to keep the cursor in view
-            scrollToCursor(view) {
-              for (const id in this.cursorPosition) {
-                //getting the cursor position of the other cursor
-                const cursorPos = this.cursorPosition[id];
-                  view.dispatch({
-                    //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
-                    effects: EditorView.scrollIntoView(cursorPos)
-                  });
-              }
-            }
-          },
-          {
-            decorations: (v) => v.decorations,
-          },
-        ),
-        presenceTheme,
-      ];
+      // Method to scroll the view to keep the cursor in view
+      scrollToCursor(view) {
+        for (const id in this.cursorPosition) {
+          //getting the cursor position of the other cursor
+          const cursorPos = this.cursorPosition[id];
+          view.dispatch({
+            //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
+            effects: EditorView.scrollIntoView(cursorPos),
+          });
+        }
+      }
+    },
+    {
+      decorations: (v) => v.decorations,
+    },
+  ),
+  presenceTheme,
+];
 
 const presenceAnnotation = Annotation.define();
 
