@@ -189,34 +189,8 @@ function vizhubThemeInit(
         '&.cm-focused .cm-nonmatchingBracket': {
           backgroundColor: 'transparent',
           outline: '1px solid #ff2222',
-        },
-        '.rainbow-bracket-red > span': {
-          color: 'white',
-        },
-        '.rainbow-bracket-orange > span': {
-          // red
-          color: '#FFB2B2',
-        },
-        '.rainbow-bracket-yellow > span': {
-          // orange
-          color: '#FFB2DA',
-        },
-        '.rainbow-bracket-green > span': {
-          // yellow
-          color: '#FFFFB2',
-        },
-        '.rainbow-bracket-blue > span': {
-          // green
-          color: '#B2FFB2',
-        },
-        '.rainbow-bracket-indigo > span': {
-          // blue
-          color: '#B2FFFF',
-        },
-        '.rainbow-bracket-violet > span': {
-          // purple
-          color: '#DAB2FF',
         }
+
       },
       { dark: true },
     ),

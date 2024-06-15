@@ -26,7 +26,25 @@ export type ThemeOption = {
   value: any;
   label: ThemeLabel;
 };
-
+// add light theme brackets to eclipse theme
+// const modifiedEclipse = {
+//   ...eclipse,
+//   '.rainbow-bracket-red > span': {
+//     color: 'white',
+//   },
+//   '.rainbow-bracket-orange > span': {
+//     //yellow
+//     color: '#FFFFB2',
+//   },
+//   '.rainbow-bracket-yellow > span': {
+//     // orange
+//     color: '#FFB2DA',
+//   },
+//   '.rainbow-bracket-green > span': {
+//     // green
+//     color: '#B2FFB2',
+//   }
+// };
 export const themes: Array<ThemeOption> = [
   { value: abcdef, label: 'abcdef' },
   { value: dracula, label: 'dracula' },
