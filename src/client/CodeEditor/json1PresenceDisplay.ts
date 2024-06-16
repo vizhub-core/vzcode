@@ -8,6 +8,12 @@ import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
 import { Username } from '../../types';
 
+const debug = false;
+
+// TODO: Make this a setting in the UI.
+// See https://github.com/vizhub-core/vzcode/issues/739
+const enableAutoFollow = false;
+
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //
@@ -46,11 +52,12 @@ export const json1PresenceDisplay = ({
         });
         // Receive remote presence changes.
         docPresence.on('receive', (id, presence) => {
-          if (debug)
+          if (debug) {
             console.log(
               `Received presence for id ${id}`,
               presence,
             ); // Debug statement
+          }
           // If presence === null, the user has disconnected / exited
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
@@ -136,8 +143,12 @@ export const json1PresenceDisplay = ({
               annotations: [presenceAnnotation.of(true)],
             });
           }, 0);
-          //call to scroll to the cursor of the other user
-          this.scrollToCursor(view);
+
+          // Auto-follow all users when their presence is broadcast
+          // by scrolling them into view.
+          if (enableAutoFollow) {
+            this.scrollToCursor(view);
+          }
         });
       }
       // Method to scroll the view to keep the cursor in view
