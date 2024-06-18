@@ -245,11 +245,14 @@ export const VZSidebar = ({
           </div>
         ) : filesExist ? (
           <ListBox label="Alignment" selectionMode="single">
-              <Item>{fileTree.children[0].name}</Item>
-              <Item>test</Item>
-              <Item>Left</Item>
-              <Item>Middle</Item>
-              <Item>Right</Item>
+              {fileTree.children.map((entity) => {
+                const { fileId } = entity as FileTreeFile;
+                const { path } = entity as FileTree;
+                const key = fileId ? fileId : path;
+                return (
+                  <Item key={key}>{entity.name}</Item>
+                );
+              })}
             </ListBox>
             
           /*
