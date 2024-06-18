@@ -15,6 +15,7 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { isDirectory } from './isDirectory.js';
+import { exec } from 'child_process';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -82,6 +83,16 @@ wss.on('connection', (ws) => {
   ws.on('close', (code) => {
     clientStream.end();
   });
+
+  // Handle incoming messages to communicate with server methods
+  ws.on('message', (message) => {
+    try {
+      const parsedMessage = JSON.parse(message);
+      search(parsedMessage.data.pattern);
+    } catch (error) {
+      console.log(error);
+    }
+  });
 });
 
 // Serve static files
@@ -106,9 +117,30 @@ app.post(
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
 
+// Search for files via grep
+const search = (pattern) => {
+  exec(`grep -r -n "${pattern}" .`, (err, stdout, stderr) => {
+    if (err) {
+      console.log(`Error: ${stderr} \n\n`);
+      return;
+    } else {
+      // Filter and log non-empty lines
+      const lines = stdout.split('\n').filter(line => line.trim() !== '');
+
+      lines.forEach(line => {
+          console.log(`Match: ${line}`);
+      });
+    }
+  });
+}
+
 // Saves the files that changed.
 const save = () => {
   const currentDocument = shareDBDoc.data;
+
+  /* TODO - These are based on cache! */
+  // console.log(shareDBConnection.get('documents'));
+  // console.log(shareDBConnection.get('documents'));
 
   // Take a look at each file (key) previously and currently.
   const allKeys = Object.keys({
@@ -116,11 +148,14 @@ const save = () => {
     ...previousDocument.files,
   });
 
+  search("import");
+
   const directoriesToDelete = [];
 
   for (const key of allKeys) {
     const previous = previousDocument.files[key];
     const current = currentDocument.files[key];
+
 
     // If this file was neither created nor deleted...
     if (previous && current) {
