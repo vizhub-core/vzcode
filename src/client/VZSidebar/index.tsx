@@ -245,6 +245,8 @@ export const VZSidebar = ({
           </div>
         ) : filesExist ? (
           <ListBox label="Alignment" selectionMode="single">
+              <Item>{fileTree.children[0].name}</Item>
+              <Item>test</Item>
               <Item>Left</Item>
               <Item>Middle</Item>
               <Item>Right</Item>
