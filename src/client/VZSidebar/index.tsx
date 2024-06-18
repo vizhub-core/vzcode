@@ -33,14 +33,12 @@ export const VZSidebar = ({
   openSettingsTooltipText = 'Open Settings',
   openKeyboardShortcuts = 'Keyboard Shortcuts',
   reportBugTooltipText = 'Report Bug',
-  toggleAutoFollow = 'Toggle Auto Follow',
 }: {
   createFileTooltipText?: string;
   createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
   openKeyboardShortcuts?: string;
-  toggleAutoFollow?: string;
 }) => {
   const {
     files,
