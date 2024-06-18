@@ -19,6 +19,10 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import React, { useRef } from 'react';
+import type {AriaListBoxProps} from 'react-aria';
+import {Item, useListState} from 'react-stately';
+import {mergeProps, useFocusRing, useListBox, useOption} from 'react-aria';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -93,6 +97,47 @@ export const VZSidebar = ({
     handleDragLeave,
     handleDrop,
   } = useDragAndDrop();
+
+
+  function ListBox<T extends object>(props: AriaListBoxProps<T>) {
+    let state = useListState(props);
+    let ref = React.useRef(null);
+
+    let {listBoxProps, labelProps} = useListBox(props, state, ref);
+
+    return (
+      <>
+        <div {...labelProps}>{props.label}</div>
+        <ul {...listBoxProps} ref={ref}>
+          {[...state.collection].map((item) => (
+            item.type === 'section'
+              ? <ListBoxSection key={item.key} section={item} state={state} />
+              : <Option key={item.key} item={item} state={state} />
+          ))}
+        </ul>
+      </>
+    );
+  }
+
+  function Option({ item, state }) {
+    // Get props for the option element
+    let ref = React.useRef(null);
+    let { optionProps } = useOption({ key: item.key }, state, ref);
+  
+    // Determine whether we should show a keyboard
+    // focus ring for accessibility
+    let { isFocusVisible, focusProps } = useFocusRing();
+  
+    return (
+      <li
+        {...mergeProps(optionProps, focusProps)}
+        ref={ref}
+        data-focus-visible={isFocusVisible}
+      >
+        {item.rendered}
+      </li>
+    );
+  }
 
   return (
     <div
@@ -199,11 +244,19 @@ export const VZSidebar = ({
             </div>
           </div>
         ) : filesExist ? (
+          <ListBox label="Alignment" selectionMode="single">
+              <Item>Left</Item>
+              <Item>Middle</Item>
+              <Item>Right</Item>
+            </ListBox>
+            
+          /*
           fileTree.children.map((entity) => {
             const { fileId } = entity as FileTreeFile;
             const { path } = entity as FileTree;
             const key = fileId ? fileId : path;
             return (
+              
               <Listing
                 key={key}
                 entity={entity}
@@ -212,8 +265,12 @@ export const VZSidebar = ({
                   handleFileDoubleClick
                 }
               />
+              
+
             );
           })
+            */
+
         ) : (
           <div className="empty">
             <div className="empty-text">
