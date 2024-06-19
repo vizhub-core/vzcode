@@ -114,7 +114,6 @@ export type VZCodeContextValue = {
   isFilesToggled: boolean;
   handleToggleFiles: () => void;
   handleToggleSearch: () => void;
-  handleSearch: (pattern: string) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -285,12 +284,6 @@ export const VZCodeProvider = ({
     setFilesToggled(false);
   }, []);
 
-  const handleSearch = useCallback(
-      (pattern:string) => {
-        searchFile(pattern);
-    }, 
-    [searchFile, isFilesToggled])
-
   // State to control the create file modal's visibility
   const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
     useState(false);
@@ -404,7 +397,6 @@ export const VZCodeProvider = ({
     isFilesToggled,
     handleToggleFiles,
     handleToggleSearch,
-    handleSearch,
 
     isCreateFileModalOpen,
     handleOpenCreateFileModal,

@@ -83,16 +83,6 @@ wss.on('connection', (ws) => {
   ws.on('close', (code) => {
     clientStream.end();
   });
-
-  // Handle incoming messages to communicate with server methods
-  ws.on('message', (message) => {
-    try {
-      const parsedMessage = JSON.parse(message);
-      search(parsedMessage.data.pattern);
-    } catch (error) {
-      console.log(error);
-    }
-  });
 });
 
 // Serve static files
