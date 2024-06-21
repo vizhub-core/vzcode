@@ -6,7 +6,11 @@ import {
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
-import { Username } from '../../types';
+import { FileId, Username } from '../../types';
+import { useCallback, useContext, useMemo, useState } from 'react';
+import { TabState, VZAction } from '../vzReducer';
+import { VZCodeContext } from '../VZCodeContext';
+import { useActions } from '../useActions';
 
 const debug = false;
 
@@ -46,7 +50,7 @@ export const json1PresenceDisplay = ({
         //  * Keys are presence ids
         //  * Values are presence objects as defined by ot-json1-presence
         const presenceState = {};
-
+        const  { openTab } = useContext ( VZCodeContext );
         // Add the scroll event listener
         //This runs for the arrow key scrolling, it should result in the users scrolling to eachother's location.
         view.dom.addEventListener('scroll', () => {
@@ -64,8 +68,14 @@ export const json1PresenceDisplay = ({
           // We also check if the presence is for the current file or not.
           if (presence && pathMatches(path, presence)) {
             presenceState[id] = presence;
-          } else {
-            delete presenceState[id];
+          } else if (presence) {
+            if (enableAutoFollow) {
+              presenceState[id] = presence;
+              //openTab({presence.ileId, isTransient = true})
+              this.scrollToCursor(view);
+            } else {
+              delete presenceState[id];
+            }
           }
           // Update decorations to reflect new presence state.
           // TODO consider mutating this rather than recomputing it on each change.
