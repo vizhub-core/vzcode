@@ -19,6 +19,12 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import type {AriaListBoxProps} from 'react-aria';
+import {mergeProps, useFocusRing, useGridList, useGridListItem} from 'react-aria';
+import {useListState} from 'react-stately';
+import {useRef} from 'react';
+
+import {Item} from 'react-stately';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -93,6 +99,48 @@ export const VZSidebar = ({
     handleDragLeave,
     handleDrop,
   } = useDragAndDrop();
+
+  function List(props) {
+    let state = useListState(props);
+    let ref = useRef();
+    let { gridProps } = useGridList(props, state, ref);
+  
+    return (
+      <ul {...gridProps} ref={ref} className="list">
+        {[...state.collection].map((item) => (
+          <ListItem key={item.key} item={item} state={state} />
+        ))}
+      </ul>
+    );
+  }
+
+  function ListItem({ item, state }) {
+    let ref = useRef(null);
+    let { rowProps, gridCellProps, isPressed } = useGridListItem(
+      { node: item },
+      state,
+      ref
+    );
+  
+    let { isFocusVisible, focusProps } = useFocusRing();
+    let showCheckbox = state.selectionManager.selectionMode !== 'none' &&
+      state.selectionManager.selectionBehavior === 'toggle';
+  
+    return (
+      <li
+        {...mergeProps(rowProps, focusProps)}
+        ref={ref}
+        className={`${isPressed ? 'pressed' : ''} ${
+          isFocusVisible ? 'focus-visible' : ''
+        }`}
+      >
+        <div {...gridCellProps}>
+          {showCheckbox && <ListCheckbox item={item} state={state} />}
+          {item.rendered}
+        </div>
+      </li>
+    );
+  }
 
   return (
     <div
@@ -199,11 +247,63 @@ export const VZSidebar = ({
             </div>
           </div>
         ) : filesExist ? (
+
+          <List
+            aria-label="Example List"
+            selectionMode="multiple"
+            selectionBehavior="replace"
+            onAction={(key) => handleFileDoubleClick(key)}
+          >
+            {fileTree.children.map((entity) => {
+                const { fileId } = entity as FileTreeFile;
+                const { path } = entity as FileTree;
+                const key = fileId ? fileId : path;
+                return (
+                  <Item key={key}>
+                    <Listing
+                      key={key}
+                      entity={entity}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+
+                  </Item>
+                );
+              })}
+          </List>
+
+          /*
+          <ListBox label="Alignment" selectionMode="single">
+              {fileTree.children.map((entity) => {
+                const { fileId } = entity as FileTreeFile;
+                const { path } = entity as FileTree;
+                const key = fileId ? fileId : path;
+                return (
+                  <Item key={key}>
+                    <Listing
+                      key={key}
+                      entity={entity}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+
+                  </Item>
+                );
+              })}
+            </ListBox>
+            */
+            
+          /*
           fileTree.children.map((entity) => {
             const { fileId } = entity as FileTreeFile;
             const { path } = entity as FileTree;
             const key = fileId ? fileId : path;
             return (
+              
               <Listing
                 key={key}
                 entity={entity}
@@ -212,8 +312,12 @@ export const VZSidebar = ({
                   handleFileDoubleClick
                 }
               />
+              
+
             );
           })
+            */
+
         ) : (
           <div className="empty">
             <div className="empty-text">
