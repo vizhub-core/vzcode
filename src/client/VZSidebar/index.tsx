@@ -19,10 +19,12 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
-import React, { useRef } from 'react';
 import type {AriaListBoxProps} from 'react-aria';
-import {Item, useListState} from 'react-stately';
-import {mergeProps, useFocusRing, useListBox, useOption} from 'react-aria';
+import {mergeProps, useFocusRing, useGridList, useGridListItem} from 'react-aria';
+import {useListState} from 'react-stately';
+import {useRef} from 'react';
+
+import {Item} from 'react-stately';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -98,43 +100,44 @@ export const VZSidebar = ({
     handleDrop,
   } = useDragAndDrop();
 
-
-  function ListBox<T extends object>(props: AriaListBoxProps<T>) {
+  function List(props) {
     let state = useListState(props);
-    let ref = React.useRef(null);
-
-    let {listBoxProps, labelProps} = useListBox(props, state, ref);
-
+    let ref = useRef();
+    let { gridProps } = useGridList(props, state, ref);
+  
     return (
-      <>
-        <div {...labelProps}>{props.label}</div>
-        <ul {...listBoxProps} ref={ref}>
-          {[...state.collection].map((item) => (
-            item.type === 'section'
-              ? <ListBoxSection key={item.key} section={item} state={state} />
-              : <Option key={item.key} item={item} state={state} />
-          ))}
-        </ul>
-      </>
+      <ul {...gridProps} ref={ref} className="list">
+        {[...state.collection].map((item) => (
+          <ListItem key={item.key} item={item} state={state} />
+        ))}
+      </ul>
     );
   }
 
-  function Option({ item, state }) {
-    // Get props for the option element
-    let ref = React.useRef(null);
-    let { optionProps } = useOption({ key: item.key }, state, ref);
+  function ListItem({ item, state }) {
+    let ref = useRef(null);
+    let { rowProps, gridCellProps, isPressed } = useGridListItem(
+      { node: item },
+      state,
+      ref
+    );
   
-    // Determine whether we should show a keyboard
-    // focus ring for accessibility
     let { isFocusVisible, focusProps } = useFocusRing();
+    let showCheckbox = state.selectionManager.selectionMode !== 'none' &&
+      state.selectionManager.selectionBehavior === 'toggle';
   
     return (
       <li
-        {...mergeProps(optionProps, focusProps)}
+        {...mergeProps(rowProps, focusProps)}
         ref={ref}
-        data-focus-visible={isFocusVisible}
+        className={`${isPressed ? 'pressed' : ''} ${
+          isFocusVisible ? 'focus-visible' : ''
+        }`}
       >
-        {item.rendered}
+        <div {...gridCellProps}>
+          {showCheckbox && <ListCheckbox item={item} state={state} />}
+          {item.rendered}
+        </div>
       </li>
     );
   }
@@ -244,16 +247,55 @@ export const VZSidebar = ({
             </div>
           </div>
         ) : filesExist ? (
+
+          <List
+            aria-label="Example List"
+            selectionMode="multiple"
+            selectionBehavior="replace"
+            onAction={(key) => handleFileDoubleClick(key)}
+          >
+            {fileTree.children.map((entity) => {
+                const { fileId } = entity as FileTreeFile;
+                const { path } = entity as FileTree;
+                const key = fileId ? fileId : path;
+                return (
+                  <Item key={key}>
+                    <Listing
+                      key={key}
+                      entity={entity}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+
+                  </Item>
+                );
+              })}
+          </List>
+
+          /*
           <ListBox label="Alignment" selectionMode="single">
               {fileTree.children.map((entity) => {
                 const { fileId } = entity as FileTreeFile;
                 const { path } = entity as FileTree;
                 const key = fileId ? fileId : path;
                 return (
-                  <Item key={key}>{entity.name}</Item>
+                  <Item key={key}>
+                    <Listing
+                      key={key}
+                      entity={entity}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+
+                  </Item>
                 );
               })}
             </ListBox>
+            */
             
           /*
           fileTree.children.map((entity) => {
