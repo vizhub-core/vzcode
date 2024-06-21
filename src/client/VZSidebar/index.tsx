@@ -50,9 +50,8 @@ export const VZSidebar = ({
     openTab,
     setIsSettingsOpen,
     setIsDocOpen,
-    isFilesToggled,
-    handleToggleFiles,
-    handleToggleSearch,
+    isSearchOpen,
+    setIsSearchOpen,
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
@@ -126,7 +125,7 @@ export const VZSidebar = ({
                 }
               >
                 <i
-                  onClick={handleToggleFiles}
+                  onClick={() => setIsSearchOpen(false)}
                   className="icon-button icon-button-dark"
                 >
                   <FolderSVG />
@@ -142,7 +141,7 @@ export const VZSidebar = ({
               }
             >
               <i
-                onClick={handleToggleSearch}
+                onClick={() => setIsSearchOpen(true)}
                 className="icon-button icon-button-dark"
               >
                 <SearchSVG />
@@ -234,7 +233,7 @@ export const VZSidebar = ({
             </OverlayTrigger>
           </div>
 
-          { isFilesToggled ? (
+          { !(isSearchOpen) ? (
             <div className='sidebar-files'>
               {isDragOver ? (
                 <div className="empty">

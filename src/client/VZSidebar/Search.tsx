@@ -2,30 +2,23 @@ import {
   JavaScriptSVG,
   TypeScriptSVG,
   ReactSVG,
+  SvelteSVG,
   JsonSVG,
   MarkdownSVG,
   HtmlSVG,
   CssSVG,
-  FileSVG
+  SearchFileSVG
 } from '../Icons';
 import {
-  useState,
   useRef,
   useEffect,
   useContext,
 } from "react";
 import { Form } from "../bootstrap";
 import { VZCodeContext } from "../VZCodeContext";
-import { ShareDBDoc, VZCodeContent } from "../../types";
+import { SearchFile } from '../../types';
 
-type File = {
-  id: string;
-  name: string;
-  extension: string;
-  lines: Array<{line: number, index: number, text: string }>;
-}
-
-function getIcon(extension: string) {
+function getExtensionIcon(extension: string) {
   switch(extension) {
     case "jsx": case "tsx":
       return <ReactSVG />;
@@ -41,50 +34,17 @@ function getIcon(extension: string) {
       return <HtmlSVG />;
     case "css":
       return <CssSVG />;
+    case "svelte":
+      return <SvelteSVG />;
     default:
-      return <FileSVG />;
+      return <SearchFileSVG />;
   }
-}
-
-function searchFiles(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): Array<File> {
-  let results: Array<File> = [];
-
-  const files = shareDBDoc.data.files
-  const fileIds = Object.keys(shareDBDoc.data.files);
-
-  for (let i = 0; i < fileIds.length; i++) {
-    const file = files[fileIds[i]];  
-
-    if (files[fileIds[i]].text) {
-      const fileName = file.name;
-      const fileExtension = fileName.split(".")[1];
-
-      const lines = file.text.split("\n");
-      const patterns = [];
-
-      for (let j = 0; j < lines.length; j++) {
-        const index = lines[j].indexOf(pattern);
-
-        if (index !== -1) {
-          patterns.push({line: j, index: index, text: lines[j]});
-        }
-      }
-
-      if (patterns.length > 0) {
-        results.push({id: fileIds[i], name: fileName, extension: fileExtension, lines: patterns});
-      }
-    }
-  }
-
-  return results;
 }
 
 export const Search = () => {
-  const [search, setSearch] = useState("");
-  const [results, setResults] = useState([]);
+  const { search, setSearch, jumpToSearch, setActiveFileLeft, setSearchResults, shareDBDoc } = useContext(VZCodeContext);
+  const pattern = search.pattern;
   const inputRef = useRef(null);
-
-  const { shareDBDoc } = useContext(VZCodeContext);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -93,13 +53,14 @@ export const Search = () => {
     
     // Search about 1 second after entering pattern
     const delaySearch = setTimeout(() => {
-      if (search.trim().length >= 1) {
-        setResults(searchFiles(shareDBDoc, search));
+      if (pattern.trim().length >= 1) {
+        setSearchResults(shareDBDoc);
+        console.log(search);
       }
     }, 2000);
 
     return () => clearTimeout(delaySearch);
-  }, [search]);
+  }, [search.pattern]);
 
   return (
     <div>
@@ -110,21 +71,21 @@ export const Search = () => {
         <h4>Search</h4>
         <Form.Control
           type="text"
-          value={search}
-          onChange={(e) => {setSearch(e.target.value); setResults([]);}}
+          value={search.pattern}
+          onChange={(e) => setSearch(e.target.value)}
           ref={inputRef}
           spellCheck="false"
         />
       </Form.Group>
-      {(results.length >= 1 && search.trim().length >= 1) ? (
+      {(pattern.length >= 1 && pattern.trim().length >= 1) ? (
         <div className="search-results">
           {
-            results.map((file : File) => (
+            search.results.map((file : SearchFile) => (
               <div className="search-result" key={file.name}>
                 <div className="search-result-heading">
                   <div className="search-result-name">
                     {
-                      getIcon(file.extension)
+                      getExtensionIcon(file.name.split(".")[1])
                     }
                     <h5>{file.name}</h5>
                   </div>
@@ -134,10 +95,16 @@ export const Search = () => {
                   {
                     file.lines.map((line) => {
                       const before = line.text.substring(0, line.index);
-                      const match = line.text.substring(line.index, line.index + search.length);
-                      const after = line.text.substring(line.index + search.length);
+                      const match = line.text.substring(line.index, line.index + pattern.length);
+                      const after = line.text.substring(line.index + pattern.length);
                       return (
-                        <p className = "search-line" key = {file.name + " - " + line.line + " - " + line.index}>
+                        <p 
+                          className = "search-line" key = {file.name + " - " + line.line + " - " + line.index}
+                          onClick={() => {
+                            jumpToSearch(shareDBDoc, file.id, line.line);
+                            setActiveFileLeft();
+                          }}
+                          >
                             {before} 
                             <span className="search-pattern">{match}</span> 
                             {after}

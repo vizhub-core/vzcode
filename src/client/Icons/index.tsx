@@ -12,10 +12,12 @@ export { PlaySVG } from './PlaySVG';
 export { QuestionMarkSVG } from './QuestionMarkSVG';
 export { FolderSVG } from "./FolderSVG"
 export { SearchSVG } from "./SearchSVG"
+export { SearchFileSVG } from "./SearchFileSVG"
 export { JavaScriptSVG } from './JavaScriptSVG';
 export { TypeScriptSVG } from './TypeScriptSVG';
-export { JsonSVG } from './JsonSVG';
-export { MarkdownSVG } from './MarkdownSVG';
+export { ReactSVG } from './ReactSVG';
+export { SvelteSVG } from './SvelteSVG';
 export { HtmlSVG } from './HtmlSVG';
 export { CssSVG } from './CssSVG';
-export { ReactSVG } from './ReactSVG';
+export { JsonSVG } from './JsonSVG';
+export { MarkdownSVG } from './MarkdownSVG';

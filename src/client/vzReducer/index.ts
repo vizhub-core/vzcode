@@ -1,4 +1,4 @@
-import { FileId, Username } from '../../types';
+import { FileId, SearchResults, ShareDBDoc, Username, VZCodeContent } from '../../types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
 import { openTabReducer } from './openTabReducer';
@@ -7,12 +7,13 @@ import {
   setActiveFileLeftReducer,
   setActiveFileRightReducer,
 } from './setActiveFileLeftRightReducer';
+import { setIsSearchOpenReducer } from './setIsSearchOpenReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
-
+import { setSearchReducer, setSearchResultsReducer } from './searchReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -26,6 +27,12 @@ export type VZState = {
 
   // The theme that is currently active.
   theme: ThemeLabel;
+  
+  // Search pattern and most recent results based on the current pattern
+  search: SearchResults
+
+  // True to show the search instead of files
+  isSearchOpen: boolean;
 
   // True to show the settings modal.
   isSettingsOpen: boolean;
@@ -73,6 +80,22 @@ export type VZAction =
   | { type: 'set_is_settings_open'; value: boolean }
   | { type: 'set_is_doc_open'; value: boolean }
 
+  // `set_is_search_open`
+  //  * Sets whether the search tab is open.
+  | { type: 'set_is_search_open'; value: boolean }
+
+  // `set_search`
+  //  * Sets the current search pattern
+  | { type: 'set_search'; value: string; }
+
+  // `set_search_results`
+  //  * Sets the current search pattern
+  | { type: 'set_search_results'; files: ShareDBDoc<VZCodeContent> }
+
+  // `jump_to_search`
+  //  * Makes the result result the active document and highlights pattern line
+  | { type: 'jump_to_search'; files: ShareDBDoc<VZCodeContent>; id: string; line: number;  }
+
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
@@ -107,6 +130,9 @@ const reducers = [
   openTabReducer,
   closeTabsReducer,
   setThemeReducer,
+  setSearchReducer,
+  setSearchResultsReducer,
+  setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,

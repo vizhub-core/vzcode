@@ -12,6 +12,7 @@ import {
   SubmitOperation,
   Username,
   VZCodeContent,
+  SearchResults,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -111,9 +112,12 @@ export type VZCodeContextValue = {
 
   typeScriptWorker: Worker | null;
 
-  isFilesToggled: boolean;
-  handleToggleFiles: () => void;
-  handleToggleSearch: () => void;
+  search: SearchResults;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isSearchOpen: boolean) => void;
+  setSearch: (pattern: string) => void;
+  setSearchResults: (files: ShareDBDoc<VZCodeContent>) => void;
+  jumpToSearch: (files: ShareDBDoc<VZCodeContent>, id: string, line: number) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -215,6 +219,8 @@ export const VZCodeProvider = ({
     tabList,
     activeFileId,
     theme,
+    search,
+    isSearchOpen,
     isSettingsOpen,
     isDocOpen,
     editorWantsFocus,
@@ -229,6 +235,10 @@ export const VZCodeProvider = ({
     openTab,
     closeTabs,
     setTheme,
+    setIsSearchOpen,
+    setSearch, 
+    setSearchResults,
+    jumpToSearch,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -259,7 +269,6 @@ export const VZCodeProvider = ({
 
   // Handle file CRUD operations (Create, Read, Update, Delete)
   const {
-    searchFile,
     createFile,
     renameFile,
     deleteFile,
@@ -271,18 +280,6 @@ export const VZCodeProvider = ({
     closeTabs,
     openTab,
   });
-
-  // State to control the search modal's visibility
-  const [isFilesToggled, setFilesToggled] =
-    useState(true);
-
-  const handleToggleFiles = useCallback(() => {
-    setFilesToggled(true);
-  }, []);
-
-  const handleToggleSearch = useCallback(() => {
-    setFilesToggled(false);
-  }, []);
 
   // State to control the create file modal's visibility
   const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
@@ -369,6 +366,13 @@ export const VZCodeProvider = ({
     openTab,
     closeTabs,
 
+    search,
+    isSearchOpen,
+    setIsSearchOpen,
+    setSearch,
+    setSearchResults,
+    jumpToSearch,
+
     isSettingsOpen,
     setIsSettingsOpen,
     closeSettings,
@@ -393,10 +397,6 @@ export const VZCodeProvider = ({
     errorMessage,
 
     typeScriptWorker,
-
-    isFilesToggled,
-    handleToggleFiles,
-    handleToggleSearch,
 
     isCreateFileModalOpen,
     handleOpenCreateFileModal,

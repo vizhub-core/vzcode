@@ -62,6 +62,17 @@ export interface FileTreeFile {
   fileId: FileId;
 }
 
+export interface SearchFile {
+  id: string;
+  name: string;
+  lines: Array<{ line: number, index: number, text: string }>;
+}
+
+export interface SearchResults {
+  pattern: string;
+  results: Array<SearchFile>;
+}
+
 export type JSONOp = any;
 
 // `ShareDBDoc`
