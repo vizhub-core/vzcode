@@ -18,14 +18,6 @@ export const useActions = (
     [dispatch],
   );
 
-  const setActiveFileLeft = useCallback(() => {
-    dispatch({ type: 'set_active_file_left' });
-  }, [dispatch]);
-
-  const setActiveFileRight = useCallback(() => {
-    dispatch({ type: 'set_active_file_right' });
-  }, [dispatch]);
-
   const openTab = useCallback(
     (tabState: TabState): void => {
       dispatch({
@@ -57,7 +49,6 @@ export const useActions = (
     [dispatch],
   );
 
-  // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
       dispatch({
@@ -68,23 +59,9 @@ export const useActions = (
     [dispatch],
   );
 
-  const setIsDocOpen = useCallback(
-    (value: boolean) => {
-      dispatch({
-        type: 'set_is_doc_open',
-        value: value,
-      });
-    },
-    [dispatch],
-  );
-
   const closeSettings = useCallback(() => {
     setIsSettingsOpen(false);
   }, [setIsSettingsOpen]);
-
-  const closeDoc = useCallback(() => {
-    setIsDocOpen(false);
-  }, [setIsDocOpen]);
 
   const editorNoLongerWantsFocus = useCallback(() => {
     dispatch({
@@ -102,18 +79,27 @@ export const useActions = (
     [dispatch],
   );
 
+  // New action function for setting the tab list
+  const setTabList = useCallback(
+    (tabList: Array<TabState>) => {
+      dispatch({
+        type: 'set_tab_list',
+        tabList,
+      });
+    },
+    [dispatch],
+  );
+
   return {
     setActiveFileId,
-    setActiveFileLeft,
-    setActiveFileRight,
     openTab,
     closeTabs,
     setTheme,
     setIsSettingsOpen,
-    setIsDocOpen,
     closeSettings,
-    closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
+    setTabList, // Export the new action function
   };
 };
+

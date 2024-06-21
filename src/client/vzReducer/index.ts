@@ -12,6 +12,7 @@ import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
+import { setTabListReducer } from './setTabListReducer'; // Imported a new reducer
 
 export { createInitialState } from './createInitialState';
 
@@ -41,8 +42,8 @@ export type VZState = {
 
 // The shape of the actions that can be dispatched to the reducer.
 export type VZAction =
-  // `set_active_file_id`
-  //  * Sets the active file ID.
+// `set_active_file_id`
+//  * Sets the active file ID.
   | { type: 'set_active_file_id'; activeFileId: FileId }
 
   // `set_active_file_left' 'set_active_file_right`
@@ -54,15 +55,15 @@ export type VZAction =
   // `open_tab`
   //  * Opens a tab.
   //  * Also serves to change an already open transient tab to persistent.
-  | {
-      type: 'open_tab';
-      fileId: FileId;
-      isTransient?: boolean;
-    }
+  | { type: 'open_tab'; fileId: FileId; isTransient?: boolean; }
 
   // `close_tabs`
   //  * Closes a set of tabs.
   | { type: 'close_tabs'; fileIdsToClose: Array<FileId> }
+
+  // `set_tab_list`
+  //  * Sets the tab list.
+  | { type: 'set_tab_list'; tabList: Array<TabState> }
 
   // `set_theme`
   //  * Sets the theme.
@@ -111,6 +112,7 @@ const reducers = [
   setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
+  setTabListReducer,
 ];
 
 export const vzReducer = (
