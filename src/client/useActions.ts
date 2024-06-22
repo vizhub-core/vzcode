@@ -90,17 +90,6 @@ export const useActions = (
     [dispatch],
   );
 
-  // Jump to line in file matching search pattern
-  const jumpToSearch = useCallback(
-    (files: ShareDBDoc<VZCodeContent>, id: string, line: number) => {
-      dispatch({
-        type: 'set_active_file_id',
-        activeFileId: id
-      });
-    },
-    [dispatch],
-  );
-
   // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
@@ -156,7 +145,6 @@ export const useActions = (
     setIsSearchOpen,
     setSearch,
     setSearchResults,
-    jumpToSearch,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,

@@ -7,13 +7,12 @@ import {
   setActiveFileLeftReducer,
   setActiveFileRightReducer,
 } from './setActiveFileLeftRightReducer';
-import { setIsSearchOpenReducer } from './setIsSearchOpenReducer';
 import { setIsSettingsOpenReducer } from './setIsSettingsOpenReducer';
 import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
-import { setSearchReducer, setSearchResultsReducer } from './searchReducer';
+import { setIsSearchOpenReducer, setSearchReducer, setSearchResultsReducer } from './searchReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -92,15 +91,11 @@ export type VZAction =
   //  * Sets the current search pattern
   | { type: 'set_search_results'; files: ShareDBDoc<VZCodeContent> }
 
-  // `jump_to_search`
-  //  * Makes the result result the active document and highlights pattern line
-  | { type: 'jump_to_search'; files: ShareDBDoc<VZCodeContent>; id: string; line: number;  }
-
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
 
-  // `set_username`
+  // `set_username`ju
   //  * Sets the username.
   | { type: 'set_username'; username: Username };
 

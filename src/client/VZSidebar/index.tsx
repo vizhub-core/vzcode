@@ -5,7 +5,7 @@ import {
   FileTreeFile,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
-import { Search} from "./Search";
+import { Search } from "./Search";
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
@@ -112,128 +112,128 @@ export const VZSidebar = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="files" ref={sidebarRef}
-        tabIndex={-1}>
-        <div className="full-box">
-          <div className="sidebar-section-buttons">
-            <OverlayTrigger
-                placement="bottom"
-                overlay={
-                  <Tooltip id="files-tooltip">
-                    {filesToolTipText}
-                  </Tooltip>
-                }
-              >
-                <i
-                  onClick={() => setIsSearchOpen(false)}
-                  className="icon-button icon-button-dark"
-                >
-                  <FolderSVG />
-                </i>
-              </OverlayTrigger>
+      <div className="full-box" ref={sidebarRef} tabIndex={-1}>
 
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="search-tooltip">
-                  {searchToolTipText}
-                </Tooltip>
-              }
+        <div className="sidebar-section-buttons">
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="files-tooltip">
+                {filesToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={() => setIsSearchOpen(false)}
+              className="icon-button icon-button-dark"
             >
-              <i
-                onClick={() => setIsSearchOpen(true)}
-                className="icon-button icon-button-dark"
-              >
-                <SearchSVG />
+              <FolderSVG />
+            </i>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="search-tooltip">
+                {searchToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={() => setIsSearchOpen(true)}
+              className="icon-button icon-button-dark"
+            >
+              <SearchSVG />
+            </i>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="open-keyboard-shortcuts">
+                {openKeyboardShortcuts}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleQuestionMarkClick}
+              className="icon-button icon-button-dark"
+            >
+              <QuestionMarkSVG />
+            </i>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="report-bug-tooltip">
+                {reportBugTooltipText}
+              </Tooltip>
+            }
+          >
+            <a
+              href="https://github.com/vizhub-core/vzcode/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="icon-button icon-button-dark">
+                <BugSVG />
               </i>
-            </OverlayTrigger>
+            </a>
+          </OverlayTrigger>
 
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="open-keyboard-shortcuts">
-                  {openKeyboardShortcuts}
-                </Tooltip>
-              }
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="open-settings-tooltip">
+                {openSettingsTooltipText}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleSettingsClick}
+              className="icon-button icon-button-dark"
             >
-              <i
-                onClick={handleQuestionMarkClick}
-                className="icon-button icon-button-dark"
-              >
-                <QuestionMarkSVG />
-              </i>
-            </OverlayTrigger>
+              <GearSVG />
+            </i>
+          </OverlayTrigger>
 
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="report-bug-tooltip">
-                  {reportBugTooltipText}
-                </Tooltip>
-              }
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="create-file-tooltip">
+                {createFileTooltipText}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleOpenCreateFileModal}
+              className="icon-button icon-button-dark"
             >
-              <a
-                href="https://github.com/vizhub-core/vzcode/issues/new"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i className="icon-button icon-button-dark">
-                  <BugSVG />
-                </i>
-              </a>
-            </OverlayTrigger>
+              <NewSVG />
+            </i>
+          </OverlayTrigger>
 
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="open-settings-tooltip">
-                  {openSettingsTooltipText}
-                </Tooltip>
-              }
+          {/*Directory Rename*/}
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="create-dir-tooltip">
+                {createDirTooltipText}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleOpenCreateDirModal}
+              className="icon-button icon-button-dark"
             >
-              <i
-                onClick={handleSettingsClick}
-                className="icon-button icon-button-dark"
-              >
-                <GearSVG />
-              </i>
-            </OverlayTrigger>
+              <FileSVG />
+            </i>
+          </OverlayTrigger>
+        </div>
 
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="create-file-tooltip">
-                  {createFileTooltipText}
-                </Tooltip>
-              }
-            >
-              <i
-                onClick={handleOpenCreateFileModal}
-                className="icon-button icon-button-dark"
-              >
-                <NewSVG />
-              </i>
-            </OverlayTrigger>
-
-            {/*Directory Rename*/}
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip id="create-dir-tooltip">
-                  {createDirTooltipText}
-                </Tooltip>
-              }
-            >
-              <i
-                onClick={handleOpenCreateDirModal}
-                className="icon-button icon-button-dark"
-              >
-                <FileSVG />
-              </i>
-            </OverlayTrigger>
-          </div>
-
-          { !(isSearchOpen) ? (
+        <div className="files">
+          {!(isSearchOpen) ? (
             <div className='sidebar-files'>
               {isDragOver ? (
                 <div className="empty">
@@ -266,7 +266,7 @@ export const VZSidebar = ({
                   </div>
                 </div>
               )}
-          </div>
+            </div>
           ) : (
             <div className='sidebar-search'>
               <Search />
@@ -280,9 +280,8 @@ export const VZSidebar = ({
           {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
             <div
-              className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
-              }`}
+              className={`connection-status-indicator ${connected ? 'connected' : 'disconnected'
+                }`}
             />
           </div>
         </div>

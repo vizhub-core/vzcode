@@ -65,7 +65,11 @@ export interface FileTreeFile {
 export interface SearchFile {
   id: string;
   name: string;
-  lines: Array<{ line: number, index: number, text: string }>;
+  lines: Array<{
+    line: number;
+    index: number;
+    text: string;
+  }>;
 }
 
 export interface SearchResults {

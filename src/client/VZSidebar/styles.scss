@@ -15,16 +15,18 @@
     justify-content: start;
     align-items: start;
     border-bottom: 2px solid var(--vh-color-neutral-02);
+    overflow: hidden; 
   }
 
   .files {
-    overflow: auto;
     display: flex;
     flex-direction: row;
     justify-content: start;
     align-items: start;
     flex: 1;
     outline: none;
+    overflow: auto;
+    height: 100%;
   }
 
   .file-or-directory {
@@ -56,7 +58,7 @@
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding: 5px;
+    padding: 8px;
     a {
       color: inherit;
     }
@@ -89,52 +91,58 @@
     margin-left: 25px;
   }
 
-  .search-result-heading {
+  .search-file-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
 
-  .search-result-heading .search-result-name {
+    * {
+      margin: 0px;
+    }
+  }
+   
+  .search-file-title, .search-file-name, .search-file-info {
     display: flex;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     gap: 10px;
   }
 
-  .search-result-heading .search-result-name h5 {
-    font-size: 1.2rem;
-  }
-
-  .search-result-heading .search-result-name svg {
-    margin-bottom: 10px;
-  }
-
-  .search-result-heading .search-result-count {
+  .search-file-name h5 {
     font-size: 1rem;
-    width: 25px;
-    height: 25px;
+  }
+   
+  .search-file-count {
+    font-size: 0.7rem;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0px;
     text-align: center;
     background: var(--vh-color-neutral-04);
     color: var(--vh-color-neutral-01);
     border-radius: 100%;
   }
 
-  .search-result-lines {
-    font-size: 1rem;
+  .search-file-info svg {
+    font-weight: bolder;
   }
 
-  .search-line {
+  .search-file-lines {
+    font-size: 0.9rem;
+    margin: 15px 0px 0px 15px;
+  }
+
+  .search-line, .arrow-wrapper {
     &:hover {
       opacity: 0.7;
       cursor: pointer;
     }
   }
 
-  .search-result-lines .search-pattern {
+  .search-file-lines .search-pattern {
     background: var(--vh-color-neutral-04);
     color: var(--vh-color-neutral-01);
     margin: 0.5px;

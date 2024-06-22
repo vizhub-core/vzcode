@@ -1,10 +1,6 @@
 import { VZAction, VZState } from '.';
 import { SearchFile, ShareDBDoc, VZCodeContent } from '../../types';
 
-function jumpToFile(files: ShareDBDoc<VZCodeContent>, fileId: number, line: number) {
-
-}
-
 function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): Array<SearchFile> {
   const files = shareDBDoc.data.files
   const fileIds = Object.keys(shareDBDoc.data.files);
@@ -19,11 +15,10 @@ function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): 
       const patterns = [];
 
       for (let j = 0; j < lines.length; j++) {
-        const index = lines[j].indexOf(pattern) || lines[j].indexOf(pattern.trim());
+        const index = lines[j].indexOf(pattern);;
 
         if (index !== -1) {
-          console.log(lines[j]);
-          patterns.push({ line: j, index: index, text: lines[j] });
+          patterns.push({ line: j + 1, index: index, text: lines[j] });
         }
       }
 
@@ -35,6 +30,14 @@ function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): 
 
   return results;
 }
+
+export const setIsSearchOpenReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'set_is_search_open'
+    ? { ...state, isSearchOpen: action.value }
+    : state;
 
 export const setSearchReducer = (
   state: VZState,
@@ -51,12 +54,3 @@ export const setSearchResultsReducer = (
       action.type === 'set_search_results'
         ? { ...state, search: { pattern: state.search.pattern, results: searchPattern(action.files,state.search.pattern) } }
         : state;
-    
-export const jumpToSearchReducer = (action: VZAction): void =>  {
-  if (action.type === 'jump_to_search') {
-    // Turn fileId into active file and then jump to the line
-    const file = action.files;
-    const fileId = action.id;
-    const fileName = action.line;
-  }
-}
