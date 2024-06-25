@@ -16,7 +16,7 @@ const debug = false;
 
 // TODO: Make this a setting in the UI.
 // See https://github.com/vizhub-core/vzcode/issues/739
-export let enableAutoFollow = false;
+export let enableAutoFollow = true;
 export const toggleAutoFollowButton = () => {
   enableAutoFollow = !enableAutoFollow;
 };
@@ -71,7 +71,7 @@ export const json1PresenceDisplay = ({
           } else if (presence) {
             if (enableAutoFollow) {
               presenceState[id] = presence;
-              //openTab({presence.ileId, isTransient = true})
+              openTab({ fileId: presence.start[1], isTransient: true });
               this.scrollToCursor(view);
             } else {
               delete presenceState[id];
