@@ -1,10 +1,10 @@
 import { VZAction, VZState } from '.';
 import { SearchFile, ShareDBDoc, VZCodeContent } from '../../types';
 
-function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): Array<SearchFile> {
+function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): { [id: string] : SearchFile } {
   const files = shareDBDoc.data.files
   const fileIds = Object.keys(shareDBDoc.data.files);
-  let results: Array<SearchFile> = [];
+  let results: { [id: string] : SearchFile } = {};
 
   for (let i = 0; i < fileIds.length; i++) {
     const file = files[fileIds[i]];  
@@ -23,12 +23,18 @@ function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): 
       }
 
       if (patterns.length > 0) {
-        results.push({ id: fileIds[i], name: fileName, lines: patterns });
+        results[fileIds[i]]  = { name: fileName, lines: patterns, visibility: "open" };
       }
     }
   }
 
   return results;
+}
+
+function updateSearchResultVisibility(results: { [id: string] : SearchFile }, id: string,
+    visibility: "open" | "flattened" | "closed"): { [id: string] : SearchFile } {
+
+    return { ...results, [id]:  { ...results[id], visibility: visibility }};
 }
 
 export const setIsSearchOpenReducer = (
@@ -44,7 +50,7 @@ export const setSearchReducer = (
   action: VZAction,
 ): VZState =>
   action.type === 'set_search'
-    ? { ...state, search: { pattern: action.value, results: [] } }
+    ? { ...state, search: { pattern: action.value, results: {} } }
     : state;
 
 export const setSearchResultsReducer = (
@@ -54,3 +60,11 @@ export const setSearchResultsReducer = (
       action.type === 'set_search_results'
         ? { ...state, search: { pattern: state.search.pattern, results: searchPattern(action.files,state.search.pattern) } }
         : state;
+
+export const setSearchResultsVisibilityReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'set_search_results_visibility'
+    ? { ...state, search: { pattern: state.search.pattern, results: updateSearchResultVisibility(state.search.results, action.id, action.visibility)} }
+    : state;

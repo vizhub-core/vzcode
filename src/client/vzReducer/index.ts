@@ -12,7 +12,7 @@ import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
-import { setIsSearchOpenReducer, setSearchReducer, setSearchResultsReducer } from './searchReducer';
+import { setIsSearchOpenReducer, setSearchReducer, setSearchResultsReducer, setSearchResultsVisibilityReducer } from './searchReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -91,6 +91,10 @@ export type VZAction =
   //  * Sets the current search pattern
   | { type: 'set_search_results'; files: ShareDBDoc<VZCodeContent> }
 
+  // `set_search_results_visibility`
+  //  * Sets the visibility of a current search pattern file
+  | { type: 'set_search_results_visibility'; files: ShareDBDoc<VZCodeContent>; id: string; visibility: "open" | "flattened" | "closed" }
+
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
@@ -127,6 +131,7 @@ const reducers = [
   setThemeReducer,
   setSearchReducer,
   setSearchResultsReducer,
+  setSearchResultsVisibilityReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,

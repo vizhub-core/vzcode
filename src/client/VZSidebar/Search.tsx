@@ -61,38 +61,28 @@ function jumpToPattern(editor: EditorView, pattern: string, line: number, index:
 
 export const Search = () => {
   const inputRef = useRef(null);
-  const [open, setOpen] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const { search, setSearch, setActiveFileId, openTab, setSearchResults, shareDBDoc, editorCache } = useContext(VZCodeContext);
+  const { search, setSearch, setActiveFileId, openTab, setSearchResults, setSearchResultsVisibility, shareDBDoc, editorCache } = useContext(VZCodeContext);
   const { pattern, results } = search;
 
   useEffect(() => {
-    setIsSearching(pattern.trim().length >= 1);
+    if (isMounted) {
+      setIsSearching(pattern.trim().length >= 1);
 
-    // Search about 1 second after entering a new pattern
-    const delaySearch = setTimeout(() => {
-      if (pattern.trim().length >= 1) {
-        setSearchResults(shareDBDoc);
-        setIsSearching(false)
-      }
-    }, 2000);
+      // Search about 1 second after entering a new pattern
+      const delaySearch = setTimeout(() => {
+        if (pattern.trim().length >= 1 && inputRef.current) {
+          setSearchResults(shareDBDoc);
+          setIsSearching(false);
+        }
+      }, 2000);
 
-    return () => clearTimeout(delaySearch);
+      return () => clearTimeout(delaySearch);
+    } else {
+      setIsMounted(true);
+    }
   }, [pattern]);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-
-    let openFiles = {}
-
-    for (const file of results) {
-      openFiles[file.id] = "open";
-    }
-
-    setOpen(openFiles);
-  }, [results]);
 
   return (
     <div>
@@ -109,20 +99,20 @@ export const Search = () => {
           spellCheck="false"
         />
       </Form.Group>
-      {(results.length >= 1 && pattern.trim().length >= 1 && open) ? (
+      {(Object.keys(results).length >= 1 && pattern.trim().length >= 1 && open) ? (
         <div className="search-results">
           {
-            results.filter((file: SearchFile) => open[file.id] !== "removed").map((file: SearchFile) => (
+            Object.entries(results).filter(([id, file]) => file.visibility !== "closed").map(([id, file]: [string, SearchFile]) => (
               <div className="search-result" key={file.name}>
                 <div className="search-file-heading">
                   <div className="search-file-title">
                     <div
                       className="arrow-wrapper"
                       style={{
-                        transform: `rotate(${open[file.id] ? 90 : 0}deg)`,
+                        transform: `rotate(${file.visibility === "open" ? 90 : 0}deg)`,
                       }}
                       onClick={() => {
-                        setOpen({ ...open, [file.id]: !(open[file.id]) })
+                        setSearchResultsVisibility(shareDBDoc, id, file.visibility === "open" ? "flattened" : "open");
                       }}
                     >
                       <DirectoryArrowSVG />
@@ -136,13 +126,18 @@ export const Search = () => {
                   </div>
                   <div className="search-file-info">
                     <h6 className="search-file-count">{file.lines.length}</h6>
-                    <div>
+                    <div
+                      className="search-file-close"
+                      onClick={() => {
+                        setSearchResultsVisibility(shareDBDoc, id, "closed");
+                      }}
+                      >
                       <CloseSVG />
                     </div>
                   </div>
                 </div>
                 <div className="search-file-lines">
-                  {open[file.id] &&
+                  {file.visibility != "flattened" &&
                     file.lines.map((line) => {
                       const before = line.text.substring(0, line.index);
                       const match = line.text.substring(line.index, line.index + pattern.length);
@@ -151,9 +146,9 @@ export const Search = () => {
                         <p
                           className="search-line" key={file.name + " - " + line.line + " - " + line.index}
                           onClick={() => {
-                            setActiveFileId(file.id);
-                            openTab({ fileId: file.id, isTransient: true });
-                            jumpToPattern(editorCache.get(file.id)?.editor, pattern, line.line, line.index);
+                            setActiveFileId(id);
+                            openTab({ fileId: id, isTransient: true });
+                            jumpToPattern(editorCache.get(id)?.editor, pattern, line.line, line.index);
                           }}
                         >
                           {before}

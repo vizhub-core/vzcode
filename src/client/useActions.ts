@@ -90,6 +90,19 @@ export const useActions = (
     [dispatch],
   );
 
+  // Update search results file visibility based on current pattern
+  const setSearchResultsVisibility = useCallback(
+    (files: ShareDBDoc<VZCodeContent>, id: string, visibility: "open" | "flattened" | "closed") => {
+      dispatch({
+        type: 'set_search_results_visibility',
+        files: files,
+        id: id,
+        visibility: visibility
+      });
+    },
+    [dispatch],
+  );
+
   // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
@@ -145,6 +158,7 @@ export const useActions = (
     setIsSearchOpen,
     setSearch,
     setSearchResults,
+    setSearchResultsVisibility,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,

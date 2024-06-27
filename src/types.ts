@@ -63,18 +63,18 @@ export interface FileTreeFile {
 }
 
 export interface SearchFile {
-  id: string;
   name: string;
   lines: Array<{
     line: number;
     index: number;
     text: string;
   }>;
+  visibility: "open" | "flattened" | "closed";
 }
 
 export interface SearchResults {
   pattern: string;
-  results: Array<SearchFile>;
+  results: { [id: string] : SearchFile };
 }
 
 export type JSONOp = any;
