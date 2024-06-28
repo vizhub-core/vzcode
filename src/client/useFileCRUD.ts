@@ -25,15 +25,6 @@ export const useFileCRUD = ({
     isTransient: boolean;
   }) => void;
 }) => {
-
-  // Search for a files based off input text patterns
-  const searchFile = useCallback(
-    (pattern: string) => {
-      console.log(`Using grep with pattern \"${pattern}\"`);
-    },
-    [submitOperation],
-  );
-
   // Create a new file
   const createFile = useCallback(
     (name: string, text = '') => {
@@ -171,7 +162,6 @@ export const useFileCRUD = ({
   );
 
   return {
-    searchFile,
     createFile,
     renameFile,
     deleteFile,

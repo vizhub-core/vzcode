@@ -57,19 +57,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 8px;
-    a {
+    
+    * {
       color: inherit;
     }
   }
 
-  .sidebar-files {
+  .sidebar-files, .sidebar-search {
     width:100%;
   }
 
   .sidebar-search {
-    width: 100%;
     padding: 10px;
 
     * {
@@ -77,18 +77,9 @@
     }
   }
 
-  .search-results {
-    padding: 5px;
-  }
-
-  .sidebar-search-form {
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--vh-color-neutral-02);
-  }
-
   .search-result-lines {
     margin-top: 10px;
-    margin-left: 25px;
+    margin-left: 20px;
   }
 
   .search-file-heading {
@@ -108,31 +99,32 @@
     gap: 10px;
   }
 
-  .search-file-name h5 {
-    font-size: 1rem;
+  .search-file-name {
+    font-size: inherit;
   }
    
   .search-file-count {
-    font-size: 0.7rem;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0px;
+    font-size: 12px;
+    font-weight: bold;
     text-align: center;
     background: var(--vh-color-neutral-04);
     color: var(--vh-color-neutral-01);
     border-radius: 100%;
   }
 
-  .search-file-info svg {
-    font-weight: bolder;
+  .search-results {
+    padding: 10px;
   }
 
   .search-file-lines {
-    font-size: 0.9rem;
-    margin: 15px 0px 0px 15px;
+    font-size: inherit;
+    margin: 15px 0px 0px 30px;
   }
 
   .search-line, .arrow-wrapper, .search-file-close {

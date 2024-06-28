@@ -117,7 +117,7 @@ export type VZCodeContextValue = {
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
   setSearchResults: (files: ShareDBDoc<VZCodeContent>) => void;
-  setSearchResultsVisibility: (files: ShareDBDoc<VZCodeContent>, id: string, visibility: "open" | "flattened" | "closed") => void;
+  setSearchFileVisibility: (files: ShareDBDoc<VZCodeContent>, id: string, visibility: "open" | "flattened" | "closed") => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -242,7 +242,7 @@ export const VZCodeProvider = ({
     setIsSearchOpen,
     setSearch, 
     setSearchResults,
-    setSearchResultsVisibility,
+    setSearchFileVisibility,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -377,7 +377,7 @@ export const VZCodeProvider = ({
     setIsSearchOpen,
     setSearch,
     setSearchResults,
-    setSearchResultsVisibility,
+    setSearchFileVisibility,
 
     isSettingsOpen,
     setIsSettingsOpen,

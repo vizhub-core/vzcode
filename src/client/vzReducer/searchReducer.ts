@@ -1,7 +1,7 @@
 import { VZAction, VZState } from '.';
-import { SearchFile, ShareDBDoc, VZCodeContent } from '../../types';
+import { SearchFile, SearchFileVisibility, SearchResult, ShareDBDoc, VZCodeContent } from '../../types';
 
-function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): { [id: string] : SearchFile } {
+function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): SearchResult {
   const files = shareDBDoc.data.files
   const fileIds = Object.keys(shareDBDoc.data.files);
   let results: { [id: string] : SearchFile } = {};
@@ -12,18 +12,18 @@ function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): 
     if (files[fileIds[i]].text) {
       const fileName = file.name;
       const lines = file.text.split("\n");
-      const patterns = [];
+      const matches = [];
 
       for (let j = 0; j < lines.length; j++) {
         const index = lines[j].indexOf(pattern);;
 
         if (index !== -1) {
-          patterns.push({ line: j + 1, index: index, text: lines[j] });
+          matches.push({ line: j + 1, index: index, text: lines[j] });
         }
       }
 
-      if (patterns.length > 0) {
-        results[fileIds[i]]  = { name: fileName, lines: patterns, visibility: "open" };
+      if (matches.length > 0) {
+        results[fileIds[i]]  = { name: fileName, matches: matches, visibility: "open" };
       }
     }
   }
@@ -31,9 +31,7 @@ function searchPattern(shareDBDoc: ShareDBDoc<VZCodeContent>, pattern: string): 
   return results;
 }
 
-function updateSearchResultVisibility(results: { [id: string] : SearchFile }, id: string,
-    visibility: "open" | "flattened" | "closed"): { [id: string] : SearchFile } {
-
+function updateSearchFileVisibility(results: SearchResult, id: string, visibility: SearchFileVisibility): SearchResult {
     return { ...results, [id]:  { ...results[id], visibility: visibility }};
 }
 
@@ -61,10 +59,10 @@ export const setSearchResultsReducer = (
         ? { ...state, search: { pattern: state.search.pattern, results: searchPattern(action.files,state.search.pattern) } }
         : state;
 
-export const setSearchResultsVisibilityReducer = (
+export const setSearchFileVisibilityReducer = (
   state: VZState,
   action: VZAction,
 ): VZState =>
-  action.type === 'set_search_results_visibility'
-    ? { ...state, search: { pattern: state.search.pattern, results: updateSearchResultVisibility(state.search.results, action.id, action.visibility)} }
+  action.type === 'set_search_file_visibility'
+    ? { ...state, search: { pattern: state.search.pattern, results: updateSearchFileVisibility(state.search.results, action.id, action.visibility)} }
     : state;

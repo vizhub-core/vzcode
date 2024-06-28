@@ -116,7 +116,7 @@ export const VZSidebar = ({
 
         <div className="sidebar-section-buttons">
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="files-tooltip">
                 {filesToolTipText}
@@ -132,7 +132,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
 
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="search-tooltip">
                 {searchToolTipText}
@@ -148,7 +148,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
 
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="open-keyboard-shortcuts">
                 {openKeyboardShortcuts}
@@ -164,7 +164,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
 
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="report-bug-tooltip">
                 {reportBugTooltipText}
@@ -183,7 +183,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
 
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="open-settings-tooltip">
                 {openSettingsTooltipText}
@@ -199,7 +199,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
 
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="create-file-tooltip">
                 {createFileTooltipText}
@@ -216,7 +216,7 @@ export const VZSidebar = ({
 
           {/*Directory Rename*/}
           <OverlayTrigger
-            placement="bottom"
+            placement="right"
             overlay={
               <Tooltip id="create-dir-tooltip">
                 {createDirTooltipText}

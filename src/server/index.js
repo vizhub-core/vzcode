@@ -107,30 +107,9 @@ app.post(
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
 
-// Search for files via grep
-const search = (pattern) => {
-  exec(`grep -r -n "${pattern}" .`, (err, stdout, stderr) => {
-    if (err) {
-      console.log(`Error: ${stderr} \n\n`);
-      return;
-    } else {
-      // Filter and log non-empty lines
-      const lines = stdout.split('\n').filter(line => line.trim() !== '');
-
-      lines.forEach(line => {
-          console.log(`Match: ${line}`);
-      });
-    }
-  });
-}
-
 // Saves the files that changed.
 const save = () => {
   const currentDocument = shareDBDoc.data;
-
-  /* TODO - These are based on cache! */
-  // console.log(shareDBConnection.get('documents'));
-  // console.log(shareDBConnection.get('documents'));
 
   // Take a look at each file (key) previously and currently.
   const allKeys = Object.keys({
@@ -138,14 +117,11 @@ const save = () => {
     ...previousDocument.files,
   });
 
-  search("import");
-
   const directoriesToDelete = [];
 
   for (const key of allKeys) {
     const previous = previousDocument.files[key];
     const current = currentDocument.files[key];
-
 
     // If this file was neither created nor deleted...
     if (previous && current) {

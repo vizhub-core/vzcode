@@ -1,4 +1,4 @@
-import { FileId, SearchResults, ShareDBDoc, Username, VZCodeContent } from '../../types';
+import { FileId, SearchFileVisibility, SearchResults, ShareDBDoc, Username, VZCodeContent } from '../../types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
 import { openTabReducer } from './openTabReducer';
@@ -12,7 +12,7 @@ import { setIsDocOpenReducer } from './setIsDocOpenReducer';
 import { setThemeReducer } from './setThemeReducer';
 import { editorNoLongerWantsFocusReducer } from './editorNoLongerWantsFocusReducer';
 import { setUsernameReducer } from './setUsernameReducer';
-import { setIsSearchOpenReducer, setSearchReducer, setSearchResultsReducer, setSearchResultsVisibilityReducer } from './searchReducer';
+import { setIsSearchOpenReducer, setSearchReducer, setSearchResultsReducer, setSearchFileVisibilityReducer } from './searchReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -93,13 +93,13 @@ export type VZAction =
 
   // `set_search_results_visibility`
   //  * Sets the visibility of a current search pattern file
-  | { type: 'set_search_results_visibility'; files: ShareDBDoc<VZCodeContent>; id: string; visibility: "open" | "flattened" | "closed" }
+  | { type: 'set_search_file_visibility'; files: ShareDBDoc<VZCodeContent>; id: string; visibility: SearchFileVisibility }
 
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
 
-  // `set_username`ju
+  // `set_username`
   //  * Sets the username.
   | { type: 'set_username'; username: Username };
 
@@ -131,7 +131,7 @@ const reducers = [
   setThemeReducer,
   setSearchReducer,
   setSearchResultsReducer,
-  setSearchResultsVisibilityReducer,
+  setSearchFileVisibilityReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,

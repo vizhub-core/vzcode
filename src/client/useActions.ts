@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
-import { FileId, ShareDBDoc, Username, VZCodeContent } from '../types';
+import { FileId, SearchFileVisibility, ShareDBDoc, Username, VZCodeContent } from '../types';
 import { TabState, VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
@@ -91,10 +91,10 @@ export const useActions = (
   );
 
   // Update search results file visibility based on current pattern
-  const setSearchResultsVisibility = useCallback(
-    (files: ShareDBDoc<VZCodeContent>, id: string, visibility: "open" | "flattened" | "closed") => {
+  const setSearchFileVisibility = useCallback(
+    (files: ShareDBDoc<VZCodeContent>, id: string, visibility: SearchFileVisibility) => {
       dispatch({
-        type: 'set_search_results_visibility',
+        type: 'set_search_file_visibility',
         files: files,
         id: id,
         visibility: visibility
@@ -158,7 +158,7 @@ export const useActions = (
     setIsSearchOpen,
     setSearch,
     setSearchResults,
-    setSearchResultsVisibility,
+    setSearchFileVisibility,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,

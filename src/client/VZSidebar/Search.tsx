@@ -46,10 +46,6 @@ function getExtensionIcon(extension: string) {
 }
 
 function jumpToPattern(editor: EditorView, pattern: string, line: number, index: number) {
-  if (!(editor)) {
-    return;
-  }
-  
   const position: number = editor.state.doc.line(line).from + index;
 
   editor.dispatch({
@@ -63,14 +59,15 @@ export const Search = () => {
   const inputRef = useRef(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const { search, setSearch, setActiveFileId, openTab, setSearchResults, setSearchResultsVisibility, shareDBDoc, editorCache } = useContext(VZCodeContext);
+  const { search, setSearch, setActiveFileId, openTab, setSearchResults, setSearchFileVisibility, shareDBDoc, editorCache } = useContext(VZCodeContext);
   const { pattern, results } = search;
 
   useEffect(() => {
     if (isMounted) {
+      // Only conduct a search after fully mounting and entering a new non-empty pattern
       setIsSearching(pattern.trim().length >= 1);
 
-      // Search about 1 second after entering a new pattern
+      // Search about 2 seconds after entering a new pattern
       const delaySearch = setTimeout(() => {
         if (pattern.trim().length >= 1 && inputRef.current) {
           setSearchResults(shareDBDoc);
@@ -90,7 +87,6 @@ export const Search = () => {
         className="sidebar-search-form mb-3"
         controlId="searchName"
       >
-        <h4>Search</h4>
         <Form.Control
           type="text"
           value={pattern}
@@ -99,77 +95,81 @@ export const Search = () => {
           spellCheck="false"
         />
       </Form.Group>
-      {(Object.keys(results).length >= 1 && pattern.trim().length >= 1 && open) ? (
-        <div className="search-results">
-          {
-            Object.entries(results).filter(([id, file]) => file.visibility !== "closed").map(([id, file]: [string, SearchFile]) => (
-              <div className="search-result" key={file.name}>
-                <div className="search-file-heading">
-                  <div className="search-file-title">
-                    <div
-                      className="arrow-wrapper"
-                      style={{
-                        transform: `rotate(${file.visibility === "open" ? 90 : 0}deg)`,
-                      }}
-                      onClick={() => {
-                        setSearchResultsVisibility(shareDBDoc, id, file.visibility === "open" ? "flattened" : "open");
-                      }}
-                    >
-                      <DirectoryArrowSVG />
-                    </div>
-                    <div className="search-file-name">
-                      {
-                        getExtensionIcon(file.name.split(".")[1])
-                      }
-                      <h5>{file.name}</h5>
-                    </div>
-                  </div>
-                  <div className="search-file-info">
-                    <h6 className="search-file-count">{file.lines.length}</h6>
-                    <div
-                      className="search-file-close"
-                      onClick={() => {
-                        setSearchResultsVisibility(shareDBDoc, id, "closed");
-                      }}
+      {(Object.keys(results).length >= 1 && pattern.trim().length >= 1) ? 
+        (
+          <div className="search-results">
+            {
+              Object.entries(results).filter(([_, file]) => file.visibility !== "closed").map(([fileId, file]: [string, SearchFile]) => (
+                <div className="search-result" key={file.name}>
+                  <div className="search-file-heading">
+                    <div className="search-file-title">
+                      <div
+                        className="arrow-wrapper"
+                        style={{
+                          transform: `rotate(${file.visibility === "open" ? 90 : 0}deg)`,
+                        }}
+                        onClick={() => {
+                          setSearchFileVisibility(shareDBDoc, fileId, file.visibility === "open" ? "flattened" : "open");
+                        }}
                       >
-                      <CloseSVG />
+                        <DirectoryArrowSVG />
+                      </div>
+                      <div className="search-file-name">
+                        {
+                          getExtensionIcon(file.name.split(".")[1])
+                        }
+                        <h5>{file.name}</h5>
+                      </div>
+                    </div>
+                    <div className="search-file-info">
+                      <h6 className="search-file-count">{file.matches.length}</h6>
+                      <div
+                        className="search-file-close"
+                        onClick={() => {
+                          setSearchFileVisibility(shareDBDoc, fileId, "closed");
+                        }}
+                        >
+                        <CloseSVG />
+                      </div>
                     </div>
                   </div>
+                  <div className="search-file-lines">
+                    {file.visibility != "flattened" &&
+                      file.matches.map((match) => {
+                        const before = match.text.substring(0, match.index);
+                        const hit = match.text.substring(match.index, match.index + pattern.length);
+                        const after = match.text.substring(match.index + pattern.length);
+
+                        return (
+                          <p
+                            className="search-line" key={file.name + " - " + match.line + " - " + match.index}
+                            onClick={() => {
+                              setActiveFileId(fileId);
+                              openTab({ fileId: fileId, isTransient: false });
+
+                              if (editorCache.get(fileId)) {
+                                jumpToPattern(editorCache.get(fileId).editor, pattern, match.line, match.index);
+                              }
+                            }}
+                          >
+                            {before}
+                            <span className="search-pattern">{hit}</span>
+                            {after}
+                          </p>
+                        );
+                      })
+                    }
+                  </div>
                 </div>
-                <div className="search-file-lines">
-                  {file.visibility != "flattened" &&
-                    file.lines.map((line) => {
-                      const before = line.text.substring(0, line.index);
-                      const match = line.text.substring(line.index, line.index + pattern.length);
-                      const after = line.text.substring(line.index + pattern.length);
-                      return (
-                        <p
-                          className="search-line" key={file.name + " - " + line.line + " - " + line.index}
-                          onClick={() => {
-                            setActiveFileId(id);
-                            openTab({ fileId: id, isTransient: true });
-                            jumpToPattern(editorCache.get(id)?.editor, pattern, line.line, line.index);
-                          }}
-                        >
-                          {before}
-                          <span className="search-pattern">{match}</span>
-                          {after}
-                        </p>
-                      );
-                    })
-                  }
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      ) : (
-        <div className="search-results">
-          <h4>{isSearching ? "Searching..." : "No Results"}</h4>
-        </div>
-      )
+              ))
+            }
+          </div>
+        ) : (
+          <div className="search-results">
+            <h6>{isSearching ? "Searching..." : "No Results"}</h6>
+          </div>
+        )
       }
     </div>
-
   );
 };
