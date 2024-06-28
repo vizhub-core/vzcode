@@ -113,7 +113,6 @@ export const VZSidebar = ({
       onDrop={handleDrop}
     >
       <div className="full-box" ref={sidebarRef} tabIndex={-1}>
-
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"

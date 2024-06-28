@@ -13,6 +13,7 @@ import {
   Username,
   VZCodeContent,
   SearchResults,
+  SearchFileVisibility,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -117,7 +118,7 @@ export type VZCodeContextValue = {
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
   setSearchResults: (files: ShareDBDoc<VZCodeContent>) => void;
-  setSearchFileVisibility: (files: ShareDBDoc<VZCodeContent>, id: string, visibility: "open" | "flattened" | "closed") => void;
+  setSearchFileVisibility: (files: ShareDBDoc<VZCodeContent>, id: string, visibility: SearchFileVisibility) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
