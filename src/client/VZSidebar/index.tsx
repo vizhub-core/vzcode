@@ -55,7 +55,7 @@ export const VZSidebar = ({
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
-    sidebarRef
+    sidebarRef,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(

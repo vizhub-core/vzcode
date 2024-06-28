@@ -335,7 +335,7 @@ server.listen(port, async () => {
       open(url);
     })();
   } else {
-    // Sets the port to the one specified in the environment 
+    // Sets the port to the one specified in the environment
     // variable (for development) or the default port.
     let livePort = process.env.EDITOR_PORT || port;
     console.log(
