@@ -22,7 +22,7 @@ import './styles.scss';
 import type {AriaListBoxProps} from 'react-aria';
 import {mergeProps, useFocusRing, useGridList, useGridListItem} from 'react-aria';
 import {useListState} from 'react-stately';
-import {useRef} from 'react';
+import {useEffect, useRef} from 'react';
 
 import {Item} from 'react-stately';
 
@@ -44,6 +44,33 @@ export const VZSidebar = ({
   reportBugTooltipText?: string;
   openKeyboardShortcuts?: string;
 }) => {
+
+  //TODO: Move these to useKeyboardShortcuts.ts
+  const gridListRef = useRef(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Check if Alt key and '3' are pressed together
+      if (event.altKey && event.key === '3') {
+        // Prevent default action to avoid any unwanted behavior
+        event.preventDefault();
+        // Check if the gridListRef.current is not null and focus on it
+        if (gridListRef.current) {
+          gridListRef.current.focus();
+        }
+      }
+    };
+
+    // Attach the event listener to the window object
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+
   const {
     files,
     openTab,
@@ -105,21 +132,17 @@ export const VZSidebar = ({
 
     let state = useListState(props);
     console.log("State: " + state);
-    let ref = useRef();
+    let ref = gridListRef;
     let { gridProps } = useGridList(props, state, ref);
     console.log("gridProps: " + gridProps);
   
     return (
-      <ul {...gridProps} ref={ref} className="list">
+      <div {...gridProps} ref={ref} className="list">
         {[...state.collection].map((item) => (
           <ListItem key={item.key} item={item} state={state} />
         ))}
-      </ul>
+      </div>
     );
-  }
-
-  function List2(props){
-    
   }
 
   function ListItem({ item, state }) {
@@ -154,6 +177,8 @@ export const VZSidebar = ({
       </li>
     );
   }
+
+  
 
   return (
     <div
@@ -274,8 +299,6 @@ export const VZSidebar = ({
               const key2 = {"file" : true, "fileId" : fileId}
               return(
                 <Item key = {key}>
-                  <p tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && alert("clicked")}>h</p>
-
                   <Listing
                       key={key}
                       entity={item}
