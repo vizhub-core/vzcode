@@ -46,7 +46,7 @@ export const DirectoryListing = ({
   );
 
   return (
-    <>
+    <div tabIndex={0} onKeyDown={(e)=>e.key === 'Enter' && handleClick()}>
       <Item
         id={path}
         name={name}
@@ -83,6 +83,6 @@ export const DirectoryListing = ({
           })}
         </div>
       ) : null}
-    </>
+    </div>
   );
 };

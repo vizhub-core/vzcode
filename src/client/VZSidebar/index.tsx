@@ -101,9 +101,13 @@ export const VZSidebar = ({
   } = useDragAndDrop();
 
   function List(props) {
+    console.log(props['items']);
+
     let state = useListState(props);
+    console.log("State: " + state);
     let ref = useRef();
     let { gridProps } = useGridList(props, state, ref);
+    console.log("gridProps: " + gridProps);
   
     return (
       <ul {...gridProps} ref={ref} className="list">
@@ -114,7 +118,17 @@ export const VZSidebar = ({
     );
   }
 
+  function List2(props){
+    
+  }
+
   function ListItem({ item, state }) {
+    console.log("item: " + item);
+    const { fileId } = item as FileTreeFile;
+    const { path } = item as FileTree;
+    const key = fileId ? fileId : path;
+    console.log("Name: " + item.Name);
+
     let ref = useRef(null);
     let { rowProps, gridCellProps, isPressed } = useGridListItem(
       { node: item },
@@ -135,7 +149,6 @@ export const VZSidebar = ({
         }`}
       >
         <div {...gridCellProps}>
-          {showCheckbox && <ListCheckbox item={item} state={state} />}
           {item.rendered}
         </div>
       </li>
@@ -249,6 +262,36 @@ export const VZSidebar = ({
         ) : filesExist ? (
 
           <List
+            aria-label="Example dynamic collection List"
+            selectionMode="multiple"
+            selectionBehavior="replace"
+            items={fileTree.children}
+          >
+            {(item) => {
+              const { fileId } = item as FileTreeFile;
+              const { path } = item as FileTree;
+              const key = fileId ? fileId : path;
+              const key2 = {"file" : true, "fileId" : fileId}
+              return(
+                <Item key = {key}>
+                  <p tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && alert("clicked")}>h</p>
+
+                  <Listing
+                      key={key}
+                      entity={item}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={
+                        handleFileDoubleClick
+                      }
+                    />
+                </Item>
+              )
+            }}
+          </List>
+
+
+          /*
+          <List
             aria-label="Example List"
             selectionMode="multiple"
             selectionBehavior="replace"
@@ -260,6 +303,7 @@ export const VZSidebar = ({
                 const key = fileId ? fileId : path;
                 return (
                   <Item key={key}>
+                    Test
                     <Listing
                       key={key}
                       entity={entity}
@@ -273,6 +317,7 @@ export const VZSidebar = ({
                 );
               })}
           </List>
+          */
 
           /*
           <ListBox label="Alignment" selectionMode="single">
