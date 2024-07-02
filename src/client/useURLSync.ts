@@ -8,21 +8,20 @@ import {
   encodeTabs,
 } from './tabsSearchParameters';
 
-// Synchronizes the tab state with the URL parameters.
 export const useURLSync = ({
-  content,
-  openTab,
-  setActiveFileId,
-  tabList,
-  activeFileId,
-}: {
+                             content,
+                             setTabList,
+                             setActiveFileId,
+                             tabList,
+                             activeFileId,
+                           }: {
   content: VZCodeContent | null;
-  openTab: (tabState: TabState) => void;
+  setTabList: (tabList: Array<TabState>) => void;
   setActiveFileId: (activeFileId: FileId) => void;
   tabList: Array<TabState>;
   activeFileId: FileId | null;
 }) => {
-  // Use React router to get and set the  search parameters.
+  // Use React router to get and set the search parameters.
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Extract the tab state parameters from the search parameters.
@@ -51,7 +50,7 @@ export const useURLSync = ({
     }
 
     // Decode the search parameters.
-    const { tabList, activeFileId } = decodeTabs({
+    const { tabList: decodedTabList, activeFileId: decodedActiveFileId } = decodeTabs({
       tabStateParams,
       content,
     });
@@ -60,13 +59,13 @@ export const useURLSync = ({
     isInitialized.current = true;
 
     // Update the state.
-    tabList.forEach(openTab);
-    setActiveFileId(activeFileId);
+    setTabList(decodedTabList);
+    setActiveFileId(decodedActiveFileId);
   }, [
     content,
-    searchParams,
+    tabStateParams,
+    setTabList,
     setActiveFileId,
-    openTab,
     isInitialized,
   ]);
 
