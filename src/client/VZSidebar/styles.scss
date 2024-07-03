@@ -1,4 +1,56 @@
 .vz-sidebar {
+  .list {
+    list-style: none;
+  }
+  
+  .list li {
+    outline: none;
+    cursor: default;
+  }
+  
+  .list li:nth-child(2n) {
+    background: var(--spectrum-alias-highlight-hover);
+  }
+  
+  .list li.pressed {
+    background: var(--spectrum-global-color-gray-200);
+  }
+  
+  .list li[aria-selected=true] {
+    background: slateblue;
+    color: white;
+  }
+  
+  .list li.focus-visible {
+    outline: 2px solid slateblue;
+    outline-offset: -3px;
+  }
+  
+  .list li.focus-visible[aria-selected=true] {
+    outline-color: white;
+  }
+  
+  .list li[aria-disabled] {
+    opacity: 0.4;
+  }
+  
+  .list [role=gridcell] {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .list li button {
+    margin-left: auto;
+  }
+  
+  /* iOS Safari has a bug that prevents accent-color: white from working. */
+  @supports not (-webkit-touch-callout: none) {
+    .list li input[type=checkbox] {
+      accent-color: white;
+    }
+  }
+
   height: 100%;
   color: var(--vh-color-neutral-04);
   background: var(--vh-color-neutral-01);

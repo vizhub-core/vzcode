@@ -40,6 +40,7 @@ export const FileListing = ({
   );
 
   return (
+    <div tabIndex = {0} onKeyDown={(e)=>e.key==='Enter' && handleDoubleClick()}>
     <Item
       id={fileId}
       name={name}
@@ -54,5 +55,6 @@ export const FileListing = ({
       </i>
       {name}
     </Item>
+    </div>
   );
 };
