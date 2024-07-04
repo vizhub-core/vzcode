@@ -10,6 +10,8 @@ Thank you for your interest in contributing to VZCode! We truly appreciate the t
 
 ## Picking Up Issues
 
+We use [issues](https://github.com/vizhub-core/vzcode/issues) to communicate around new development tasks. Please don't start working on something until there is an issue for it, and the need for it has been validated. If you have an idea, please [create an issue](https://github.com/vizhub-core/vzcode/issues/new) before creating its corresponding PR.
+
 - **Self-Assign**: If you decide to work on an issue, please self-assign it. This is to make sure no two contributors end up working on the same issue and duplicating efforts.
 - **Kanban Board**: Once you've picked up an issue, make sure you move it to the "In Progress" column on our Kanban board. This gives everyone real-time visibility into who is actively working on what.
 
