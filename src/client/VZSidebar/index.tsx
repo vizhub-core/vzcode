@@ -5,7 +5,7 @@ import {
   FileTreeFile,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
-import { Search } from "./Search";
+import { Search } from './Search';
 import { getFileTree } from '../getFileTree';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
@@ -16,7 +16,7 @@ import {
   GearSVG,
   NewSVG,
   FileSVG,
-  QuestionMarkSVG
+  QuestionMarkSVG,
 } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
@@ -35,7 +35,7 @@ export const VZSidebar = ({
   openKeyboardShortcuts = 'Keyboard Shortcuts',
   reportBugTooltipText = 'Report Bug',
   searchToolTipText = 'Search',
-  filesToolTipText = 'Files'
+  filesToolTipText = 'Files',
 }: {
   createFileTooltipText?: string;
   createDirTooltipText?: string;
@@ -112,7 +112,11 @@ export const VZSidebar = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className="full-box" ref={sidebarRef} tabIndex={-1}>
+      <div
+        className="full-box"
+        ref={sidebarRef}
+        tabIndex={-1}
+      >
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
@@ -232,8 +236,8 @@ export const VZSidebar = ({
         </div>
 
         <div className="files">
-          {!(isSearchOpen) ? (
-            <div className='sidebar-files'>
+          {!isSearchOpen ? (
+            <div className="sidebar-files">
               {isDragOver ? (
                 <div className="empty">
                   <div className="empty-text">
@@ -259,15 +263,15 @@ export const VZSidebar = ({
               ) : (
                 <div className="empty">
                   <div className="empty-text">
-                    It looks like you don't have any files yet!
-                    Click the "Create file" button above to create
-                    your first file.
+                    It looks like you don't have any files
+                    yet! Click the "Create file" button
+                    above to create your first file.
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className='sidebar-search'>
+            <div className="sidebar-search">
               <Search />
             </div>
           )}
@@ -279,8 +283,9 @@ export const VZSidebar = ({
           {connected ? 'Connected' : 'Connection Lost'}
           <div className="connection">
             <div
-              className={`connection-status-indicator ${connected ? 'connected' : 'disconnected'
-                }`}
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
             />
           </div>
         </div>
