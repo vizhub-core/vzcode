@@ -6,13 +6,14 @@ import {
   useRef,
 } from 'react';
 import {
-  FileId,
   Files,
   ItemId,
   ShareDBDoc,
   SubmitOperation,
   Username,
   VZCodeContent,
+  SearchResults,
+  SearchFileVisibility,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -111,6 +112,19 @@ export type VZCodeContextValue = {
   errorMessage: string | null;
 
   typeScriptWorker: Worker | null;
+
+  search: SearchResults;
+  isSearchOpen: boolean;
+  setIsSearchOpen: (isSearchOpen: boolean) => void;
+  setSearch: (pattern: string) => void;
+  setSearchResults: (
+    files: ShareDBDoc<VZCodeContent>,
+  ) => void;
+  setSearchFileVisibility: (
+    files: ShareDBDoc<VZCodeContent>,
+    id: string,
+    visibility: SearchFileVisibility,
+  ) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -216,6 +230,8 @@ export const VZCodeProvider = ({
     tabList,
     activeFileId,
     theme,
+    search,
+    isSearchOpen,
     isSettingsOpen,
     isDocOpen,
     editorWantsFocus,
@@ -230,6 +246,10 @@ export const VZCodeProvider = ({
     openTab,
     closeTabs,
     setTheme,
+    setIsSearchOpen,
+    setSearch,
+    setSearchResults,
+    setSearchFileVisibility,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -358,6 +378,13 @@ export const VZCodeProvider = ({
     tabList,
     openTab,
     closeTabs,
+
+    search,
+    isSearchOpen,
+    setIsSearchOpen,
+    setSearch,
+    setSearchResults,
+    setSearchFileVisibility,
 
     isSettingsOpen,
     setIsSettingsOpen,

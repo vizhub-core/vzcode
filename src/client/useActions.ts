@@ -1,6 +1,12 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
-import { FileId, Username } from '../types';
+import {
+  FileId,
+  SearchFileVisibility,
+  ShareDBDoc,
+  Username,
+  VZCodeContent,
+} from '../types';
 import { TabState, VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
@@ -58,6 +64,56 @@ export const useActions = (
   );
 
   // True to show the settings modal.
+  const setIsSearchOpen = useCallback(
+    (value: boolean) => {
+      dispatch({
+        type: 'set_is_search_open',
+        value: value,
+      });
+    },
+    [dispatch],
+  );
+
+  // Update search pattern
+  const setSearch = useCallback(
+    (pattern: string) => {
+      dispatch({
+        type: 'set_search',
+        value: pattern,
+      });
+    },
+    [dispatch],
+  );
+
+  // Update search results based on current pattern
+  const setSearchResults = useCallback(
+    (files: ShareDBDoc<VZCodeContent>) => {
+      dispatch({
+        type: 'set_search_results',
+        files: files,
+      });
+    },
+    [dispatch],
+  );
+
+  // Update search results file visibility based on current pattern
+  const setSearchFileVisibility = useCallback(
+    (
+      files: ShareDBDoc<VZCodeContent>,
+      id: string,
+      visibility: SearchFileVisibility,
+    ) => {
+      dispatch({
+        type: 'set_search_file_visibility',
+        files: files,
+        id: id,
+        visibility: visibility,
+      });
+    },
+    [dispatch],
+  );
+
+  // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
       dispatch({
@@ -109,6 +165,10 @@ export const useActions = (
     openTab,
     closeTabs,
     setTheme,
+    setIsSearchOpen,
+    setSearch,
+    setSearchResults,
+    setSearchFileVisibility,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
