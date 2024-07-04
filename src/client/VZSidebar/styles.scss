@@ -9,7 +9,6 @@
   .full-box {
     width: 100%;
     height: 100%;
-    padding: 4px;
     display: flex;
     flex-direction: row;
     justify-content: start;
@@ -36,8 +35,8 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    margin: 0 10px;
-    padding: 0 4px 0 8px;
+    margin: 0 8px;
+    padding: 0 4px 0 6px;
     border-radius: 4px;
     font-family: var(--vzcode-font-family);
     font-weight: 500;
@@ -57,8 +56,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
+    gap: 6px;
+    padding: 6px;
 
     * {
       color: inherit;
@@ -174,7 +173,7 @@
     align-items: center;
     white-space: nowrap;
     overflow: hidden;
-    gap: 8px;
+    gap: 6px;
     .file-icon,
     .arrow-wrapper {
       opacity: 0.5;
