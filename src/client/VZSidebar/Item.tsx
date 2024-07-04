@@ -162,8 +162,6 @@ export const Item = ({
           ? null
           : handleDoubleClick
       }
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="name">
         {isRenaming ? (

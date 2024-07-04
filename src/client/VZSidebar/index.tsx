@@ -46,7 +46,7 @@ export const VZSidebar = ({
 }) => {
 
   //TODO: Move these to useKeyboardShortcuts.ts
-  const gridListRef = useRef(null);
+  let gridListRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -128,13 +128,9 @@ export const VZSidebar = ({
   } = useDragAndDrop();
 
   function List(props) {
-    console.log(props['items']);
-
     let state = useListState(props);
-    console.log("State: " + state);
     let ref = gridListRef;
     let { gridProps } = useGridList(props, state, ref);
-    console.log("gridProps: " + gridProps);
   
     return (
       <div {...gridProps} ref={ref} className="list">
@@ -146,18 +142,21 @@ export const VZSidebar = ({
   }
 
   function ListItem({ item, state }) {
-    console.log("item: " + item);
     const { fileId } = item as FileTreeFile;
     const { path } = item as FileTree;
     const key = fileId ? fileId : path;
-    console.log("Name: " + item.Name);
 
     let ref = useRef(null);
+    
     let { rowProps, gridCellProps, isPressed } = useGridListItem(
       { node: item },
       state,
       ref
     );
+
+    if (isPressed){
+      gridListRef = ref;
+    }
   
     let { isFocusVisible, focusProps } = useFocusRing();
     let showCheckbox = state.selectionManager.selectionMode !== 'none' &&
@@ -296,9 +295,10 @@ export const VZSidebar = ({
               const { fileId } = item as FileTreeFile;
               const { path } = item as FileTree;
               const key = fileId ? fileId : path;
-              const key2 = {"file" : true, "fileId" : fileId}
+              const itemKey = `item-${key}`;
+              
               return(
-                <Item key = {key}>
+                <Item key = {itemKey}>
                   <Listing
                       key={key}
                       entity={item}

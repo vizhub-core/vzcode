@@ -39,17 +39,6 @@
     align-items: center;
     gap: 4px;
   }
-  
-  .list li button {
-    margin-left: auto;
-  }
-  
-  /* iOS Safari has a bug that prevents accent-color: white from working. */
-  @supports not (-webkit-touch-callout: none) {
-    .list li input[type=checkbox] {
-      accent-color: white;
-    }
-  }
 
   height: 100%;
   color: var(--vh-color-neutral-04);
