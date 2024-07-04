@@ -15,7 +15,6 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { isDirectory } from './isDirectory.js';
-import { exec } from 'child_process';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
