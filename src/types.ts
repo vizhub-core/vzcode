@@ -61,6 +61,26 @@ export interface FileTreeFile {
   file: File;
   fileId: FileId;
 }
+export type SearchMatch = Array<{
+  line: number;
+  index: number;
+  text: string;
+}>;
+export type SearchFileVisibility =
+  | 'open'
+  | 'flattened'
+  | 'closed';
+export type SearchResult = { [id: string]: SearchFile };
+
+export interface SearchFile {
+  name: string;
+  matches: SearchMatch;
+  visibility: SearchFileVisibility;
+}
+export interface SearchResults {
+  pattern: string;
+  results: SearchResult;
+}
 
 export type JSONOp = any;
 

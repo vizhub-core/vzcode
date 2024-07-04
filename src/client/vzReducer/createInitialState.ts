@@ -12,6 +12,8 @@ export const createInitialState = ({
   tabList: [],
   activeFileId: null,
   theme: defaultTheme,
+  search: { pattern: "", results: {}},
+  isSearchOpen: false,
   isSettingsOpen: false,
   isDocOpen: false,
   editorWantsFocus: false,
