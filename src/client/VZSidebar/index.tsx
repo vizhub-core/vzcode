@@ -1,4 +1,9 @@
-import { useCallback, useContext, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import {
   FileId,
   FileTree,
@@ -23,7 +28,10 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
-import { enableAutoFollow, toggleAutoFollowButton } from '../CodeEditor/json1PresenceDisplay';
+import {
+  enableAutoFollow,
+  toggleAutoFollowButton,
+} from '../CodeEditor/json1PresenceDisplay';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -75,7 +83,9 @@ export const VZSidebar = ({
     SplitPaneResizeContext,
   );
 
-  const [AutoFollow, setAutoFollow] = useState(enableAutoFollow);
+  const [AutoFollow, setAutoFollow] = useState(
+    enableAutoFollow,
+  );
 
   const handleToggleFollow = useCallback(() => {
     toggleAutoFollowButton();
@@ -97,7 +107,6 @@ export const VZSidebar = ({
     },
     [openTab],
   );
-
 
   // True if files exist.
   const filesExist =
@@ -243,23 +252,25 @@ export const VZSidebar = ({
               <FileSVG />
             </i>
           </OverlayTrigger>
-          
-           {/*Toggle Follow*/}
-            <OverlayTrigger
-              placement="right"
-              overlay={
-                <Tooltip id="toggle-auto-follow">
-                  {enableAutoFollow ? 'Disable Auto Follow' : 'Enable Auto Follow'}
-                </Tooltip>
-              }
+
+          {/*Toggle Follow*/}
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="toggle-auto-follow">
+                {enableAutoFollow
+                  ? 'Disable Auto Follow'
+                  : 'Enable Auto Follow'}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleToggleFollow} //not implemented yet, replace with correct handle
+              className="icon-button icon-button-dark"
             >
-              <i
-                onClick={handleToggleFollow} //not implemented yet, replace with correct handle
-                className="icon-button icon-button-dark"
-              >
-                <PinSVG />
-              </i>
-            </OverlayTrigger>
+              <PinSVG />
+            </i>
+          </OverlayTrigger>
         </div>
 
         <div className="files">
