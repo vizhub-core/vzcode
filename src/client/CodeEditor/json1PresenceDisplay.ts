@@ -12,8 +12,10 @@ const debug = false;
 
 // TODO: Make this a setting in the UI.
 // See https://github.com/vizhub-core/vzcode/issues/739
-const enableAutoFollow = false;
-
+export let enableAutoFollow = false;
+export const toggleAutoFollowButton = () => {
+  enableAutoFollow = !enableAutoFollow;
+};
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //

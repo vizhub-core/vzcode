@@ -10,6 +10,7 @@ export { FileSVG } from './FileSVG';
 export { DirectoryArrowSVG } from './DirectoryArrowSVG';
 export { PlaySVG } from './PlaySVG';
 export { QuestionMarkSVG } from './QuestionMarkSVG';
+export { PinSVG } from './PinSVG';
 export { FolderSVG } from './FolderSVG';
 export { SearchSVG } from './SearchSVG';
 export { SearchFileSVG } from './SearchFileSVG';

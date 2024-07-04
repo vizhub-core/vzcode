@@ -1,4 +1,9 @@
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import {
   FileId,
   FileTree,
@@ -17,11 +22,16 @@ import {
   NewSVG,
   FileSVG,
   QuestionMarkSVG,
+  PinSVG,
 } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import {
+  enableAutoFollow,
+  toggleAutoFollowButton,
+} from '../CodeEditor/json1PresenceDisplay';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -72,6 +82,15 @@ export const VZSidebar = ({
   const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
   );
+
+  const [AutoFollow, setAutoFollow] = useState(
+    enableAutoFollow,
+  );
+
+  const handleToggleFollow = useCallback(() => {
+    toggleAutoFollowButton();
+    setAutoFollow(enableAutoFollow); // Update local state to trigger re-render
+  }, []);
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
@@ -231,6 +250,25 @@ export const VZSidebar = ({
               className="icon-button icon-button-dark"
             >
               <FileSVG />
+            </i>
+          </OverlayTrigger>
+
+          {/*Toggle Follow*/}
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="toggle-auto-follow">
+                {enableAutoFollow
+                  ? 'Disable Auto Follow'
+                  : 'Enable Auto Follow'}
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleToggleFollow} //not implemented yet, replace with correct handle
+              className="icon-button icon-button-dark"
+            >
+              <PinSVG />
             </i>
           </OverlayTrigger>
         </div>
