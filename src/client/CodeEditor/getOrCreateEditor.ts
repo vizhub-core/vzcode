@@ -92,6 +92,7 @@ export const getOrCreateEditor = ({
   typeScriptWorker,
   customInteractRules,
   allowGlobals,
+  enableAutoFollowRef,
 }: {
   fileId: FileId;
 
@@ -121,6 +122,10 @@ export const getOrCreateEditor = ({
   typeScriptWorker: Worker;
   customInteractRules?: Array<InteractRule>;
   allowGlobals: boolean;
+
+  // Ref to a boolean that determines whether to
+  // enable auto-following the cursors of remote users.
+  enableAutoFollowRef: React.MutableRefObject<boolean>;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -173,6 +178,7 @@ export const getOrCreateEditor = ({
         json1PresenceDisplay({
           path: textPath,
           docPresence,
+          enableAutoFollowRef,
         }),
       );
     }

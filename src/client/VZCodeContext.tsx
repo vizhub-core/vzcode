@@ -149,6 +149,9 @@ export type VZCodeContextValue = {
 
   hoveredItemId: ItemId | null;
   setHoveredItemId: (itemId: ItemId | null) => void;
+
+  enableAutoFollow: boolean;
+  toggleAutoFollow: () => void;
 };
 
 export const VZCodeProvider = ({
@@ -236,6 +239,7 @@ export const VZCodeProvider = ({
     isDocOpen,
     editorWantsFocus,
     username,
+    enableAutoFollow,
   } = state;
 
   // Functions for dispatching actions to the reducer.
@@ -256,6 +260,7 @@ export const VZCodeProvider = ({
     closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
+    toggleAutoFollow,
   } = useActions(dispatch);
 
   // Sync tab state to the URL.
@@ -428,6 +433,9 @@ export const VZCodeProvider = ({
 
     hoveredItemId,
     setHoveredItemId,
+
+    enableAutoFollow,
+    toggleAutoFollow,
   };
 
   return (

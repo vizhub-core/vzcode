@@ -158,6 +158,12 @@ export const useActions = (
     [dispatch],
   );
 
+  const toggleAutoFollow = useCallback(() => {
+    dispatch({
+      type: 'toggle_auto_follow',
+    });
+  }, [dispatch]);
+
   return {
     setActiveFileId,
     setActiveFileLeft,
@@ -175,5 +181,6 @@ export const useActions = (
     closeDoc,
     editorNoLongerWantsFocus,
     setUsername,
+    toggleAutoFollow,
   };
 };

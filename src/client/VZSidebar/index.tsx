@@ -28,10 +28,6 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
-import {
-  enableAutoFollow,
-  toggleAutoFollowButton,
-} from '../CodeEditor/json1PresenceDisplay';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -66,6 +62,8 @@ export const VZSidebar = ({
     handleOpenCreateDirModal,
     connected,
     sidebarRef,
+    enableAutoFollow,
+    toggleAutoFollow,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -82,15 +80,6 @@ export const VZSidebar = ({
   const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
   );
-
-  const [AutoFollow, setAutoFollow] = useState(
-    enableAutoFollow,
-  );
-
-  const handleToggleFollow = useCallback(() => {
-    toggleAutoFollowButton();
-    setAutoFollow(enableAutoFollow); // Update local state to trigger re-render
-  }, []);
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
@@ -265,8 +254,12 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleToggleFollow} //not implemented yet, replace with correct handle
-              className="icon-button icon-button-dark"
+              onClick={toggleAutoFollow}
+              className={`icon-button icon-button-dark${
+                enableAutoFollow
+                  ? ' vh-color-success-01'
+                  : ''
+              }`}
             >
               <PinSVG />
             </i>

@@ -25,6 +25,7 @@ import {
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
 } from './searchReducer';
+import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -55,6 +56,11 @@ export type VZState = {
 
   // The username of the current user.
   username: Username;
+
+  // True if "auto-follow" is enabled.
+  // This is a feature that automatically scrolls the editor to the
+  // currently active remote user's cursor position.
+  enableAutoFollow: boolean;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
@@ -121,7 +127,11 @@ export type VZAction =
 
   // `set_username`
   //  * Sets the username.
-  | { type: 'set_username'; username: Username };
+  | { type: 'set_username'; username: Username }
+
+  // `toggle_auto_follow
+  //  * Toggles the auto-follow feature.
+  | { type: 'toggle_auto_follow' };
 
 // Representation of an open tab.
 export type TabState = {
@@ -157,6 +167,7 @@ const reducers = [
   setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
+  toggleAutoFollowReducer,
 ];
 
 export const vzReducer = (
