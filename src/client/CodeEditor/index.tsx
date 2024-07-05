@@ -4,6 +4,7 @@ import {
   useCallback,
   useMemo,
   useContext,
+  useEffect,
 } from 'react';
 import { Username } from '../../types';
 import { EditorCacheValue } from '../useEditorCache';
@@ -36,9 +37,8 @@ export const CodeEditor = ({
     typeScriptWorker,
     theme,
     codeEditorRef,
+    enableAutoFollow,
   } = useContext(VZCodeContext);
-
-  const ref = codeEditorRef;
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
@@ -71,6 +71,13 @@ export const CodeEditor = ({
   const usernameRef = useRef<Username>(username);
   usernameRef.current = username;
 
+  // Track enableAutoFollow on a ref, so that we can use it in the
+  // CodeMirror extension.
+  const enableAutoFollowRef = useRef(enableAutoFollow);
+  useEffect(() => {
+    enableAutoFollowRef.current = enableAutoFollow;
+  }, [enableAutoFollow]);
+
   // Get the editor corresponding to the active file.
   // Looks in `editorCache` first, and if not found, creates a new editor.
   const editorCacheValue: EditorCacheValue = useMemo(
@@ -89,6 +96,7 @@ export const CodeEditor = ({
         typeScriptWorker,
         customInteractRules,
         allowGlobals,
+        enableAutoFollowRef,
       }),
     [
       activeFileId,
@@ -109,11 +117,13 @@ export const CodeEditor = ({
   // and the editor corresponding to the new file is added to the DOM.
   useLayoutEffect(() => {
     // Guard against cases where page is still loading.
-    if (!ref.current) return;
+    if (!codeEditorRef.current) return;
     if (!content) return;
 
     // Add the editor and apply the prior scroll position to the DOM.
-    ref.current.appendChild(editorCacheValue.editor.dom);
+    codeEditorRef.current.appendChild(
+      editorCacheValue.editor.dom,
+    );
     editorCacheValue.editor.scrollDOM.scrollTo({
       top: editorCacheValue.scrollPosition ?? 0,
     });
@@ -123,7 +133,9 @@ export const CodeEditor = ({
       // This happens every time `activeFileId` changes.
       editorCacheValue.scrollPosition =
         editorCacheValue.editor.scrollDOM.scrollTop;
-      ref.current.removeChild(editorCacheValue.editor.dom);
+      codeEditorRef.current.removeChild(
+        editorCacheValue.editor.dom,
+      );
     };
   }, [shareDBDoc, editorCacheValue]);
 
@@ -142,8 +154,8 @@ export const CodeEditor = ({
   return (
     <div
       className="vz-code-editor"
-      ref={ref}
+      ref={codeEditorRef}
       tabIndex={-1}
-    ></div>
+    />
   );
 };

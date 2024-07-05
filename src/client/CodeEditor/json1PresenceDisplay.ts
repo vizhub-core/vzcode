@@ -10,12 +10,10 @@ import { Username } from '../../types';
 
 const debug = false;
 
-// TODO: Make this a setting in the UI.
-// See https://github.com/vizhub-core/vzcode/issues/739
-export let enableAutoFollow = false;
-export const toggleAutoFollowButton = () => {
-  enableAutoFollow = !enableAutoFollow;
-};
+// export let enableAutoFollow = false;
+// export const toggleAutoFollowButton = () => {
+//   enableAutoFollow = !enableAutoFollow;
+// };
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //
@@ -27,6 +25,7 @@ export const toggleAutoFollowButton = () => {
 export const json1PresenceDisplay = ({
   path,
   docPresence,
+  enableAutoFollowRef,
 }) => [
   ViewPlugin.fromClass(
     class {
@@ -148,7 +147,7 @@ export const json1PresenceDisplay = ({
 
           // Auto-follow all users when their presence is broadcast
           // by scrolling them into view.
-          if (enableAutoFollow) {
+          if (enableAutoFollowRef.current) {
             this.scrollToCursor(view);
           }
         });
