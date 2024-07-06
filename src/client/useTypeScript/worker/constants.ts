@@ -1,7 +1,8 @@
 import ts from 'typescript';
 
 export const compilerOptions: ts.CompilerOptions = {
-  lib: ['dom', 'esnext'],
+  target: ts.ScriptTarget.ES2022,
+  lib: ['dom', 'es2022'],
 
   // Disable warnings around "Any type".
   noImplicitAny: false,
