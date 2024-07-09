@@ -170,7 +170,7 @@ export const Item = ({
         {isRenaming ? (
           <>
             <i className="file-icon">
-              { getExtensionIcon(renameValue) }
+              {getExtensionIcon(renameValue)}
             </i>
             <input
               className="rename-input"
