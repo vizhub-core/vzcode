@@ -13,7 +13,6 @@ export { QuestionMarkSVG } from './QuestionMarkSVG';
 export { PinSVG } from './PinSVG';
 export { FolderSVG } from './FolderSVG';
 export { SearchSVG } from './SearchSVG';
-export { SearchFileSVG } from './SearchFileSVG';
 export { JavaScriptSVG } from './JavaScriptSVG';
 export { TypeScriptSVG } from './TypeScriptSVG';
 export { ReactSVG } from './ReactSVG';
