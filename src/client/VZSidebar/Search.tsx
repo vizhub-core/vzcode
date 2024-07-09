@@ -117,7 +117,7 @@ export const Search = () => {
                       <DirectoryArrowSVG />
                     </div>
                     <div className="search-file-name">
-                      { getExtensionIcon(file.name) }
+                      {getExtensionIcon(file.name)}
                       <h5>{file.name}</h5>
                     </div>
                   </div>

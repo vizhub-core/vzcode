@@ -85,9 +85,7 @@ export const FileListing = ({
       handleRenameClick={handleRenameClick}
       isActive={isActive}
     >
-      <i className="file-icon">
-        { getExtensionIcon(name) }
-      </i>
+      <i className="file-icon">{getExtensionIcon(name)}</i>
       {name}
     </Item>
   );
