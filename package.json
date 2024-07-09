@@ -1,6 +1,6 @@
 {
   "name": "vzcode",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
