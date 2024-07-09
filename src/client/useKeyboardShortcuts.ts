@@ -4,6 +4,7 @@ import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
+import { FileId } from '../types';
 
 /*
   The following is a helpful resource for the following Code Mirror Syntax Tree methods below
@@ -170,6 +171,17 @@ export const useKeyboardShortcuts = ({
   sidebarRef,
   editorCache,
   codeEditorRef,
+}: {
+  closeTabs: (fileIds: FileId[]) => void;
+  activeFileId: FileId | null;
+  handleOpenCreateFileModal: () => void;
+  setActiveFileLeft: () => void;
+  setActiveFileRight: () => void;
+  runPrettierRef: React.MutableRefObject<() => void>;
+  runCodeRef: React.MutableRefObject<() => void>;
+  sidebarRef: React.RefObject<HTMLDivElement>;
+  editorCache: Map<string, { editor: EditorView }>;
+  codeEditorRef: React.RefObject<HTMLDivElement>;
 }) => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -205,7 +217,9 @@ export const useKeyboardShortcuts = ({
           // TODO clean this up so we can remove `activeFileId`
           // as a dependency
           // TODO closeActiveTab()
-          closeTabs([activeFileId]);
+          if (activeFileId) {
+            closeTabs([activeFileId]);
+          }
           return;
         }
 
@@ -261,12 +275,18 @@ export const useKeyboardShortcuts = ({
     const jumpToDefinitionHandler = (
       event: MouseEvent,
     ): void => {
-      // Ensure the current destination node is defined and current cursor position matches highlighted element
+      // Ensure the current destination node is defined
+      // and current cursor position matches highlighted element
       if (
         !definingNode ||
         (event.target as HTMLSpanElement) !==
           activeJumpingElement
       ) {
+        return;
+      }
+
+      // Don't crash if no active file
+      if (!activeFileId) {
         return;
       }
 
@@ -300,6 +320,10 @@ export const useKeyboardShortcuts = ({
     };
 
     const handleMouseOver = (event: MouseEvent) => {
+      if (!activeFileId) {
+        return;
+      }
+
       const editor: EditorView =
         editorCache.get(activeFileId).editor;
       const tree = syntaxTree(editor.state);
