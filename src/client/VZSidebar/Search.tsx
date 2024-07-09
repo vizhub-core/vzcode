@@ -102,6 +102,7 @@ export const Search = () => {
       return () => clearTimeout(delaySearch);
     } else {
       setIsMounted(true);
+      inputRef.current.focus();
     }
   }, [pattern]);
 
