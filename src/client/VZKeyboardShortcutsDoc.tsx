@@ -85,6 +85,18 @@ export const VZKeyboardShortcutsDoc = ({
               </span>
             </li>
             <li>
+              <strong>Alt-1</strong> <br/>
+              <span>
+                Set focus to the sidebar
+              </span>
+            </li>
+            <li>
+              <strong>Alt-2</strong> <br/>
+              <span>
+                Set focus to the code-editor
+              </span>
+            </li>
+            <li>
               <strong>Most VSCode Shortcuts</strong> <br />
               See VSCode docs:{' '}
               <a
