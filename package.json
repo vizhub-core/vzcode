@@ -14,7 +14,7 @@
     "test-interactive": "cd test/sampleDirectories/kitchenSink && node ../../../src/server/index.js",
     "prettier": "prettier {*.*,**/*.*} --write",
     "tsc": "tsc --noEmit",
-    "dev": "set EDITOR_PORT=5173&&concurrently \"npm run test-interactive\" \"vite\"",
+    "dev": "set EDITOR_PORT=5173 && concurrently \"npm run test-interactive\" \"vite\"",
     "build": "vite build",
     "build-release": "vite build --mode release",
     "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
