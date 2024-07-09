@@ -26,6 +26,7 @@ export const json1PresenceDisplay = ({
   path,
   docPresence,
   enableAutoFollowRef,
+  openTab,
 }) => [
   ViewPlugin.fromClass(
     class {

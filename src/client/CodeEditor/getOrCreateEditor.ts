@@ -93,6 +93,7 @@ export const getOrCreateEditor = ({
   customInteractRules,
   allowGlobals,
   enableAutoFollowRef,
+  openTab,
 }: {
   fileId: FileId;
 
@@ -126,6 +127,7 @@ export const getOrCreateEditor = ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
+  openTab: (fileId: FileId) => void;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -179,6 +181,7 @@ export const getOrCreateEditor = ({
           path: textPath,
           docPresence,
           enableAutoFollowRef,
+          openTab,
         }),
       );
     }
