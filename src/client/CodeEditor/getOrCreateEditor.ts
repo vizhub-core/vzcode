@@ -40,6 +40,9 @@ import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import { cssLanguage } from '@codemirror/lang-css';
+import { javascriptLanguage } from '@codemirror/lang-javascript';
+
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -48,7 +51,19 @@ const enableTypeScriptLinter = true;
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
-
+  
+let htmlConfig = {
+  matchClosingTags: true,
+  selfClosingTags: false,
+  autoCloseTags: true,
+  extraTags: {},
+  extraGlobalAttributes: {},
+  nestedLanguages: [
+    { tag: 'script', language: javascript, parser: javascriptLanguage.parser },
+    { tag: 'style', language: css, parser: cssLanguage.parser },
+  ],
+  nestedAttributes: [],
+};
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -59,7 +74,7 @@ const languageExtensions = {
   js: tsx,
   jsx: tsx,
   ts: tsx,
-  html,
+  html: () => html(htmlConfig),
   css,
   md: markdown,
   svelte,
@@ -146,7 +161,7 @@ export const getOrCreateEditor = ({
   let themeCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
-  const extensions = [];
+  const extensions = [autocompletion(), html(htmlConfig)]
 
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
