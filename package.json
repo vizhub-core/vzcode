@@ -140,7 +140,7 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
-    "openai": "^4.52.4",
+    "openai": "^4.52.5",
     "prettier-plugin-svelte": "^3.2.5",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
@@ -157,10 +157,10 @@
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^8.2.2",
     "prettier": "^3.3.2",
-    "sass": "^1.77.6",
+    "sass": "^1.77.7",
     "typescript": "^5.5.3",
     "vite": "^5.3.3",
-    "vitest": "^2.0.1"
+    "vitest": "^2.0.2"
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.18.1",
