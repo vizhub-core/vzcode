@@ -40,6 +40,7 @@ import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import { TabState } from '../vzReducer';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 
@@ -115,6 +116,7 @@ export const getOrCreateEditor = ({
   customInteractRules,
   allowGlobals,
   enableAutoFollowRef,
+  openTab,
 }: {
   fileId: FileId;
 
@@ -148,6 +150,7 @@ export const getOrCreateEditor = ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
+  openTab: (tabState: TabState) => void;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -202,6 +205,7 @@ export const getOrCreateEditor = ({
           path: textPath,
           docPresence,
           enableAutoFollowRef,
+          openTab,
         }),
       );
     }
