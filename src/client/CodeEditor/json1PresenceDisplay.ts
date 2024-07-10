@@ -7,9 +7,9 @@ import {
 import { Annotation, RangeSet } from '@codemirror/state';
 import ColorHash from 'color-hash';
 import { Username } from '../../types';
+import { TabState } from '../vzReducer';
 
 const debug = false;
-
 
 // export let enableAutoFollow = false;
 // export const toggleAutoFollowButton = () => {
@@ -23,13 +23,18 @@ const debug = false;
 //  * https://codemirror.net/examples/decoration/
 //  * https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js
 //  * https://share.github.io/sharedb/presence
-  export const json1PresenceDisplay = ({
-    path,
-    docPresence,
-    enableAutoFollowRef,
-    openTab,
-  }) => [
-    ViewPlugin.fromClass(
+export const json1PresenceDisplay = ({
+  path,
+  docPresence,
+  enableAutoFollowRef,
+  openTab,
+}: {
+  path: Array<string>;
+  docPresence: any;
+  enableAutoFollowRef: React.MutableRefObject<boolean>;
+  openTab: (tabState: TabState) => void;
+}) => [
+  ViewPlugin.fromClass(
     class {
       // The decorations to display.
       // This is a RangeSet of Decoration objects.
@@ -38,7 +43,6 @@ const debug = false;
 
       //Added variable for cursor position
       cursorPosition = {};
-      
 
       constructor(view: EditorView) {
         // Initialize decorations to empty array so CodeMirror doesn't crash.
@@ -64,15 +68,18 @@ const debug = false;
           }
           // If presence === null, the user has disconnected / exited
           // We also check if the presence is for the current file or not.
-          
-          console.log(typeof openTab);  // Should log 'function'
-          
+
+          console.log(typeof openTab); // Should log 'function'
+
           if (presence && pathMatches(path, presence)) {
             presenceState[id] = presence;
           } else if (presence) {
             if (enableAutoFollowRef.current) {
               presenceState[id] = presence;
-              openTab({ fileId: presence.start[1], isTransient: true });              
+              openTab({
+                fileId: presence.start[1],
+                isTransient: true,
+              });
               this.scrollToCursor(view);
             } else {
               delete presenceState[id];

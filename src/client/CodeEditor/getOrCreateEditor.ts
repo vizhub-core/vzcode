@@ -40,6 +40,7 @@ import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import { TabState } from '../vzReducer';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -127,7 +128,7 @@ export const getOrCreateEditor = ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
-  openTab: (fileId: FileId) => void;
+  openTab: (tabState: TabState) => void;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {

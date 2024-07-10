@@ -52,7 +52,9 @@ export type VZCodeContextValue = {
   submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void;
+  // TODO pull in this type from ShareDB if possible
   localPresence: any;
+  // TODO pull in this type from ShareDB if possible
   docPresence: any;
 
   files: Files | null;
@@ -76,13 +78,7 @@ export type VZCodeContextValue = {
   setActiveFileRight: () => void;
 
   tabList: Array<TabState>;
-  openTab: ({
-    fileId,
-    isTransient,
-  }: {
-    fileId: string;
-    isTransient?: boolean;
-  }) => void;
+  openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: string[]) => void;
 
   isSettingsOpen: boolean;
