@@ -1,17 +1,4 @@
 import {
-  JavaScriptSVG,
-  TypeScriptSVG,
-  ReactSVG,
-  SvelteSVG,
-  JsonSVG,
-  MarkdownSVG,
-  HtmlSVG,
-  CssSVG,
-  SearchFileSVG,
-  DirectoryArrowSVG,
-  CloseSVG,
-} from '../Icons';
-import {
   useRef,
   useEffect,
   useContext,
@@ -21,30 +8,8 @@ import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
 import { SearchFile } from '../../types';
 import { EditorView } from 'codemirror';
-
-function getExtensionIcon(extension: string) {
-  switch (extension) {
-    case 'jsx':
-    case 'tsx':
-      return <ReactSVG />;
-    case 'js':
-      return <JavaScriptSVG />;
-    case 'ts':
-      return <TypeScriptSVG />;
-    case 'json':
-      return <JsonSVG />;
-    case 'md':
-      return <MarkdownSVG />;
-    case 'html':
-      return <HtmlSVG />;
-    case 'css':
-      return <CssSVG />;
-    case 'svelte':
-      return <SvelteSVG />;
-    default:
-      return <SearchFileSVG />;
-  }
-}
+import { getExtensionIcon } from './FileListing';
+import { CloseSVG, DirectoryArrowSVG } from '../Icons';
 
 function jumpToPattern(
   editor: EditorView,
@@ -102,6 +67,7 @@ export const Search = () => {
       return () => clearTimeout(delaySearch);
     } else {
       setIsMounted(true);
+      inputRef.current.focus();
     }
   }, [pattern]);
 
@@ -151,9 +117,7 @@ export const Search = () => {
                       <DirectoryArrowSVG />
                     </div>
                     <div className="search-file-name">
-                      {getExtensionIcon(
-                        file.name.split('.')[1],
-                      )}
+                      {getExtensionIcon(file.name)}
                       <h5>{file.name}</h5>
                     </div>
                   </div>
