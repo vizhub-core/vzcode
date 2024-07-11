@@ -164,13 +164,20 @@ export const Item = ({
 
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
-    validateFileName(renameInputRef.current.value) ? setValidName(true) : setValidName(false);
+
+    if (validateFileName(renameInputRef.current.value)){
+      setValidName(true);
+    }
+    else{
+      setValidName(false);
+      console.log("Not Valid");
+    }
   }, []);
 
   return (
     <div
       className={`file-or-directory user-select-none ${
-        isActive ? `active-file ${validName ? '' : 'not-valid'}` : ''
+        isActive ? 'active-file' : ''
       }`}
       onClick={isRenaming ? null : handleClick}
       onDoubleClick={
@@ -181,7 +188,7 @@ export const Item = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="name">
+      <div className= {`name ${validName ? '' : 'not-valid'}`}>
         {isRenaming ? (
           <>
             <i className="file-icon">

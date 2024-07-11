@@ -166,10 +166,6 @@
   .active-file,
   .active-file:hover {
     background-color: #264399;
-
-    &.not-valid {
-      background-color: red;
-    }
   }
 
   .name {
@@ -183,8 +179,11 @@
     .arrow-wrapper {
       opacity: 0.5;
     }
-  }
 
+    &.not-valid{
+      background-color: red;
+    }
+  }
 
   .rename-input {
     width: 100%;
