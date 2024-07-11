@@ -107,7 +107,12 @@ export const Item = ({
       // Renaming to empty signals deletion
       setShowModal(true);
     } else {
-      handleRenameClick(renameInputRef.current.value);
+      if (validateFileName(renameInputRef.current.value)){
+        handleRenameClick(renameInputRef.current.value);
+      }
+
+      setValidName(true);
+      
     }
   }, [handleRenameClick]);
 
@@ -170,7 +175,6 @@ export const Item = ({
     }
     else{
       setValidName(false);
-      console.log("Not Valid");
     }
   }, []);
 
