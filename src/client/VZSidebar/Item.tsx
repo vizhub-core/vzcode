@@ -89,6 +89,7 @@ export const Item = ({
   // Ref to track the input DOM, so that we can focus and blur it
   const renameInputRef = useRef(null);
 
+  // Tracks the validity of the file/directory name
   const [validName, setValidName] = useState(true);
 
   const onKeyDown = useCallback(
@@ -111,9 +112,7 @@ export const Item = ({
       if (validateFileName(renameInputRef.current.value)){
         handleRenameClick(renameInputRef.current.value);
       }
-
       setValidName(true);
-      
     }
   }, [handleRenameClick]);
 
@@ -171,12 +170,7 @@ export const Item = ({
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
 
-    if (validateFileName(renameInputRef.current.value)){
-      setValidName(true);
-    }
-    else{
-      setValidName(false);
-    }
+    validateFileName(renameInputRef.current.value) ? setValidName(true) : setValidName(false);
   }, []);
 
   return (
