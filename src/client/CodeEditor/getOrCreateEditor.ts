@@ -40,6 +40,9 @@ import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import { TabState } from '../vzReducer';
+import { cssLanguage } from '@codemirror/lang-css';
+import { javascriptLanguage } from '@codemirror/lang-javascript';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -49,6 +52,26 @@ const enableTypeScriptLinter = true;
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
 
+const htmlConfig = {
+  matchClosingTags: true,
+  selfClosingTags: false,
+  autoCloseTags: true,
+  extraTags: {},
+  extraGlobalAttributes: {},
+  nestedLanguages: [
+    {
+      tag: 'script',
+      language: javascript,
+      parser: javascriptLanguage.parser,
+    },
+    {
+      tag: 'style',
+      language: css,
+      parser: cssLanguage.parser,
+    },
+  ],
+  nestedAttributes: [],
+};
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -59,7 +82,7 @@ const languageExtensions = {
   js: tsx,
   jsx: tsx,
   ts: tsx,
-  html,
+  html: () => html(htmlConfig),
   css,
   md: markdown,
   svelte,
@@ -93,6 +116,7 @@ export const getOrCreateEditor = ({
   customInteractRules,
   allowGlobals,
   enableAutoFollowRef,
+  openTab,
 }: {
   fileId: FileId;
 
@@ -126,6 +150,7 @@ export const getOrCreateEditor = ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
+  openTab: (tabState: TabState) => void;
 }): EditorCacheValue => {
   // Cache hit
   if (editorCache.has(fileId)) {
@@ -146,6 +171,7 @@ export const getOrCreateEditor = ({
   let themeCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
+  // const extensions = [autocompletion(), html(htmlConfig)]
   const extensions = [];
 
   // This plugin implements multiplayer editing,
@@ -179,6 +205,7 @@ export const getOrCreateEditor = ({
           path: textPath,
           docPresence,
           enableAutoFollowRef,
+          openTab,
         }),
       );
     }
@@ -266,18 +293,28 @@ export const getOrCreateEditor = ({
   // );
 
   // Add the extension that provides TypeScript completions.
-  if (enableTypeScriptCompletions) {
-    extensions.push(
-      autocompletion({
-        override: [
-          typeScriptCompletions({
-            typeScriptWorker,
-            fileName: name,
-          }),
-        ],
-      }),
-    );
-  }
+  // only add this if it's TS-compatible (.js, .jsx, .ts, .tsx)
+  const isTypeScript =
+    fileExtension === 'js' ||
+    fileExtension === 'jsx' ||
+    fileExtension === 'ts' ||
+    fileExtension === 'tsx';
+
+  extensions.push(
+    autocompletion(
+      isTypeScript
+        ? {
+            override: [
+              typeScriptCompletions({
+                typeScriptWorker,
+                fileName: name,
+              }),
+            ],
+          }
+        : undefined,
+    ),
+  );
+
   if (shareDBDoc && enableTypeScriptLinter) {
     extensions.push(
       linter(

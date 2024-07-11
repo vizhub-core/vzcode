@@ -1,8 +1,44 @@
 import { useCallback, useContext } from 'react';
 import { Item } from './Item';
 import { FileId } from '../../types';
-import { FileSVG } from '../Icons';
+import {
+  FileSVG,
+  JavaScriptSVG,
+  TypeScriptSVG,
+  ReactSVG,
+  SvelteSVG,
+  JsonSVG,
+  MarkdownSVG,
+  HtmlSVG,
+  CssSVG,
+} from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
+
+export function getExtensionIcon(fileName: string) {
+  const extension = fileName.split('.');
+
+  switch (extension[extension.length - 1]) {
+    case 'jsx':
+    case 'tsx':
+      return <ReactSVG />;
+    case 'js':
+      return <JavaScriptSVG />;
+    case 'ts':
+      return <TypeScriptSVG />;
+    case 'json':
+      return <JsonSVG />;
+    case 'md':
+      return <MarkdownSVG />;
+    case 'html':
+      return <HtmlSVG />;
+    case 'css':
+      return <CssSVG />;
+    case 'svelte':
+      return <SvelteSVG />;
+    default:
+      return <FileSVG />;
+  }
+}
 
 export const FileListing = ({
   name,
@@ -49,9 +85,7 @@ export const FileListing = ({
       handleRenameClick={handleRenameClick}
       isActive={isActive}
     >
-      <i className="file-icon">
-        <FileSVG />
-      </i>
+      <i className="file-icon">{getExtensionIcon(name)}</i>
       {name}
     </Item>
   );

@@ -38,6 +38,7 @@ export const CodeEditor = ({
     theme,
     codeEditorRef,
     enableAutoFollow,
+    openTab,
   } = useContext(VZCodeContext);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
@@ -97,6 +98,7 @@ export const CodeEditor = ({
         customInteractRules,
         allowGlobals,
         enableAutoFollowRef,
+        openTab,
       }),
     [
       activeFileId,

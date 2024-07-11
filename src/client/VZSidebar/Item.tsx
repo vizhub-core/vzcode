@@ -12,6 +12,7 @@ import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { VZCodeContext } from '../VZCodeContext';
 import { ItemId } from '../../types';
+import { getExtensionIcon } from './FileListing';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -196,7 +197,7 @@ export const Item = ({
         {isRenaming ? (
           <>
             <i className="file-icon">
-              <FileSVG />
+              {getExtensionIcon(renameValue)}
             </i>
             <input
               className="rename-input"

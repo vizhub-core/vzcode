@@ -1,6 +1,6 @@
 {
   "name": "vzcode",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
@@ -140,14 +140,14 @@
     "json0-ot-diff": "^1.1.2",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
-    "openai": "^4.52.3",
+    "openai": "^4.52.4",
     "prettier-plugin-svelte": "^3.2.5",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
     "sharedb": "^5.0.2",
-    "sharedb-client-browser": "^5.0.1",
+    "sharedb-client-browser": "^5.0.2",
     "vizhub-ui": "^3.23.0",
     "ws": "^8.18.0"
   },
@@ -160,10 +160,10 @@
     "sass": "^1.77.6",
     "typescript": "^5.5.3",
     "vite": "^5.3.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.1"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.18.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.18.0"
+    "@rollup/rollup-darwin-arm64": "^4.18.1",
+    "@rollup/rollup-win32-x64-msvc": "^4.18.1"
   }
 }
