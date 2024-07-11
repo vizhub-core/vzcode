@@ -63,6 +63,19 @@ export const Item = ({
     [id, setHoveredItemId],
   );
 
+  const validateFileName = useCallback(
+    (fileName: string) => {
+      let valid;
+      //General Character Check
+      const regex =
+        /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
+      valid = regex.test(fileName);
+
+      return valid;
+    },
+    [],
+  );
+
   // Tracks whether the file is being renamed (inline text input)
   const [isRenaming, setIsRenaming] = useState(false);
 
@@ -74,6 +87,8 @@ export const Item = ({
 
   // Ref to track the input DOM, so that we can focus and blur it
   const renameInputRef = useRef(null);
+
+  const [validName, setValidName] = useState(true);
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -149,12 +164,13 @@ export const Item = ({
 
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
+    validateFileName(renameInputRef.current.value) ? setValidName(true) : setValidName(false);
   }, []);
 
   return (
     <div
       className={`file-or-directory user-select-none ${
-        isActive ? 'active-file' : ''
+        isActive ? `active-file ${validName ? '' : 'not-valid'}` : ''
       }`}
       onClick={isRenaming ? null : handleClick}
       onDoubleClick={
