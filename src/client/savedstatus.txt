@@ -1,0 +1,87 @@
+// src/hooks/usePending.js
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { runDelay } from '../constants';
+
+export const usePending = (shareDBDoc) => {
+  const lastOpTimerRef = useRef();
+  const [pending, setPending] = useState(false);
+
+  const resetOnNoPending = useCallback(() => {
+    if (!shareDBDoc) return;
+
+    shareDBDoc.whenNothingPending(() => {
+      setPending(false);
+    });
+  }, [shareDBDoc, setPending]);
+
+  useEffect(() => {
+    if (!shareDBDoc) return;
+
+    shareDBDoc.on('before op', () => {
+      setPending(true);
+
+      clearTimeout(lastOpTimerRef.current);
+
+      lastOpTimerRef.current = setTimeout(() => {
+        // should be triggered only once, cause upcoming ops unschedule previous resetOnNoPending
+        resetOnNoPending();
+      }, runDelay);
+    });
+  }, [shareDBDoc, resetOnNoPending]);
+
+  return pending;
+};
+
+// src/components/StatusIndicator.js
+import React, { useEffect, useState } from 'react';
+import { usePending } from '../hooks/usePending';
+import ShareDB from 'sharedb/lib/client';
+import ReconnectingWebSocket from 'reconnecting-websocket';
+
+// Assume you have your backend server URL
+const backendUrl = 'ws://your-sharedb-server-url';
+
+const StatusIndicator = () => {
+  const [doc, setDoc] = useState(null);
+  const pending = usePending(doc);
+
+  useEffect(() => {
+    // Setup ShareDB connection
+    const socket = new ReconnectingWebSocket(backendUrl);
+    const connection = new ShareDB.Connection(socket);
+
+    // Get document
+    const doc = connection.get('examples', 'counter');
+    doc.subscribe((err) => {
+      if (err) throw err;
+      setDoc(doc);
+    });
+
+    return () => {
+      connection.close();
+    };
+  }, []);
+
+  return (
+    <div>
+      {pending ? 'Saving...' : 'Connected, all changes saved'}
+    </div>
+  );
+};
+
+export default StatusIndicator;
+
+// src/App.js
+import React from 'react';
+import StatusIndicator from './components/StatusIndicator';
+
+const App = () => {
+  return (
+    <div>
+      <h1>ShareDB Status Indicator</h1>
+      <StatusIndicator />
+    </div>
+  );
+};
+
+export default App;
