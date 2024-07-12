@@ -13,6 +13,7 @@ import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { VZCodeContext } from '../VZCodeContext';
 import { ItemId } from '../../types';
 import { getExtensionIcon } from './FileListing';
+import { validateFileName } from './validateFileName';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -48,7 +49,7 @@ export const Item = ({
   renameFileTooltipText?: string;
   deleteFileTooltipText?: string;
 }) => {
-  const { hoveredItemId, setHoveredItemId } =
+  const { hoveredItemId, setHoveredItemId, files} =
     useContext(VZCodeContext);
   // // Tracks whether the mouse is hovering over the file or directory
   // const [isHovered, setIsHovered] = useState(false);
@@ -62,19 +63,6 @@ export const Item = ({
       }
     },
     [id, setHoveredItemId],
-  );
-
-  const validateFileName = useCallback(
-    (fileName: string) => {
-      let valid;
-      //General Character Check
-      const regex =
-        /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
-      valid = regex.test(fileName);
-
-      return valid;
-    },
-    [],
   );
 
   // Tracks whether the file is being renamed (inline text input)
@@ -91,6 +79,8 @@ export const Item = ({
 
   // Tracks the validity of the file/directory name
   const [validName, setValidName] = useState(true);
+
+  const [lastValidName, setLastValidName] = useState(name);
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -109,8 +99,9 @@ export const Item = ({
       // Renaming to empty signals deletion
       setShowModal(true);
     } else {
-      if (validateFileName(renameInputRef.current.value)){
+      if (validName){
         handleRenameClick(renameInputRef.current.value);
+        setLastValidName(renameInputRef.current.value);
       }
       setValidName(true);
     }
@@ -170,7 +161,11 @@ export const Item = ({
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
 
-    validateFileName(renameInputRef.current.value) ? setValidName(true) : setValidName(false);
+    const validate = validateFileName({files});
+    setValidName(validate(renameInputRef.current.value));
+
+    console.log("in onChange, validName is: ", validName);
+
   }, []);
 
   return (
