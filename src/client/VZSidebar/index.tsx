@@ -135,8 +135,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={() => setIsSearchOpen(false)}
+              id="files-icon"
               className="icon-button icon-button-dark"
+              onClick={() => setIsSearchOpen(false)}
             >
               <FolderSVG />
             </i>
@@ -151,8 +152,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={() => setIsSearchOpen(true)}
+              id="search-icon"
               className="icon-button icon-button-dark"
+              onClick={() => setIsSearchOpen(true)}
             >
               <SearchSVG />
             </i>
@@ -167,8 +169,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleQuestionMarkClick}
+              id="shortcut-icon"
               className="icon-button icon-button-dark"
+              onClick={handleQuestionMarkClick}
             >
               <QuestionMarkSVG />
             </i>
@@ -187,7 +190,9 @@ export const VZSidebar = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="icon-button icon-button-dark">
+              <i 
+                id="bug-icon"
+                className="icon-button icon-button-dark">
                 <BugSVG />
               </i>
             </a>
@@ -202,8 +207,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleSettingsClick}
+              id="settings-icon"
               className="icon-button icon-button-dark"
+              onClick={handleSettingsClick}
             >
               <GearSVG />
             </i>
@@ -218,8 +224,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleOpenCreateFileModal}
+              id="new-file-icon"
               className="icon-button icon-button-dark"
+              onClick={handleOpenCreateFileModal}
             >
               <NewSVG />
             </i>
@@ -235,8 +242,10 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleOpenCreateDirModal}
+              id="new-directory-icon"
+              
               className="icon-button icon-button-dark"
+              onClick={handleOpenCreateDirModal}
             >
               <FileSVG />
             </i>
@@ -254,12 +263,13 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={toggleAutoFollow}
+              id="auto-focus-icon"
               className={`icon-button icon-button-dark${
                 enableAutoFollow
                   ? ' vh-color-success-01'
                   : ''
               }`}
+              onClick={toggleAutoFollow}
             >
               <PinSVG />
             </i>

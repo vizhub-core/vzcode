@@ -69,7 +69,7 @@ export const VZKeyboardShortcutsDoc = ({
               <span>Close the current tab</span>
             </li>
             <li>
-              <strong>Alt + n</strong> <br />
+              <strong>Alt + n or Ctrl + Shift + n</strong> <br />
               <span>Open the create file modal</span>
             </li>
             <li>
@@ -83,6 +83,10 @@ export const VZKeyboardShortcutsDoc = ({
               <span>
                 Change the active tab to the next one
               </span>
+            </li>
+            <li>
+              <strong>Ctrl + Shift + &lt;key&gt;</strong> <br />
+              <span>Click sidebar icon with <strong>e</strong> (Files), <strong>f</strong> (Search), <strong>k</strong> (Keyboard Shortcuts), <strong>b</strong> (Report Bugs), <strong>s</strong> (Settings), <strong>n</strong> (New File), <strong>d</strong> (New Directory), <strong>a</strong> (Auto-focus)</span>
             </li>
             <li>
               <strong>Most VSCode Shortcuts</strong> <br />
