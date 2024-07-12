@@ -151,6 +151,18 @@ function jumpToDefinition(
   }
 }
 
+// Sidebar keyboard shortcuts in form Ctrl + Shift + <key>
+const sideBarKeyBoardMap = {
+  'E': 'files-icon',
+  'F': 'search-icon',
+  'K': 'shortcut-icon',
+  'B': 'bug-icon',
+  'S': 'settings-icon',
+  'N': 'new-file-icon',
+  'D': 'new-directory-icon',
+  'A': 'auto-focus-icon'
+};
+
 // This module implements the keyboard shortcuts
 // for the VZCode editor.
 // These include:
@@ -201,6 +213,11 @@ export const useKeyboardShortcuts = ({
           runCode();
         }
         return;
+      }
+      
+      if (event.ctrlKey && event.shiftKey) {
+        // Handle keyboard shortcuts related to the side bar icons
+        document.getElementById(sideBarKeyBoardMap[event.key])?.click();
       }
 
       if (event.ctrlKey === true) {
