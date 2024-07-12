@@ -120,7 +120,9 @@ export type VZCodeContextValue = {
     files: ShareDBDoc<VZCodeContent>,
     id: string,
     visibility: SearchFileVisibility,
+    element: string | null
   ) => void;
+  setSearchActiveElement: (element: string | null) => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -250,6 +252,7 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    setSearchActiveElement,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -386,6 +389,7 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    setSearchActiveElement,
 
     isSettingsOpen,
     setIsSettingsOpen,

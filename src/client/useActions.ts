@@ -102,12 +102,28 @@ export const useActions = (
       files: ShareDBDoc<VZCodeContent>,
       id: string,
       visibility: SearchFileVisibility,
+      element: string | null,
     ) => {
       dispatch({
         type: 'set_search_file_visibility',
         files: files,
         id: id,
         visibility: visibility,
+        element: element
+      });
+    },
+    [dispatch],
+  );
+
+  // Update search results file matching line visibility to be 
+  const setSearchMatchVisibility = null;
+
+  // Update search results active element
+  const setSearchActiveElement = useCallback(
+    (element: string | null) => {
+      dispatch({
+        type: 'set_search_active_line',
+        element: element,
       });
     },
     [dispatch],
@@ -175,6 +191,7 @@ export const useActions = (
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    setSearchActiveElement,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,

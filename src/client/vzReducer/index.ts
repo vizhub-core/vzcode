@@ -24,6 +24,7 @@ import {
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  setSearchActiveElementReducer
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 export { createInitialState } from './createInitialState';
@@ -119,7 +120,21 @@ export type VZAction =
       files: ShareDBDoc<VZCodeContent>;
       id: string;
       visibility: SearchFileVisibility;
+      element: string;
     }
+
+  // `hide_search_results_line`
+  //  * Hides a current search pattern file's specific matching line
+  | {
+    type: 'hide_search_results_line';
+    files: ShareDBDoc<VZCodeContent>;
+    id: string;
+    line: number;
+  }
+
+  // `set_search_active_line`
+  //  * Sets which line in the search results (file or line) is active.
+  | { type: 'set_search_active_line'; element: string | null }
 
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
@@ -162,6 +177,7 @@ const reducers = [
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  setSearchActiveElementReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,

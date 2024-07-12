@@ -125,18 +125,21 @@
     padding: 10px;
   }
 
+  .search-results .active {
+    color: red;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  .search-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .search-file-lines {
     font-size: inherit;
     margin: 15px 0px 0px 30px;
-  }
-
-  .search-line,
-  .arrow-wrapper,
-  .search-file-close {
-    &:hover {
-      opacity: 0.7;
-      cursor: pointer;
-    }
   }
 
   .search-file-lines .search-pattern {

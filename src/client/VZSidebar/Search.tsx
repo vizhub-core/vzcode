@@ -43,10 +43,11 @@ export const Search = () => {
     openTab,
     setSearchResults,
     setSearchFileVisibility,
+    setSearchActiveElement,
     shareDBDoc,
     editorCache,
   } = useContext(VZCodeContext);
-  const { pattern, results } = search;
+  const { pattern, results, activeElement } = search;
 
   useEffect(() => {
     if (isMounted) {
@@ -97,21 +98,29 @@ export const Search = () => {
                 className="search-result"
                 key={file.name}
               >
-                <div className="search-file-heading">
+                <div 
+                  onMouseOver={() => {
+                    if (activeElement !== file.name) {
+                      setSearchActiveElement(file.name);
+                    }
+                  }}
+                  onClick={() => {
+                    setSearchFileVisibility(
+                      shareDBDoc,
+                      fileId,
+                      file.visibility === 'open'
+                        ? 'flattened'
+                        : 'open',
+                      file.name,
+                    );
+                  }}
+                  className={`search-file-heading ${file.name === activeElement ? 'active' : ''}`}
+                  >
                   <div className="search-file-title">
                     <div
                       className="arrow-wrapper"
                       style={{
                         transform: `rotate(${file.visibility === 'open' ? 90 : 0}deg)`,
-                      }}
-                      onClick={() => {
-                        setSearchFileVisibility(
-                          shareDBDoc,
-                          fileId,
-                          file.visibility === 'open'
-                            ? 'flattened'
-                            : 'open',
-                        );
                       }}
                     >
                       <DirectoryArrowSVG />
@@ -122,26 +131,35 @@ export const Search = () => {
                     </div>
                   </div>
                   <div className="search-file-info">
-                    <h6 className="search-file-count">
-                      {file.matches.length}
-                    </h6>
-                    <div
-                      className="search-file-close"
-                      onClick={() => {
-                        setSearchFileVisibility(
-                          shareDBDoc,
-                          fileId,
-                          'closed',
-                        );
-                      }}
-                    >
-                      <CloseSVG />
-                    </div>
+                    {
+                      file.name === activeElement ? (
+                          <span
+                            className="search-file-close"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              
+                              setSearchFileVisibility(
+                                shareDBDoc,
+                                fileId,
+                                'closed',
+                                null
+                              );
+                            }}
+                          >
+                            <CloseSVG />
+                          </span>
+                      ) : (
+                          <h6 className="search-file-count">
+                            {file.matches.length}
+                          </h6>
+                      )
+                    }
                   </div>
                 </div>
-                <div className="search-file-lines">
+                <div 
+                  className="search-file-lines">
                   {file.visibility != 'flattened' &&
-                    file.matches.map((match) => {
+                    file.matches.filter((match) => !(match.isClosed)).map((match) => {
                       const before = match.text.substring(
                         0,
                         match.index,
@@ -153,41 +171,67 @@ export const Search = () => {
                       const after = match.text.substring(
                         match.index + pattern.length,
                       );
+                      const identifier = file.name + "-" + match.line;
 
                       return (
-                        <p
-                          className="search-line"
-                          key={
-                            file.name +
-                            ' - ' +
-                            match.line +
-                            ' - ' +
-                            match.index
-                          }
-                          onClick={() => {
-                            setActiveFileId(fileId);
-                            openTab({
-                              fileId: fileId,
-                              isTransient: false,
-                            });
-
-                            if (editorCache.get(fileId)) {
-                              jumpToPattern(
-                                editorCache.get(fileId)
-                                  .editor,
-                                pattern,
-                                match.line,
-                                match.index,
-                              );
+                        <div
+                          key={identifier}
+                          className={`search-line ${identifier === activeElement ? 'active' : ''}`}
+                          >
+                            <p
+                            
+                            key={
+                              file.name +
+                              ' - ' +
+                              match.line +
+                              ' - ' +
+                              match.index
                             }
-                          }}
-                        >
-                          {before}
-                          <span className="search-pattern">
-                            {hit}
-                          </span>
-                          {after}
-                        </p>
+                            onMouseOver={() => {
+                              if (activeElement !== identifier) {
+                                setSearchActiveElement(identifier);
+                              }
+                            }}
+                            onClick={() => {
+                              setSearchActiveElement(identifier);
+                              setActiveFileId(fileId);
+                              openTab({
+                                fileId: fileId,
+                                isTransient: false,
+                              });
+
+                              if (editorCache.get(fileId)) {
+                                jumpToPattern(
+                                  editorCache.get(fileId)
+                                    .editor,
+                                  pattern,
+                                  match.line,
+                                  match.index,
+                                );
+                              }
+                            }}
+                          >
+                            {before}
+                            <span className="search-pattern">
+                              {hit}
+                            </span>
+                            {after}
+                          </p>
+                          {
+                          activeElement === identifier && (
+                            <span
+                              className="search-file-close"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                
+                              alert("CLOSING!");
+                              }}
+                            >
+                              <CloseSVG />
+                            </span>  
+                            )
+                          }
+                        </div>
                       );
                     })}
                 </div>

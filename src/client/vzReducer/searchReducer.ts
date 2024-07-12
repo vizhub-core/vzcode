@@ -31,6 +31,7 @@ function searchPattern(
             line: j + 1,
             index: index,
             text: lines[j],
+            isClosed: false
           });
         }
       }
@@ -74,7 +75,7 @@ export const setSearchReducer = (
   action.type === 'set_search'
     ? {
         ...state,
-        search: { pattern: action.value, results: {} },
+        search: { pattern: action.value, results: {}, activeElement: null },
       }
     : state;
 
@@ -91,6 +92,7 @@ export const setSearchResultsReducer = (
             action.files,
             state.search.pattern,
           ),
+          activeElement: null
         },
       }
     : state;
@@ -109,6 +111,47 @@ export const setSearchFileVisibilityReducer = (
             action.id,
             action.visibility,
           ),
+          activeElement: action.element
+        },
+      }
+    : state;
+
+export const setSearchMatchVisibility = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'hide_search_results_line'
+    ? {
+        ...state,
+        search: {
+          ...state.search,
+          results: {
+            ...state.search.results,
+            [action.id]: {
+              ...state.search.results[action.id],
+              matches: {
+                ...state.search.results[action.id].matches,
+                [action.line]: {
+                  ...state.search.results[action.id].matches[action.line],
+                  isClosed: true,
+                },
+              }
+            }
+          }
+        }
+      }
+    : state;
+    
+export const setSearchActiveElementReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'set_search_active_line'
+    ? {
+        ...state,
+        search: {
+          ...state.search,
+          activeElement: action.element
         },
       }
     : state;

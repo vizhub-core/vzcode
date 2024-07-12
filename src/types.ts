@@ -65,6 +65,7 @@ export type SearchMatch = Array<{
   line: number;
   index: number;
   text: string;
+  isClosed: boolean;
 }>;
 export type SearchFileVisibility =
   | 'open'
@@ -80,6 +81,7 @@ export interface SearchFile {
 export interface SearchResults {
   pattern: string;
   results: SearchResult;
+  activeElement: string | null;
 }
 
 export type JSONOp = any;
