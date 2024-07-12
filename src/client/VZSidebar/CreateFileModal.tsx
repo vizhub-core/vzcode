@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { Modal, Form, Button } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
+import { validateFileName } from './validateFileName';
 
 export const CreateFileModal = ({
   initialFileName = '',
@@ -36,32 +37,11 @@ export const CreateFileModal = ({
     setNewName('');
   }, [newName, handleCreateFileClick]);
 
-  // Returns true if file name is valid, false otherwise.
-  const validateFileName = useCallback(
-    (fileName: string) => {
-      let valid;
-      //General Character Check
-      const regex =
-        /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
-      valid = regex.test(fileName);
-
-      //Check for Duplicate Filename
-      for (const key in files) {
-        if (fileName === files[key].name) {
-          valid = false;
-        }
-      }
-
-      return valid;
-    },
-    [files],
-  );
-
   const handleKeyDown = useCallback(
     (e) => {
       if (
         e.key === 'Enter' &&
-        validateFileName(newName) &&
+        validateFileName({ files, fileName: newName }) &&
         (e.ctrlKey ||
           e.shiftKey ||
           (!e.altKey && !e.metaKey))
@@ -69,7 +49,7 @@ export const CreateFileModal = ({
         onCreateClick();
       }
     },
-    [onCreateClick, validateFileName, newName],
+    [onCreateClick, newName],
   );
 
   return isCreateFileModalOpen ? (
@@ -101,7 +81,9 @@ export const CreateFileModal = ({
         <Button
           variant="primary"
           onClick={onCreateClick}
-          disabled={!validateFileName(newName)}
+          disabled={
+            !validateFileName({ files, fileName: newName })
+          }
         >
           Create File
         </Button>

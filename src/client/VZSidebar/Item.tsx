@@ -49,7 +49,7 @@ export const Item = ({
   renameFileTooltipText?: string;
   deleteFileTooltipText?: string;
 }) => {
-  const { hoveredItemId, setHoveredItemId, files} =
+  const { hoveredItemId, setHoveredItemId, files } =
     useContext(VZCodeContext);
   // // Tracks whether the mouse is hovering over the file or directory
   // const [isHovered, setIsHovered] = useState(false);
@@ -99,7 +99,7 @@ export const Item = ({
       // Renaming to empty signals deletion
       setShowModal(true);
     } else {
-      if (validName){
+      if (validName) {
         handleRenameClick(renameInputRef.current.value);
         setLastValidName(renameInputRef.current.value);
       }
@@ -159,13 +159,12 @@ export const Item = ({
   }, []);
 
   const onChange = useCallback(() => {
-    setRenameValue(renameInputRef.current.value);
+    const fileName = renameInputRef.current.value;
+    setRenameValue(fileName);
 
-    const validate = validateFileName({files});
-    setValidName(validate(renameInputRef.current.value));
+    setValidName(validateFileName({ files, fileName }));
 
-    console.log("in onChange, validName is: ", validName);
-
+    console.log('in onChange, validName is: ', validName);
   }, []);
 
   return (
@@ -182,7 +181,9 @@ export const Item = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className= {`name ${validName ? '' : 'not-valid'}`}>
+      <div
+        className={`name ${validName ? '' : 'not-valid'}`}
+      >
         {isRenaming ? (
           <>
             <i className="file-icon">
