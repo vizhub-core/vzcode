@@ -2,7 +2,8 @@
 
 VZCode offers a multiplayer code editing environment that caters to a real-time collaborative development experience. It's the code editor component of [VizHub](https://vizhub.com/), and can also be used independently from VizHub.
 
-![VZCode Interface](https://github.com/vizhub-core/vzcode/assets/68416/1812f25c-66b4-49bb-a04f-4474eb30e32b)
+![VZCode Interface](https://private-user-images.githubusercontent.com/68416/347477705-4eb1c037-6748-47be-a85f-db29b11c2223.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjA4NDE4MDAsIm5iZiI6MTcyMDg0MTUwMCwicGF0aCI6Ii82ODQxNi8zNDc0Nzc3MDUtNGViMWMwMzctNjc0OC00N2JlLWE4NWYtZGIyOWIxMWMyMjIzLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA3MTMlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwNzEzVDAzMzE0MFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTYzNzZmNzc1MjI0ODFiN2VlYzY4MWY5ZGFkMWI1ODc0ZGVmMzEzYjc0YzY3MjFhMTA3NzJlY2NhZDAyYThlMGYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0JmFjdG9yX2lkPTAma2V5X2lkPTAmcmVwb19pZD0wIn0.btClWF6DCX3Au1MKldpCZhVk0QU6tAVlbxMBPs5xtwE)
+
 
 ## Table of Contents
 
