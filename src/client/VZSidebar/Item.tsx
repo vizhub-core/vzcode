@@ -13,6 +13,8 @@ import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { VZCodeContext } from '../VZCodeContext';
 import { ItemId } from '../../types';
 import { getExtensionIcon } from './FileListing';
+import { ForkSVG } from '../Icons/ForkSVG';
+import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 
 // TODO support renaming directories
 // See https://github.com/vizhub-core/vzcode/issues/103
@@ -97,6 +99,15 @@ export const Item = ({
     }
   }, [handleRenameClick]);
 
+  const handleOpenInNewTab = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      // set the code editor width to half of its current width
+      
+    },
+    [],
+  );
+
   const handleRenameIconClick = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation();
@@ -121,6 +132,7 @@ export const Item = ({
     },
     [],
   );
+
 
   // Function to close the modal
   const handleModalClose = useCallback(() => {
@@ -192,6 +204,21 @@ export const Item = ({
           className="utils"
           style={{ position: 'relative' }}
         >
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id="fork-file-tooltip">
+                {isDirectory ? 'Directory' : 'Open in New Tab'}
+              </Tooltip>
+            }
+          >
+            <i 
+            onClick={handleOpenInNewTab}
+            className="icon-button icon-button-dark"
+            >
+              <ForkSVG />
+            </i>
+          </OverlayTrigger>
           {(isDirectory ? enableRenameDirectory : true) ? (
             <OverlayTrigger
               placement="top"
