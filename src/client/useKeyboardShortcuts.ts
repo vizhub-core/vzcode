@@ -218,8 +218,10 @@ export const useKeyboardShortcuts = ({
       if (event.ctrlKey && event.shiftKey) {
         // Handle keyboard shortcuts related to the side bar icons
         document.getElementById(sideBarKeyBoardMap[event.key])?.click();
-      }
-
+      } else if (event.ctrlKey && event.key === ',') {
+        document.getElementById(sideBarKeyBoardMap['S'])?.click();
+      } 
+      
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
         document.addEventListener(

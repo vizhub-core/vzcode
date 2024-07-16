@@ -35,13 +35,13 @@ import './styles.scss';
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
-  createFileTooltipText = 'New File',
-  createDirTooltipText = 'New Directory',
-  openSettingsTooltipText = 'Open Settings',
-  openKeyboardShortcuts = 'Keyboard Shortcuts',
-  reportBugTooltipText = 'Report Bug',
-  searchToolTipText = 'Search',
-  filesToolTipText = 'Files',
+  createFileTooltipText = 'New File (Ctrl + Shift + N)',
+  createDirTooltipText = 'New Directory (Ctrl + Shift + D)',
+  openSettingsTooltipText = 'Open Settings (Ctrl + Shift + S or Ctrl + ,)',
+  openKeyboardShortcuts = 'Keyboard Shortcuts (Ctrl + Shift + K)',
+  reportBugTooltipText = 'Report Bug (Ctrl + Shift + B)',
+  searchToolTipText = 'Search (Ctrl + Shift + F)',
+  filesToolTipText = 'Files (Ctrl + Shift + E)',
 }: {
   createFileTooltipText?: string;
   createDirTooltipText?: string;
@@ -243,7 +243,6 @@ export const VZSidebar = ({
           >
             <i
               id="new-directory-icon"
-              
               className="icon-button icon-button-dark"
               onClick={handleOpenCreateDirModal}
             >
@@ -257,8 +256,8 @@ export const VZSidebar = ({
             overlay={
               <Tooltip id="toggle-auto-follow">
                 {enableAutoFollow
-                  ? 'Disable Auto Follow'
-                  : 'Enable Auto Follow'}
+                  ? 'Disable Auto Follow (Ctrl + Shift + A)'
+                  : 'Enable Auto Follow (Ctrl + Shift + A)'}
               </Tooltip>
             }
           >

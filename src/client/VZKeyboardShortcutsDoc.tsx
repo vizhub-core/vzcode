@@ -85,10 +85,6 @@ export const VZKeyboardShortcutsDoc = ({
               </span>
             </li>
             <li>
-              <strong>Ctrl + Shift + &lt;key&gt;</strong> <br />
-              <span>Click sidebar icon with <strong>e</strong> (Files), <strong>f</strong> (Search), <strong>k</strong> (Keyboard Shortcuts), <strong>b</strong> (Report Bugs), <strong>s</strong> (Settings), <strong>n</strong> (New File), <strong>d</strong> (New Directory), <strong>a</strong> (Auto-focus)</span>
-            </li>
-            <li>
               <strong>Most VSCode Shortcuts</strong> <br />
               See VSCode docs:{' '}
               <a
