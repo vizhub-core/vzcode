@@ -133,7 +133,7 @@ export const Search = () => {
                   <div className="search-file-info">
                     {
                       file.name === activeElement ? (
-                          <span
+                          <span 
                             className="search-file-close"
                             onClick={(event) => {
                               event.stopPropagation();
@@ -223,8 +223,6 @@ export const Search = () => {
                               className="search-file-close"
                               onClick={(event) => {
                                 event.stopPropagation();
-                                
-                              alert("CLOSING!");
                               }}
                             >
                               <CloseSVG />
@@ -239,7 +237,7 @@ export const Search = () => {
             ))}
         </div>
       ) : (
-        <div className="search-results">
+        <div className="search-state">
           <h6>
             {isSearching ? 'Searching...' : 'No Results'}
           </h6>

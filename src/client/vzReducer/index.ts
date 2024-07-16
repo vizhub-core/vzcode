@@ -24,6 +24,7 @@ import {
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  setSearchMatchVisibilityReducer,
   setSearchActiveElementReducer
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
@@ -177,6 +178,7 @@ const reducers = [
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  setSearchMatchVisibilityReducer,
   setSearchActiveElementReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,

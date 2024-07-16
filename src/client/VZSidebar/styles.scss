@@ -71,22 +71,20 @@
   }
 
   .sidebar-search {
-    padding: 10px;
-
     * {
       color: inherit;
     }
   }
 
-  .search-result-lines {
-    margin-top: 10px;
-    margin-left: 20px;
+  .sidebar-search-form {
+    padding: 10px;
   }
 
   .search-file-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 10px;
 
     * {
       margin: 0px;
@@ -121,13 +119,13 @@
     border-radius: 100%;
   }
 
-  .search-results {
-    padding: 10px;
+  .search-state {
+    margin: 10px;
   }
 
   .search-results .active {
-    color: red;
-    opacity: 0.7;
+    border: 1px solid var(--vh-color-neutral-04);
+    background-color: var(--vh-color-neutral-02);
     cursor: pointer;
   }
 
@@ -135,11 +133,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-right: 10px;
+  }
+
+  .search-line p {
+    padding-left: 30px;
+    margin: 10px 0px;
   }
 
   .search-file-lines {
     font-size: inherit;
-    margin: 15px 0px 0px 30px;
+    margin-top: 10px;
   }
 
   .search-file-lines .search-pattern {

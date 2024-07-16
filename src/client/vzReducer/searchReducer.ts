@@ -116,13 +116,14 @@ export const setSearchFileVisibilityReducer = (
       }
     : state;
 
-export const setSearchMatchVisibility = (
+export const setSearchMatchVisibilityReducer = (
   state: VZState,
   action: VZAction,
 ): VZState =>
   action.type === 'hide_search_results_line'
     ? {
         ...state,
+
         search: {
           ...state.search,
           results: {
