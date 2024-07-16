@@ -24,6 +24,7 @@ import {
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 export { createInitialState } from './createInitialState';
@@ -121,6 +122,10 @@ export type VZAction =
       visibility: SearchFileVisibility;
     }
 
+  // `toggle_search_focused`
+  // * Toggles focused variable to trigger search input focus
+  | { type: 'toggle_search_focused' }
+
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
@@ -162,6 +167,7 @@ const reducers = [
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  toggleSearchFocusedReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,
