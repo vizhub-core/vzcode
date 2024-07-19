@@ -28,44 +28,10 @@ import {
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 export { createInitialState } from './createInitialState';
 
-// Default case with a single panel looks like this:
-// {
-//   tabList: [
-//     { fileId: '1' },
-//     { fileId: '2' },
-//     { fileId: '3' },
-//   ],
-//   orientation: 'vertical',
-//   children: [],
-// }
-
-// The leaf node of the tree data structure
-type LeafPane = {
-  type: 'leafPane';
-  // The list of tabs
-  // Mutually exclusive with `children`.
-  tabList: Array<TabState>;
-};
-
-// Internal node of the tree data structure
-type SplitPane = {
-  type: 'splitPane';
-  // Which orientation is it? Vertical split or horizontal split?
-  // Applies only to `children`
-  orientation: 'vertical' | 'horizontal';
-
-  // The children panels
-  // Mutually exclusive with `tabList`.
-  children: Array<Pane>;
-};
-
-// The node data structure of the split pane tree
-type Pane = LeafPane | SplitPane;
-
 // The shape of the state managed by the reducer.
 export type VZState = {
-  // The state of the split pane (tree data structure).
-  pane: Pane;
+  // The list of open tabs.
+  tabList: Array<TabState>;
 
   // The ID of the file that is currently active.
   // Invariant: `activeFileId` is always in `tabList`.
