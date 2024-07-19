@@ -9,8 +9,13 @@ export const createInitialState = ({
   defaultTheme: ThemeLabel;
   initialUsername?: Username;
 }): VZState => ({
-  tabList: [],
-  activeFileId: null,
+  pane: {
+    id: 'root',
+    type: 'leafPane',
+    tabList: [],
+    activeFileId: null,
+  },
+  activePaneId: 'root',
   theme: defaultTheme,
   search: { pattern: '', results: {} },
   isSearchOpen: false,

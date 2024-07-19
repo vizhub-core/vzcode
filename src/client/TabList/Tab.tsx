@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import type { FileId } from '../../types';
-import type { TabState } from '../vzReducer';
+import type { FileId, TabState } from '../../types';
 import { CloseSVG } from '../Icons';
 
 // Supports adding the file's containing folder to the tab name

@@ -14,14 +14,11 @@ import {
   VZCodeContent,
   SearchResults,
   SearchFileVisibility,
+  TabState,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
-import {
-  TabState,
-  createInitialState,
-  vzReducer,
-} from './vzReducer';
+import { createInitialState, vzReducer } from './vzReducer';
 import {
   ThemeLabel,
   defaultTheme,
@@ -227,8 +224,7 @@ export const VZCodeProvider = ({
 
   // Unpack state.
   const {
-    tabList,
-    activeFileId,
+    pane,
     theme,
     search,
     isSearchOpen,
@@ -238,6 +234,13 @@ export const VZCodeProvider = ({
     username,
     enableAutoFollow,
   } = state;
+
+  // TODO support splitPane type
+  if (pane.type !== 'leafPane') {
+    throw new Error('Expected leafPane');
+  }
+  const tabList = pane.tabList;
+  const activeFileId = pane.activeFileId;
 
   // Functions for dispatching actions to the reducer.
   const {
