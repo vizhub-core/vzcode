@@ -32,8 +32,8 @@ export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
 export type VZState = {
-  // The list of open tabs.
-  tabList: Array<TabState>;
+  // The state of the split pane (tree data structure).
+  pane: Pane;
 
   // The id of the currently active pane.
   activePaneId: PaneId;
