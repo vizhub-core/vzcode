@@ -148,6 +148,7 @@
     "react-router-dom": "^6.24.1",
     "sharedb": "^5.0.2",
     "sharedb-client-browser": "^5.0.2",
+    "styled-components": "^6.1.12",
     "vizhub-ui": "^3.23.0",
     "ws": "^8.18.0"
   },

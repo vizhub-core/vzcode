@@ -165,11 +165,6 @@ export const Item = ({
       }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-
-      onContextMenu={(e) => {
-        e.preventDefault(); // prevent the default behaviour when right clicked
-        console.log("Right Click");
-      }}
     >
       <div className="name">
         {isRenaming ? (

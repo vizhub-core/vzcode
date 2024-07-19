@@ -3,6 +3,7 @@ import {
   useContext,
   useMemo,
   useState,
+  useEffect
 } from 'react';
 import {
   FileId,
@@ -28,6 +29,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import {ContextMenu} from "./ContextMenu.js"
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -110,6 +112,20 @@ export const VZSidebar = ({
     handleDragLeave,
     handleDrop,
   } = useDragAndDrop();
+
+  const [clicked, setClicked] = useState(false);
+    const [points, setPoints] = useState({
+        x: 0,
+        y: 0,
+    });
+
+    useEffect(()=>{
+      const handleClick = () => setClicked(false);
+      window.addEventListener("click", handleClick);
+      return () => {
+          window.removeEventListener("click", handleClick);
+      };
+  }, []);
 
   return (
     <div
@@ -290,15 +306,27 @@ export const VZSidebar = ({
                   const { fileId } = entity as FileTreeFile;
                   const { path } = entity as FileTree;
                   const key = fileId ? fileId : path;
+                  
                   return (
-                    <Listing
-                      key={key}
-                      entity={entity}
-                      handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
-                    />
+                    <div
+                    onContextMenu={(e)=>{
+                      e.preventDefault();
+                      setClicked(true);
+                      setPoints({
+                          x: e.pageX,
+                          y: e.pageY
+                      });
+
+                    }}>
+                      <Listing
+                        key={key}
+                        entity={entity}
+                        handleFileClick={handleFileClick}
+                        handleFileDoubleClick={
+                          handleFileDoubleClick
+                        }
+                      />
+                    </div>
                   );
                 })
               ) : (
@@ -309,13 +337,26 @@ export const VZSidebar = ({
                     above to create your first file.
                   </div>
                 </div>
-              )}
+              )
+              }
             </div>
           ) : (
             <div className="sidebar-search">
               <Search />
             </div>
-          )}
+          )
+          
+          }
+          {clicked && (
+            <ContextMenu top = {points.y} left = {points.x}>
+              <ul>
+                  <li>Edit</li>
+                  <li>Copy</li>
+                  <li>Delete</li>
+              </ul>
+            </ContextMenu>
+            )
+            }
         </div>
       </div>
 
@@ -332,5 +373,7 @@ export const VZSidebar = ({
         </div>
       )}
     </div>
+
+
   );
 };
