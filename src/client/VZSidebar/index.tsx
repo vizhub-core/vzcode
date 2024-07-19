@@ -35,7 +35,12 @@ import './styles.scss';
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
-  createFileTooltipText = 'New File (Ctrl + Shift + N)',
+  createFileTooltipText = (
+    <>
+      <strong>New file</strong>
+      <div>(Ctrl + Shift + N)</div>
+    </>
+  ),
   createDirTooltipText = 'New Directory (Ctrl + Shift + D)',
   openSettingsTooltipText = 'Open Settings (Ctrl + Shift + S or Ctrl + ,)',
   openKeyboardShortcuts = 'Keyboard Shortcuts (Ctrl + Shift + K)',
@@ -43,7 +48,7 @@ export const VZSidebar = ({
   searchToolTipText = 'Search (Ctrl + Shift + F)',
   filesToolTipText = 'Files (Ctrl + Shift + E)',
 }: {
-  createFileTooltipText?: string;
+  createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: string;
   openSettingsTooltipText?: string;
   reportBugTooltipText?: string;
@@ -190,9 +195,10 @@ export const VZSidebar = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i 
+              <i
                 id="bug-icon"
-                className="icon-button icon-button-dark">
+                className="icon-button icon-button-dark"
+              >
                 <BugSVG />
               </i>
             </a>
