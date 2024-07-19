@@ -16,8 +16,6 @@ import { getExtensionIcon } from './FileListing';
 import { ForkSVG } from '../Icons/ForkSVG';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 
-// TODO support renaming directories
-// See https://github.com/vizhub-core/vzcode/issues/103
 const enableRenameDirectory = true;
 
 // A file or directory in the sidebar.
@@ -103,7 +101,6 @@ export const Item = ({
     (event: React.MouseEvent) => {
       event.stopPropagation();
       // set the code editor width to half of its current width
-      
     },
     [],
   );

@@ -99,6 +99,7 @@ export const CodeEditor = ({
         allowGlobals,
         enableAutoFollowRef,
         openTab,
+        // splitPaneView,
       }),
     [
       activeFileId,
@@ -121,6 +122,7 @@ export const CodeEditor = ({
     // Guard against cases where page is still loading.
     if (!codeEditorRef.current) return;
     if (!content) return;
+    // if (openSplitPane) return;
 
     // Add the editor and apply the prior scroll position to the DOM.
     codeEditorRef.current.appendChild(
@@ -134,10 +136,10 @@ export const CodeEditor = ({
       // Remove the old editor from the DOM and store the current scroll position.
       // This happens every time `activeFileId` changes.
       editorCacheValue.scrollPosition =
-        editorCacheValue.editor.scrollDOM.scrollTop;
-      codeEditorRef.current.removeChild(
-        editorCacheValue.editor.dom,
-      );
+      editorCacheValue.editor.scrollDOM.scrollTop;
+      // codeEditorRef.current.removeChild(
+      //   editorCacheValue.editor.dom,
+      // );
     };
   }, [shareDBDoc, editorCacheValue]);
 
