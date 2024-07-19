@@ -38,23 +38,71 @@ export const VZSidebar = ({
   createFileTooltipText = (
     <>
       <strong>New file</strong>
-      <div>(Ctrl + Shift + N)</div>
+      {/* TODO verify that Ctrl + Shift + N works - does not work in Linux */}
+      <div>(Alt + N or Ctrl + Shift + N)</div>
     </>
   ),
-  createDirTooltipText = 'New Directory (Ctrl + Shift + D)',
-  openSettingsTooltipText = 'Open Settings (Ctrl + Shift + S or Ctrl + ,)',
-  openKeyboardShortcuts = 'Keyboard Shortcuts (Ctrl + Shift + K)',
-  reportBugTooltipText = 'Report Bug (Ctrl + Shift + B)',
-  searchToolTipText = 'Search (Ctrl + Shift + F)',
-  filesToolTipText = 'Files (Ctrl + Shift + E)',
+  createDirTooltipText = (
+    <div>
+      <strong>New Directory</strong>
+      {/* TODO consider Alt+D, as Ctrl + Shift + D does not work in Linux */}
+      <div>(Ctrl + Shift + D)</div>
+    </div>
+  ),
+  openSettingsTooltipText = (
+    <div>
+      <strong>Open Settings</strong>
+      <div>(Ctrl + Shift + S or Ctrl + ,)</div>
+    </div>
+  ),
+  openKeyboardShortcuts = (
+    <div>
+      <strong>Keyboard Shortcuts</strong>
+      <div>(Ctrl + Shift + K)</div>
+    </div>
+  ),
+  reportBugTooltipText = (
+    <div>
+      <strong>Report Bug</strong>
+      {/* TODO get this keyboard shortcut working? */}
+      {/* <div>(Ctrl + Shift + B)</div> */}
+    </div>
+  ),
+  searchToolTipText = (
+    <div>
+      <strong>Search</strong>
+      <div>(Ctrl + Shift + F)</div>
+    </div>
+  ),
+  filesToolTipText = (
+    <div>
+      <strong>Files</strong>
+      <div>(Ctrl + Shift + E)</div>
+    </div>
+  ),
+  enableAutoFollowTooltipText = (
+    <div>
+      <strong>Enable Auto Follow</strong>
+      <div>(Ctrl + Shift + A)</div>
+    </div>
+  ),
+  disableAutoFollowTooltipText = (
+    <div>
+      <strong>Disable Auto Follow</strong>
+      {/* TODO consider Alt+A, this breaks in Linux */}
+      <div>(Ctrl + Shift + A)</div>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
-  createDirTooltipText?: string;
-  openSettingsTooltipText?: string;
-  reportBugTooltipText?: string;
-  openKeyboardShortcuts?: string;
-  searchToolTipText?: string;
-  filesToolTipText?: string;
+  createDirTooltipText?: React.ReactNode;
+  openSettingsTooltipText?: React.ReactNode;
+  reportBugTooltipText?: React.ReactNode;
+  openKeyboardShortcuts?: React.ReactNode;
+  searchToolTipText?: React.ReactNode;
+  filesToolTipText?: React.ReactNode;
+  enableAutoFollowTooltipText?: React.ReactNode;
+  disableAutoFollowTooltipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -262,8 +310,8 @@ export const VZSidebar = ({
             overlay={
               <Tooltip id="toggle-auto-follow">
                 {enableAutoFollow
-                  ? 'Disable Auto Follow (Ctrl + Shift + A)'
-                  : 'Enable Auto Follow (Ctrl + Shift + A)'}
+                  ? disableAutoFollowTooltipText
+                  : enableAutoFollowTooltipText}
               </Tooltip>
             }
           >
