@@ -219,15 +219,16 @@ export const useKeyboardShortcuts = ({
       
       if (event.ctrlKey && event.shiftKey) {
         // Handle keyboard shortcuts related to the side bar icons
-        const icon: string = sideBarKeyBoardMap[event.key];
-        document.getElementById(icon)?.click();
+        document.getElementById(sideBarKeyBoardMap[event.key])?.click();
 
         // Ensure the search input is always focused
         if (event.key === 'F') {
           toggleSearchFocused();
         }
-      }
-
+      } else if (event.ctrlKey && event.key === ',') {
+        document.getElementById(sideBarKeyBoardMap['S'])?.click();
+      } 
+      
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
         document.addEventListener(
