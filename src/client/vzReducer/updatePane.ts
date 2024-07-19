@@ -14,7 +14,7 @@ export const updatePane = ({
 }: {
   pane: Pane;
   activePaneId: PaneId;
-  newTabList: Array<TabState>;
+  newTabList?: Array<TabState>;
   newActiveFileId?: FileId | null;
 }): Pane =>
   pane.type === 'splitPane'
@@ -32,7 +32,10 @@ export const updatePane = ({
     : pane.id === activePaneId
       ? {
           ...pane,
-          tabList: newTabList,
+          tabList:
+            newTabList !== undefined
+              ? newTabList
+              : pane.tabList,
           activeFileId:
             newActiveFileId !== undefined
               ? newActiveFileId

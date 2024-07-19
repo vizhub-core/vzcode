@@ -19,6 +19,7 @@ import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
   ShareDBDoc,
+  TabState,
   Username,
   VZCodeContent,
 } from '../../types';
@@ -40,7 +41,6 @@ import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
-import { TabState } from '../vzReducer';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 

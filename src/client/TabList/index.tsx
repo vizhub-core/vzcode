@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { VZCodeContext } from '../VZCodeContext';
-import { TabState } from '../vzReducer';
 import { Tab } from './Tab';
 import './style.scss';
+import { TabState } from '../../types';
 
 // Displays the list of tabs above the code editor.
 export const TabList = () => {

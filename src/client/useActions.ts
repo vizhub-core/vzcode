@@ -4,10 +4,11 @@ import {
   FileId,
   SearchFileVisibility,
   ShareDBDoc,
+  TabState,
   Username,
   VZCodeContent,
 } from '../types';
-import { TabState, VZAction } from './vzReducer';
+import { VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
 // that can be used to dispatch actions to the reducer.

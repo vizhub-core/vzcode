@@ -10,9 +10,9 @@ import {
   FileId,
   Presence,
   PresenceId,
+  TabState,
   Username,
 } from '../../types';
-import { TabState } from '../vzReducer';
 
 const debug = false;
 

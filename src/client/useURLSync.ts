@@ -1,6 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { FileId, VZCodeContent } from '../types';
-import { TabState } from './vzReducer';
+import { FileId, TabState, VZCodeContent } from '../types';
 import { useEffect, useMemo, useRef } from 'react';
 import {
   TabStateParams,

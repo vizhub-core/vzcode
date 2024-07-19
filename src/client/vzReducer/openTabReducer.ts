@@ -1,5 +1,5 @@
 import { VZAction, VZState } from '.';
-import { Pane } from '../../types';
+import { Pane, TabState } from '../../types';
 import { findPane } from './findPane';
 import { updatePane } from './updatePane';
 

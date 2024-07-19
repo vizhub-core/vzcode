@@ -1,6 +1,9 @@
 import { EditorView, keymap } from '@codemirror/view';
-import { ShareDBDoc, VZCodeContent } from '../../types';
-import { TabState } from '../vzReducer';
+import {
+  ShareDBDoc,
+  TabState,
+  VZCodeContent,
+} from '../../types';
 
 export const AIAssistCodeMirrorKeyMap = ({
   shareDBDoc,
