@@ -80,6 +80,7 @@ export interface SearchFile {
 export interface SearchResults {
   pattern: string;
   results: SearchResult;
+  focused: boolean;
 }
 
 export type JSONOp = any;

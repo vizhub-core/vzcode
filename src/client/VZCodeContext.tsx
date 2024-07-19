@@ -121,6 +121,7 @@ export type VZCodeContextValue = {
     id: string,
     visibility: SearchFileVisibility,
   ) => void;
+  toggleSearchFocused: () => void;
 
   isCreateFileModalOpen: boolean;
   handleOpenCreateFileModal: () => void;
@@ -250,6 +251,7 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    toggleSearchFocused,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -344,6 +346,7 @@ export const VZCodeProvider = ({
     handleOpenCreateFileModal,
     setActiveFileLeft,
     setActiveFileRight,
+    toggleSearchFocused,
     runPrettierRef,
     runCodeRef,
     sidebarRef,
@@ -386,6 +389,7 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    toggleSearchFocused,
 
     isSettingsOpen,
     setIsSettingsOpen,
