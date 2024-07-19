@@ -17,7 +17,7 @@ export const createInitialState = ({
   },
   activePaneId: 'root',
   theme: defaultTheme,
-  search: { pattern: '', results: {} },
+  search: { pattern: '', results: {}, focused: false },
   isSearchOpen: false,
   isSettingsOpen: false,
   isDocOpen: false,
