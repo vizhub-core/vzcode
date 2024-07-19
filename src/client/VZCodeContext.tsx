@@ -226,7 +226,7 @@ export const VZCodeProvider = ({
 
   // Unpack state.
   const {
-    tabList,
+    pane,
     activeFileId,
     theme,
     search,
@@ -237,6 +237,12 @@ export const VZCodeProvider = ({
     username,
     enableAutoFollow,
   } = state;
+
+  // TODO support splitPane
+  if (pane.type !== 'leafPane') {
+    throw new Error('Expected leafPane');
+  }
+  const tabList = pane.tabList;
 
   // Functions for dispatching actions to the reducer.
   const {

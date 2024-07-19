@@ -1,4 +1,7 @@
-import { TabState, VZAction, VZState } from '.';
+import { VZAction, VZState } from '.';
+import { Pane } from '../../types';
+import { findPane } from './findPane';
+import { updatePane } from './updatePane';
 
 export const openTabReducer = (
   state: VZState,
@@ -6,17 +9,26 @@ export const openTabReducer = (
 ): VZState => {
   if (action.type !== 'open_tab') return state;
 
+  const { pane, activePaneId } = state;
+  const activePane: Pane = findPane(pane, activePaneId);
+
+  if (activePane.type !== 'leafPane') {
+    throw new Error(
+      'closeTabsReducer: activePane is not a leafPane',
+    );
+  }
+
   // Check if the tab is already open and if it's transient.
-  const existingTabIndex = state.tabList.findIndex(
+  const existingTabIndex = activePane.tabList.findIndex(
     (tab) => tab.fileId === action.fileId,
   );
   const tabExists = existingTabIndex !== -1;
   const existingTabIsTransient =
     tabExists &&
-    state.tabList[existingTabIndex].isTransient;
+    activePane.tabList[existingTabIndex].isTransient;
 
   // Find if there's any other transient tab.
-  const transientTabIndex = state.tabList.findIndex(
+  const transientTabIndex = activePane.tabList.findIndex(
     (tab) =>
       tab.isTransient && tab.fileId !== action.fileId,
   );
@@ -31,25 +43,29 @@ export const openTabReducer = (
 
   if (tabExists) {
     if (existingTabIsTransient) {
-      newTabList = state.tabList.map((tabState) =>
+      newTabList = activePane.tabList.map((tabState) =>
         tabState.fileId === action.fileId
           ? newTabState
           : tabState,
       );
     } else {
-      newTabList = [...state.tabList];
+      newTabList = [...activePane.tabList];
     }
   } else if (transientTabIndex !== -1) {
-    newTabList = [...state.tabList];
+    newTabList = [...activePane.tabList];
     newTabList[transientTabIndex] = newTabState;
   } else {
-    newTabList = [...state.tabList, newTabState];
+    newTabList = [...activePane.tabList, newTabState];
   }
 
   return {
     ...state,
-    activeFileId: action.fileId,
-    tabList: newTabList,
+    pane: updatePane({
+      pane,
+      activePaneId,
+      newTabList,
+      newActiveFileId: action.fileId,
+    }),
 
     // If the tab is persistent, the editor should focus on the next render.
     editorWantsFocus: !action.isTransient,

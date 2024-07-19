@@ -82,6 +82,67 @@ export interface SearchResults {
   results: SearchResult;
 }
 
+// Representation of an open tab.
+export type TabState = {
+  // `fileId`
+  // The ID of the file that the tab represents.
+  fileId: FileId;
+
+  // `isTransient`
+  // Represents whether the tab is temporary or persistent.
+  //  * `true` if the tab is temporary, meaning its text
+  //    appears as italic, and it will be automatically
+  //    closed when the user switches to another file.
+  //    If `true` and the tab is opened, the editor will not focus.
+  //  * `false` or `undefined` if the tab is persistent, meaning its text
+  //    appears as normal, and it will not be automatically
+  //    closed when the user switches to another file.
+  //    If `false` and the tab is opened, the editor will focus.
+  isTransient?: boolean;
+};
+
+// PaneId
+//   * A unique ID for a pane.
+//   * This is a random string.
+export type PaneId = string;
+
+// The leaf node of the tree data structure
+export type LeafPane = {
+  type: 'leafPane';
+  // The list of tabs
+  // Mutually exclusive with `children`.
+  tabList: Array<TabState>;
+
+  // The ID of the file that is currently active
+  // within this leaf pane.
+  // Invariant: `activeFileId` is always in `tabList`.
+  activeFileId: FileId | null;
+};
+
+// Internal node of the tree data structure
+export type SplitPane = {
+  type: 'splitPane';
+
+  // Which orientation is it? Vertical split or horizontal split?
+  // Applies only to `children`
+  orientation: 'vertical' | 'horizontal';
+
+  // The children panels
+  // Mutually exclusive with `tabList`.
+  children: Array<Pane>;
+};
+
+// The node data structure of the split pane tree
+export type Pane = {
+  // Every pane gets a unique ID,
+  // so we can refer to it in actions.
+  id: PaneId;
+
+  // The type of the pane
+  // Either a leaf pane or a split pane.
+  type: 'leafPane' | 'splitPane';
+} & (LeafPane | SplitPane);
+
 export type JSONOp = any;
 
 // `ShareDBDoc`
