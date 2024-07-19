@@ -36,6 +36,9 @@ export const Search = () => {
   const inputRef = useRef(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const [focusedChildIndex, setFocusedChildIndex] = useState(null);
+
   const {
     search,
     setSearch,
@@ -48,6 +51,8 @@ export const Search = () => {
     editorCache,
   } = useContext(VZCodeContext);
   const { pattern, results, activeElement } = search;
+  const files: [string, SearchFile][] = Object.entries(results)
+    .filter(([_, file]) => file.visibility !== 'closed');
 
   useEffect(() => {
     if (isMounted) {
@@ -72,6 +77,78 @@ export const Search = () => {
     }
   }, [pattern]);
 
+  const flattenResult = (fileId: string, file: SearchFile) => {
+    setSearchFileVisibility(
+      shareDBDoc,
+      fileId,
+      file.visibility === 'open'
+        ? 'flattened'
+        : 'open',
+      file.name
+    )
+  };
+
+  const closeResult = (fileId: string) => {
+    setSearchFileVisibility(
+      shareDBDoc,
+      fileId,
+      'closed',
+      null
+    );
+  }
+
+  const handleKeyDown = (event) => {
+      event.preventDefault();
+
+      switch (event.key) {
+        case 'Tab':
+          setFocusedIndex(0);
+          setFocusedChildIndex(null);
+          break;
+        case 'ArrowUp':
+          if (focusedChildIndex !== null) {
+            setFocusedChildIndex((previousIndex) => Math.max(previousIndex - 1, 0));
+          } else {
+            setFocusedIndex((previousIndex) => Math.max(previousIndex - 1, 0));
+          }
+          break;
+        case 'ArrowDown':
+          if (focusedChildIndex !== null) {
+            setFocusedChildIndex((previousIndex) => 
+              Math.min(previousIndex + 1, files[focusedIndex][1].matches.length - 1)
+            );
+          } else {
+            setFocusedIndex((previousIndex) => Math.min(previousIndex + 1, files.length - 1));
+          }
+          break;
+        case 'ArrowLeft':
+          if (focusedChildIndex !== null) {
+            setFocusedChildIndex(null);
+          } else {
+            flattenResult(files[focusedIndex][0], files[focusedIndex][1]);
+          }
+          break;
+        case 'ArrowRight':
+          if (files[focusedIndex][1].visibility !== 'open') {
+            flattenResult(files[focusedIndex][0], files[focusedIndex][1]);
+          } else if (focusedChildIndex === null) {
+            setFocusedChildIndex(0);
+          }
+          
+          break;
+        case 'Enter':
+        case ' ':
+          if (focusedChildIndex !== null) {
+            // Jump to line
+          } else {
+            // Jump to file
+          }
+          break;
+        default:
+          break;
+      }
+  }
+
   return (
     <div>
       <Form.Group
@@ -81,40 +158,29 @@ export const Search = () => {
         <Form.Control
           type="text"
           value={pattern}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(event) => setSearch(event.target.value)}
           ref={inputRef}
           spellCheck="false"
         />
       </Form.Group>
       {Object.keys(results).length >= 1 &&
       pattern.trim().length >= 1 ? (
-        <div className="search-results">
-          {Object.entries(results)
-            .filter(
-              ([_, file]) => file.visibility !== 'closed',
-            )
-            .map(([fileId, file]: [string, SearchFile]) => (
+        <div 
+          onKeyDown={handleKeyDown}
+          tabIndex={0} 
+          className="search-results">
+          {files.map(([fileId, file]: [string, SearchFile], index) => (
               <div
                 className="search-result"
                 key={file.name}
               >
                 <div 
-                  onMouseOver={() => {
-                    if (activeElement !== file.name) {
-                      setSearchActiveElement(file.name);
-                    }
-                  }}
                   onClick={() => {
-                    setSearchFileVisibility(
-                      shareDBDoc,
-                      fileId,
-                      file.visibility === 'open'
-                        ? 'flattened'
-                        : 'open',
-                      file.name,
-                    );
+                    flattenResult(fileId, file);
                   }}
-                  className={`search-file-heading ${file.name === activeElement ? 'active' : ''}`}
+                  className={`search-file-heading 
+                      ${(focusedIndex == index && focusedChildIndex == null)  
+                      ? 'active' : ''}`}
                   >
                   <div className="search-file-title">
                     <div
@@ -132,18 +198,13 @@ export const Search = () => {
                   </div>
                   <div className="search-file-info">
                     {
-                      file.name === activeElement ? (
+                      (index == focusedIndex && focusedChildIndex == null) ? (
                           <span 
                             className="search-file-close"
                             onClick={(event) => {
                               event.stopPropagation();
                               
-                              setSearchFileVisibility(
-                                shareDBDoc,
-                                fileId,
-                                'closed',
-                                null
-                              );
+                              closeResult(fileId);
                             }}
                           >
                             <CloseSVG />
@@ -159,7 +220,7 @@ export const Search = () => {
                 <div 
                   className="search-file-lines">
                   {file.visibility != 'flattened' &&
-                    file.matches.filter((match) => !(match.isClosed)).map((match) => {
+                    file.matches.filter((match) => !(match.isClosed)).map((match, childIndex) => {
                       const before = match.text.substring(
                         0,
                         match.index,
@@ -171,12 +232,16 @@ export const Search = () => {
                       const after = match.text.substring(
                         match.index + pattern.length,
                       );
+
                       const identifier = file.name + "-" + match.line;
 
                       return (
                         <div
                           key={identifier}
-                          className={`search-line ${identifier === activeElement ? 'active' : ''}`}
+                          tabIndex={(index == focusedIndex) ? 0 : -1} 
+                          className={`search-line 
+                              ${(focusedChildIndex == childIndex && focusedIndex == index) 
+                                ? 'active' : ''}`}
                           >
                             <p
                             
