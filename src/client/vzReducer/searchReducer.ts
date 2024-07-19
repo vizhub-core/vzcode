@@ -74,10 +74,10 @@ export const setSearchReducer = (
   action.type === 'set_search'
     ? {
         ...state,
-        search: { 
-          pattern: action.value, 
-          results: {}, 
-          focused: true 
+        search: {
+          pattern: action.value,
+          results: {},
+          focused: true,
         },
       }
     : state;
@@ -95,7 +95,7 @@ export const setSearchResultsReducer = (
             action.files,
             state.search.pattern,
           ),
-          focused: state.search.focused
+          focused: state.search.focused,
         },
       }
     : state;
@@ -128,7 +128,7 @@ export const toggleSearchFocusedReducer = (
         ...state,
         search: {
           ...state.search,
-          focused: !(state.search.focused)
+          focused: !state.search.focused,
         },
       }
     : state;

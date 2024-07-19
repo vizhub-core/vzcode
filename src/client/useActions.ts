@@ -114,7 +114,7 @@ export const useActions = (
     [dispatch],
   );
 
-  // Toggle the focused variable, which should focus the search input 
+  // Toggle the focused variable, which should focus the search input
   const toggleSearchFocused = useCallback(() => {
     dispatch({
       type: 'toggle_search_focused',

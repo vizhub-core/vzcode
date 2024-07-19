@@ -153,14 +153,14 @@ function jumpToDefinition(
 
 // Sidebar keyboard shortcuts in form Ctrl + Shift + <key>
 const sideBarKeyBoardMap = {
-  'E': 'files-icon',
-  'F': 'search-icon',
-  'K': 'shortcut-icon',
-  'B': 'bug-icon',
-  'S': 'settings-icon',
-  'N': 'new-file-icon',
-  'D': 'new-directory-icon',
-  'A': 'auto-focus-icon'
+  E: 'files-icon',
+  F: 'search-icon',
+  K: 'shortcut-icon',
+  B: 'bug-icon',
+  S: 'settings-icon',
+  N: 'new-file-icon',
+  D: 'new-directory-icon',
+  A: 'auto-focus-icon',
 };
 
 // This module implements the keyboard shortcuts
@@ -216,19 +216,23 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
-      
+
       if (event.ctrlKey && event.shiftKey) {
         // Handle keyboard shortcuts related to the side bar icons
-        document.getElementById(sideBarKeyBoardMap[event.key])?.click();
+        document
+          .getElementById(sideBarKeyBoardMap[event.key])
+          ?.click();
 
         // Ensure the search input is always focused
         if (event.key === 'F') {
           toggleSearchFocused();
         }
       } else if (event.ctrlKey && event.key === ',') {
-        document.getElementById(sideBarKeyBoardMap['S'])?.click();
-      } 
-      
+        document
+          .getElementById(sideBarKeyBoardMap['S'])
+          ?.click();
+      }
+
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
         document.addEventListener(
