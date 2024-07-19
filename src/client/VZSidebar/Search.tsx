@@ -74,7 +74,7 @@ export const Search = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [focused]); 
+  }, [focused]);
 
   return (
     <div>
