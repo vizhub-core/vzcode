@@ -119,7 +119,12 @@ export type VZCodeContextValue = {
     visibility: SearchFileVisibility,
     element: string | null
   ) => void;
-  setSearchActiveElement: (element: string | null) => void;
+  setSearchLineVisibility: (
+    files: ShareDBDoc<VZCodeContent>,
+    id: string,
+    line: number,
+  ) => void;
+  setSearchFocusedIndex: (focusedIndex: number, childIndex: number) => void;
   toggleSearchFocused: () => void;
 
   isCreateFileModalOpen: boolean;
@@ -256,7 +261,8 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
-    setSearchActiveElement,
+    setSearchLineVisibility,
+    setSearchFocusedIndex,
     toggleSearchFocused,
     setIsSettingsOpen,
     setIsDocOpen,
@@ -395,7 +401,8 @@ export const VZCodeProvider = ({
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
-    setSearchActiveElement,
+    setSearchLineVisibility,
+    setSearchFocusedIndex,
     toggleSearchFocused,
 
     isSettingsOpen,

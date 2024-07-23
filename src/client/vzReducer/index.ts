@@ -26,8 +26,8 @@ import {
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
-  setSearchMatchVisibilityReducer,
-  setSearchActiveElementReducer,
+  setSearchLineVisibilityReducer,
+  setSearchFocusedIndexReducer,
   toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
@@ -139,9 +139,9 @@ export type VZAction =
     line: number;
   }
 
-  // `set_search_active_line`
-  //  * Sets which line in the search results (file or line) is active.
-  | { type: 'set_search_active_line'; element: string | null }
+  // `set_active_search_index`
+  //  * Sets focused (file) index and child focused (line) index for search results
+  | { type: 'set_active_search_index'; focusedIndex: number; childIndex: number }
 
   // `toggle_search_focused`
   // * Toggles focused variable to trigger search input focus
@@ -169,8 +169,8 @@ const reducers = [
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
-  setSearchMatchVisibilityReducer,
-  setSearchActiveElementReducer,
+  setSearchLineVisibilityReducer,
+  setSearchFocusedIndexReducer,
   toggleSearchFocusedReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,

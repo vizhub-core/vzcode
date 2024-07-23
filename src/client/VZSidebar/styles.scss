@@ -76,6 +76,10 @@
     }
   }
 
+  .sidebar-search .arrow-wrapper {
+    cursor: pointer;
+  }
+
   .sidebar-search-form {
     padding: 10px;
   }
@@ -85,6 +89,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+    cursor: pointer;
 
     * {
       margin: 0px;
@@ -134,6 +139,7 @@
     justify-content: space-between;
     align-items: center;
     padding-right: 10px;
+    cursor: pointer;
   }
 
   .search-line p {

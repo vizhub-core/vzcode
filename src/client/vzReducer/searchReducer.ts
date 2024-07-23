@@ -79,6 +79,8 @@ export const setSearchReducer = (
           ...state.search,
           pattern: action.value,
           results: {},
+          focusedIndex: 0,
+          focusedChildIndex: null,
           focused: true,
         },
       }
@@ -98,7 +100,6 @@ export const setSearchResultsReducer = (
             action.files,
             state.search.pattern,
           ),
-          activeElement: null,
           focused: state.search.focused,
         },
       }
@@ -123,7 +124,7 @@ export const setSearchFileVisibilityReducer = (
       }
     : state;
 
-export const setSearchMatchVisibilityReducer = (
+export const setSearchLineVisibilityReducer = (
   state: VZState,
   action: VZAction,
 ): VZState =>
@@ -150,16 +151,17 @@ export const setSearchMatchVisibilityReducer = (
       }
     : state;
     
-export const setSearchActiveElementReducer = (
+export const setSearchFocusedIndexReducer = (
   state: VZState,
   action: VZAction,
 ): VZState =>
-  action.type === 'set_search_active_line'
+  action.type === 'set_active_search_index'
     ? {
         ...state,
         search: {
           ...state.search,
-          activeElement: action.element,
+          focusedIndex: action.focusedIndex,
+          focusedChildIndex: action.childIndex,
         },
       }
     : state;
