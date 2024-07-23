@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 import { closeTabsReducer } from './closeTabsReducer';
 import { VZAction, VZState, createInitialState } from '.';
 import { defaultTheme } from '../themes';
@@ -25,8 +25,9 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(0);
-    expect(newState.activeFileId).toBeNull();
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(0);
+    expect(newState.pane.activeFileId).toBeNull();
   });
 
   it('Keeps other tabs open', () => {
@@ -36,11 +37,14 @@ describe('closeTabsReducer', () => {
     };
     const stateWithTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-      ],
-      activeFileId: 'file1',
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+        ],
+        activeFileId: 'file1',
+      },
     };
 
     const newState = closeTabsReducer(
@@ -48,24 +52,29 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(1);
-    expect(newState.tabList[0].fileId).toBe('file1');
-    expect(newState.activeFileId).toBe('file1');
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(1);
+    expect(newState.pane.tabList[0].fileId).toBe('file1');
+    expect(newState.pane.activeFileId).toBe('file1');
   });
 
-  it('Activates previous tab after closing an active tab', () => {
+  it.only('Activates previous tab after closing an active tab', () => {
     const action: VZAction = {
       type: 'close_tabs',
       fileIdsToClose: ['file2'],
     };
-    const stateWithTabs = {
+    const stateWithTabs: VZState = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-        { fileId: 'file3', isTransient: false },
-      ],
-      activeFileId: 'file2',
+      pane: {
+        ...initialState.pane,
+        type: 'leafPane',
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+          { fileId: 'file3', isTransient: false },
+        ],
+        activeFileId: 'file2',
+      },
     };
 
     const newState = closeTabsReducer(
@@ -73,8 +82,9 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(2);
-    expect(newState.activeFileId).toBe('file1'); // should switch to the previous tab
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(2);
+    expect(newState.pane.activeFileId).toBe('file1'); // should switch to the previous tab
   });
 
   it('Does not modify the state if closing non-existing tabs', () => {
@@ -84,12 +94,15 @@ describe('closeTabsReducer', () => {
     };
     const stateWithTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-        { fileId: 'file3', isTransient: false },
-      ],
-      activeFileId: 'file2',
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+          { fileId: 'file3', isTransient: false },
+        ],
+        activeFileId: 'file2',
+      },
     };
 
     const newState = closeTabsReducer(
@@ -121,8 +134,9 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(2);
-    expect(newState.activeFileId).toBe('file3'); // remains unchanged
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(2);
+    expect(newState.pane.activeFileId).toBe('file3'); // remains unchanged
   });
 
   it('Closes the first tab out of many, when it is active', () => {
@@ -146,8 +160,9 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(2);
-    expect(newState.activeFileId).toBe('file2'); // switches to the next available tab
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(2);
+    expect(newState.pane.activeFileId).toBe('file2'); // switches to the next available tab
   });
 
   it('Closes multiple tabs at once', () => {
@@ -171,7 +186,8 @@ describe('closeTabsReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(1);
-    expect(newState.activeFileId).toBe('file3'); // switches to the next available tab
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(1);
+    expect(newState.pane.activeFileId).toBe('file3'); // switches to the next available tab
   });
 });

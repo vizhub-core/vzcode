@@ -1,5 +1,7 @@
 import {
   FileId,
+  Pane,
+  PaneId,
   SearchFileVisibility,
   SearchResults,
   ShareDBDoc,
@@ -24,18 +26,18 @@ import {
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
 export type VZState = {
-  // The list of open tabs.
-  tabList: Array<TabState>;
+  // The state of the split pane (tree data structure).
+  pane: Pane;
 
-  // The ID of the file that is currently active.
-  // Invariant: `activeFileId` is always in `tabList`.
-  activeFileId: FileId | null;
+  // The id of the currently active pane.
+  activePaneId: PaneId;
 
   // The theme that is currently active.
   theme: ThemeLabel;
@@ -86,7 +88,11 @@ export type VZAction =
 
   // `close_tabs`
   //  * Closes a set of tabs.
-  | { type: 'close_tabs'; fileIdsToClose: Array<FileId> }
+  | {
+      type: 'close_tabs';
+      fileIdsToClose: Array<FileId>;
+      // The pane id to close tabs from.
+    }
 
   // `set_theme`
   //  * Sets the theme.
@@ -121,6 +127,10 @@ export type VZAction =
       visibility: SearchFileVisibility;
     }
 
+  // `toggle_search_focused`
+  // * Toggles focused variable to trigger search input focus
+  | { type: 'toggle_search_focused' }
+
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
@@ -133,25 +143,6 @@ export type VZAction =
   //  * Toggles the auto-follow feature.
   | { type: 'toggle_auto_follow' };
 
-// Representation of an open tab.
-export type TabState = {
-  // `fileId`
-  // The ID of the file that the tab represents.
-  fileId: FileId;
-
-  // `isTransient`
-  // Represents whether the tab is temporary or persistent.
-  //  * `true` if the tab is temporary, meaning its text
-  //    appears as italic, and it will be automatically
-  //    closed when the user switches to another file.
-  //    If `true` and the tab is opened, the editor will not focus.
-  //  * `false` or `undefined` if the tab is persistent, meaning its text
-  //    appears as normal, and it will not be automatically
-  //    closed when the user switches to another file.
-  //    If `false` and the tab is opened, the editor will focus.
-  isTransient?: boolean;
-};
-
 const reducers = [
   setActiveFileIdReducer,
   setActiveFileLeftReducer,
@@ -162,6 +153,7 @@ const reducers = [
   setSearchReducer,
   setSearchResultsReducer,
   setSearchFileVisibilityReducer,
+  toggleSearchFocusedReducer,
   setIsSearchOpenReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,

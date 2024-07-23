@@ -46,7 +46,7 @@ export const Search = () => {
     shareDBDoc,
     editorCache,
   } = useContext(VZCodeContext);
-  const { pattern, results } = search;
+  const { pattern, results, focused } = search;
 
   useEffect(() => {
     if (isMounted) {
@@ -67,9 +67,14 @@ export const Search = () => {
       return () => clearTimeout(delaySearch);
     } else {
       setIsMounted(true);
-      inputRef.current.focus();
     }
   }, [pattern]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [focused]);
 
   return (
     <div>
