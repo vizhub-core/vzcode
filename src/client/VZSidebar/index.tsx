@@ -1,6 +1,7 @@
 import {
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -8,6 +9,9 @@ import {
   FileId,
   FileTree,
   FileTreeFile,
+  Presence,
+  PresenceId,
+  PresenceIndicator,
 } from '../../types';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { Search } from './Search';
@@ -117,6 +121,7 @@ export const VZSidebar = ({
     sidebarRef,
     enableAutoFollow,
     toggleAutoFollow,
+    docPresence,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -163,6 +168,37 @@ export const VZSidebar = ({
     handleDragLeave,
     handleDrop,
   } = useDragAndDrop();
+
+  // Track presence of remote users across files
+  // so that they can be displayed in the sidebar.
+  useEffect(() => {
+    docPresence;
+  }, []);
+
+  useEffect(() => {
+    if (docPresence) {
+      const handleReceive = (
+        presenceId: PresenceId,
+        update: Presence,
+      ) => {
+        const presenceIndicator: PresenceIndicator = {
+          username: update.username,
+          fileId: update.start[1] as FileId,
+        };
+
+        console.log('Got presence!');
+        // console.log({presenceId,update})
+        console.log(
+          JSON.stringify(presenceIndicator, null, 2),
+        );
+      };
+
+      docPresence.on('receive', handleReceive);
+      return () => {
+        docPresence.off('receive', handleReceive);
+      };
+    }
+  }, [docPresence]);
 
   return (
     <div

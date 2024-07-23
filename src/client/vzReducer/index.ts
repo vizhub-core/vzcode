@@ -63,6 +63,8 @@ export type VZState = {
   // This is a feature that automatically scrolls the editor to the
   // currently active remote user's cursor position.
   enableAutoFollow: boolean;
+
+  sidebarPresenceIndicators: Array<PresenceIndicator>;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
