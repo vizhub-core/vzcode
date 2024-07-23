@@ -7,12 +7,27 @@ export const ForkSVG = () => {
       viewBox="0 0 24 24"
       fill="none"
     >
-      <path
-        d="M12 3V21M3 12L21 12"
+      <rect
+        x="5"
+        y="4"
+        width="7.5"
+        height="16"
+        rx="1"
+        ry="1"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fill="none"
+      />
+      <rect
+        x="12"
+        y="4"
+        width="7.5"
+        height="16"
+        rx="1"
+        ry="1"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="none"
       />
     </svg>
   );

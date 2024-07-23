@@ -205,7 +205,7 @@ export const Item = ({
             placement="top"
             overlay={
               <Tooltip id="fork-file-tooltip">
-                {isDirectory ? 'Directory' : 'Open in New Tab'}
+                {isDirectory ? 'Directory' : 'Split Editor'}
               </Tooltip>
             }
           >
