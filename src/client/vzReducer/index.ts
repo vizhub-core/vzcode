@@ -147,7 +147,6 @@ export type VZAction =
   // * Toggles focused variable to trigger search input focus
   | { type: 'toggle_search_focused' }
 
-
   // `editor_no_longer_wants_focus`
   //  * Sets `editorWantsFocus` to `false`.
   | { type: 'editor_no_longer_wants_focus' }
