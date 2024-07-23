@@ -2,6 +2,7 @@ import {
   FileId,
   Pane,
   PaneId,
+  PresenceIndicator,
   SearchFileVisibility,
   SearchResults,
   ShareDBDoc,
@@ -29,6 +30,7 @@ import {
   toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
+import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -64,6 +66,8 @@ export type VZState = {
   // currently active remote user's cursor position.
   enableAutoFollow: boolean;
 
+  // The list of remote users and which file they have open,
+  // for presence display in the sidebar.
   sidebarPresenceIndicators: Array<PresenceIndicator>;
 };
 
@@ -143,7 +147,14 @@ export type VZAction =
 
   // `toggle_auto_follow
   //  * Toggles the auto-follow feature.
-  | { type: 'toggle_auto_follow' };
+  | { type: 'toggle_auto_follow' }
+
+  // `update_presence_indicator
+  //  * Updates a single presence indicator
+  | {
+      type: 'update_presence_indicator';
+      presenceIndicator: PresenceIndicator;
+    };
 
 const reducers = [
   setActiveFileIdReducer,
@@ -162,6 +173,7 @@ const reducers = [
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
   toggleAutoFollowReducer,
+  updatePresenceIndicatorReducer,
 ];
 
 export const vzReducer = (

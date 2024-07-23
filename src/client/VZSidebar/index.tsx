@@ -122,6 +122,8 @@ export const VZSidebar = ({
     enableAutoFollow,
     toggleAutoFollow,
     docPresence,
+    updatePresenceIndicator,
+    sidebarPresenceIndicators,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -175,6 +177,7 @@ export const VZSidebar = ({
     docPresence;
   }, []);
 
+  // Track the presence indicators for display in sidebar
   useEffect(() => {
     if (docPresence) {
       const handleReceive = (
@@ -191,6 +194,8 @@ export const VZSidebar = ({
         console.log(
           JSON.stringify(presenceIndicator, null, 2),
         );
+
+        updatePresenceIndicator(presenceIndicator);
       };
 
       docPresence.on('receive', handleReceive);
@@ -199,6 +204,8 @@ export const VZSidebar = ({
       };
     }
   }, [docPresence]);
+
+  console.log(sidebarPresenceIndicators);
 
   return (
     <div
