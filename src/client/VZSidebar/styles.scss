@@ -179,6 +179,10 @@
     .arrow-wrapper {
       opacity: 0.5;
     }
+
+    &.not-valid{
+      background-color: red;
+    }
   }
 
   .rename-input {
