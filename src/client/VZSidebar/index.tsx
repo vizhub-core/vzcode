@@ -35,21 +35,74 @@ import './styles.scss';
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
-  createFileTooltipText = 'New File',
-  createDirTooltipText = 'New Directory',
-  openSettingsTooltipText = 'Open Settings',
-  openKeyboardShortcuts = 'Keyboard Shortcuts',
-  reportBugTooltipText = 'Report Bug',
-  searchToolTipText = 'Search',
-  filesToolTipText = 'Files',
+  createFileTooltipText = (
+    <>
+      <strong>New file</strong>
+      {/* TODO verify that Ctrl + Shift + N works - does not work in Linux */}
+      <div>(Alt + N or Ctrl + Shift + N)</div>
+    </>
+  ),
+  createDirTooltipText = (
+    <div>
+      <strong>New Directory</strong>
+      {/* TODO consider Alt+D, as Ctrl + Shift + D does not work in Linux */}
+      <div>(Ctrl + Shift + D)</div>
+    </div>
+  ),
+  openSettingsTooltipText = (
+    <div>
+      <strong>Open Settings</strong>
+      <div>(Ctrl + Shift + S or Ctrl + ,)</div>
+    </div>
+  ),
+  openKeyboardShortcuts = (
+    <div>
+      <strong>Keyboard Shortcuts</strong>
+      <div>(Ctrl + Shift + K)</div>
+    </div>
+  ),
+  reportBugTooltipText = (
+    <div>
+      <strong>Report Bug</strong>
+      {/* TODO get this keyboard shortcut working? */}
+      {/* <div>(Ctrl + Shift + B)</div> */}
+    </div>
+  ),
+  searchToolTipText = (
+    <div>
+      <strong>Search</strong>
+      <div>(Ctrl + Shift + F)</div>
+    </div>
+  ),
+  filesToolTipText = (
+    <div>
+      <strong>Files</strong>
+      <div>(Ctrl + Shift + E)</div>
+    </div>
+  ),
+  enableAutoFollowTooltipText = (
+    <div>
+      <strong>Enable Auto Follow</strong>
+      <div>(Ctrl + Shift + A)</div>
+    </div>
+  ),
+  disableAutoFollowTooltipText = (
+    <div>
+      <strong>Disable Auto Follow</strong>
+      {/* TODO consider Alt+A, this breaks in Linux */}
+      <div>(Ctrl + Shift + A)</div>
+    </div>
+  ),
 }: {
-  createFileTooltipText?: string;
-  createDirTooltipText?: string;
-  openSettingsTooltipText?: string;
-  reportBugTooltipText?: string;
-  openKeyboardShortcuts?: string;
-  searchToolTipText?: string;
-  filesToolTipText?: string;
+  createFileTooltipText?: React.ReactNode;
+  createDirTooltipText?: React.ReactNode;
+  openSettingsTooltipText?: React.ReactNode;
+  reportBugTooltipText?: React.ReactNode;
+  openKeyboardShortcuts?: React.ReactNode;
+  searchToolTipText?: React.ReactNode;
+  filesToolTipText?: React.ReactNode;
+  enableAutoFollowTooltipText?: React.ReactNode;
+  disableAutoFollowTooltipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -135,8 +188,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={() => setIsSearchOpen(false)}
+              id="files-icon"
               className="icon-button icon-button-dark"
+              onClick={() => setIsSearchOpen(false)}
             >
               <FolderSVG />
             </i>
@@ -151,8 +205,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={() => setIsSearchOpen(true)}
+              id="search-icon"
               className="icon-button icon-button-dark"
+              onClick={() => setIsSearchOpen(true)}
             >
               <SearchSVG />
             </i>
@@ -167,8 +222,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleQuestionMarkClick}
+              id="shortcut-icon"
               className="icon-button icon-button-dark"
+              onClick={handleQuestionMarkClick}
             >
               <QuestionMarkSVG />
             </i>
@@ -187,7 +243,10 @@ export const VZSidebar = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="icon-button icon-button-dark">
+              <i
+                id="bug-icon"
+                className="icon-button icon-button-dark"
+              >
                 <BugSVG />
               </i>
             </a>
@@ -202,8 +261,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleSettingsClick}
+              id="settings-icon"
               className="icon-button icon-button-dark"
+              onClick={handleSettingsClick}
             >
               <GearSVG />
             </i>
@@ -218,8 +278,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleOpenCreateFileModal}
+              id="new-file-icon"
               className="icon-button icon-button-dark"
+              onClick={handleOpenCreateFileModal}
             >
               <NewSVG />
             </i>
@@ -235,8 +296,9 @@ export const VZSidebar = ({
             }
           >
             <i
-              onClick={handleOpenCreateDirModal}
+              id="new-directory-icon"
               className="icon-button icon-button-dark"
+              onClick={handleOpenCreateDirModal}
             >
               <FileSVG />
             </i>
@@ -248,18 +310,19 @@ export const VZSidebar = ({
             overlay={
               <Tooltip id="toggle-auto-follow">
                 {enableAutoFollow
-                  ? 'Disable Auto Follow'
-                  : 'Enable Auto Follow'}
+                  ? disableAutoFollowTooltipText
+                  : enableAutoFollowTooltipText}
               </Tooltip>
             }
           >
             <i
-              onClick={toggleAutoFollow}
+              id="auto-focus-icon"
               className={`icon-button icon-button-dark${
                 enableAutoFollow
                   ? ' vh-color-success-01'
                   : ''
               }`}
+              onClick={toggleAutoFollow}
             >
               <PinSVG />
             </i>

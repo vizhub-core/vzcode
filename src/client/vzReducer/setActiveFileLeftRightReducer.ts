@@ -1,4 +1,7 @@
 import { VZAction, VZState } from '.';
+import { Pane } from '../../types';
+import { findPane } from './findPane';
+import { updatePane } from './updatePane';
 
 export const setActiveFileLeftReducer = (
   state: VZState,
@@ -8,18 +11,31 @@ export const setActiveFileLeftReducer = (
     return state;
   }
 
-  let index = state.tabList.findIndex(
-    (tab) => tab.fileId === state.activeFileId,
+  const { pane, activePaneId } = state;
+  const activePane: Pane = findPane(pane, activePaneId);
+
+  if (activePane.type !== 'leafPane') {
+    throw new Error(
+      'closeTabsReducer: activePane is not a leafPane',
+    );
+  }
+
+  let index = activePane.tabList.findIndex(
+    (tab) => tab.fileId === activePane.activeFileId,
   );
 
   index -= 1;
   if (index < 0) {
-    index = state.tabList.length - 1;
+    index = activePane.tabList.length - 1;
   }
 
   return {
     ...state,
-    activeFileId: state.tabList[index].fileId,
+    pane: updatePane({
+      pane,
+      activePaneId,
+      newActiveFileId: activePane.tabList[index].fileId,
+    }),
   };
 };
 
@@ -31,17 +47,30 @@ export const setActiveFileRightReducer = (
     return state;
   }
 
-  let index = state.tabList.findIndex(
-    (tab) => tab.fileId === state.activeFileId,
+  const { pane, activePaneId } = state;
+  const activePane: Pane = findPane(pane, activePaneId);
+
+  if (activePane.type !== 'leafPane') {
+    throw new Error(
+      'closeTabsReducer: activePane is not a leafPane',
+    );
+  }
+
+  let index = activePane.tabList.findIndex(
+    (tab) => tab.fileId === activePane.activeFileId,
   );
 
   index += 1;
-  if (index > state.tabList.length - 1) {
+  if (index > activePane.tabList.length - 1) {
     index = 0;
   }
 
   return {
     ...state,
-    activeFileId: state.tabList[index].fileId,
+    pane: updatePane({
+      pane,
+      activePaneId,
+      newActiveFileId: activePane.tabList[index].fileId,
+    }),
   };
 };

@@ -69,7 +69,8 @@ export const VZKeyboardShortcutsDoc = ({
               <span>Close the current tab</span>
             </li>
             <li>
-              <strong>Alt + n</strong> <br />
+              <strong>Alt + n or Ctrl + Shift + n</strong>{' '}
+              <br />
               <span>Open the create file modal</span>
             </li>
             <li>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { shouldTriggerRun } from './shouldTriggerRun';
 import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
@@ -151,6 +151,18 @@ function jumpToDefinition(
   }
 }
 
+// Sidebar keyboard shortcuts in form Ctrl + Shift + <key>
+const sideBarKeyBoardMap = {
+  E: 'files-icon',
+  F: 'search-icon',
+  K: 'shortcut-icon',
+  B: 'bug-icon',
+  S: 'settings-icon',
+  N: 'new-file-icon',
+  D: 'new-directory-icon',
+  A: 'auto-focus-icon',
+};
+
 // This module implements the keyboard shortcuts
 // for the VZCode editor.
 // These include:
@@ -166,6 +178,7 @@ export const useKeyboardShortcuts = ({
   handleOpenCreateFileModal,
   setActiveFileLeft,
   setActiveFileRight,
+  toggleSearchFocused,
   runPrettierRef,
   runCodeRef,
   sidebarRef,
@@ -177,6 +190,7 @@ export const useKeyboardShortcuts = ({
   handleOpenCreateFileModal: () => void;
   setActiveFileLeft: () => void;
   setActiveFileRight: () => void;
+  toggleSearchFocused: () => void;
   runPrettierRef: React.MutableRefObject<() => void>;
   runCodeRef: React.MutableRefObject<() => void>;
   sidebarRef: React.RefObject<HTMLDivElement>;
@@ -201,6 +215,22 @@ export const useKeyboardShortcuts = ({
           runCode();
         }
         return;
+      }
+
+      if (event.ctrlKey && event.shiftKey) {
+        // Handle keyboard shortcuts related to the side bar icons
+        document
+          .getElementById(sideBarKeyBoardMap[event.key])
+          ?.click();
+
+        // Ensure the search input is always focused
+        if (event.key === 'F') {
+          toggleSearchFocused();
+        }
+      } else if (event.ctrlKey && event.key === ',') {
+        document
+          .getElementById(sideBarKeyBoardMap['S'])
+          ?.click();
       }
 
       if (event.ctrlKey === true) {

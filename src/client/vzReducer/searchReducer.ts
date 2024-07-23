@@ -75,7 +75,12 @@ export const setSearchReducer = (
   action.type === 'set_search'
     ? {
         ...state,
-        search: { pattern: action.value, results: {}, activeElement: null },
+        search: {
+          ...state.search,
+          pattern: action.value,
+          results: {},
+          focused: true,
+        },
       }
     : state;
 
@@ -87,12 +92,14 @@ export const setSearchResultsReducer = (
     ? {
         ...state,
         search: {
+          ...state.search,
           pattern: state.search.pattern,
           results: searchPattern(
             action.files,
             state.search.pattern,
           ),
-          activeElement: null
+          activeElement: null,
+          focused: state.search.focused,
         },
       }
     : state;
@@ -105,13 +112,13 @@ export const setSearchFileVisibilityReducer = (
     ? {
         ...state,
         search: {
+          ...state.search,
           pattern: state.search.pattern,
           results: updateSearchFileVisibility(
             state.search.results,
             action.id,
             action.visibility,
           ),
-          activeElement: action.element
         },
       }
     : state;
@@ -152,7 +159,21 @@ export const setSearchActiveElementReducer = (
         ...state,
         search: {
           ...state.search,
-          activeElement: action.element
+          activeElement: action.element,
+        },
+      }
+    : state;
+
+export const toggleSearchFocusedReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'toggle_search_focused'
+    ? {
+        ...state,
+        search: {
+          ...state.search,
+          focused: !(state.search.focused),
         },
       }
     : state;

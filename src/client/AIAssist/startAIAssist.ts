@@ -3,9 +3,9 @@ import {
   File,
   FileId,
   ShareDBDoc,
+  TabState,
   VZCodeContent,
 } from '../../types';
-import { TabState } from '../vzReducer';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
 

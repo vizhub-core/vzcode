@@ -50,7 +50,7 @@ export const Search = () => {
     shareDBDoc,
     editorCache,
   } = useContext(VZCodeContext);
-  const { pattern, results, activeElement } = search;
+  const { pattern, results, focused, activeElement } = search;
   const files: [string, SearchFile][] = Object.entries(results)
     .filter(([_, file]) => file.visibility !== 'closed');
 
@@ -73,7 +73,6 @@ export const Search = () => {
       return () => clearTimeout(delaySearch);
     } else {
       setIsMounted(true);
-      inputRef.current.focus();
     }
   }, [pattern]);
 
@@ -148,6 +147,12 @@ export const Search = () => {
           break;
       }
   }
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [focused]);
 
   return (
     <div>

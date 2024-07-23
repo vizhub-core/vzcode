@@ -1,5 +1,4 @@
-import { FileId, VZCodeContent } from '../types';
-import { TabState } from './vzReducer';
+import { FileId, TabState, VZCodeContent } from '../types';
 
 // The delimiter used to separate file names in the `tabs` parameter.
 // We need a character that is both URL-safe (does not get escaped in URLs)

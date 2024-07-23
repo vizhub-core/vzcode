@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 import { openTabReducer } from './openTabReducer';
 import { VZAction, VZState, createInitialState } from '.';
 import { defaultTheme } from '../themes';
@@ -16,16 +16,22 @@ describe('openTabReducer', () => {
     };
     const newState = openTabReducer(initialState, action);
 
-    expect(newState.tabList.length).toBe(1);
-    expect(newState.tabList[0].fileId).toBe('file1');
-    expect(newState.tabList[0].isTransient).toBe(false);
-    expect(newState.activeFileId).toBe('file1');
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(1);
+    expect(newState.pane.tabList[0].fileId).toBe('file1');
+    expect(newState.pane.tabList[0].isTransient).toBe(
+      false,
+    );
+    expect(newState.pane.activeFileId).toBe('file1');
   });
 
   it('Replaces a transient tab', () => {
     const stateWithTransientTab = {
       ...initialState,
-      tabList: [{ fileId: 'file2', isTransient: true }],
+      pane: {
+        ...initialState.pane,
+        tabList: [{ fileId: 'file2', isTransient: true }],
+      },
     };
     const action: VZAction = {
       type: 'open_tab',
@@ -37,16 +43,20 @@ describe('openTabReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(1);
-    expect(newState.tabList[0].fileId).toBe('file1');
-    expect(newState.tabList[0].isTransient).toBe(true);
-    expect(newState.activeFileId).toBe('file1');
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(1);
+    expect(newState.pane.tabList[0].fileId).toBe('file1');
+    expect(newState.pane.tabList[0].isTransient).toBe(true);
+    expect(newState.pane.activeFileId).toBe('file1');
   });
 
   it('Does not modify a non-transient tab', () => {
     const stateWithNonTransientTab = {
       ...initialState,
-      tabList: [{ fileId: 'file1', isTransient: false }],
+      pane: {
+        ...initialState.pane,
+        tabList: [{ fileId: 'file1', isTransient: false }],
+      },
     };
     const action: VZAction = {
       type: 'open_tab',
@@ -58,19 +68,25 @@ describe('openTabReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(1);
-    expect(newState.tabList[0].fileId).toBe('file1');
-    expect(newState.tabList[0].isTransient).toBe(false); // should remain non-transient
-    expect(newState.activeFileId).toBe('file1');
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(1);
+    expect(newState.pane.tabList[0].fileId).toBe('file1');
+    expect(newState.pane.tabList[0].isTransient).toBe(
+      false,
+    ); // should remain non-transient
+    expect(newState.pane.activeFileId).toBe('file1');
   });
 
   it('Activates an already open tab', () => {
     const stateWithMultipleTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-      ],
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+        ],
+      },
     };
     const action: VZAction = {
       type: 'open_tab',
@@ -82,8 +98,9 @@ describe('openTabReducer', () => {
       action,
     );
 
-    expect(newState.tabList.length).toBe(2);
-    expect(newState.activeFileId).toBe('file1');
+    assert(newState.pane.type === 'leafPane');
+    expect(newState.pane.tabList.length).toBe(2);
+    expect(newState.pane.activeFileId).toBe('file1');
   });
 
   it('Sets editorWantsFocus to true for non-transient tabs', () => {

@@ -4,10 +4,11 @@ import {
   FileId,
   SearchFileVisibility,
   ShareDBDoc,
+  TabState,
   Username,
   VZCodeContent,
 } from '../types';
-import { TabState, VZAction } from './vzReducer';
+import { VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
 // that can be used to dispatch actions to the reducer.
@@ -129,6 +130,13 @@ export const useActions = (
     [dispatch],
   );
 
+  // Toggle the focused variable, which should focus the search input
+  const toggleSearchFocused = useCallback(() => {
+    dispatch({
+      type: 'toggle_search_focused',
+    });
+  }, [dispatch]);
+
   // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
@@ -192,6 +200,7 @@ export const useActions = (
     setSearchResults,
     setSearchFileVisibility,
     setSearchActiveElement,
+    toggleSearchFocused,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
