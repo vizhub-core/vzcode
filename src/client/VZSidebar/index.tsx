@@ -23,6 +23,7 @@ import {
   FileSVG,
   QuestionMarkSVG,
   PinSVG,
+  FollowMeSVG,
 } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
@@ -93,6 +94,12 @@ export const VZSidebar = ({
       <div>(Ctrl + Shift + A)</div>
     </div>
   ),
+  enableFollowMeTooltipText = (
+    <div>
+      <strong>Follow Me</strong>
+      <div>(Filler)</div>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -103,6 +110,7 @@ export const VZSidebar = ({
   filesToolTipText?: React.ReactNode;
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
+  enableFollowMeTooltipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -328,6 +336,24 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
         </div>
+
+        {/*Enable Follow Me*/}
+        <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="enable-follow-me">
+                {enableFollowMeTooltipText}
+              </Tooltip>
+            }
+          >
+            <i
+              id="follow-me-icon"
+              className="icon-button icon-button-dark"
+              onClick={toggleAutoFollow}
+            >
+              <FollowMeSVG />
+            </i>
+          </OverlayTrigger>
 
         <div className="files">
           {!isSearchOpen ? (
