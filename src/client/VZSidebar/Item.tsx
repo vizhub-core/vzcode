@@ -13,7 +13,7 @@ import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { VZCodeContext } from '../VZCodeContext';
 import { ItemId } from '../../types';
 import { getExtensionIcon } from './FileListing';
-import { ForkSVG } from '../Icons/ForkSVG';
+import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 
 const enableRenameDirectory = true;
@@ -96,14 +96,6 @@ export const Item = ({
       handleRenameClick(renameInputRef.current.value);
     }
   }, [handleRenameClick]);
-
-  const handleOpenInNewTab = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation();
-      // set the code editor width to half of its current width
-    },
-    [],
-  );
 
   const handleRenameIconClick = useCallback(
     (event: React.MouseEvent) => {
@@ -201,21 +193,7 @@ export const Item = ({
           className="utils"
           style={{ position: 'relative' }}
         >
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id="fork-file-tooltip">
-                {isDirectory ? 'Directory' : 'Split Editor'}
-              </Tooltip>
-            }
-          >
-            <i 
-            onClick={handleOpenInNewTab}
-            className="icon-button icon-button-dark"
-            >
-              <ForkSVG />
-            </i>
-          </OverlayTrigger>
+
           {(isDirectory ? enableRenameDirectory : true) ? (
             <OverlayTrigger
               placement="top"
