@@ -41,6 +41,7 @@ export const RunCodeWidget = ({
     (event: React.MouseEvent) => {
       event.stopPropagation();
       // set the code editor width to half of its current width
+      
     },
     [],
   );
