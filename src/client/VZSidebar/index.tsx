@@ -1,9 +1,7 @@
-import {
+import React, {
   useCallback,
   useContext,
-  useMemo,
-  useState,
-} from 'react';
+  useMemo } from 'react';
 import {
   FileId,
   FileTree,
@@ -29,28 +27,17 @@ import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
 
-// TODO turn this UI back on when we are actually detecting
-// the connection status.
-// See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
-  createFileTooltipText = 'New File',
-  createDirTooltipText = 'New Directory',
-  openSettingsTooltipText = 'Open Settings',
-  openKeyboardShortcuts = 'Keyboard Shortcuts',
-  reportBugTooltipText = 'Report Bug',
-  searchToolTipText = 'Search',
-  filesToolTipText = 'Files',
-}: {
-  createFileTooltipText?: string;
-  createDirTooltipText?: string;
-  openSettingsTooltipText?: string;
-  reportBugTooltipText?: string;
-  openKeyboardShortcuts?: string;
-  searchToolTipText?: string;
-  filesToolTipText?: string;
-}) => {
+                            createFileTooltipText = 'New File',
+                            createDirTooltipText = 'New Directory',
+                            openSettingsTooltipText = 'Open Settings',
+                            openKeyboardShortcuts = 'Keyboard Shortcuts',
+                            reportBugTooltipText = 'Report Bug',
+                            searchToolTipText = 'Search',
+                            filesToolTipText = 'Files',
+                          }) => {
   const {
     files,
     openTab,
@@ -64,15 +51,18 @@ export const VZSidebar = ({
     sidebarRef,
     enableAutoFollow,
     toggleAutoFollow,
+    savingStatus,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
+
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
@@ -81,7 +71,6 @@ export const VZSidebar = ({
     SplitPaneResizeContext,
   );
 
-  // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
     (fileId: FileId) => {
       openTab({ fileId, isTransient: true });
@@ -89,7 +78,6 @@ export const VZSidebar = ({
     [openTab],
   );
 
-  // On double-click, open the file in a persistent tab.
   const handleFileDoubleClick = useCallback(
     (fileId: FileId) => {
       openTab({ fileId, isTransient: false });
@@ -97,7 +85,6 @@ export const VZSidebar = ({
     [openTab],
   );
 
-  // True if files exist.
   const filesExist =
     fileTree &&
     fileTree.children &&
@@ -225,7 +212,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Directory Rename*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -242,7 +228,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Toggle Follow*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -310,14 +295,19 @@ export const VZSidebar = ({
       </div>
 
       {enableConnectionStatus && (
-        <div className="connection-status">
-          {connected ? 'Connected' : 'Connection Lost'}
-          <div className="connection">
-            <div
-              className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
-              }`}
-            />
+        <div className="status-bar">
+          <div className="connection-status">
+            {connected ? 'Connected' : 'Connection Lost'}
+            <div className="connection">
+              <div
+                className={`connection-status-indicator ${
+                  connected ? 'connected' : 'disconnected'
+                }`}
+              />
+            </div>
+          </div>
+          <div className="saving-status">
+            {savingStatus}
           </div>
         </div>
       )}

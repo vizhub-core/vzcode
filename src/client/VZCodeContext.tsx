@@ -140,6 +140,8 @@ export type VZCodeContextValue = {
   sidebarRef: React.RefObject<HTMLDivElement>;
 
   codeEditorRef: React.RefObject<HTMLDivElement>;
+  savingStatus: string;
+  setSavingStatus: (status: string) => void;
 
   connected: boolean;
 
@@ -355,6 +357,9 @@ export const VZCodeProvider = ({
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
 
+  // Implement the saving/saved status
+  const [savingStatus, setSavingStatus] = useState('All changes saved');
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -426,6 +431,8 @@ export const VZCodeProvider = ({
     codeEditorRef,
 
     connected,
+    savingStatus,
+    setSavingStatus,
 
     hoveredItemId,
     setHoveredItemId,
