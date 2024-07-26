@@ -49,6 +49,10 @@ function searchPattern(
   return results;
 }
 
+function setSearchLineVisibility() {
+  
+}
+
 function updateSearchFileVisibility(
   results: SearchResult,
   id: string,
@@ -131,26 +135,21 @@ export const setSearchLineVisibilityReducer = (
   action.type === 'hide_search_results_line'
     ? {
         ...state,
-
         search: {
           ...state.search,
           results: {
             ...state.search.results,
             [action.id]: {
               ...state.search.results[action.id],
-              matches: {
-                ...state.search.results[action.id].matches,
-                [action.line]: {
-                  ...state.search.results[action.id].matches[action.line],
-                  isClosed: true,
-                },
-              }
-            }
-          }
-        }
+              matches: state.search.results[action.id].matches.filter((match, index) =>
+                match.line !== action.line
+              ),
+            },
+          },
+        },
       }
     : state;
-    
+
 export const setSearchFocusedIndexReducer = (
   state: VZState,
   action: VZAction,

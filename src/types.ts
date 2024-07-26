@@ -65,7 +65,6 @@ export type SearchMatch = Array<{
   line: number;
   index: number;
   text: string;
-  isClosed: boolean;
 }>;
 export type SearchFileVisibility =
   | 'open'
