@@ -3,6 +3,7 @@ import { PlaySVG} from '../Icons';
 import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import { VZCodeContext } from '../VZCodeContext';
 import { OverlayTrigger, Tooltip } from '../bootstrap';
+
 import './style.scss';
 
 export const RunCodeWidget = ({
@@ -37,14 +38,21 @@ export const RunCodeWidget = ({
     // Optional: reset the icon state after animation completes (e.g., 1 second)
     setTimeout(() => setIsRunning(false), 1000);
   }, []);
-    const handleSplitEditor = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation();
-      // set the code editor width to half of its current width
-      
-    },
-    [],
-  );
+  //   const handleSplitEditor = useCallback(() => {
+  //   const splitEditor = runCodeRef.current;
+  //   if (splitEditor !== null) {
+  //     splitEditor();
+  //   }
+  // }
+  // , []);
+  const handleSplitEditor = useCallback(() => {
+    const splitCurrentPane = runCodeRef.current;
+    console.log('Split Editor');
+    console.log(splitCurrentPane);
+    splitCurrentPane();
+
+  }
+  , []);
 
   return (
       <div>

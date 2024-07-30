@@ -137,9 +137,9 @@ export const CodeEditor = ({
       // This happens every time `activeFileId` changes.
       editorCacheValue.scrollPosition =
       editorCacheValue.editor.scrollDOM.scrollTop;
-      // codeEditorRef.current.removeChild(
-      //   editorCacheValue.editor.dom,
-      // );
+      codeEditorRef.current.removeChild(
+        editorCacheValue.editor.dom,
+      );
     };
   }, [shareDBDoc, editorCacheValue]);
 

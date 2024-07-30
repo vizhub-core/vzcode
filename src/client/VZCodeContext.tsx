@@ -146,6 +146,9 @@ export type VZCodeContextValue = {
 
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
+  
+  splitCurrPane: boolean;
+  splitPane: () => void;
 };
 
 export const VZCodeProvider = ({
@@ -223,6 +226,8 @@ export const VZCodeProvider = ({
   );
 
   // Unpack state.
+  // print the state object to see what it contains
+  // console.log('state: ', state);
   const {
     pane,
     theme,
@@ -262,6 +267,7 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    splitCurrentPane,
   } = useActions(dispatch);
 
   // Sync tab state to the URL.
@@ -439,6 +445,7 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
+
   };
 
   return (

@@ -29,6 +29,7 @@ import {
   toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
+import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -139,9 +140,12 @@ export type VZAction =
   //  * Sets the username.
   | { type: 'set_username'; username: Username }
 
-  // `toggle_auto_follow
+  // `toggle_auto_follow`
   //  * Toggles the auto-follow feature.
-  | { type: 'toggle_auto_follow' };
+  | { type: 'toggle_auto_follow' }
+  
+  // `split_current_pane`
+  | { type: 'split_current_pane' };
 
 const reducers = [
   setActiveFileIdReducer,
@@ -160,6 +164,7 @@ const reducers = [
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
   toggleAutoFollowReducer,
+  splitCurrentPaneReducer,
 ];
 
 export const vzReducer = (
