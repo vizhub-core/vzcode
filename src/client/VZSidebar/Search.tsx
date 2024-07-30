@@ -3,6 +3,7 @@ import {
   useEffect,
   useContext,
   useState,
+  useCallback,
 } from 'react';
 import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
@@ -35,11 +36,11 @@ function jumpToPattern(
 function isResultElementWithinView(container, element) {
   const containerTop = container.scrollTop;
   const containerBottom = containerTop + container.clientHeight;
-  
+
   const elementTop = element.offsetTop - container.offsetTop;
   const elementBottom = elementTop + element.clientHeight;
 
-  return elementTop >= containerTop && elementBottom <= containerBottom;
+  return elementTop >= (containerTop + 100) && elementBottom <= (containerBottom - 100);
 }
 
 export const Search = () => {
@@ -83,7 +84,7 @@ export const Search = () => {
     }
   }, [pattern]);
 
-  const flattenResult = (fileId: string, file: SearchFile) => {
+  const flattenResult = useCallback((fileId: string, file: SearchFile) => {
     setSearchFileVisibility(
       shareDBDoc,
       fileId,
@@ -92,19 +93,28 @@ export const Search = () => {
         : 'open',
       file.name
     )
-  };
+  }, []);
 
-  const closeResult = (fileId: string) => {
+  const closeResult = useCallback((fileId: string) => {
     setSearchFileVisibility(
       shareDBDoc,
       fileId,
       'closed',
       null
     );
-  }
+  }, []);
+
+  const focusFileElement = useCallback((fileId, index) => {
+    setActiveFileId(fileId);
+    setSearchFocusedIndex(index, null);
+  }, []);
 
   const handleKeyDown = (event) => {
     event.preventDefault();
+
+    if (files.length === 0) {
+      return;
+    }
 
     const matchingLines: number = files[focusedIndex][1].matches.length;
 
@@ -114,18 +124,13 @@ export const Search = () => {
         setSearchFocusedIndex(focusedIndex, null);
         break;
       case 'ArrowUp':
-        // No effect on first search listing
-        if (focusedIndex == 0 && focusedChildIndex == null) break;
-
-        if (focusedChildIndex === null) {
+        if (focusedIndex == 0 && focusedChildIndex == null) {
+          // No effect on first search listing
+          break;
+        } else if (focusedChildIndex === null || matchingLines == 0) {
           // Toggle the previous file last child, if any
           const previousMatchingLines: number = files[focusedIndex - 1][1].matches.length;
-          
-          if (previousMatchingLines > 0) {
-            setSearchFocusedIndex(focusedIndex - 1, previousMatchingLines - 1);
-          } else {
-            setSearchFocusedIndex(focusedIndex - 1, null);
-          }
+          setSearchFocusedIndex(focusedIndex - 1, previousMatchingLines > 0 ? previousMatchingLines - 1 : null);
         } else if (focusedChildIndex === 0) {
           // Toggle the file
           setSearchFocusedIndex(focusedIndex, null);
@@ -136,13 +141,13 @@ export const Search = () => {
 
         break;
       case 'ArrowDown':
-        // Last matching line should have no effect
-        if (focusedIndex == files.length - 1 && focusedChildIndex == matchingLines - 1) break;
-
-        if (focusedChildIndex === null && matchingLines > 0) {
+        if (focusedIndex == files.length - 1 && focusedChildIndex == matchingLines - 1) {
+          // Last matching line should have no effect
+          break;
+        } else if (focusedChildIndex === null && matchingLines > 0) {
           // Toggle the first matching line
           setSearchFocusedIndex(focusedIndex, 0);
-        } else if (focusedChildIndex == matchingLines - 1) {
+        } else if (focusedChildIndex == matchingLines - 1 || matchingLines == 0) {
           // Toggle the next file
           setSearchFocusedIndex(focusedIndex + 1, null);
         } else {
@@ -161,15 +166,14 @@ export const Search = () => {
       case 'ArrowRight':
         if (files[focusedIndex][1].visibility !== 'open') {
           flattenResult(files[focusedIndex][0], files[focusedIndex][1]);
-        } else if (focusedChildIndex === null) {
+        } else if (focusedChildIndex === null && matchingLines !== 0) {
           setSearchFocusedIndex(focusedIndex, 0);
         }
 
         break;
       case 'Enter':
       case ' ':
-        // Always jump to the file
-        const fileId = files[focusedIndex][0];
+        const fileId: string = files[focusedIndex][0];
         setActiveFileId(fileId);
 
         if (focusedChildIndex !== null) {
@@ -205,7 +209,7 @@ export const Search = () => {
           lineElement.scrollIntoView({ block: "center" });
         }
       }
-    }    
+    }
   }
 
   useEffect(() => {
@@ -243,10 +247,7 @@ export const Search = () => {
                 key={file.name}
               >
                 <div
-                  onClick={() => {
-                    setActiveFileId(fileId);
-                    setSearchFocusedIndex(index, null);
-                  }}
+                  onClick={() => focusFileElement(fileId, index)}
                   id={fileId}
                   className={`search-file-heading 
                       ${(focusedIndex == index && focusedChildIndex == null)
@@ -255,9 +256,7 @@ export const Search = () => {
                   <div className="search-file-title">
                     <div
                       className="arrow-wrapper"
-                      onClick={() => {
-                        flattenResult(fileId, file);
-                      }}
+                      onClick={() => flattenResult(fileId, file)}
                       style={{
                         transform: `rotate(${file.visibility === 'open' ? 90 : 0}deg)`,
                       }}
@@ -277,6 +276,8 @@ export const Search = () => {
                           onClick={(event) => {
                             event.stopPropagation();
                             closeResult(fileId);
+                            // Focus the previous search file, if possible
+                            setSearchFocusedIndex(Math.max(0, index - 1), null);
                           }}
                         >
                           <CloseSVG />
@@ -346,6 +347,11 @@ export const Search = () => {
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   setSearchLineVisibility(shareDBDoc, fileId, match.line);
+
+                                  if (childIndex == 0) {
+                                    // Removing remaining single line
+                                    setSearchFocusedIndex(index, null);
+                                  }
                                 }}
                               >
                                 <CloseSVG />
