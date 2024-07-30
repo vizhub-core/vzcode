@@ -24,4 +24,5 @@ export const createInitialState = ({
   editorWantsFocus: false,
   username: initialUsername,
   enableAutoFollow: false,
+  sidebarPresenceIndicators: [],
 });

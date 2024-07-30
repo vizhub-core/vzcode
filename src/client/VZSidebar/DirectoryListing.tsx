@@ -23,6 +23,7 @@ export const DirectoryListing = ({
     deleteDirectory,
     isDirectoryOpen,
     toggleDirectory,
+    sidebarPresenceIndicators,
   } = useContext(VZCodeContext);
 
   const handleClick = useCallback(() => {
@@ -63,7 +64,7 @@ export const DirectoryListing = ({
         >
           <DirectoryArrowSVG />
         </div>
-        {name}
+        <div className="name">{name}</div>
       </Item>
       {children && isOpen ? (
         <div className="indentation">

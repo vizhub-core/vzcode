@@ -2,6 +2,7 @@ import {
   FileId,
   Pane,
   PaneId,
+  PresenceIndicator,
   SearchFileVisibility,
   SearchResults,
   ShareDBDoc,
@@ -29,6 +30,7 @@ import {
   toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
+import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
 export { createInitialState } from './createInitialState';
 
@@ -64,6 +66,10 @@ export type VZState = {
   // This is a feature that automatically scrolls the editor to the
   // currently active remote user's cursor position.
   enableAutoFollow: boolean;
+
+  // The list of remote users and which file they have open,
+  // for presence display in the sidebar.
+  sidebarPresenceIndicators: Array<PresenceIndicator>;
 };
 
 // The shape of the actions that can be dispatched to the reducer.
@@ -144,6 +150,13 @@ export type VZAction =
   //  * Toggles the auto-follow feature.
   | { type: 'toggle_auto_follow' }
 
+  // `update_presence_indicator
+  //  * Updates a single presence indicator
+  | {
+      type: 'update_presence_indicator';
+      presenceIndicator: PresenceIndicator;
+    }
+
   // `split_current_pane`
   | { type: 'split_current_pane' };
 
@@ -164,6 +177,7 @@ const reducers = [
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
   toggleAutoFollowReducer,
+  updatePresenceIndicatorReducer,
   splitCurrentPaneReducer,
 ];
 

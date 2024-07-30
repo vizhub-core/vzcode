@@ -192,11 +192,34 @@ export type VZCodeContent = {
   isInteracting?: boolean;
 };
 // Example Presence object, from ShareDB:
-// {"start":["files","69064344","text",183],"end":["files","69064344","text",183],"username":"Jim"}
+// {
+//   "start": [
+//     "files",
+//     "71898298",
+//     "text",
+//     415
+//   ],
+//   "end": [
+//     "files",
+//     "71898298",
+//     "text",
+//     415
+//   ],
+//   "username": "Tim"
+// }
 export type Presence = {
   start: Array<string | number>;
   end: Array<string | number>;
   username: Username;
+};
+
+// An item in the list of sidebar presence indicators.
+// It needs to know:
+// * What user the presence is associated with
+// * What file the presence is associated with
+export type PresenceIndicator = {
+  username: Username;
+  fileId: FileId;
 };
 
 // An id used for presence.

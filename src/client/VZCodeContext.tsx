@@ -15,6 +15,7 @@ import {
   SearchResults,
   SearchFileVisibility,
   TabState,
+  PresenceIndicator,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -147,6 +148,11 @@ export type VZCodeContextValue = {
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
 
+  updatePresenceIndicator: (
+    presenceIndicator: PresenceIndicator,
+  ) => void;
+
+  sidebarPresenceIndicators: Array<PresenceIndicator>;
   splitCurrentPane: () => void;
 };
 
@@ -237,6 +243,7 @@ export const VZCodeProvider = ({
     editorWantsFocus,
     username,
     enableAutoFollow,
+    sidebarPresenceIndicators,
   } = state;
 
   // TODO support splitPane type
@@ -266,6 +273,7 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    updatePresenceIndicator,
     splitCurrentPane,
   } = useActions(dispatch);
 
@@ -444,6 +452,8 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
+    updatePresenceIndicator,
+    sidebarPresenceIndicators,
     splitCurrentPane,
   };
 
