@@ -122,7 +122,6 @@ export const Item = ({
     [],
   );
 
-
   // Function to close the modal
   const handleModalClose = useCallback(() => {
     setShowModal(false);
@@ -193,7 +192,6 @@ export const Item = ({
           className="utils"
           style={{ position: 'relative' }}
         >
-
           {(isDirectory ? enableRenameDirectory : true) ? (
             <OverlayTrigger
               placement="top"

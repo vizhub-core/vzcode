@@ -143,7 +143,7 @@ export type VZAction =
   // `toggle_auto_follow`
   //  * Toggles the auto-follow feature.
   | { type: 'toggle_auto_follow' }
-  
+
   // `split_current_pane`
   | { type: 'split_current_pane' };
 

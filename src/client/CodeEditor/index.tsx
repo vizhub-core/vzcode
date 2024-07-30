@@ -136,7 +136,7 @@ export const CodeEditor = ({
       // Remove the old editor from the DOM and store the current scroll position.
       // This happens every time `activeFileId` changes.
       editorCacheValue.scrollPosition =
-      editorCacheValue.editor.scrollDOM.scrollTop;
+        editorCacheValue.editor.scrollDOM.scrollTop;
       codeEditorRef.current.removeChild(
         editorCacheValue.editor.dom,
       );

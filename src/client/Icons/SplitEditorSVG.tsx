@@ -31,4 +31,4 @@ export const SplitEditorSVG = () => {
       />
     </svg>
   );
-}
+};

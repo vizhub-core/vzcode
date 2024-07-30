@@ -158,8 +158,8 @@ export const getOrCreateEditor = ({
 }): EditorCacheValue => {
   // Cache hit
 
-  const cacheKey = fileId+"|"+paneId;
-  
+  const cacheKey = fileId + '|' + paneId;
+
   if (editorCache.has(cacheKey)) {
     return editorCache.get(cacheKey);
   }
