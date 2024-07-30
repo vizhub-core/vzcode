@@ -155,7 +155,7 @@ export type VZAction =
   | {
       type: 'update_presence_indicator';
       presenceIndicator: PresenceIndicator;
-    };
+    }
 
   // `split_current_pane`
   | { type: 'split_current_pane' };

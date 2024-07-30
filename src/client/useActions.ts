@@ -188,7 +188,7 @@ export const useActions = (
       type: 'split_current_pane',
     });
   }, [dispatch]);
-  
+
   return {
     setActiveFileId,
     setActiveFileLeft,
