@@ -92,13 +92,19 @@ export const FileListing = ({
         {presence.length > 0 && (
           <div className="presence-indicators">
             {presence.map((indicator, index) => (
-              <div key={index} className="presence-indicator">
-                {indicator.username[0]} {/* Display the first letter of the username */}
+              <div
+                key={index}
+                className="presence-indicator"
+              >
+                {indicator.username[0]}{' '}
+                {/* Display the first letter of the username */}
               </div>
             ))}
           </div>
         )}
-        <i className="file-icon">{getExtensionIcon(name)}</i>
+        <i className="file-icon">
+          {getExtensionIcon(name)}
+        </i>
         {name}
       </div>
     </Item>

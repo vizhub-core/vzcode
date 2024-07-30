@@ -5,7 +5,6 @@ export const updatePresenceIndicatorReducer = (
   action: VZAction,
 ): VZState => {
   if (action.type === 'update_presence_indicator') {
-    
     // True if there's already an entry for this user.
     const needsUpdate =
       state.sidebarPresenceIndicators.find(
