@@ -49,10 +49,6 @@ function searchPattern(
   return results;
 }
 
-function setSearchLineVisibility() {
-  
-}
-
 function updateSearchFileVisibility(
   results: SearchResult,
   id: string,

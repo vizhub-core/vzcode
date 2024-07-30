@@ -127,7 +127,6 @@ export type VZAction =
       files: ShareDBDoc<VZCodeContent>;
       id: string;
       visibility: SearchFileVisibility;
-      element: string;
     }
 
   // `hide_search_results_line`

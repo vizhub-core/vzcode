@@ -90,8 +90,7 @@ export const Search = () => {
       fileId,
       file.visibility === 'open'
         ? 'flattened'
-        : 'open',
-      file.name
+        : 'open'
     )
   }, []);
 
@@ -99,8 +98,7 @@ export const Search = () => {
     setSearchFileVisibility(
       shareDBDoc,
       fileId,
-      'closed',
-      null
+      'closed'
     );
   }, []);
 

@@ -102,15 +102,13 @@ export const useActions = (
     (
       files: ShareDBDoc<VZCodeContent>,
       id: string,
-      visibility: SearchFileVisibility,
-      element: string | null,
+      visibility: SearchFileVisibility
     ) => {
       dispatch({
         type: 'set_search_file_visibility',
         files: files,
         id: id,
         visibility: visibility,
-        element: element
       });
     },
     [dispatch],

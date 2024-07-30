@@ -116,8 +116,7 @@ export type VZCodeContextValue = {
   setSearchFileVisibility: (
     files: ShareDBDoc<VZCodeContent>,
     id: string,
-    visibility: SearchFileVisibility,
-    element: string | null
+    visibility: SearchFileVisibility
   ) => void;
   setSearchLineVisibility: (
     files: ShareDBDoc<VZCodeContent>,
