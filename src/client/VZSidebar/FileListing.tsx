@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { Item } from './Item';
-import { FileId } from '../../types';
+import { FileId, PresenceIndicator } from '../../types';
 import {
   FileSVG,
   JavaScriptSVG,
@@ -46,12 +46,14 @@ export const FileListing = ({
   handleFileClick,
   handleFileDoubleClick,
   isActive,
+  presence,
 }: {
   name: string;
   fileId: FileId;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
   isActive: boolean;
+  presence: PresenceIndicator[];
 }) => {
   const { renameFile, deleteFile } =
     useContext(VZCodeContext);
@@ -85,8 +87,20 @@ export const FileListing = ({
       handleRenameClick={handleRenameClick}
       isActive={isActive}
     >
-      <i className="file-icon">{getExtensionIcon(name)}</i>
-      {name}
+      <div className="name">
+        {/* Render presence indicators to the left of the file name */}
+        {presence.length > 0 && (
+          <div className="presence-indicators">
+            {presence.map((indicator, index) => (
+              <div key={index} className="presence-indicator">
+                {indicator.username[0]} {/* Display the first letter of the username */}
+              </div>
+            ))}
+          </div>
+        )}
+        <i className="file-icon">{getExtensionIcon(name)}</i>
+        {name}
+      </div>
     </Item>
   );
 };
