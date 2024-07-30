@@ -21,6 +21,7 @@ export const splitCurrentPaneReducer = (
   const newLeafPane1: Pane = {
     id: `${activePaneId}-1`, // Generate unique IDs for new panes
     type: 'leafPane',
+    // TODO Copy the tab list from the active pane
     tabList: [],
     activeFileId: null,
   };
@@ -28,6 +29,7 @@ export const splitCurrentPaneReducer = (
   const newLeafPane2: Pane = {
     id: `${activePaneId}-2`,
     type: 'leafPane',
+    // TODO Copy the tab list from the active pane
     tabList: [],
     activeFileId: null,
   };

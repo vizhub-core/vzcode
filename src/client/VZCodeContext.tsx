@@ -34,6 +34,7 @@ import {
 import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useRunCode } from './useRunCode';
+import { findPane } from './vzReducer/findPane';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -241,6 +242,10 @@ export const VZCodeProvider = ({
 
   // TODO support splitPane type
   if (pane.type !== 'leafPane') {
+    const activePaneId = state.activePaneId;
+    const activePane = findPane(pane, activePaneId);
+    console.log('activePane: ', activePane);
+    // console.error(pane);
     throw new Error('Expected leafPane');
   }
   const tabList = pane.tabList;
@@ -270,6 +275,10 @@ export const VZCodeProvider = ({
   } = useActions(dispatch);
 
   // Sync tab state to the URL.
+  // TODO make the URL sync to the active pane only
+  const activePaneId = state.activePaneId;
+  // find the active pane
+  const activePane = findPane(pane, activePaneId);
   useURLSync({
     content,
     openTab,
