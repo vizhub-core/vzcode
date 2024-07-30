@@ -146,7 +146,7 @@ export type VZCodeContextValue = {
 
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
-  
+
   splitCurrentPane: () => void;
 };
 
@@ -444,7 +444,7 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
-
+    splitCurrentPane,
   };
 
   return (
