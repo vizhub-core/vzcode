@@ -207,10 +207,12 @@ export type VZCodeContent = {
 //   ],
 //   "username": "Tim"
 // }
+
 export type Presence = {
   start: Array<string | number>;
   end: Array<string | number>;
   username: Username;
+  userColor: string; // Optional color field
 };
 
 // An item in the list of sidebar presence indicators.
@@ -220,6 +222,7 @@ export type Presence = {
 export type PresenceIndicator = {
   username: Username;
   fileId: FileId;
+  userColor: string; // Optional color field
 };
 
 // An id used for presence.

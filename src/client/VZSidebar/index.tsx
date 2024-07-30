@@ -184,16 +184,18 @@ export const VZSidebar = ({
         presenceId: PresenceId,
         update: Presence,
       ) => {
+        console.log('Received update object:', update);
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
           fileId: update.start[1] as FileId,
+          userColor: update.userColor,
+          
         };
-
-        console.log('Got presence!');
-        // console.log({presenceId,update})
-        console.log(
-          JSON.stringify(presenceIndicator, null, 2),
-        );
+        console.log('Got presence!', update);
+        const userColor = update.userColor;
+        console.log ('got user color', userColor);
+        console.log (update.username, presenceIndicator.username, update.userColor, presenceIndicator.userColor);
+        console.log({presenceId, update})
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -205,7 +207,7 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
-  console.log(sidebarPresenceIndicators);
+  //console.log(sidebarPresenceIndicators);
 
   return (
     <div

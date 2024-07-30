@@ -5,19 +5,18 @@ export const updatePresenceIndicatorReducer = (
   action: VZAction,
 ): VZState => {
   if (action.type === 'update_presence_indicator') {
-    // True if there's already an entry for this user.
-    const needsUpdate =
-      state.sidebarPresenceIndicators.find(
-        (d) =>
-          d.username === action.presenceIndicator.username,
-      );
+    const { username, userColor } = action.presenceIndicator;
+
+    const needsUpdate = state.sidebarPresenceIndicators.find(
+      (d) => d.username === username,
+    );
 
     return {
       ...state,
       sidebarPresenceIndicators: needsUpdate
         ? state.sidebarPresenceIndicators.map((d) =>
-            d.username === action.presenceIndicator.username
-              ? action.presenceIndicator
+            d.username === username
+              ? { ...d, userColor: userColor || '#FFFFFF' } // Ensure userColor is updated
               : d,
           )
         : [

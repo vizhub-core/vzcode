@@ -10,6 +10,7 @@ import {
   FileId,
   Presence,
   PresenceId,
+  PresenceIndicator,
   TabState,
   Username,
 } from '../../types';
@@ -87,53 +88,48 @@ export const json1PresenceDisplay = ({
               presence,
             );
 
-            // If the presence is in the current file, update the presence state.
-            if (isPresenceInCurrentFile) {
-              presenceState[id] = presence;
-            } else if (presence) {
-              // Otherwise, delete the presence state.
-              delete presenceState[id];
+            // Generate user color based on the id
+  const userColor = new ColorHash({ lightness: 0.75 }).rgb(id).join(',');
 
-              // If auto-follow is enabled, and the presence is NOT
-              // in the current file, then open the tab of the other user.
-              if (enableAutoFollowRef.current) {
-                openTab({
-                  fileId: presence.start[1] as FileId,
-                  isTransient: true,
-                });
-              }
-            }
-            // Update decorations to reflect new presence state.
-            // TODO consider mutating this rather than recomputing it on each change.
+  // If the presence is in the current file, update the presence state with the color.
+  if (isPresenceInCurrentFile) {
+    presenceState[id] = presence;
+    presenceState[id].userColor = userColor;  // Add color to the presence
+    console.log('Emitting presence with userColor:', presence.userColor);
+  } else if (presence) {
+    // Otherwise, delete the presence state.
+    delete presenceState[id];
 
-            const presenceDecorations = [];
+    // If auto-follow is enabled, and the presence is NOT
+    // in the current file, then open the tab of the other user.
+    if (enableAutoFollowRef.current) {
+      openTab({
+        fileId: presence.start[1] as FileId,
+        isTransient: true,
+      });
+    }
+  }
 
-            // Object.keys(presenceState).map((id) => {
-            for (const id of Object.keys(presenceState)) {
-              const presence: Presence = presenceState[id];
-              const { start, end } = presence;
-              const from = +start[start.length - 1];
-              const to = +end[end.length - 1];
-              const userColor = new ColorHash({
-                lightness: 0.75,
-              }).rgb(id);
-              const { username } = presence;
+  // Update decorations to reflect new presence state.
+  const presenceDecorations = [];
 
-              presenceDecorations.push({
-                from,
-                to: from,
-                value: Decoration.widget({
-                  side: -1,
-                  block: false,
-                  widget: new PresenceWidget(
-                    // TODO see if we can figure out why
-                    // updateDOM was not being called when passing
-                    // the presence id as the id
-                    // id,
-                    '' + Math.random(),
-                    userColor,
-                    username,
-                  ),
+  for (const id of Object.keys(presenceState)) {
+    const presence: Presence = presenceState[id];
+    const { start, end, userColor } = presence; // Use the color here
+    const from = +start[start.length - 1];
+    const to = +end[end.length - 1];
+
+    presenceDecorations.push({
+      from,
+      to: from,
+      value: Decoration.widget({
+        side: -1,
+        block: false,
+        widget: new PresenceWidget(
+          '' + Math.random(),
+          userColor || 'rgb(0, 0, 0)', // Fallback color
+          presence.username,
+        ),
                 }),
               });
 
@@ -148,7 +144,7 @@ export const json1PresenceDisplay = ({
                     class: 'cm-json1-presence',
                     attributes: {
                       style: `
-                      background-color: rgba(${userColor}, 0.75);
+                      background-color: rgba(${presence.userColor}, 0.75);
                       mix-blend-mode: luminosity;
                       `,
                     },
@@ -231,11 +227,7 @@ class PresenceWidget extends WidgetType {
   color: string;
   username: Username;
   timeout: number;
-  constructor(
-    id: string,
-    color: string,
-    username: Username,
-  ) {
+  constructor(id: string, color: string, username: Username) {
     super();
     this.id = id;
     this.color = color;
@@ -243,8 +235,7 @@ class PresenceWidget extends WidgetType {
   }
 
   eq(other: PresenceWidget) {
-    return other.id === this.id;
-    // return false;
+    return other.id === this.id && other.color === this.color && other.username === this.username;
   }
 
   toDOM() {

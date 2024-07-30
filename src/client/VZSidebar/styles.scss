@@ -260,13 +260,13 @@
     overflow: hidden;
     gap: 6px;
   }
-
+  
   .presence-indicators {
     display: flex;
     gap: 4px;
-    margin-right: 6px; /* Space between the indicators and the file name */
+    margin-right: 6px; 
   }
-
+  
   .presence-indicator {
     width: 16px;
     height: 16px;
@@ -275,7 +275,6 @@
     align-items: center;
     justify-content: center;
     font-size: 10px;
-    background-color: #ff5733;
     color: #ffffff;
   }
 }
