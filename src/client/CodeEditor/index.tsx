@@ -99,6 +99,7 @@ export const CodeEditor = ({
         allowGlobals,
         enableAutoFollowRef,
         openTab,
+        // splitPaneView,
       }),
     [
       activeFileId,
@@ -121,6 +122,7 @@ export const CodeEditor = ({
     // Guard against cases where page is still loading.
     if (!codeEditorRef.current) return;
     if (!content) return;
+    // if (openSplitPane) return;
 
     // Add the editor and apply the prior scroll position to the DOM.
     codeEditorRef.current.appendChild(

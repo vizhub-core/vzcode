@@ -1,8 +1,13 @@
 import { useCallback, useContext, useState } from 'react';
 import { PlaySVG } from '../Icons';
+import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import { VZCodeContext } from '../VZCodeContext';
 import { OverlayTrigger, Tooltip } from '../bootstrap';
+
 import './style.scss';
+
+// Feature flag for split pane feature (WIP)
+const enableSplitPane = false;
 
 export const RunCodeWidget = ({
   runCodeWidgetTooltipText = (
@@ -14,7 +19,7 @@ export const RunCodeWidget = ({
 }: {
   runCodeWidgetTooltipText?: JSX.Element;
 }) => {
-  const { runCodeRef, runPrettierRef } =
+  const { runCodeRef, runPrettierRef, splitCurrentPane } =
     useContext(VZCodeContext);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -37,23 +42,50 @@ export const RunCodeWidget = ({
     setTimeout(() => setIsRunning(false), 1000);
   }, []);
 
+  const handleSplitEditor = useCallback(() => {
+    console.log('Split Editor');
+    console.log(splitCurrentPane);
+    splitCurrentPane();
+  }, [splitCurrentPane]);
+
   return (
-    <div className="vz-code-run-code-widget">
-      <OverlayTrigger
-        placement="left"
-        overlay={
-          <Tooltip id="run-code-widget-tooltip">
-            {runCodeWidgetTooltipText}
-          </Tooltip>
-        }
-      >
-        <i
-          className={`icon-button icon-button-dark ${isRunning ? 'rotate-icon' : ''}`}
-          onClick={handleClick}
+    <div>
+      <div className="vz-code-split-view-widget">
+        {enableSplitPane && (
+          <OverlayTrigger
+            placement="bottom"
+            overlay={
+              <Tooltip id="fork-file-tooltip">
+                Split Editor
+              </Tooltip>
+            }
+          >
+            <i
+              onClick={handleSplitEditor}
+              className="icon-button icon-button-dark"
+            >
+              <SplitEditorSVG />
+            </i>
+          </OverlayTrigger>
+        )}
+      </div>
+      <div className="vz-code-run-code-widget">
+        <OverlayTrigger
+          placement="bottom"
+          overlay={
+            <Tooltip id="run-code-widget-tooltip">
+              {runCodeWidgetTooltipText}
+            </Tooltip>
+          }
         >
-          <PlaySVG />
-        </i>
-      </OverlayTrigger>
+          <i
+            className={`icon-button icon-button-dark ${isRunning ? 'rotate-icon' : ''}`}
+            onClick={handleClick}
+          >
+            <PlaySVG />
+          </i>
+        </OverlayTrigger>
+      </div>
     </div>
   );
 };

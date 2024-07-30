@@ -183,6 +183,12 @@ export const useActions = (
     [dispatch],
   );
 
+  const splitCurrentPane = useCallback(() => {
+    dispatch({
+      type: 'split_current_pane',
+    });
+  }, [dispatch]);
+  
   return {
     setActiveFileId,
     setActiveFileLeft,
@@ -203,5 +209,6 @@ export const useActions = (
     setUsername,
     toggleAutoFollow,
     updatePresenceIndicator,
+    splitCurrentPane,
   };
 };

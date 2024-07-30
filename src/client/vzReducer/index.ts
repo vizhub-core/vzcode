@@ -31,6 +31,7 @@ import {
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
+import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -145,7 +146,7 @@ export type VZAction =
   //  * Sets the username.
   | { type: 'set_username'; username: Username }
 
-  // `toggle_auto_follow
+  // `toggle_auto_follow`
   //  * Toggles the auto-follow feature.
   | { type: 'toggle_auto_follow' }
 
@@ -155,6 +156,9 @@ export type VZAction =
       type: 'update_presence_indicator';
       presenceIndicator: PresenceIndicator;
     };
+
+  // `split_current_pane`
+  | { type: 'split_current_pane' };
 
 const reducers = [
   setActiveFileIdReducer,
@@ -174,6 +178,7 @@ const reducers = [
   setUsernameReducer,
   toggleAutoFollowReducer,
   updatePresenceIndicatorReducer,
+  splitCurrentPaneReducer,
 ];
 
 export const vzReducer = (

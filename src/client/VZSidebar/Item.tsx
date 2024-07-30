@@ -13,9 +13,9 @@ import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { VZCodeContext } from '../VZCodeContext';
 import { ItemId } from '../../types';
 import { getExtensionIcon } from './FileListing';
+import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
+import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 
-// TODO support renaming directories
-// See https://github.com/vizhub-core/vzcode/issues/103
 const enableRenameDirectory = true;
 
 // A file or directory in the sidebar.

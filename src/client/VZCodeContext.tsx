@@ -153,6 +153,7 @@ export type VZCodeContextValue = {
   ) => void;
 
   sidebarPresenceIndicators: Array<PresenceIndicator>;
+  splitCurrentPane: () => void;
 };
 
 export const VZCodeProvider = ({
@@ -230,6 +231,8 @@ export const VZCodeProvider = ({
   );
 
   // Unpack state.
+  // print the state object to see what it contains
+  // console.log('state: ', state);
   const {
     pane,
     theme,
@@ -271,6 +274,7 @@ export const VZCodeProvider = ({
     setUsername,
     toggleAutoFollow,
     updatePresenceIndicator,
+    splitCurrentPane,
   } = useActions(dispatch);
 
   // Sync tab state to the URL.
@@ -450,6 +454,7 @@ export const VZCodeProvider = ({
     toggleAutoFollow,
     updatePresenceIndicator,
     sidebarPresenceIndicators,
+    splitCurrentPane,
   };
 
   return (
