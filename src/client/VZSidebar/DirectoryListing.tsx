@@ -46,18 +46,6 @@ export const DirectoryListing = ({
     [isDirectoryOpen, path],
   );
 
-  // First pass at trying to get it to work in the directory.
-  // Determine if there is presence in this directory
-  const presenceData = children
-    .filter((child) => 'fileId' in child)
-    .map((child) => (child as FileTreeFile).fileId)
-    .filter(fileId => sidebarPresenceIndicators[fileId]);
-
-  // Get presence data for the directory itself
-  const hasPresenceInDirectory = Object.keys(sidebarPresenceIndicators).some(fileId =>
-    children.some(child => 'fileId' in child && (child as FileTreeFile).fileId === fileId)
-  );
-
   return (
     <>
       <Item
@@ -76,19 +64,7 @@ export const DirectoryListing = ({
         >
           <DirectoryArrowSVG />
         </div>
-        <div className="name">
-          {name}
-          {/* Render presence indicators for the directory */}
-          {(hasPresenceInDirectory || presenceData.length > 0) && (
-            <div className="presence-indicators">
-              {presenceData.map((fileId, index) => (
-                <div key={index} className="presence-indicator">
-                  {/* Optional: Add content or styles specific to each presence indicator */}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <div className="name">{name}</div>
       </Item>
       {children && isOpen ? (
         <div className="indentation">
@@ -100,7 +76,9 @@ export const DirectoryListing = ({
                 entity={entity}
                 key={fileId || path}
                 handleFileClick={handleFileClick}
-                handleFileDoubleClick={handleFileDoubleClick}
+                handleFileDoubleClick={
+                  handleFileDoubleClick
+                }
               />
             );
           })}
