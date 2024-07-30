@@ -18,6 +18,7 @@ import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
+  PaneId,
   ShareDBDoc,
   TabState,
   Username,
@@ -102,6 +103,7 @@ const getAtPath = (obj, path) => {
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
+  paneId = 'root',
   fileId,
   shareDBDoc,
   content,
@@ -118,6 +120,8 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef,
   openTab,
 }: {
+  // TODO pass this in from the outside
+  paneId?: PaneId;
   fileId: FileId;
 
   // The ShareDB document that contains the file.
@@ -153,8 +157,11 @@ export const getOrCreateEditor = ({
   openTab: (tabState: TabState) => void;
 }): EditorCacheValue => {
   // Cache hit
-  if (editorCache.has(fileId)) {
-    return editorCache.get(fileId);
+
+  const cacheKey = fileId + '|' + paneId;
+
+  if (editorCache.has(cacheKey)) {
+    return editorCache.get(cacheKey);
   }
 
   // Cache miss
@@ -385,7 +392,7 @@ export const getOrCreateEditor = ({
   const editorCacheValue = { editor, themeCompartment };
 
   // Populate the cache.
-  editorCache.set(fileId, editorCacheValue);
+  editorCache.set(cacheKey, editorCacheValue);
 
   return editorCacheValue;
 };

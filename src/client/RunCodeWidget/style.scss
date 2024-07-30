@@ -3,10 +3,15 @@
   right: 16px;
   top: 9px;
   color: var(--vh-color-neutral-04);
-
   .rotate-icon {
     animation: spin 1s linear;
   }
+}
+.vz-code-split-view-widget {
+  position: absolute;
+  right: 51px;
+  top: 9px;
+  color: var(--vh-color-neutral-04);
 }
 
 @keyframes spin {
