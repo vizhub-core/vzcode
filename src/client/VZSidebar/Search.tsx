@@ -83,16 +83,16 @@ export const Search = () => {
       setIsMounted(true);
     }
   }, [pattern]);
-
+  
   const flattenResult = useCallback((fileId: string, file: SearchFile) => {
     setSearchFileVisibility(
       shareDBDoc,
       fileId,
-      file.visibility === 'open'
+      file.visibility === 'open' && focusedChildIndex === null
         ? 'flattened'
         : 'open'
     )
-  }, []);
+  }, [focusedIndex, focusedChildIndex]);
 
   const closeResult = useCallback((fileId: string) => {
     setSearchFileVisibility(
@@ -290,7 +290,8 @@ export const Search = () => {
                 </div>
                 <div
                   className="search-file-lines">
-                  {file.visibility !== 'flattened' &&
+                  {((file.visibility === 'open')
+                    || (file.visibility === "flattened" && index == focusedIndex && focusedChildIndex !== null)) && 
                     file.matches.map((match, childIndex) => {
                       const before = match.text.substring(
                         0,
