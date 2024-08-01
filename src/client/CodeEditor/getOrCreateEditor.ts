@@ -33,6 +33,7 @@ import {
 } from './InteractiveWidgets';
 import {
   EditorCache,
+  editorCacheKey,
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
@@ -158,7 +159,7 @@ export const getOrCreateEditor = ({
 }): EditorCacheValue => {
   // Cache hit
 
-  const cacheKey = fileId + '|' + paneId;
+  const cacheKey = editorCacheKey(fileId, paneId);
 
   if (editorCache.has(cacheKey)) {
     return editorCache.get(cacheKey);
