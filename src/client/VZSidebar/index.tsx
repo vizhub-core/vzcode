@@ -189,11 +189,11 @@ export const VZSidebar = ({
           fileId: update.start[1] as FileId,
         };
 
-        console.log('Got presence!');
-        // console.log({presenceId,update})
-        console.log(
-          JSON.stringify(presenceIndicator, null, 2),
-        );
+        // console.log('Got presence!');
+        // // console.log({presenceId,update})
+        // console.log(
+        //   JSON.stringify(presenceIndicator, null, 2),
+        // );
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -205,7 +205,7 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
-  console.log(sidebarPresenceIndicators);
+  // console.log(sidebarPresenceIndicators);
 
   return (
     <div
