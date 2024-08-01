@@ -27,6 +27,7 @@ export const AIAssistWidget = ({
   const {
     shareDBDoc,
     activeFileId,
+    activePaneId,
     tabList,
     editorCache,
     runPrettierRef,
