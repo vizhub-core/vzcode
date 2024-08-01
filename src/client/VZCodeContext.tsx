@@ -16,6 +16,8 @@ import {
   SearchFileVisibility,
   TabState,
   PresenceIndicator,
+  Pane,
+  PaneId,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -74,6 +76,8 @@ export type VZCodeContextValue = {
   setActiveFileId: (fileId: string | null) => void;
   setActiveFileLeft: () => void;
   setActiveFileRight: () => void;
+
+  activePaneId: PaneId;
 
   tabList: Array<TabState>;
   openTab: (tabState: TabState) => void;
@@ -235,6 +239,7 @@ export const VZCodeProvider = ({
   // console.log('state: ', state);
   const {
     pane,
+    activePaneId,
     theme,
     search,
     isSearchOpen,
@@ -394,6 +399,8 @@ export const VZCodeProvider = ({
     setActiveFileId,
     setActiveFileLeft,
     setActiveFileRight,
+
+    activePaneId,
 
     tabList,
     openTab,
