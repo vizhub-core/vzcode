@@ -31,6 +31,7 @@ function searchPattern(
             line: j + 1,
             index: index,
             text: lines[j],
+            isClosed: false
           });
         }
       }
@@ -75,8 +76,11 @@ export const setSearchReducer = (
     ? {
         ...state,
         search: {
+          ...state.search,
           pattern: action.value,
           results: {},
+          focusedIndex: 0,
+          focusedChildIndex: null,
           focused: true,
         },
       }
@@ -90,6 +94,7 @@ export const setSearchResultsReducer = (
     ? {
         ...state,
         search: {
+          ...state.search,
           pattern: state.search.pattern,
           results: searchPattern(
             action.files,
@@ -108,13 +113,50 @@ export const setSearchFileVisibilityReducer = (
     ? {
         ...state,
         search: {
+          ...state.search,
           pattern: state.search.pattern,
           results: updateSearchFileVisibility(
             state.search.results,
             action.id,
             action.visibility,
           ),
-          focused: state.search.focused,
+        },
+      }
+    : state;
+
+export const setSearchLineVisibilityReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'hide_search_results_line'
+    ? {
+        ...state,
+        search: {
+          ...state.search,
+          results: {
+            ...state.search.results,
+            [action.id]: {
+              ...state.search.results[action.id],
+              matches: state.search.results[action.id].matches.filter((match, index) =>
+                match.line !== action.line
+              ),
+            },
+          },
+        },
+      }
+    : state;
+
+export const setSearchFocusedIndexReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState =>
+  action.type === 'set_active_search_index'
+    ? {
+        ...state,
+        search: {
+          ...state.search,
+          focusedIndex: action.focusedIndex,
+          focusedChildIndex: action.childIndex,
         },
       }
     : state;
@@ -128,7 +170,7 @@ export const toggleSearchFocusedReducer = (
         ...state,
         search: {
           ...state.search,
-          focused: !state.search.focused,
+          focused: !(state.search.focused),
         },
       }
     : state;

@@ -103,13 +103,42 @@ export const useActions = (
     (
       files: ShareDBDoc<VZCodeContent>,
       id: string,
-      visibility: SearchFileVisibility,
+      visibility: SearchFileVisibility
     ) => {
       dispatch({
         type: 'set_search_file_visibility',
         files: files,
         id: id,
         visibility: visibility,
+      });
+    },
+    [dispatch],
+  );
+
+  // Update search results file matching line visibility to be 
+  const setSearchLineVisibility = useCallback(
+    (
+      files: ShareDBDoc<VZCodeContent>,
+      id: string,
+      line: number,
+    ) => {
+      dispatch({
+        type: 'hide_search_results_line',
+        files: files,
+        id: id,
+        line: line
+      });
+    },
+    [dispatch],
+  );;
+
+  // Update search results active element
+  const setSearchFocusedIndex = useCallback(
+    (focusedIndex: number, childIndex: number) => {
+      dispatch({
+        type: 'set_active_search_index',
+        focusedIndex: focusedIndex,
+        childIndex: childIndex,
       });
     },
     [dispatch],
@@ -200,6 +229,8 @@ export const useActions = (
     setSearch,
     setSearchResults,
     setSearchFileVisibility,
+    setSearchLineVisibility,
+    setSearchFocusedIndex,
     toggleSearchFocused,
     setIsSettingsOpen,
     setIsDocOpen,

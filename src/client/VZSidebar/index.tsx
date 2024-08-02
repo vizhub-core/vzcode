@@ -372,7 +372,7 @@ export const VZSidebar = ({
           </OverlayTrigger>
         </div>
 
-        <div className="files">
+        <div className="files" id = "sidebar-view-container">
           {!isSearchOpen ? (
             <div className="sidebar-files">
               {isDragOver ? (
