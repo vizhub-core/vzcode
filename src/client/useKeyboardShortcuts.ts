@@ -4,7 +4,8 @@ import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
-import { FileId } from '../types';
+import { FileId, PaneId } from '../types';
+import { editorCacheKey } from './useEditorCache';
 
 /*
   The following is a helpful resource for the following Code Mirror Syntax Tree methods below
@@ -175,6 +176,7 @@ const sideBarKeyBoardMap = {
 export const useKeyboardShortcuts = ({
   closeTabs,
   activeFileId,
+  activePaneId,
   handleOpenCreateFileModal,
   setActiveFileLeft,
   setActiveFileRight,
@@ -187,6 +189,7 @@ export const useKeyboardShortcuts = ({
 }: {
   closeTabs: (fileIds: FileId[]) => void;
   activeFileId: FileId | null;
+  activePaneId: PaneId;
   handleOpenCreateFileModal: () => void;
   setActiveFileLeft: () => void;
   setActiveFileRight: () => void;
@@ -198,6 +201,12 @@ export const useKeyboardShortcuts = ({
   codeEditorRef: React.RefObject<HTMLDivElement>;
 }) => {
   useEffect(() => {
+    // This key is needed to look up the current editor in the editor cache.
+    const cacheKey = editorCacheKey(
+      activeFileId,
+      activePaneId,
+    );
+
     const handleKeyPress = (event: KeyboardEvent) => {
       if (shouldTriggerRun(event)) {
         event.preventDefault();
@@ -321,8 +330,9 @@ export const useKeyboardShortcuts = ({
       }
 
       // Move current cursor and center view in the editor to destination node
+
       const editor: EditorView =
-        editorCache.get(activeFileId).editor;
+        editorCache.get(cacheKey).editor;
       const closestDefinition: SyntaxNode = definingNode;
 
       editor.dispatch({
@@ -355,7 +365,7 @@ export const useKeyboardShortcuts = ({
       }
 
       const editor: EditorView =
-        editorCache.get(activeFileId).editor;
+        editorCache.get(cacheKey).editor;
       const tree = syntaxTree(editor.state);
       const element = event.target as HTMLSpanElement;
 

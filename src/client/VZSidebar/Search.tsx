@@ -7,10 +7,11 @@ import {
 } from 'react';
 import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
-import { SearchFile } from '../../types';
+import { FileId, SearchFile } from '../../types';
 import { EditorView } from 'codemirror';
 import { CloseSVG, DirectoryArrowSVG } from '../Icons';
 import { FileTypeIcon } from './FileTypeIcon';
+import { editorCacheKey } from '../useEditorCache';
 
 function jumpToPattern(
   editor: EditorView,
@@ -54,6 +55,7 @@ export const Search = () => {
   const {
     search,
     setSearch,
+    activePaneId,
     setActiveFileId,
     setSearchResults,
     setSearchFileVisibility,
@@ -110,14 +112,17 @@ export const Search = () => {
     [focusedIndex, focusedChildIndex],
   );
 
-  const closeResult = useCallback((fileId: string) => {
+  const closeResult = useCallback((fileId: FileId) => {
     setSearchFileVisibility(shareDBDoc, fileId, 'closed');
   }, []);
 
-  const focusFileElement = useCallback((fileId, index) => {
-    setActiveFileId(fileId);
-    setSearchFocusedIndex(index, null);
-  }, []);
+  const focusFileElement = useCallback(
+    (fileId: FileId, index: number) => {
+      setActiveFileId(fileId);
+      setSearchFocusedIndex(index, null);
+    },
+    [],
+  );
 
   const handleKeyDown = (event) => {
     event.preventDefault();
@@ -234,9 +239,13 @@ export const Search = () => {
               focusedChildIndex
             ].index;
 
-          if (editorCache.get(fileId)) {
+          const cacheKey = editorCacheKey(
+            fileId,
+            activePaneId,
+          );
+          if (editorCache.has(cacheKey)) {
             jumpToPattern(
-              editorCache.get(fileId).editor,
+              editorCache.get(cacheKey).editor,
               pattern,
               line,
               index,
@@ -431,12 +440,20 @@ export const Search = () => {
                                     childIndex,
                                   );
 
+                                  const cacheKey =
+                                    editorCacheKey(
+                                      fileId,
+                                      activePaneId,
+                                    );
+
                                   if (
-                                    editorCache.get(fileId)
+                                    editorCache.has(
+                                      cacheKey,
+                                    )
                                   ) {
                                     jumpToPattern(
                                       editorCache.get(
-                                        fileId,
+                                        cacheKey,
                                       ).editor,
                                       pattern,
                                       match.line,
