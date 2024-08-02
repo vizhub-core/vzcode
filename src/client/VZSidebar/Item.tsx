@@ -5,16 +5,14 @@ import {
   useEffect,
   useContext,
 } from 'react';
-import { EditSVG, FileSVG, TrashSVG } from '../Icons';
+import { ItemId } from '../../types';
+import { EditSVG, TrashSVG } from '../Icons';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
+import { VZCodeContext } from '../VZCodeContext';
+import { FileTypeIcon } from './FileTypeIcon';
 
 // TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
-import { VZCodeContext } from '../VZCodeContext';
-import { ItemId } from '../../types';
-import { getExtensionIcon } from './FileListing';
-import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
-import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 
 const enableRenameDirectory = true;
 
@@ -169,9 +167,7 @@ export const Item = ({
       <div className="name">
         {isRenaming ? (
           <>
-            <i className="file-icon">
-              {getExtensionIcon(renameValue)}
-            </i>
+            <FileTypeIcon name={renameValue} />
             <input
               className="rename-input"
               ref={renameInputRef}

@@ -272,22 +272,24 @@
     white-space: nowrap;
     overflow: hidden;
     gap: 6px;
+    position: relative;
   }
 
   .presence-indicators {
+    position: absolute;
+    top: 0;
     display: flex;
     gap: 4px;
-    margin-right: 6px; /* Space between the indicators and the file name */
   }
 
   .presence-indicator {
-    width: 16px;
-    height: 16px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 8px;
     background-color: #ff5733;
     color: #ffffff;
   }
