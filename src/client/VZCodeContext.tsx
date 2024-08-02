@@ -375,6 +375,7 @@ export const VZCodeProvider = ({
   useKeyboardShortcuts({
     closeTabs,
     activeFileId,
+    activePaneId,
     handleOpenCreateFileModal,
     setActiveFileLeft,
     setActiveFileRight,
