@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import {
   FileId,
+  PresenceIndicator,
   SearchFileVisibility,
   ShareDBDoc,
   TabState,
@@ -172,11 +173,22 @@ export const useActions = (
     });
   }, [dispatch]);
 
+  const updatePresenceIndicator = useCallback(
+    (presenceIndicator: PresenceIndicator) => {
+      dispatch({
+        type: 'update_presence_indicator',
+        presenceIndicator,
+      });
+    },
+    [dispatch],
+  );
+
   const splitCurrentPane = useCallback(() => {
     dispatch({
       type: 'split_current_pane',
     });
   }, [dispatch]);
+
   return {
     setActiveFileId,
     setActiveFileLeft,
@@ -196,6 +208,7 @@ export const useActions = (
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    updatePresenceIndicator,
     splitCurrentPane,
   };
 };

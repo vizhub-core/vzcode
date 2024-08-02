@@ -8,6 +8,7 @@ import {
 import { SparklesSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
 import { Spinner } from '../Spinner';
+import { editorCacheKey } from '../../useEditorCache';
 import './style.scss';
 
 const enableStopGeneration = false;
@@ -23,8 +24,15 @@ export const AIAssistWidget = ({
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
 }) => {
-  const { shareDBDoc, activeFileId, tabList, editorCache } =
-    useContext(VZCodeContext);
+  const {
+    shareDBDoc,
+    activeFileId,
+    activePaneId,
+    tabList,
+    editorCache,
+    runPrettierRef,
+    runCodeRef,
+  } = useContext(VZCodeContext);
 
   // The stream ID of the most recent request.
   //  * If `null`, no request has been made yet.
@@ -32,9 +40,6 @@ export const AIAssistWidget = ({
   //    server is processing it.
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
-
-  const { runPrettierRef, runCodeRef } =
-    useContext(VZCodeContext);
 
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
@@ -46,7 +51,9 @@ export const AIAssistWidget = ({
 
       // Wait for generation to finish.
       await startAIAssist({
-        view: editorCache.get(activeFileId).editor,
+        view: editorCache.get(
+          editorCacheKey(activeFileId, activePaneId),
+        ).editor,
         shareDBDoc,
         fileId: activeFileId,
         tabList,
@@ -89,7 +96,7 @@ export const AIAssistWidget = ({
           : currentAIStreamId,
       );
     }
-  }, [activeFileId, aiStreamId]);
+  }, [activeFileId, activePaneId, aiStreamId]);
 
   const showWidget = enableStopGeneration
     ? true

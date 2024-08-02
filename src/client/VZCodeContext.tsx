@@ -15,6 +15,9 @@ import {
   SearchResults,
   SearchFileVisibility,
   TabState,
+  PresenceIndicator,
+  Pane,
+  PaneId,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -73,6 +76,8 @@ export type VZCodeContextValue = {
   setActiveFileId: (fileId: string | null) => void;
   setActiveFileLeft: () => void;
   setActiveFileRight: () => void;
+
+  activePaneId: PaneId;
 
   tabList: Array<TabState>;
   openTab: (tabState: TabState) => void;
@@ -147,6 +152,11 @@ export type VZCodeContextValue = {
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
 
+  updatePresenceIndicator: (
+    presenceIndicator: PresenceIndicator,
+  ) => void;
+
+  sidebarPresenceIndicators: Array<PresenceIndicator>;
   splitCurrentPane: () => void;
 };
 
@@ -229,6 +239,7 @@ export const VZCodeProvider = ({
   // console.log('state: ', state);
   const {
     pane,
+    activePaneId,
     theme,
     search,
     isSearchOpen,
@@ -237,6 +248,7 @@ export const VZCodeProvider = ({
     editorWantsFocus,
     username,
     enableAutoFollow,
+    sidebarPresenceIndicators,
   } = state;
 
   // TODO support splitPane type
@@ -266,6 +278,7 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    updatePresenceIndicator,
     splitCurrentPane,
   } = useActions(dispatch);
 
@@ -387,6 +400,8 @@ export const VZCodeProvider = ({
     setActiveFileLeft,
     setActiveFileRight,
 
+    activePaneId,
+
     tabList,
     openTab,
     closeTabs,
@@ -444,6 +459,8 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
+    updatePresenceIndicator,
+    sidebarPresenceIndicators,
     splitCurrentPane,
   };
 

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { FileId } from '../types';
+import { FileId, PaneId } from '../types';
 import { EditorView } from 'codemirror';
 
 export type EditorCacheValue = {
@@ -8,7 +8,17 @@ export type EditorCacheValue = {
   scrollPosition?: number;
 };
 
-export type EditorCache = Map<FileId, EditorCacheValue>;
+export type EditorCacheKey = string;
+
+export const editorCacheKey = (
+  fileId: FileId,
+  paneId: PaneId,
+): EditorCacheKey => fileId + '|' + paneId;
+
+export type EditorCache = Map<
+  EditorCacheKey,
+  EditorCacheValue
+>;
 
 export const useEditorCache = () => {
   // Singleton cache of CodeMirror instances

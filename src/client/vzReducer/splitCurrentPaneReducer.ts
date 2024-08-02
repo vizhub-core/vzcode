@@ -1,9 +1,4 @@
-import {
-  PaneId,
-  LeafPane,
-  SplitPane,
-  Pane,
-} from '../../types';
+import { PaneId, Pane } from '../../types';
 import { VZAction, VZState } from '.';
 import { updatePane } from './updatePane';
 
@@ -11,7 +6,7 @@ export const splitCurrentPaneReducer = (
   state: VZState,
   action: VZAction,
 ): VZState => {
-  console.log('splitCurrentPaneReducer');
+  // console.log('splitCurrentPaneReducer');
   if (action.type !== 'split_current_pane') {
     return state;
   }
