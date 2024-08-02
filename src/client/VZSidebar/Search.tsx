@@ -7,10 +7,10 @@ import {
 } from 'react';
 import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
-import { SearchFile, SearchMatch } from '../../types';
+import { SearchFile } from '../../types';
 import { EditorView } from 'codemirror';
-import { getExtensionIcon } from './FileListing';
 import { CloseSVG, DirectoryArrowSVG } from '../Icons';
+import { FileTypeIcon } from './FileTypeIcon';
 
 function jumpToPattern(
   editor: EditorView,
@@ -347,7 +347,7 @@ export const Search = () => {
                         <DirectoryArrowSVG />
                       </div>
                       <div className="search-file-name">
-                        {getExtensionIcon(file.name)}
+                        <FileTypeIcon name={file.name} />
                         <h5>{file.name}</h5>
                       </div>
                     </div>

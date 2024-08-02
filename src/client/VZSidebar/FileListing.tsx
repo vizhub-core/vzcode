@@ -1,44 +1,25 @@
 import { useCallback, useContext } from 'react';
 import { Item } from './Item';
 import { FileId, PresenceIndicator } from '../../types';
-import {
-  FileSVG,
-  JavaScriptSVG,
-  TypeScriptSVG,
-  ReactSVG,
-  SvelteSVG,
-  JsonSVG,
-  MarkdownSVG,
-  HtmlSVG,
-  CssSVG,
-} from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
+import { FileTypeIcon } from './FileTypeIcon';
 
-export function getExtensionIcon(fileName: string) {
-  const extension = fileName.split('.');
-
-  switch (extension[extension.length - 1]) {
-    case 'jsx':
-    case 'tsx':
-      return <ReactSVG />;
-    case 'js':
-      return <JavaScriptSVG />;
-    case 'ts':
-      return <TypeScriptSVG />;
-    case 'json':
-      return <JsonSVG />;
-    case 'md':
-      return <MarkdownSVG />;
-    case 'html':
-      return <HtmlSVG />;
-    case 'css':
-      return <CssSVG />;
-    case 'svelte':
-      return <SvelteSVG />;
-    default:
-      return <FileSVG />;
-  }
-}
+const PresenceIndicators = ({
+  presence,
+}: {
+  presence: PresenceIndicator[];
+}) => {
+  return (
+    <div className="presence-indicators">
+      {presence.map((indicator, index) => (
+        <div key={index} className="presence-indicator">
+          {indicator.username[0]}{' '}
+          {/* Display the first letter of the username */}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export const FileListing = ({
   name,
@@ -87,26 +68,9 @@ export const FileListing = ({
       handleRenameClick={handleRenameClick}
       isActive={isActive}
     >
-      <div className="name">
-        {/* Render presence indicators to the left of the file name */}
-        {presence.length > 0 && (
-          <div className="presence-indicators">
-            {presence.map((indicator, index) => (
-              <div
-                key={index}
-                className="presence-indicator"
-              >
-                {indicator.username[0]}{' '}
-                {/* Display the first letter of the username */}
-              </div>
-            ))}
-          </div>
-        )}
-        <i className="file-icon">
-          {getExtensionIcon(name)}
-        </i>
-        {name}
-      </div>
+      <PresenceIndicators presence={presence} />
+      <FileTypeIcon name={name} />
+      {name}
     </Item>
   );
 };
