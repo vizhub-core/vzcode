@@ -144,7 +144,7 @@ export const CodeEditor = ({
   }, [shareDBDoc, editorCacheValue]);
 
   // Focus the editor
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (editorWantsFocus) {
       editorCacheValue.editor.focus();
       editorNoLongerWantsFocus();

@@ -58,6 +58,9 @@ export const openTabReducer = (
     newTabList = [...activePane.tabList, newTabState];
   }
 
+  // If the tab is persistent, the editor should focus on the next render.
+  const editorWantsFocus = !action.isTransient;
+
   return {
     ...state,
     pane: updatePane({
@@ -66,8 +69,6 @@ export const openTabReducer = (
       newTabList,
       newActiveFileId: action.fileId,
     }),
-
-    // If the tab is persistent, the editor should focus on the next render.
-    editorWantsFocus: !action.isTransient,
+    editorWantsFocus,
   };
 };
