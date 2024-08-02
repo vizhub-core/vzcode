@@ -201,6 +201,12 @@ export const useKeyboardShortcuts = ({
   codeEditorRef: React.RefObject<HTMLDivElement>;
 }) => {
   useEffect(() => {
+    // This key is needed to look up the current editor in the editor cache.
+    const cacheKey = editorCacheKey(
+      activeFileId,
+      activePaneId,
+    );
+
     const handleKeyPress = (event: KeyboardEvent) => {
       if (shouldTriggerRun(event)) {
         event.preventDefault();
@@ -324,10 +330,7 @@ export const useKeyboardShortcuts = ({
       }
 
       // Move current cursor and center view in the editor to destination node
-      const cacheKey = editorCacheKey(
-        activeFileId,
-        activePaneId,
-      );
+
       const editor: EditorView =
         editorCache.get(cacheKey).editor;
       const closestDefinition: SyntaxNode = definingNode;
@@ -362,7 +365,7 @@ export const useKeyboardShortcuts = ({
       }
 
       const editor: EditorView =
-        editorCache.get(activeFileId).editor;
+        editorCache.get(cacheKey).editor;
       const tree = syntaxTree(editor.state);
       const element = event.target as HTMLSpanElement;
 

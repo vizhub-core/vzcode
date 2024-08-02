@@ -4,6 +4,7 @@ import {
   EditorState,
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
+import { svelte } from '@replit/codemirror-lang-svelte';
 import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
@@ -11,35 +12,39 @@ import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
-import { showMinimap } from '@replit/codemirror-minimap';
+// import { showMinimap } from '@replit/codemirror-minimap';
 import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
 import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
+  PaneId,
   ShareDBDoc,
+  TabState,
   Username,
   VZCodeContent,
 } from '../../types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
-  colorsInTextPlugidn,
-  highlightWidgets,
+  colorsInTextPlugin,
   rotationIndicator,
   widgets,
-} from './widgets';
+} from './InteractiveWidgets';
 import {
   EditorCache,
+  editorCacheKey,
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { AIAssist } from '../AIAssist';
 import { typeScriptCompletions } from './typeScriptCompletions';
 import { typeScriptLinter } from './typeScriptLinter';
-import { TabState } from '../vzReducer';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
+import { InteractRule } from '@replit/codemirror-interact';
+import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import { cssLanguage } from '@codemirror/lang-css';
+import { javascriptLanguage } from '@codemirror/lang-javascript';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptCompletions = true;
@@ -49,6 +54,26 @@ const enableTypeScriptLinter = true;
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
 
+const htmlConfig = {
+  matchClosingTags: true,
+  selfClosingTags: false,
+  autoCloseTags: true,
+  extraTags: {},
+  extraGlobalAttributes: {},
+  nestedLanguages: [
+    {
+      tag: 'script',
+      language: javascript,
+      parser: javascriptLanguage.parser,
+    },
+    {
+      tag: 'style',
+      language: css,
+      parser: cssLanguage.parser,
+    },
+  ],
+  nestedAttributes: [],
+};
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -59,9 +84,10 @@ const languageExtensions = {
   js: tsx,
   jsx: tsx,
   ts: tsx,
-  html,
+  html: () => html(htmlConfig),
   css,
   md: markdown,
+  svelte,
 };
 
 // Gets a value at a path in an object.
@@ -78,8 +104,10 @@ const getAtPath = (obj, path) => {
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
+  paneId = 'root',
   fileId,
   shareDBDoc,
+  content,
   filesPath,
   localPresence,
   docPresence,
@@ -87,11 +115,14 @@ export const getOrCreateEditor = ({
   onInteract,
   editorCache,
   usernameRef,
-  aiAssistEndpoint,
-  aiAssistOptions,
   typeScriptWorker,
-  tabList,
+  customInteractRules,
+  allowGlobals,
+  enableAutoFollowRef,
+  openTab,
 }: {
+  // TODO pass this in from the outside
+  paneId?: PaneId;
   fileId: FileId;
 
   // The ShareDB document that contains the file.
@@ -101,7 +132,13 @@ export const getOrCreateEditor = ({
   //    based on the file extension.
   // It's also passed into the `json1Sync` extension,
   // which is used for multiplayer editing.
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  // This can be `undefined` in the case where we are
+  // viewing files read-only, in which case multiplayer
+  // editing is not enabled.
+  shareDBDoc: ShareDBDoc<VZCodeContent> | undefined;
+
+  // The initial content to present.
+  content: VZCodeContent;
 
   filesPath: string[];
   localPresence: any;
@@ -111,25 +148,30 @@ export const getOrCreateEditor = ({
   editorCache: EditorCache;
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
-  aiAssistOptions?: {
-    [key: string]: any;
-  };
   typeScriptWorker: Worker;
-  tabList: Array<TabState>;
+  customInteractRules?: Array<InteractRule>;
+  allowGlobals: boolean;
+
+  // Ref to a boolean that determines whether to
+  // enable auto-following the cursors of remote users.
+  enableAutoFollowRef: React.MutableRefObject<boolean>;
+  openTab: (tabState: TabState) => void;
 }): EditorCacheValue => {
   // Cache hit
-  if (editorCache.has(fileId)) {
-    return editorCache.get(fileId);
+
+  const cacheKey = editorCacheKey(fileId, paneId);
+
+  if (editorCache.has(cacheKey)) {
+    return editorCache.get(cacheKey);
   }
 
   // Cache miss
 
   // Compute `text` and `fileExtension` from the ShareDB document.
-  const data = shareDBDoc.data;
   const textPath = [...filesPath, fileId, 'text'];
   const namePath = [...filesPath, fileId, 'name'];
-  const text = getAtPath(data, textPath);
-  const name = getAtPath(data, namePath);
+  const text = getAtPath(content, textPath);
+  const name = getAtPath(content, namePath);
   const fileExtension = name.split('.').pop();
 
   // Create a compartment for the theme so that it can be changed dynamically.
@@ -137,51 +179,49 @@ export const getOrCreateEditor = ({
   let themeCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
+  // const extensions = [autocompletion(), html(htmlConfig)]
   const extensions = [];
 
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
   // Does not deal with showing others' cursors.
-  extensions.push(
-    json1Sync({
-      shareDBDoc,
-      path: textPath,
-      json1: json1Presence,
-      textUnicode,
-    }),
-  );
-
-  // Deals with broadcasting changes in cursor location and selection.
-  if (localPresence) {
+  if (shareDBDoc) {
     extensions.push(
-      json1PresenceBroadcast({
+      json1Sync({
+        shareDBDoc,
         path: textPath,
-        localPresence,
-        usernameRef,
+        json1: json1Presence,
+        textUnicode,
       }),
     );
+
+    // Deals with broadcasting changes in cursor location and selection.
+    if (localPresence) {
+      extensions.push(
+        json1PresenceBroadcast({
+          path: textPath,
+          localPresence,
+          usernameRef,
+        }),
+      );
+    }
+
+    // Deals with receiving the broadcast from other clients and displaying them.
+    if (docPresence) {
+      extensions.push(
+        json1PresenceDisplay({
+          path: textPath,
+          docPresence,
+          enableAutoFollowRef,
+          openTab,
+        }),
+      );
+    }
+  } else {
+    // If the ShareDB document is not provided,
+    // then we do not allow editing.
+    extensions.push(EditorView.editable.of(false));
   }
-
-  // Show the minimap
-  // See https://github.com/replit/codemirror-minimap#usage
-  extensions.push(
-    showMinimap.compute(['doc'], () => ({
-      create: () => ({
-        dom: document.createElement('div'),
-      }),
-      // displayText: 'blocks',
-    })),
-  );
-
-  // VSCode keybindings
-  // See https://github.com/replit/codemirror-vscode-keymap#usage
-  extensions.push(keymap.of(vscodeKeymap));
-
-  // Deals with receiving the broadcas from other clients and displaying them.
-  if (docPresence)
-    extensions.push(
-      json1PresenceDisplay({ path: textPath, docPresence }),
-    );
 
   extensions.push(colorsInTextPlugin);
 
@@ -219,9 +259,9 @@ export const getOrCreateEditor = ({
     // TODO manually test this case by creating a file
     // that has no extension, opening it up,
     // and then adding an extension.
-    console.warn(
-      `No language extension for file extension: ${fileExtension}`,
-    );
+    // console.warn(
+    //   `No language extension for file extension: ${fileExtension}`,
+    // );
     // We still need to push the compartment,
     // otherwise the compartment won't work when
     // a file extension _is_ added later on.
@@ -240,36 +280,50 @@ export const getOrCreateEditor = ({
   // the boolean checkboxes. The color pickers are also tricky,
   // as they would also need to be able to handle `onInteractEnd`.
   // See https://github.com/replit/codemirror-interact/issues/14
-  extensions.push(widgets({ onInteract }));
+  extensions.push(
+    widgets({ onInteract, customInteractRules }),
+  );
 
-  extensions.push(highlightWidgets);
+  // TODO fix the bugginess in this one where
+  // the highlight persists after the mouse leaves.
+  // extensions.push(highlightWidgets);
 
   extensions.push(rotationIndicator);
 
-  extensions.push(
-    AIAssist({
-      shareDBDoc,
-      fileId,
-      tabList,
-      aiAssistEndpoint,
-      aiAssistOptions,
-    }),
-  );
+  // extensions.push(
+  //   AIAssistCodeMirrorKeyMap({
+  //     shareDBDoc,
+  //     fileId,
+  //     tabList,
+  //     aiAssistEndpoint,
+  //     aiAssistOptions,
+  //   }),
+  // );
 
   // Add the extension that provides TypeScript completions.
-  if (enableTypeScriptCompletions) {
-    extensions.push(
-      autocompletion({
-        override: [
-          typeScriptCompletions({
-            typeScriptWorker,
-            fileName: name,
-          }),
-        ],
-      }),
-    );
-  }
-  if (enableTypeScriptLinter) {
+  // only add this if it's TS-compatible (.js, .jsx, .ts, .tsx)
+  const isTypeScript =
+    fileExtension === 'js' ||
+    fileExtension === 'jsx' ||
+    fileExtension === 'ts' ||
+    fileExtension === 'tsx';
+
+  extensions.push(
+    autocompletion(
+      isTypeScript
+        ? {
+            override: [
+              typeScriptCompletions({
+                typeScriptWorker,
+                fileName: name,
+              }),
+            ],
+          }
+        : undefined,
+    ),
+  );
+
+  if (shareDBDoc && enableTypeScriptLinter) {
     extensions.push(
       linter(
         typeScriptLinter({
@@ -277,6 +331,7 @@ export const getOrCreateEditor = ({
           fileName: name,
           shareDBDoc,
           fileId,
+          allowGlobals,
         }) as unknown as () => Diagnostic[],
         //Needs the unknown because we are returning a Promise<Diagnostic>
       ),
@@ -296,6 +351,38 @@ export const getOrCreateEditor = ({
     }),
   );
 
+  // Show the minimap
+  // See https://github.com/replit/codemirror-minimap#usage
+  // This extension has poor performance, so it's disabled for now.
+  // extensions.push(
+  //   showMinimap.compute(['doc'], () => ({
+  //     create: () => ({
+  //       dom: document.createElement('div'),
+  //     }),
+  //     // Without this, performance is terrible.
+  //     displayText: 'blocks',
+  //   })),
+  // );
+
+  // VSCode keybindings
+  // See https://github.com/replit/codemirror-vscode-keymap#usage
+  // extensions.push(keymap.of(vscodeKeymap));
+  extensions.push(
+    keymap.of(
+      vscodeKeymap.map((binding) => {
+        // Here we override the Shift+Enter behavior specifically,
+        // as that can be used to trigger a manual save/Prettier,
+        // and the default behavior from the keymap interferes.
+        if (binding.key === 'Enter') {
+          delete binding.shift;
+        }
+        return binding;
+      }),
+    ),
+  );
+  // adds rainbow brackets
+  extensions.push(rainbowBrackets());
+
   const editor = new EditorView({
     state: EditorState.create({
       doc: text,
@@ -306,7 +393,7 @@ export const getOrCreateEditor = ({
   const editorCacheValue = { editor, themeCompartment };
 
   // Populate the cache.
-  editorCache.set(fileId, editorCacheValue);
+  editorCache.set(cacheKey, editorCacheValue);
 
   return editorCacheValue;
 };
