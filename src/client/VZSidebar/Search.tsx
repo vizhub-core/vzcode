@@ -35,12 +35,17 @@ function jumpToPattern(
 
 function isResultElementWithinView(container, element) {
   const containerTop = container.scrollTop;
-  const containerBottom = containerTop + container.clientHeight;
+  const containerBottom =
+    containerTop + container.clientHeight;
 
-  const elementTop = element.offsetTop - container.offsetTop;
+  const elementTop =
+    element.offsetTop - container.offsetTop;
   const elementBottom = elementTop + element.clientHeight;
 
-  return elementTop >= (containerTop + 100) && elementBottom <= (containerBottom - 100);
+  return (
+    elementTop >= containerTop + 100 &&
+    elementBottom <= containerBottom - 100
+  );
 }
 
 export const Search = () => {
@@ -57,10 +62,17 @@ export const Search = () => {
     shareDBDoc,
     editorCache,
   } = useContext(VZCodeContext);
-  const { pattern, results, focusedIndex, focusedChildIndex, focused } = search;
+  const {
+    pattern,
+    results,
+    focusedIndex,
+    focusedChildIndex,
+    focused,
+  } = search;
   const inputRef = useRef(null);
-  const files: [string, SearchFile][] = Object.entries(results)
-    .filter(([_, file]) => file.visibility !== 'closed');
+  const files: [string, SearchFile][] = Object.entries(
+    results,
+  ).filter(([_, file]) => file.visibility !== 'closed');
 
   useEffect(() => {
     if (isMounted) {
@@ -83,23 +95,23 @@ export const Search = () => {
       setIsMounted(true);
     }
   }, [pattern]);
-  
-  const flattenResult = useCallback((fileId: string, file: SearchFile) => {
-    setSearchFileVisibility(
-      shareDBDoc,
-      fileId,
-      file.visibility === 'open' && focusedChildIndex === null
-        ? 'flattened'
-        : 'open'
-    )
-  }, [focusedIndex, focusedChildIndex]);
+
+  const flattenResult = useCallback(
+    (fileId: string, file: SearchFile) => {
+      setSearchFileVisibility(
+        shareDBDoc,
+        fileId,
+        file.visibility === 'open' &&
+          focusedChildIndex === null
+          ? 'flattened'
+          : 'open',
+      );
+    },
+    [focusedIndex, focusedChildIndex],
+  );
 
   const closeResult = useCallback((fileId: string) => {
-    setSearchFileVisibility(
-      shareDBDoc,
-      fileId,
-      'closed'
-    );
+    setSearchFileVisibility(shareDBDoc, fileId, 'closed');
   }, []);
 
   const focusFileElement = useCallback((fileId, index) => {
@@ -114,7 +126,8 @@ export const Search = () => {
       return;
     }
 
-    const matchingLines: number = files[focusedIndex][1].matches.length;
+    const matchingLines: number =
+      files[focusedIndex][1].matches.length;
 
     switch (event.key) {
       case 'Tab':
@@ -122,35 +135,62 @@ export const Search = () => {
         setSearchFocusedIndex(focusedIndex, null);
         break;
       case 'ArrowUp':
-        if (focusedIndex == 0 && focusedChildIndex == null) {
+        if (
+          focusedIndex == 0 &&
+          focusedChildIndex == null
+        ) {
           // No effect on first search listing
           break;
-        } else if (focusedChildIndex === null || matchingLines == 0) {
+        } else if (
+          focusedChildIndex === null ||
+          matchingLines == 0
+        ) {
           // Toggle the previous file last child, if any
-          const previousMatchingLines: number = files[focusedIndex - 1][1].matches.length;
-          setSearchFocusedIndex(focusedIndex - 1, previousMatchingLines > 0 ? previousMatchingLines - 1 : null);
+          const previousMatchingLines: number =
+            files[focusedIndex - 1][1].matches.length;
+          setSearchFocusedIndex(
+            focusedIndex - 1,
+            previousMatchingLines > 0
+              ? previousMatchingLines - 1
+              : null,
+          );
         } else if (focusedChildIndex === 0) {
           // Toggle the file
           setSearchFocusedIndex(focusedIndex, null);
         } else {
           // Toggle the previous matching line
-          setSearchFocusedIndex(focusedIndex, focusedChildIndex - 1);
+          setSearchFocusedIndex(
+            focusedIndex,
+            focusedChildIndex - 1,
+          );
         }
 
         break;
       case 'ArrowDown':
-        if (focusedIndex == files.length - 1 && focusedChildIndex == matchingLines - 1) {
+        if (
+          focusedIndex == files.length - 1 &&
+          focusedChildIndex == matchingLines - 1
+        ) {
           // Last matching line should have no effect
           break;
-        } else if (focusedChildIndex === null && matchingLines > 0) {
+        } else if (
+          focusedChildIndex === null &&
+          matchingLines > 0
+        ) {
           // Toggle the first matching line
           setSearchFocusedIndex(focusedIndex, 0);
-        } else if (focusedChildIndex == matchingLines - 1 || matchingLines == 0) {
+        } else if (
+          focusedChildIndex == matchingLines - 1 ||
+          matchingLines == 0
+        ) {
           // Toggle the next file
           setSearchFocusedIndex(focusedIndex + 1, null);
         } else {
           // Toggle the next matching line
-          setSearchFocusedIndex(focusedIndex, focusedChildIndex + 1);
+          setSearchFocusedIndex(
+            focusedIndex,
+            focusedChildIndex + 1,
+          );
         }
 
         break;
@@ -158,13 +198,22 @@ export const Search = () => {
         if (focusedChildIndex !== null) {
           setSearchFocusedIndex(focusedIndex, null);
         } else {
-          flattenResult(files[focusedIndex][0], files[focusedIndex][1]);
+          flattenResult(
+            files[focusedIndex][0],
+            files[focusedIndex][1],
+          );
         }
         break;
       case 'ArrowRight':
         if (files[focusedIndex][1].visibility !== 'open') {
-          flattenResult(files[focusedIndex][0], files[focusedIndex][1]);
-        } else if (focusedChildIndex === null && matchingLines !== 0) {
+          flattenResult(
+            files[focusedIndex][0],
+            files[focusedIndex][1],
+          );
+        } else if (
+          focusedChildIndex === null &&
+          matchingLines !== 0
+        ) {
           setSearchFocusedIndex(focusedIndex, 0);
         }
 
@@ -176,11 +225,22 @@ export const Search = () => {
 
         if (focusedChildIndex !== null) {
           // Jump to matching line
-          const line: number = files[focusedIndex][1].matches[focusedChildIndex].line;
-          const index: number = files[focusedIndex][1].matches[focusedChildIndex].index;
+          const line: number =
+            files[focusedIndex][1].matches[
+              focusedChildIndex
+            ].line;
+          const index: number =
+            files[focusedIndex][1].matches[
+              focusedChildIndex
+            ].index;
 
           if (editorCache.get(fileId)) {
-            jumpToPattern(editorCache.get(fileId).editor, pattern, line, index);
+            jumpToPattern(
+              editorCache.get(fileId).editor,
+              pattern,
+              line,
+              index,
+            );
           }
         }
         break;
@@ -190,25 +250,35 @@ export const Search = () => {
 
     // Ensure keyboard navigation keeps results within the current view
     const file: string = files[focusedIndex][0];
-    const container = document.getElementById("sidebar-view-container");
+    const container = document.getElementById(
+      'sidebar-view-container',
+    );
 
     if (container) {
       if (focusedChildIndex === null) {
         const fileElement = document.getElementById(file);
 
-        if (!(isResultElementWithinView(container, fileElement))) {
-          fileElement.scrollIntoView({ block: "center" });
+        if (
+          !isResultElementWithinView(container, fileElement)
+        ) {
+          fileElement.scrollIntoView({ block: 'center' });
         }
       } else {
-        const line = files[focusedIndex][1].matches[focusedChildIndex].line;
-        const lineElement = document.getElementById(file + "-" + line);
+        const line =
+          files[focusedIndex][1].matches[focusedChildIndex]
+            .line;
+        const lineElement = document.getElementById(
+          file + '-' + line,
+        );
 
-        if (!(isResultElementWithinView(container, lineElement))) {
-          lineElement.scrollIntoView({ block: "center" });
+        if (
+          !isResultElementWithinView(container, lineElement)
+        ) {
+          lineElement.scrollIntoView({ block: 'center' });
         }
       }
     }
-  }
+  };
 
   useEffect(() => {
     // Focus the search input on mount and keyboard shortcut invocation
@@ -226,56 +296,74 @@ export const Search = () => {
         <Form.Control
           type="text"
           value={pattern}
-          onChange={(event) => setSearch(event.target.value)}
+          onChange={(event) =>
+            setSearch(event.target.value)
+          }
           ref={inputRef}
           spellCheck="false"
         />
       </Form.Group>
       {Object.keys(results).length >= 1 &&
-        pattern.trim().length >= 1 ? (
+      pattern.trim().length >= 1 ? (
         <div
           onKeyDown={handleKeyDown}
           tabIndex={0}
-          className="search-results">
-          {files.map(([fileId, file]: [string, SearchFile], index) => {
-            const matches = file.matches;
-            return (
-              <div
-                className="search-result"
-                key={file.name}
-              >
+          className="search-results"
+        >
+          {files.map(
+            (
+              [fileId, file]: [string, SearchFile],
+              index,
+            ) => {
+              const matches = file.matches;
+              return (
                 <div
-                  onClick={() => focusFileElement(fileId, index)}
-                  id={fileId}
-                  className={`search-file-heading 
-                      ${(focusedIndex == index && focusedChildIndex == null)
-                      ? 'active' : ''}`}
+                  className="search-result"
+                  key={file.name}
                 >
-                  <div className="search-file-title">
-                    <div
-                      className="arrow-wrapper"
-                      onClick={() => flattenResult(fileId, file)}
-                      style={{
-                        transform: `rotate(${file.visibility === 'open' ? 90 : 0}deg)`,
-                      }}
-                    >
-                      <DirectoryArrowSVG />
+                  <div
+                    onClick={() =>
+                      focusFileElement(fileId, index)
+                    }
+                    id={fileId}
+                    className={`search-file-heading 
+                      ${
+                        focusedIndex == index &&
+                        focusedChildIndex == null
+                          ? 'active'
+                          : ''
+                      }`}
+                  >
+                    <div className="search-file-title">
+                      <div
+                        className="arrow-wrapper"
+                        onClick={() =>
+                          flattenResult(fileId, file)
+                        }
+                        style={{
+                          transform: `rotate(${file.visibility === 'open' ? 90 : 0}deg)`,
+                        }}
+                      >
+                        <DirectoryArrowSVG />
+                      </div>
+                      <div className="search-file-name">
+                        {getExtensionIcon(file.name)}
+                        <h5>{file.name}</h5>
+                      </div>
                     </div>
-                    <div className="search-file-name">
-                      {getExtensionIcon(file.name)}
-                      <h5>{file.name}</h5>
-                    </div>
-                  </div>
-                  <div className="search-file-info">
-                    {
-                      (index == focusedIndex && focusedChildIndex == null) ? (
+                    <div className="search-file-info">
+                      {index == focusedIndex &&
+                      focusedChildIndex == null ? (
                         <span
                           className="search-file-close"
                           onClick={(event) => {
                             event.stopPropagation();
                             closeResult(fileId);
                             // Focus the previous search file, if possible
-                            setSearchFocusedIndex(Math.max(0, index - 1), null);
+                            setSearchFocusedIndex(
+                              Math.max(0, index - 1),
+                              null,
+                            );
                           }}
                         >
                           <CloseSVG />
@@ -284,86 +372,119 @@ export const Search = () => {
                         <h6 className="search-file-count">
                           {matches.length}
                         </h6>
-                      )
-                    }
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div
-                  className="search-file-lines">
-                  {((file.visibility === 'open')
-                    || (file.visibility === "flattened" && index == focusedIndex && focusedChildIndex !== null)) && 
-                    file.matches.map((match, childIndex) => {
-                      const before = match.text.substring(
-                        0,
-                        match.index,
-                      );
-                      const hit = match.text.substring(
-                        match.index,
-                        match.index + pattern.length,
-                      );
-                      const after = match.text.substring(
-                        match.index + pattern.length,
-                      );
+                  <div className="search-file-lines">
+                    {(file.visibility === 'open' ||
+                      (file.visibility === 'flattened' &&
+                        index == focusedIndex &&
+                        focusedChildIndex !== null)) &&
+                      file.matches.map(
+                        (match, childIndex) => {
+                          const before =
+                            match.text.substring(
+                              0,
+                              match.index,
+                            );
+                          const hit = match.text.substring(
+                            match.index,
+                            match.index + pattern.length,
+                          );
+                          const after =
+                            match.text.substring(
+                              match.index + pattern.length,
+                            );
 
-                      const identifier = file.name + "-" + match.line;
+                          const identifier =
+                            file.name + '-' + match.line;
 
-                      return (
-                        <div
-                          key={identifier}
-                          tabIndex={(index == focusedIndex) ? 0 : -1}
-                          id={fileId + "-" + match.line}
-                          className={`search-line 
-                              ${(focusedIndex == index && focusedChildIndex == childIndex)
-                              ? 'active' : ''}`}
-                        >
-                          <p
-                            key={
-                              file.name +
-                              ' - ' +
-                              match.line +
-                              ' - ' +
-                              match.index
-                            }
-                            onClick={() => {
-                              setSearchFocusedIndex(index, childIndex);
-
-                              if (editorCache.get(fileId)) {
-                                jumpToPattern(editorCache.get(fileId).editor,
-                                  pattern, match.line, match.index);
+                          return (
+                            <div
+                              key={identifier}
+                              tabIndex={
+                                index == focusedIndex
+                                  ? 0
+                                  : -1
                               }
-                            }}
-                          >
-                            {before}
-                            <span className="search-pattern">
-                              {hit}
-                            </span>
-                            {after}
-                          </p>
-                          {
-                            (focusedIndex == index && focusedChildIndex === childIndex) && (
-                              <span
-                                className="search-file-close"
-                                onClick={(event) => {
-                                  event.stopPropagation();
-                                  setSearchLineVisibility(shareDBDoc, fileId, match.line);
+                              id={fileId + '-' + match.line}
+                              className={`search-line 
+                              ${
+                                focusedIndex == index &&
+                                focusedChildIndex ==
+                                  childIndex
+                                  ? 'active'
+                                  : ''
+                              }`}
+                            >
+                              <p
+                                key={
+                                  file.name +
+                                  ' - ' +
+                                  match.line +
+                                  ' - ' +
+                                  match.index
+                                }
+                                onClick={() => {
+                                  setSearchFocusedIndex(
+                                    index,
+                                    childIndex,
+                                  );
 
-                                  if (childIndex == 0) {
-                                    // Removing remaining single line
-                                    setSearchFocusedIndex(index, null);
+                                  if (
+                                    editorCache.get(fileId)
+                                  ) {
+                                    jumpToPattern(
+                                      editorCache.get(
+                                        fileId,
+                                      ).editor,
+                                      pattern,
+                                      match.line,
+                                      match.index,
+                                    );
                                   }
                                 }}
                               >
-                                <CloseSVG />
-                              </span>
-                            )
-                          }
-                        </div>
-                      );
-                    })}
+                                {before}
+                                <span className="search-pattern">
+                                  {hit}
+                                </span>
+                                {after}
+                              </p>
+                              {focusedIndex == index &&
+                                focusedChildIndex ===
+                                  childIndex && (
+                                  <span
+                                    className="search-file-close"
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      setSearchLineVisibility(
+                                        shareDBDoc,
+                                        fileId,
+                                        match.line,
+                                      );
+
+                                      if (childIndex == 0) {
+                                        // Removing remaining single line
+                                        setSearchFocusedIndex(
+                                          index,
+                                          null,
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <CloseSVG />
+                                  </span>
+                                )}
+                            </div>
+                          );
+                        },
+                      )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              );
+            },
+          )}
         </div>
       ) : (
         <div className="search-state">

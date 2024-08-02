@@ -80,8 +80,8 @@ export interface SearchFile {
 export interface SearchResults {
   pattern: string;
   results: SearchResult;
-  focusedIndex: number;
-  focusedChildIndex: number;
+  focusedIndex: number | null;
+  focusedChildIndex: number | null;
   focused: boolean;
 }
 
