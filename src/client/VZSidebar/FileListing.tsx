@@ -92,6 +92,7 @@ export const FileListing = ({
             <div
               key={index}
               className="presence-indicator"
+              //style={{ backgroundColor: 'blue' }} // Hardcoded color for testing
               style={{ backgroundColor: indicator.userColor }}
             >
               {indicator.username[0]}

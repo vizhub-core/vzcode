@@ -5,7 +5,7 @@ import {
   Decoration,
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
-import ColorHash from 'color-hash';
+import { assignUserColor } from '../presenceColor';
 import {
   FileId,
   Presence,
@@ -88,14 +88,15 @@ export const json1PresenceDisplay = ({
               presence,
             );
 
-            // Generate user color based on the id
-  const userColor = new ColorHash({ lightness: 0.75 }).rgb(id).join(',');
+// Initialize or update presence with user color
+const initializePresence = (id: string, presence: Presence): Presence => {
+  return assignUserColor(presence, id);
+};
 
   // If the presence is in the current file, update the presence state with the color.
   if (isPresenceInCurrentFile) {
-    presenceState[id] = presence;
-    presenceState[id].userColor = userColor;  // Add color to the presence
-    console.log('Emitting presence with userColor:', presence.userColor);
+    presenceState[id] = initializePresence(id, presence);    
+    console.log('Structure of original presence object:', JSON.stringify(presenceState[id], null, 2));
   } else if (presence) {
     // Otherwise, delete the presence state.
     delete presenceState[id];
@@ -127,7 +128,7 @@ export const json1PresenceDisplay = ({
         block: false,
         widget: new PresenceWidget(
           '' + Math.random(),
-          userColor || 'rgb(0, 0, 0)', // Fallback color
+          userColor, // Fallback color
           presence.username,
         ),
                 }),

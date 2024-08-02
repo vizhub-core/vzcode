@@ -32,6 +32,8 @@ import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { useDragAndDrop } from './useDragAndDrop';
 import './styles.scss';
+import { assignUserColor } from '../presenceColor';
+
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -183,19 +185,16 @@ export const VZSidebar = ({
       const handleReceive = (
         presenceId: PresenceId,
         update: Presence,
-      ) => {
-        console.log('Received update object:', update);
+      ) =>
+         {
+        const updatedPresence = assignUserColor(update, presenceId);
         const presenceIndicator: PresenceIndicator = {
-          username: update.username,
-          fileId: update.start[1] as FileId,
-          userColor: update.userColor,
-          
+          username: updatedPresence.username,
+          fileId: updatedPresence.start[1] as FileId,
+          userColor: updatedPresence.userColor,
+
         };
-        console.log('Got presence!', update);
-        const userColor = update.userColor;
-        console.log ('got user color', userColor);
-        console.log (update.username, presenceIndicator.username, update.userColor, presenceIndicator.userColor);
-        console.log({presenceId, update})
+        console.log('Structure of updated object:', JSON.stringify(presenceIndicator, null, 2));
 
         updatePresenceIndicator(presenceIndicator);
       };
