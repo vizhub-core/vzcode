@@ -73,6 +73,27 @@ function getIdentifierContext(
   return levels;
 }
 
+function traverseImports(state: EditorState) {
+  const imports = [];
+
+  syntaxTree(state).iterate({
+    enter(tree) {
+      if (tree.name === 'ImportDeclaration') {
+        const importPath = state.doc.sliceString(tree.from, tree.to);
+
+        console.log(importPath);
+        
+        
+        if (importPath.startsWith('./') || importPath.startsWith('../')) {
+          console.log("Relative path");
+        }
+      }
+    },
+  });
+
+  return imports;
+}
+
 function jumpToDefinition(
   editor: EditorView,
   node: SyntaxNode,
@@ -90,6 +111,7 @@ function jumpToDefinition(
     identifier.to,
   );
   const context: number = getIdentifierContext(identifier);
+
 
   if (identifier) {
     syntaxTree(state).iterate({
@@ -142,6 +164,13 @@ function jumpToDefinition(
           closestDefinition = definitions[i].identifier;
           break;
         }
+      }
+
+      // Check if the identifier is part of an import
+      for (const importNode of traverseImports(state)) {
+        const importPath = state.doc.sliceString(importNode.from, importNode.to);
+
+        console.log(importPath);
       }
 
       return closestDefinition;
