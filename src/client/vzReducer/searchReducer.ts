@@ -31,7 +31,7 @@ function searchPattern(
             line: j + 1,
             index: index,
             text: lines[j],
-            isClosed: false
+            isClosed: false,
           });
         }
       }
@@ -137,8 +137,11 @@ export const setSearchLineVisibilityReducer = (
             ...state.search.results,
             [action.id]: {
               ...state.search.results[action.id],
-              matches: state.search.results[action.id].matches.filter((match, index) =>
-                match.line !== action.line
+              matches: state.search.results[
+                action.id
+              ].matches.filter(
+                (match, index) =>
+                  match.line !== action.line,
               ),
             },
           },
@@ -170,7 +173,7 @@ export const toggleSearchFocusedReducer = (
         ...state,
         search: {
           ...state.search,
-          focused: !(state.search.focused),
+          focused: !state.search.focused,
         },
       }
     : state;

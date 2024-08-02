@@ -139,15 +139,19 @@ export type VZAction =
   // `hide_search_results_line`
   //  * Hides a current search pattern file's specific matching line
   | {
-    type: 'hide_search_results_line';
-    files: ShareDBDoc<VZCodeContent>;
-    id: string;
-    line: number;
-  }
+      type: 'hide_search_results_line';
+      files: ShareDBDoc<VZCodeContent>;
+      id: string;
+      line: number;
+    }
 
   // `set_active_search_index`
   //  * Sets focused (file) index and child focused (line) index for search results
-  | { type: 'set_active_search_index'; focusedIndex: number; childIndex: number }
+  | {
+      type: 'set_active_search_index';
+      focusedIndex: number;
+      childIndex: number;
+    }
 
   // `toggle_search_focused`
   // * Toggles focused variable to trigger search input focus
