@@ -13,6 +13,7 @@ import {
   CssSVG,
 } from '../Icons';
 import { VZCodeContext } from '../VZCodeContext';
+import { assignUserColor } from '../presenceColor';
 
 export function getExtensionIcon(fileName: string) {
   const extension = fileName.split('.');
@@ -92,8 +93,8 @@ export const FileListing = ({
             <div
               key={index}
               className="presence-indicator"
-              //style={{ backgroundColor: 'blue' }} // Hardcoded color for testing
-              style={{ backgroundColor: indicator.userColor }}
+              style={{ backgroundColor: 'blue' }} // Hardcoded color for testing
+              //style={{ backgroundColor: assignUserColor(indicator.username) }}
             >
               {indicator.username[0]}
             </div>
@@ -105,3 +106,5 @@ export const FileListing = ({
     </Item>
   );
 };
+
+console.log(assignUserColor('bill'));

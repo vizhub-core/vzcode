@@ -187,15 +187,12 @@ export const VZSidebar = ({
         update: Presence,
       ) =>
          {
-        const updatedPresence = assignUserColor(update, presenceId);
+        const updatedPresenceColor = assignUserColor(update.username);
         const presenceIndicator: PresenceIndicator = {
-          username: updatedPresence.username,
-          fileId: updatedPresence.start[1] as FileId,
-          userColor: updatedPresence.userColor,
+          username: update.username,
+          fileId: update.start[1] as FileId,
 
         };
-        console.log('Structure of updated object:', JSON.stringify(presenceIndicator, null, 2));
-
         updatePresenceIndicator(presenceIndicator);
       };
 

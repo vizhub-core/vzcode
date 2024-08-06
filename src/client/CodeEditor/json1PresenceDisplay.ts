@@ -88,14 +88,11 @@ export const json1PresenceDisplay = ({
               presence,
             );
 
-// Initialize or update presence with user color
-const initializePresence = (id: string, presence: Presence): Presence => {
-  return assignUserColor(presence, id);
-};
+
 
   // If the presence is in the current file, update the presence state with the color.
   if (isPresenceInCurrentFile) {
-    presenceState[id] = initializePresence(id, presence);    
+    presenceState[id] = presence;    
     console.log('Structure of original presence object:', JSON.stringify(presenceState[id], null, 2));
   } else if (presence) {
     // Otherwise, delete the presence state.
@@ -116,7 +113,8 @@ const initializePresence = (id: string, presence: Presence): Presence => {
 
   for (const id of Object.keys(presenceState)) {
     const presence: Presence = presenceState[id];
-    const { start, end, userColor } = presence; // Use the color here
+    const { start, end } = presence; // Use the color here
+    const userColor = assignUserColor(presence.username); 
     const from = +start[start.length - 1];
     const to = +end[end.length - 1];
 
@@ -128,7 +126,7 @@ const initializePresence = (id: string, presence: Presence): Presence => {
         block: false,
         widget: new PresenceWidget(
           '' + Math.random(),
-          userColor, // Fallback color
+          userColor, 
           presence.username,
         ),
                 }),
@@ -145,7 +143,7 @@ const initializePresence = (id: string, presence: Presence): Presence => {
                     class: 'cm-json1-presence',
                     attributes: {
                       style: `
-                      background-color: rgba(${presence.userColor}, 0.75);
+                      background-color: rgba(${assignUserColor(presence.username)}, 0.75);
                       mix-blend-mode: luminosity;
                       `,
                     },
