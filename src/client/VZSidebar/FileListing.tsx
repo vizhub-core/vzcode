@@ -13,15 +13,25 @@ const PresenceIndicators = ({
 }) => {
   return (
     <div className="presence-indicators">
-      {presence.map((indicator, index) => (
-        <div key={index} className="presence-indicator"
-          //style={{ backgroundColor: 'blue' }} // Hardcoded color for testing
-          style={{ backgroundColor: assignUserColor(indicator.username) }}
+      {presence.map((indicator, index) => {
+        // Get the raw RGB values from assignUserColor
+        const color = assignUserColor(indicator.username);
+
+        // Format it as `rgb()` directly in the component
+        const formattedColor = `rgb(${color})`;
+
+        //console.log(`Username: ${indicator.username}, Assigned Color: ${formattedColor}`);
+
+        return (
+          <div
+            key={index}
+            className="presence-indicator"
+            style={{ backgroundColor: formattedColor }}
           >
-          {indicator.username[0]}{' '}
-          {/* Display the first letter of the username */}
-        </div>
-      ))}
+            {indicator.username[0]}
+          </div>
+        );
+      })}
     </div>
   );
 };
