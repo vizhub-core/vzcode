@@ -5,7 +5,7 @@ import {
   Decoration,
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
-import ColorHash from 'color-hash';
+import { assignUserColor } from '../presenceColor';
 import {
   FileId,
   Presence,
@@ -114,11 +114,9 @@ export const json1PresenceDisplay = ({
               const { start, end } = presence;
               const from = +start[start.length - 1];
               const to = +end[end.length - 1];
-              const userColor = new ColorHash({
-                lightness: 0.75,
-              }).rgb(id);
+              const userColor = assignUserColor(presence.username);
               const { username } = presence;
-
+              //console.log("File User Color:" + assignUserColor(presence.username));
               presenceDecorations.push({
                 from,
                 to: from,
