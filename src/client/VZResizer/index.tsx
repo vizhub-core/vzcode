@@ -6,7 +6,6 @@ import {
   useCallback,
   useRef,
 } from 'react';
-
 import {
   Side,
   SplitPaneResizeContext,
@@ -44,9 +43,10 @@ export const VZResizer = ({
 
   // If there is no active file, don't render the resizer
   // for the right side.
-  const { activeFileId } = useContext(VZCodeContext);
+  const { activePane } = useContext(VZCodeContext);
+
   const shouldRenderResizer =
-    side === 'left' || activeFileId;
+    side === 'left' || activePane.activeFileId;
 
   const previousClientX = useRef<number>(0);
 
