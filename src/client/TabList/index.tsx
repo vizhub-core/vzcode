@@ -1,26 +1,23 @@
 import { useContext } from 'react';
+import { TabState } from '../../types';
 import { VZCodeContext } from '../VZCodeContext';
 import { Tab } from './Tab';
 import './style.scss';
-import { TabState } from '../../types';
 
 // Displays the list of tabs above the code editor.
-export const TabList = () => {
-  const {
-    files,
-    activeFileId,
-    setActiveFileId,
-    tabList,
-    openTab,
-    closeTabs,
-  } = useContext(VZCodeContext);
+export const TabList = ({ activeFileId, tabList }) => {
+  const { files, setActiveFileId, openTab, closeTabs } =
+    useContext(VZCodeContext);
 
   return (
     <div className="vz-tab-list">
       {files &&
         tabList
           // Handles the case that the tab list references a file that was deleted.
-          .filter((tabState) => tabState.fileId in files)
+          .filter(
+            (tabState: TabState) =>
+              tabState.fileId in files,
+          )
           .map((tabState: TabState) => (
             <Tab
               key={tabState.fileId}

@@ -24,7 +24,7 @@ export const CodeEditor = ({
   allowGlobals: boolean;
 }) => {
   const {
-    activeFileId,
+    activePane,
     shareDBDoc,
     content,
     submitOperation,
@@ -84,7 +84,7 @@ export const CodeEditor = ({
   const editorCacheValue: EditorCacheValue = useMemo(
     () =>
       getOrCreateEditor({
-        fileId: activeFileId,
+        fileId: activePane.activeFileId,
         shareDBDoc,
         content,
         filesPath,
@@ -102,7 +102,7 @@ export const CodeEditor = ({
         // splitPaneView,
       }),
     [
-      activeFileId,
+      activePane,
       shareDBDoc,
       filesPath,
       localPresence,

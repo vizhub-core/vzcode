@@ -7,7 +7,7 @@ import { OverlayTrigger, Tooltip } from '../bootstrap';
 import './style.scss';
 
 // Feature flag for split pane feature (WIP)
-const enableSplitPane = false;
+const enableSplitPane = true;
 
 export const RunCodeWidget = ({
   runCodeWidgetTooltipText = (
