@@ -5,7 +5,6 @@ import { VZCodeContext } from '../VZCodeContext';
 import { FileTypeIcon } from './FileTypeIcon';
 import { assignUserColor } from '../presenceColor';
 
-
 const PresenceIndicators = ({
   presence,
 }: {
