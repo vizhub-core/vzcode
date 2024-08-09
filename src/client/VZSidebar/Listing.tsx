@@ -19,7 +19,7 @@ export const Listing = ({
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
 }) => {
-  const { activeFileId, sidebarPresenceIndicators } =
+  const { activePane, sidebarPresenceIndicators } =
     useContext(VZCodeContext);
   const { name, file, fileId } = entity as FileTreeFile;
   const { path, children } = entity as FileTree;
@@ -35,7 +35,7 @@ export const Listing = ({
       name={name}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
-      isActive={fileId === activeFileId}
+      isActive={fileId === activePane.activeFileId}
       presence={presence}
     />
   ) : (
