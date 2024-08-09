@@ -114,7 +114,9 @@ export const json1PresenceDisplay = ({
               const { start, end } = presence;
               const from = +start[start.length - 1];
               const to = +end[end.length - 1];
-              const userColor = assignUserColor(presence.username);
+              const userColor = assignUserColor(
+                presence.username,
+              );
               const { username } = presence;
               //console.log("File User Color:" + assignUserColor(presence.username));
               presenceDecorations.push({
