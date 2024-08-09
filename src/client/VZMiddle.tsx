@@ -60,6 +60,9 @@ const PaneView = ({
           aiAssistOptions={aiAssistOptions}
           aiAssistTooltipText={aiAssistTooltipText}
           aiAssistClickOverride={aiAssistClickOverride}
+          paneId={pane.id}
+          activeFileId={pane.activeFileId}
+          tabList={pane.tabList}
         />
       ) : null}
       <RunCodeWidget />

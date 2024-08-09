@@ -1,5 +1,6 @@
 import { useCallback, useContext, useState } from 'react';
 import { OverlayTrigger, Tooltip } from '../../bootstrap';
+import { FileId, PaneId, TabState } from '../../../types';
 import { VZCodeContext } from '../../VZCodeContext';
 import {
   RequestId,
@@ -7,8 +8,8 @@ import {
 } from '../../generateRequestId';
 import { SparklesSVG } from '../../Icons';
 import { startAIAssist } from '../startAIAssist';
-import { Spinner } from '../Spinner';
 import { editorCacheKey } from '../../useEditorCache';
+import { Spinner } from '../Spinner';
 import './style.scss';
 
 const enableStopGeneration = false;
@@ -18,17 +19,20 @@ export const AIAssistWidget = ({
   aiAssistOptions,
   aiAssistTooltipText = 'Start AI Assist',
   aiAssistClickOverride,
+  activeFileId,
+  tabList,
+  paneId,
 }: {
   aiAssistEndpoint: string;
   aiAssistOptions: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
+  activeFileId: FileId;
+  tabList: Array<TabState>;
+  paneId: PaneId;
 }) => {
   const {
     shareDBDoc,
-    activeFileId,
-    activePaneId,
-    tabList,
     editorCache,
     runPrettierRef,
     runCodeRef,
@@ -52,7 +56,7 @@ export const AIAssistWidget = ({
       // Wait for generation to finish.
       await startAIAssist({
         view: editorCache.get(
-          editorCacheKey(activeFileId, activePaneId),
+          editorCacheKey(activeFileId, paneId),
         ).editor,
         shareDBDoc,
         fileId: activeFileId,
@@ -96,7 +100,7 @@ export const AIAssistWidget = ({
           : currentAIStreamId,
       );
     }
-  }, [activeFileId, activePaneId, aiStreamId]);
+  }, [activeFileId, paneId, aiStreamId]);
 
   const showWidget = enableStopGeneration
     ? true
