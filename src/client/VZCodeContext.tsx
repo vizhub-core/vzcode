@@ -18,6 +18,7 @@ import {
   PresenceIndicator,
   Pane,
   PaneId,
+  LeafPane,
 } from '../types';
 import { usePrettier } from './usePrettier';
 import { useTypeScript } from './useTypeScript';
@@ -37,6 +38,7 @@ import {
 import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useRunCode } from './useRunCode';
+import { findPane } from './vzReducer/findPane';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -72,14 +74,14 @@ export type VZCodeContextValue = {
   ) => void;
   deleteDirectory: (directoryId: string) => void;
 
-  activeFileId: string | null;
   setActiveFileId: (fileId: string | null) => void;
   setActiveFileLeft: () => void;
   setActiveFileRight: () => void;
 
   activePaneId: PaneId;
+  pane: Pane;
+  activePane: LeafPane;
 
-  tabList: Array<TabState>;
   openTab: (tabState: TabState) => void;
   closeTabs: (fileIds: string[]) => void;
 
@@ -260,12 +262,11 @@ export const VZCodeProvider = ({
     sidebarPresenceIndicators,
   } = state;
 
-  // TODO support splitPane type
-  if (pane.type !== 'leafPane') {
+  const activePane = findPane(pane, activePaneId);
+  if (activePane.type !== 'leafPane') {
+    // Should never happen
     throw new Error('Expected leafPane');
   }
-  const tabList = pane.tabList;
-  const activeFileId = pane.activeFileId;
 
   // Functions for dispatching actions to the reducer.
   const {
@@ -298,8 +299,8 @@ export const VZCodeProvider = ({
     content,
     openTab,
     setActiveFileId,
-    tabList,
-    activeFileId,
+    tabList: activePane.tabList,
+    activeFileId: activePane.activeFileId,
   });
 
   // The set of open directories.
@@ -374,7 +375,8 @@ export const VZCodeProvider = ({
 
   useKeyboardShortcuts({
     closeTabs,
-    activeFileId,
+    // TODO verify that this makes sense
+    activeFileId: activePane.activeFileId,
     activePaneId,
     handleOpenCreateFileModal,
     setActiveFileLeft,
@@ -407,14 +409,16 @@ export const VZCodeProvider = ({
     renameDirectory,
     deleteDirectory,
 
-    activeFileId,
     setActiveFileId,
     setActiveFileLeft,
     setActiveFileRight,
 
     activePaneId,
+    // Root pane
+    pane,
+    // Active leaf pane
+    activePane,
 
-    tabList,
     openTab,
     closeTabs,
 
