@@ -3,6 +3,8 @@ import { Item } from './Item';
 import { FileId, PresenceIndicator } from '../../types';
 import { VZCodeContext } from '../VZCodeContext';
 import { FileTypeIcon } from './FileTypeIcon';
+import { assignUserColor } from '../presenceColor';
+
 
 const PresenceIndicators = ({
   presence,
@@ -12,7 +14,10 @@ const PresenceIndicators = ({
   return (
     <div className="presence-indicators">
       {presence.map((indicator, index) => (
-        <div key={index} className="presence-indicator">
+        <div key={index} className="presence-indicator"
+          //style={{ backgroundColor: 'blue' }} // Hardcoded color for testing
+          style={{ backgroundColor: assignUserColor(indicator.username) }}
+          >
           {indicator.username[0]}{' '}
           {/* Display the first letter of the username */}
         </div>
