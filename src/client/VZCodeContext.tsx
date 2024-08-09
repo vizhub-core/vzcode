@@ -241,16 +241,41 @@ export const VZCodeProvider = ({
   } = state;
 
   // TODO support splitPane type
-  if (pane.type !== 'leafPane') {
-    const activePaneId = state.activePaneId;
-    const activePane = findPane(pane, activePaneId);
-    console.log('activePane: ', activePane);
-    // console.error(pane);
-    throw new Error('Expected leafPane');
-  }
-  const tabList = pane.tabList;
-  const activeFileId = pane.activeFileId;
+  // Determine the active pane and handle both leaf and non-leaf panes
+  let activePaneId = state.activePaneId;
+  let activePane = findPane(pane, activePaneId);
 
+  let tabList = [];
+  let activeFileId = null;
+
+  if (activePane.type === 'leafPane') {
+    tabList = activePane.tabList;
+    activeFileId = activePane.activeFileId;
+  } else {
+    // Handle non-leaf pane logic if needed
+    // For now, just log the active pane for debugging purposes
+    console.log('Active Pane is not a leafPane:', activePane);
+    // check if any children are leaf panes
+    // if so, set the active pane to the first leaf pane
+    // if no children are leaf panes check if any childrens children are leaf panes
+    // if so, set the active pane to the first leaf pane
+    while (activePane.type !== 'leafPane') {
+      // check if any children are leaf panes
+      for (const child of activePane.children) {
+        if (child.type === 'leafPane') {
+          activePaneId = child.id;
+          activePane = child;
+          break;
+        }
+      }
+      // if no children are leaf panes check if any childrens children are leaf panes
+      if (activePane.type !== 'leafPane') {
+        // set the active pane to the first child
+        activePaneId = activePane.children[0].id;
+        activePane = activePane.children[0];
+      }
+    }
+  }
   // Functions for dispatching actions to the reducer.
   const {
     setActiveFileId,
@@ -276,9 +301,9 @@ export const VZCodeProvider = ({
 
   // Sync tab state to the URL.
   // TODO make the URL sync to the active pane only
-  const activePaneId = state.activePaneId;
-  // find the active pane
-  const activePane = findPane(pane, activePaneId);
+  // const activePaneId = state.activePaneId;
+  // // find the active pane
+  // const activePane = findPane(pane, activePaneId);
   useURLSync({
     content,
     openTab,
