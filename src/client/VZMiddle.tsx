@@ -9,11 +9,7 @@ import { VZCodeContext } from './VZCodeContext';
 import { RunCodeWidget } from './RunCodeWidget';
 import { InteractRule } from '@replit/codemirror-interact';
 
-// TODO modify this to handle the SplitPane type
-// Recursive structure?
-// SplitPaneView
-// LeafPaneView
-const PaneView = ({
+const LeafPaneView = ({
   pane,
   content,
   customInteractRules,
@@ -23,21 +19,8 @@ const PaneView = ({
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
+  isClient,
 }) => {
-  // This prevents the CodeEditor from rendering
-  // during SSR.
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // TODO something like
-  // return pane.type === 'leafPane' ? (
-  //   <LeafPaneView />
-  // ) : (
-  //   <SplitPaneView />
-  // );
-
   // This should go in LeafPaneView
   return (
     <>
@@ -66,6 +49,99 @@ const PaneView = ({
     </>
   );
 };
+
+const SplitPaneView = ({
+  pane,
+  content,
+  customInteractRules,
+  allowGlobals,
+  enableAIAssist,
+  aiAssistEndpoint,
+  aiAssistOptions,
+  aiAssistTooltipText,
+  aiAssistClickOverride,
+}) => {
+  console.log('SplitPaneView');
+  return (
+    <>
+      <PaneView
+        pane={pane.children[0]}
+        content={content}
+        customInteractRules={customInteractRules}
+        allowGlobals={allowGlobals}
+        enableAIAssist={enableAIAssist}
+        aiAssistEndpoint={aiAssistEndpoint}
+        aiAssistOptions={aiAssistOptions}
+        aiAssistTooltipText={aiAssistTooltipText}
+        aiAssistClickOverride={aiAssistClickOverride}
+      />
+      <PaneView
+        pane={pane.children[1]}
+        content={content}
+        customInteractRules={customInteractRules}
+        allowGlobals={allowGlobals}
+        enableAIAssist={enableAIAssist}
+        aiAssistEndpoint={aiAssistEndpoint}
+        aiAssistOptions={aiAssistOptions}
+        aiAssistTooltipText={aiAssistTooltipText}
+        aiAssistClickOverride={aiAssistClickOverride}
+      />
+    </>
+  );
+}
+
+
+// TODO modify this to handle the SplitPane type
+// Recursive structure?
+// SplitPaneView
+// LeafPaneView
+const PaneView = ({
+  pane,
+  content,
+  customInteractRules,
+  allowGlobals,
+  enableAIAssist,
+  aiAssistEndpoint,
+  aiAssistOptions,
+  aiAssistTooltipText,
+  aiAssistClickOverride,
+}) => {
+  // This prevents the CodeEditor from rendering
+  // during SSR.
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // TODO something like
+  return pane.type === 'leafPane' ? (
+    <LeafPaneView 
+    pane = {pane}
+    content = {content}
+    customInteractRules = {customInteractRules}
+    allowGlobals = {allowGlobals}
+    enableAIAssist = {enableAIAssist}
+    aiAssistEndpoint = {aiAssistEndpoint}
+    aiAssistOptions = {aiAssistOptions}
+    aiAssistTooltipText = {aiAssistTooltipText}
+    aiAssistClickOverride = {aiAssistClickOverride}
+    isClient = {isClient}
+    />
+  ) : (
+    <SplitPaneView
+    pane = {pane}
+    content = {content}
+    customInteractRules = {customInteractRules}
+    allowGlobals = {allowGlobals}
+    enableAIAssist = {enableAIAssist}
+    aiAssistEndpoint = {aiAssistEndpoint}
+    aiAssistOptions = {aiAssistOptions}
+    aiAssistTooltipText = {aiAssistTooltipText}
+    aiAssistClickOverride = {aiAssistClickOverride}
+    />
+  );
+}
+
 
 // The middle portion of the VZCode environment, containing:
 // * The list of tabs at the top
