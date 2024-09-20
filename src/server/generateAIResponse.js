@@ -8,17 +8,42 @@ const debug = false;
 // Feature flag to slow down AI for development/testing
 const slowdown = false;
 
-let openai;
-if (process.env.OPENAI_API_KEY !== undefined) {
-  openai = new OpenAI();
+// The options passed into the OpenAI client
+// new OpenAI(openAIOptions)
+const openAIOptions = {
+  apiKey: process.env.VZCODE_AI_API_KEY,
+};
+
+// Support for local AI server
+if (process.env.VZCODE_AI_BASE_URL !== undefined) {
+  // The OpenAI client errors if the API key is not set,
+  // so in the case where we don't need an API key,
+  // e.g. for testing with a local AI server like LM Studio or LocalAI,
+  // we populate the option with a fake API key, so it doesn't error.
+  if (!openAIOptions.apiKey) {
+    openAIOptions.apiKey = 'Fake API Key';
+  }
+
+  openAIOptions.baseURL = process.env.VZCODE_AI_BASE_URL;
 }
 
-const AISourceName = 'AIAssist';
+debug &&
+  console.log(
+    'openAIOptions: ' +
+      JSON.stringify(openAIOptions, null, 2),
+  );
+const openai = new OpenAI(openAIOptions);
 
-function opComesFromAIAssist(ops, source) {
-  return source === AISourceName;
-}
+// The name of the source that the AI responses
+// will be attributed to in ShareDB operations.
+const AIShareDBSourceName = 'AIAssist';
 
+// Returns trie if the operation comes from AI.
+const opComesFromAIAssist = (ops, source) =>
+  source === AIShareDBSourceName;
+
+// Keeps track of the currently ongoing AI streams.
+// There could be many streams at the same time.
 const streams = {};
 
 export const generateAIResponse = async ({
@@ -44,7 +69,10 @@ export const generateAIResponse = async ({
       shareDBDoc,
     );
   }
-  function accomodateDocChanges(op, source) {
+
+  // Handle the case that a user edits the text in the document
+  // that comes becofore the insertion cursor.
+  const accomodateDocChanges = (op, source) => {
     if (!opComesFromAIAssist(op, source)) {
       if (op !== null) {
         insertionCursor = type
@@ -55,10 +83,10 @@ export const generateAIResponse = async ({
           .slice(-1)[0];
       }
     }
-  }
-
+  };
   shareDBDoc.on('op', accomodateDocChanges);
 
+  // The prompt!
   const messages = [
     {
       role: 'system',
@@ -83,7 +111,6 @@ export const generateAIResponse = async ({
   streams[streamId] = await openai.chat.completions.create({
     // model: 'gpt-3.5-turbo',
     model: 'gpt-4',
-
     messages,
     stream: true,
   });
@@ -98,7 +125,9 @@ export const generateAIResponse = async ({
       ],
     );
 
-    shareDBDoc.submitOp(op, { source: AISourceName });
+    shareDBDoc.submitOp(op, {
+      source: AIShareDBSourceName,
+    });
 
     if (slowdown) {
       await new Promise((resolve) => {
