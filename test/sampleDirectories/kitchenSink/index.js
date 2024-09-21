@@ -21,16 +21,10 @@ const initialData = [
   { x: 781, y: 91, r: 61, fill: '#0E3DFB' },
   { x: 668, y: 229, r: 64, fill: '#7300FF' },
   // TODO add more circles
-  { x: 447, y: 350, r: 70, fill: '#007AFF' },
-  { x: 724, y: 400, r: 30, fill: '#34BA78' },
-  { x: 510, y: 298, r: 80, fill: '#8C00FF' },
-  { x: 510, y: 298, r: 80, fill: '#121845' },
-  { x: 510, y: 298, r: 80, fill: '#001EFF' },
-  { x: 510, y: 298, r: 80, fill: '#00FF88' },
-  { x: 510, y: 298, r: 80, fill: '#001EFF' },
-  { x: 510, y: 298, r: 80, fill: '#001EFF' },
-
-  { x: 270, y: 390, r: 44, fill: '#00F7FA' },
+  ```javascript
+{ x: 123, y: 456, r: 30, fill: '#FFA500' },
+{ x: 789, y: 101, r: 25, fill: '#00BFFF' },
+```,
 ];
 
 // Add IDs to each datum
@@ -56,4 +50,3 @@ for (let i = 1; i < lines.length; i++) {
 }
 // Ensure data is correct
 console.log(data); // Debugging
-  

@@ -1,4 +1,3 @@
-
 /*===========================================================================*\
  * Fast Fourier Transform (Cooley-Tukey Method)
  *
@@ -7,7 +6,8 @@
  * This code is not designed to be highly optimized but as an educational
  * tool to understand the Fast Fourier Transform.
 \*===========================================================================*/
-
+// This module exports fast fourier transformation functions.
+export { fft, fftInPlace } from './fft/fft.js';
 //------------------------------------------------
 // Note: Some of this code is not optimized and is
 // primarily designed as an educational and testing
@@ -61,7 +61,7 @@ export const fft = (vector) => {
       e = complexMultiply(exponent(k, N), X_odds[k]);
 
     X[k] = complexAdd(t, e);
-    X[k +  N / 2] = complexSubtract(t, e);
+    X[k + N / 2] = complexSubtract(t, e);
   }
 
   function even(__, ix) {
