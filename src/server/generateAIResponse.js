@@ -10,9 +10,14 @@ const slowdown = false;
 
 // The options passed into the OpenAI client
 // new OpenAI(openAIOptions)
-const openAIOptions = {
-  apiKey: process.env.VZCODE_AI_API_KEY,
-};
+const openAIOptions = {};
+
+// Support specifying the API key via an environment variable
+// If VZCODE_AI_API_KEY is not set, note that the OpenAI client
+// will look for the OPENAI_API_KEY environment variable instead.
+if (process.env.VZCODE_AI_API_KEY !== undefined) {
+  openAIOptions.apiKey = process.env.VZCODE_AI_API_KEY;
+}
 
 // Support for local AI server
 if (process.env.VZCODE_AI_BASE_URL !== undefined) {
