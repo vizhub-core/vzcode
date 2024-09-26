@@ -1,11 +1,29 @@
 import OpenAI from 'openai';
 import { json1Presence } from '../ot.js';
 
+// This module implements the generation of the AI response,
+// using the OpenAI client.
+
+// These environment variables are used to configure the OpenAI client.
+// See `.env.sample` for the expected values.
+const { VZCODE_AI_API_KEY, VZCODE_AI_BASE_URL } =
+  process.env;
+
+// If neither of these are not set, the OpenAI client will not be initialized,
+// e.g. for local development where no AI is needed.
+const isAIEnabled =
+  VZCODE_AI_API_KEY !== undefined &&
+  VZCODE_AI_BASE_URL !== undefined;
+
 const { editOp, type } = json1Presence;
 
+// Debug flag to log more information during development.
 const debug = false;
 
-// Feature flag to slow down AI for development/testing
+// Feature flag to slow down AI for development/testing.
+// Particularly relevant for debugging ShareDB and CodeMirror sync issues.
+// This allows you to test the case of editing the document at the
+// same time as the AI generation is happening.
 const slowdown = false;
 
 // The options passed into the OpenAI client
@@ -37,7 +55,11 @@ debug &&
     'openAIOptions: ' +
       JSON.stringify(openAIOptions, null, 2),
   );
-const openai = new OpenAI(openAIOptions);
+let openai;
+
+if (isAIEnabled) {
+  openai = new OpenAI(openAIOptions);
+}
 
 // The name of the source that the AI responses
 // will be attributed to in ShareDB operations.
