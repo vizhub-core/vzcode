@@ -80,6 +80,16 @@ export const generateAIResponse = async ({
   streamId,
   shareDBDoc,
 }) => {
+  if (!isAIEnabled) {
+    console.log(
+      '[generateAIResponse] AI is not enabled. Skipping AI generation.',
+    );
+    console.log(
+      '[generateAIResponse] To enable AI, see .env.sample for the required environment variables.',
+    );
+    return;
+  }
+
   if (debug) {
     console.log(
       '[generateAIResponse] inputText:',
