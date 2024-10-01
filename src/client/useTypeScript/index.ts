@@ -46,3 +46,49 @@ export const useTypeScript = ({
     debounceUpdateContent(content);
   }, [content]);
 };
+
+export const useEnhancedTypeScript = ({
+    content,
+    typeScriptWorker,
+  }: {
+    content: VZCodeContent;
+    typeScriptWorker: Worker;
+  }) => {
+    const { error } = useTypeScript({ content, typeScriptWorker });
+    const [validationResult, setValidationResult] = useState<string | null>(null);
+  
+    const validateContent = useCallback(() => {
+      if (content === null) return;
+  
+      try {
+        typeScriptWorker.postMessage({
+          event: 'validate-content',
+          details: content,
+        });
+      } catch (err) {
+        setValidationResult('Failed to validate content.');
+      }
+    }, [content, typeScriptWorker]);
+  
+    useEffect(() => {
+      if (!error) {
+        validateContent();
+      }
+    }, [content, error]);
+  
+    // Listen for validation results from the TypeScript worker
+    useEffect(() => {
+      const handleMessage = (e: MessageEvent) => {
+        if (e.data.event === 'validation-result') {
+          setValidationResult(e.data.details);
+        }
+      };
+  
+      typeScriptWorker.addEventListener('message', handleMessage);
+      return () => {
+        typeScriptWorker.removeEventListener('message', handleMessage);
+      };
+    }, [typeScriptWorker]);
+  
+    return { error, validationResult };
+  };
