@@ -371,7 +371,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
         </div>
-
         <div className="files" id="sidebar-view-container">
           {!isSearchOpen ? (
             <div className="sidebar-files">
@@ -413,6 +412,7 @@ export const VZSidebar = ({
             </div>
           )}
         </div>
+        test
       </div>
 
       {enableConnectionStatus && (

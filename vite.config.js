@@ -24,4 +24,13 @@ export default defineConfig({
       'sharedb-client-browser/dist/ot-json1-presence-umd.cjs',
     ],
   },
+
+  // Fix CSS warnings
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+      },
+    },
+  },
 });
