@@ -412,9 +412,7 @@ export const VZSidebar = ({
             </div>
           )}
         </div>
-        test
       </div>
-
       {enableConnectionStatus && (
         <div className="connection-status">
           {connected ? 'Connected' : 'Connection Lost'}
