@@ -53,7 +53,7 @@ export const handleAICopilot =
         model: VZCODE_AI_COLIPOT_MODEL,
         prompt,
         max_tokens: 150,
-        stop: '<|fim_pad|>',
+        stop: ['<|fim_pad|>', '<|file_sep|>'],
       });
       const text = completion.choices[0].text;
 
