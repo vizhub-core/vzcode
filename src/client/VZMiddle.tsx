@@ -23,6 +23,7 @@ const PaneView = ({
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
+  aiCopilotEndpoint,
 }) => {
   // This prevents the CodeEditor from rendering
   // during SSR.
@@ -49,6 +50,7 @@ const PaneView = ({
         <CodeEditor
           customInteractRules={customInteractRules}
           allowGlobals={allowGlobals}
+          aiCopilotEndpoint={aiCopilotEndpoint}
         />
       )}
       {isClient &&
@@ -82,6 +84,7 @@ export const VZMiddle = ({
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
+  aiCopilotEndpoint,
   customInteractRules,
   allowGlobals = false,
 }: {
@@ -90,6 +93,7 @@ export const VZMiddle = ({
   aiAssistOptions?: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
+  aiCopilotEndpoint?: string;
   customInteractRules?: Array<InteractRule>;
   allowGlobals?: boolean;
 }) => {
@@ -128,6 +132,7 @@ export const VZMiddle = ({
         aiAssistOptions={aiAssistOptions}
         aiAssistTooltipText={aiAssistTooltipText}
         aiAssistClickOverride={aiAssistClickOverride}
+        aiCopilotEndpoint={aiCopilotEndpoint}
       />
       <CodeErrorOverlay
         errorMessage={errorMessage}
