@@ -70,6 +70,14 @@
     width: 100%;
   }
 
+  .copy-files-list-blurb {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: #999;
+  }
+
   .sidebar-search {
     * {
       color: inherit;

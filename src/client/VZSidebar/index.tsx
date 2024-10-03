@@ -413,6 +413,26 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
+
+      {enableConnectionStatus && (
+        <div className="connection-status">
+          {connected ? 'Connected' : 'Connection Lost'}
+          <div className="connection">
+            <div  
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="copy-files-list-blurb">
+    Copy files list
+      </div>
+
+
+
       {enableConnectionStatus && (
         <div className="connection-status">
           {connected ? 'Connected' : 'Connection Lost'}
