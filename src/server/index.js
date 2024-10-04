@@ -15,6 +15,8 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { isDirectory } from './isDirectory.js';
+import chokidar from 'chokidar';
+
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -105,6 +107,7 @@ app.post(
 
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
+
 
 // Saves the files that changed.
 const save = () => {
@@ -246,6 +249,15 @@ const save = () => {
 
   previousDocument = currentDocument;
 };
+
+//listen when file is changed outside of VZCode and update it back in VZCode
+const chokidar = require('chokidar');
+const watcher = chokidar.watch('/path/to/watch', {
+  ignored: /(^|[\/\\])\../, // ignore dotfiles (files that start with a dot, e.g., .gitignore)
+  persistent: true // keep watching for changes even after the initial scan
+}); 
+
+
 
 // // Listen for when users modify files.
 // // Files get written to disk after `autoSaveDebounceTimeMS`
