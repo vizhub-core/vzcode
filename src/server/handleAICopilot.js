@@ -21,6 +21,9 @@ const isCopilotEnabled =
   VZCODE_AI_COLIPOT_BASE_URL !== undefined &&
   VZCODE_AI_COLIPOT_MODEL !== undefined;
 
+debug &&
+  console.log('isCopilotEnabled: ' + isCopilotEnabled);
+
 let openai;
 if (isCopilotEnabled) {
   const openAIOptions = {
@@ -37,6 +40,12 @@ if (isCopilotEnabled) {
 
 export const handleAICopilot =
   (/*TODO shareDBDoc*/) => async (req, res) => {
+    // Don't break if the AI is not enabled.
+    // This is useful for local development.
+    if (!isCopilotEnabled) {
+      res.status(200).send({ text: '' });
+      return;
+    }
     const { prefix, suffix } = req.body;
 
     const prompt = `<|fim_prefix|>${prefix}<|fim_suffix|>${suffix}<|fim_middle|>`;
@@ -56,13 +65,6 @@ export const handleAICopilot =
         stop: ['<|fim_pad|>', '<|file_sep|>'],
       });
       const text = completion.choices[0].text;
-
-      // // Sometimes the LLM returns repeated <|fim_pad|> tokens.
-      // // So strip them out
-      // const cleanedText = text.replace(
-      //   /<\|fim_pad\|>/g,
-      //   '',
-      // );
 
       res.status(200).send({ text });
     } catch (error) {
