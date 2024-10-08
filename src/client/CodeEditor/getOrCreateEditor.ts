@@ -10,11 +10,13 @@ import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
+
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 // import { showMinimap } from '@replit/codemirror-minimap';
 import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
+
 import { json1Presence, textUnicode } from '../../ot';
 import {
   FileId,
@@ -45,10 +47,13 @@ import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
+import { copilot } from './Copilot';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
-const enableTypeScriptCompletions = true;
 const enableTypeScriptLinter = true;
+
+// Feature flag to enable AI copilot
+const enableCopilot = true;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -120,6 +125,7 @@ export const getOrCreateEditor = ({
   allowGlobals,
   enableAutoFollowRef,
   openTab,
+  aiCopilotEndpoint,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -156,6 +162,7 @@ export const getOrCreateEditor = ({
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
   openTab: (tabState: TabState) => void;
+  aiCopilotEndpoint: string;
 }): EditorCacheValue => {
   // Cache hit
 
@@ -382,6 +389,11 @@ export const getOrCreateEditor = ({
   );
   // adds rainbow brackets
   extensions.push(rainbowBrackets());
+
+  // adds copilot
+  if (enableCopilot) {
+    extensions.push(copilot({ aiCopilotEndpoint }));
+  }
 
   const editor = new EditorView({
     state: EditorState.create({
