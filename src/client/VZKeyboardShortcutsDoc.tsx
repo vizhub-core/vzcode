@@ -46,7 +46,7 @@ export const VZKeyboardShortcutsDoc = ({
           {/* <Form.Label>WINDOWS</Form.Label> */}
           <ul>
             <li>
-              <strong><kbd>Ctrl</kbd> + S</strong> or{' '}
+              <strong><kbd>Ctrl</kbd> + <kbd>S</kbd></strong> or{' '}
               <strong><kbd>Shift↑</kbd> + <kbd>Enter←</kbd></strong> <br />
               <span>Run and format code</span>
             </li>
@@ -65,11 +65,11 @@ export const VZKeyboardShortcutsDoc = ({
               </span>
             </li>
             <li>
-              <strong><kbd>Alt</kbd> + W</strong> <br />
+              <strong><kbd>Alt</kbd> + <kbd>W</kbd></strong> <br />
               <span>Close the current tab</span>
             </li>
             <li>
-              <strong><kbd>Alt</kbd> + N</strong> or{' '} <strong><kbd>Ctrl</kbd> + <kbd>Shift↑</kbd> + N</strong>{' '}
+              <strong><kbd>Alt</kbd> + <kbd>N</kbd></strong> or{' '} <strong><kbd>Ctrl</kbd> + <kbd>Shift↑</kbd> + <kbd>N</kbd></strong>{' '}
               <br />
               <span>Open the create file modal</span>
             </li>
