@@ -69,6 +69,9 @@ const LINT_ERROR_CODE_OBJ_REASSINGMENT = 2739;
 // Type 'any' is not assignable to type 'never'.
 const LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER = 2322;
 
+// Ignore potential undefined error for variables
+const LINT_ERROR_CODE_POSSIBLY_UNDEFINED = 18048;
+
 // This code is for errors like:
 // "Object is of type 'unknown'."
 const LINT_ERROR_CODE_UNKNOWN = 18046;
@@ -87,4 +90,5 @@ export const excludedErrorCodes = new Set([
   LINT_ERROR_CODE_ANY_NOT_ASSIGNABLE_TO_NEVER,
   LINT_ERROR_CODE_UNKNOWN,
   LINT_ERROR_CODE_UNKNOWN_SYMBOL_ITERATOR,
+  LINT_ERROR_CODE_POSSIBLY_UNDEFINED,
 ]);
