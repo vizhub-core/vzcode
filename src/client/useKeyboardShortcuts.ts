@@ -225,6 +225,38 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
+      if (event.altKey && event.key === 'p') {
+        // Alt-P: Open project view sidebar
+        document.getElementById('project-view-icon')?.click();
+        return;
+      }
+
+      if (event.ctrlKey && event.shiftKey && event.key === 'L') {
+        // Ctrl-Shift-L: Select all occurrences of the selected identifier
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const { from, to } = editor.state.selection.main;
+          const selectedText = editor.state.sliceDoc(from, to);
+
+          // Find all occurrences of the selected text in the document
+          const ranges = [];
+          const docText = editor.state.doc.toString();
+          let match;
+          const regex = new RegExp(`\\b${selectedText}\\b`, 'g');
+          while ((match = regex.exec(docText)) !== null) {
+            ranges.push({ anchor: match.index, head: match.index + selectedText.length });
+          }
+
+          // Dispatch a transaction to select all found ranges
+          if (ranges.length > 0) {
+            editor.dispatch({
+              selection: EditorState.createSelection(ranges),
+              scrollIntoView: true,
+            });
+          }
+        }
+        return;
+      }
 
       if (event.ctrlKey && event.shiftKey) {
         // Handle keyboard shortcuts related to the side bar icons
