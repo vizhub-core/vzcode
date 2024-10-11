@@ -5,22 +5,23 @@ import { Username } from '../../types';
 // @ts-ignore
 import PrettierWorker from '../usePrettier/worker?worker';
 // @ts-ignore
-import TypeScriptWorker from '../useTypeScript/worker?worker';
+import { LiveKitRoom } from '@livekit/components-react';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
-import { VZResizer } from '../VZResizer';
-import {
-  useInitialUsername,
-  usePersistUsername,
-} from '../usernameLocalStorage';
-import { useShareDB } from './useShareDB';
-import { VZLeft } from '../VZLeft';
-import { VZMiddle } from '../VZMiddle';
-import { VZRight } from '../VZRight';
 import {
   VZCodeContext,
   VZCodeProvider,
 } from '../VZCodeContext';
+import { VZLeft } from '../VZLeft';
+import { VZMiddle } from '../VZMiddle';
+import { VZResizer } from '../VZResizer';
+import { VZRight } from '../VZRight';
+import TypeScriptWorker from '../useTypeScript/worker?worker';
+import {
+  useInitialUsername,
+  usePersistUsername,
+} from '../usernameLocalStorage';
 import './style.scss';
+import { useShareDB } from './useShareDB';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -90,16 +91,22 @@ function App() {
         initialUsername={initialUsername}
         connected={connected}
       >
-        <div className="app">
-          <VZLeft />
-          <VZMiddle allowGlobals={true} />
-          {enableRightPanel ? <VZRight /> : null}
-          <VZResizer side="left" />
-          {enableRightPanel ? (
-            <VZResizer side="right" />
-          ) : null}
-        </div>
-        <PersistUsername />
+        <LiveKitRoom
+          audio={true}
+          token={`placeholder`}
+          serverUrl={`placeholder`}
+        >
+          <div className="app">
+            <VZLeft />
+            <VZMiddle allowGlobals={true} />
+            {enableRightPanel ? <VZRight /> : null}
+            <VZResizer side="left" />
+            {enableRightPanel ? (
+              <VZResizer side="right" />
+            ) : null}
+          </div>
+          <PersistUsername />
+        </LiveKitRoom>
       </VZCodeProvider>
     </SplitPaneResizeProvider>
   );
