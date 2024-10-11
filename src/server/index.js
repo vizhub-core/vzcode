@@ -251,11 +251,36 @@ const save = () => {
 };
 
 //listen when file is changed outside of VZCode and update it back in VZCode
-const chokidar = require('chokidar');
-const watcher = chokidar.watch('/path/to/watch', {
+const watcher = chokidar.watch(process.cwd(), {
   ignored: /(^|[\/\\])\../, // ignore dotfiles (files that start with a dot, e.g., .gitignore)
   persistent: true // keep watching for changes even after the initial scan
 }); 
+
+const updateVZCode = (path) => {
+  const content = fs.readFileSync(path, 'utf-8'); // Read the new content of the file
+
+  // Assuming you have a way to map the file path to a VZCode document,
+  // update the ShareDB document with the new content.
+  shareDBDoc.submitOp([{p: ['files', path], od: oldContent, oi: content}]);
+};
+
+watcher
+  .on('add', path => {
+    console.log(`File ${path} has been added`);
+    updateVZCode(path); // Call to update VZCode for newly added files
+  })
+  .on('change', path => {
+    console.log(`File ${path} has been changed`);
+    updateVZCode(path); // Call to update VZCode when file is modified
+  });
+
+
+
+
+
+
+
+
 
 
 
