@@ -91,11 +91,7 @@ function App() {
         initialUsername={initialUsername}
         connected={connected}
       >
-        <LiveKitRoom
-          audio={true}
-          token={`placeholder`}
-          serverUrl={`placeholder`}
-        >
+        <LiveKitRoom audio={true} token={``} serverUrl={``}>
           <div className="app">
             <VZLeft />
             <VZMiddle allowGlobals={true} />
