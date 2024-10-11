@@ -257,7 +257,30 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
+      if (event.altKey && event.key === 'q') {
+        // Alt-Q: Toggle line wrapping
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const wrapping = editor.state.facet(EditorView.lineWrapping);
+          editor.dispatch({
+            effects: EditorView.lineWrapping.of(!wrapping),
+          });
+        }
+        return;
+      }
 
+      if (event.ctrlKey && event.altKey && event.key === 'd') {
+        // Ctrl-Alt-D: Duplicate the current line or selection
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const { from, to } = editor.state.selection.main;
+          const content = editor.state.sliceDoc(from, to);
+          editor.dispatch({
+            changes: { from: to, insert: '\n' + content },
+          });
+        }
+        return;
+      }
       if (event.ctrlKey && event.shiftKey) {
         // Handle keyboard shortcuts related to the side bar icons
         document
