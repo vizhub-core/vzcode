@@ -16,16 +16,21 @@ router.post('/tasks', async (req, res) => {
     }
 });
 
-//Get all Tasks
+// Get all Tasks
 router.get('/tasks', async (req, res) => {
-    try 
-    {
-        
-    } 
-    catch (err) 
-    {
+    try {
+        const { completed, priority } = req.query;
+        const query = {};
+        if (completed) query["completed"] = completed === 'true';
+        if (priority) query["priority"] = priority;
+        const tasks = await Task.find(query);
+        res.json(tasks);
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+router.patch('/tasks/:id/complete', async (req, res) => {
+    //IMPLEMENT SOOn
+});
 module.exports = router;
