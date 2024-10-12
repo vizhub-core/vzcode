@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
+import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
 import chokidar from 'chokidar';
 
@@ -105,9 +106,15 @@ app.post(
   handleAIAssist(shareDBDoc),
 );
 
+// Handle AI Copilot requests.
+app.post(
+  '/ai-copilot',
+  bodyParser.json(),
+  handleAICopilot(shareDBDoc),
+);
+
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;
-
 
 // Saves the files that changed.
 const save = () => {
@@ -250,40 +257,6 @@ const save = () => {
   previousDocument = currentDocument;
 };
 
-//listen when file is changed outside of VZCode and update it back in VZCode
-const watcher = chokidar.watch(process.cwd(), {
-  ignored: /(^|[\/\\])\../, // ignore dotfiles (files that start with a dot, e.g., .gitignore)
-  persistent: true // keep watching for changes even after the initial scan
-}); 
-
-const updateVZCode = (path) => {
-  const content = fs.readFileSync(path, 'utf-8'); // Read the new content of the file
-
-  // Assuming you have a way to map the file path to a VZCode document,
-  // update the ShareDB document with the new content.
-  shareDBDoc.submitOp([{p: ['files', path], od: oldContent, oi: content}]);
-};
-
-watcher
-  .on('add', path => {
-    console.log(`File ${path} has been added`);
-    updateVZCode(path); // Call to update VZCode for newly added files
-  })
-  .on('change', path => {
-    console.log(`File ${path} has been changed`);
-    updateVZCode(path); // Call to update VZCode when file is modified
-  });
-
-
-
-
-
-
-
-
-
-
-
 // // Listen for when users modify files.
 // // Files get written to disk after `autoSaveDebounceTimeMS`
 // // milliseconds of inactivity.
@@ -316,6 +289,39 @@ function throttleSave() {
     }, throttleTimeMS - timeSinceLastExecution);
   }
 }
+const watcher = chokidar.watch(process.cwd(), {
+  ignored: /(^|[\/\\])\../, // ignore dotfiles (files that start with a dot, e.g., .gitignore)
+  persistent: true // keep watching for changes even after the initial scan
+}); 
+
+const updateVZCode = (filePath) => {
+  const content = fs.readFileSync(filePath, 'utf-8'); // Read the new content of the file
+  
+  // Check if the file exists in the current document
+  const fileEntry = shareDBDoc.data.files[filePath];
+  
+  if (fileEntry) {
+    const oldContent = fileEntry.text; // Retrieve the old content from ShareDB
+    
+    // Only submit the operation if the content has changed
+    if (oldContent !== content) {
+      shareDBDoc.submitOp([{ p: ['files', filePath, 'text'], od: oldContent, oi: content }]);
+    }
+  } else {
+    // If the file doesn't exist, add a new entry in ShareDB
+    shareDBDoc.submitOp([{ p: ['files', filePath], oi: { name: filePath, text: content } }]);
+  }
+};
+
+watcher
+  .on('add', path => {
+    console.log(File ${path} has been added);
+    updateVZCode(path); // Call to update VZCode for newly added files
+  })
+  .on('change', path => {
+    console.log(File ${path} has been changed);
+    updateVZCode(path); // Call to update VZCode when file is modified
+  });
 
 // Function to debounce the saving
 let debounceTimeout;
