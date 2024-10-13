@@ -70,6 +70,15 @@
     width: 100%;
   }
 
+  .copy-files-list-blurb {
+    position: absolute;
+    bottom: 10px;
+    right: 30px;
+    font-size: 12px;
+    font-family: Poppins;
+    color: #999;
+  }
+
   .sidebar-search {
     * {
       color: inherit;

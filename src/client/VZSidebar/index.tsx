@@ -38,6 +38,15 @@ import './styles.scss';
 // See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
+const copyFileList = (fileNames: string[]) => {
+  const fileListString = fileNames.join('\n');
+  navigator.clipboard.writeText(fileListString).then(() => {
+    alert('File list copied to clipboard!');
+  }).catch((err) => {
+    console.error('Could not copy text: ', err);
+  });
+};
+
 export const VZSidebar = ({
   createFileTooltipText = (
     <>
@@ -205,7 +214,29 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
+
+
   // console.log(sidebarPresenceIndicators);
+  const fileNames = useMemo(() => {
+    return fileTree?.children?.map((entity) => {
+      const { path } = entity as FileTree;
+      return path;
+    }) || [];
+  }, [fileTree]);
+
+
+    useEffect(() => {
+    const copyFilesElement = document.querySelector('.copy-files-list-blurb');
+    if (copyFilesElement) {
+      copyFilesElement.addEventListener('click', () => copyFileList(fileNames));
+    }
+
+    return () => {
+      if (copyFilesElement) {
+        copyFilesElement.removeEventListener('click', () => copyFileList(fileNames));
+      }
+    };
+  }, [fileNames]);
 
   return (
     <div
@@ -413,6 +444,26 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
+
+      {enableConnectionStatus && (
+        <div className="connection-status">
+          {connected ? 'Connected' : 'Connection Lost'}
+          <div className="connection">
+            <div  
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="copy-files-list-blurb">
+    Copy files list
+      </div>
+
+
+
       {enableConnectionStatus && (
         <div className="connection-status">
           {connected ? 'Connected' : 'Connection Lost'}
