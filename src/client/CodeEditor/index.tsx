@@ -19,11 +19,9 @@ const filesPath = ['files'];
 export const CodeEditor = ({
   customInteractRules,
   allowGlobals,
-  aiCopilotEndpoint,
 }: {
   customInteractRules?: Array<InteractRule>;
   allowGlobals: boolean;
-  aiCopilotEndpoint: string;
 }) => {
   const {
     activePane,
@@ -46,9 +44,42 @@ export const CodeEditor = ({
   // Set `doc.data.isInteracting` to `true` when the user is interacting
   // via interactive code widgets (e.g. Alt+drag), and `false` when they are not.
   const interactTimeoutRef = useRef(null);
+  
+  const posFromDOM = (element: HTMLElement | null, position: number) => {
+    try {
+      if (!element) {
+        throw new RangeError("Trying to find position for a DOM position outside of the document");
+      }
+  
+  
+      const rect = element.getBoundingClientRect();
+      
+      return {
+        top: rect.top + position,
+        left: rect.left + position, 
+      };
+    } catch (error) {
+      console.error('Error in posFromDOM:', error);
+      return null;
+    }
+  };
+  
 
   const onInteract = useCallback(() => {
-    // Set `isInteracting: true` if not already set.
+
+    const element = document.querySelector(".some-element-class") as HTMLElement | null; 
+    const position = 0; 
+  
+    if (element) {
+      const domPosition = posFromDOM(element, position);
+  
+      if (domPosition) {
+        console.log("DOM Position:", domPosition);
+      }
+    } else {
+      console.error('Element not found or is not an HTMLElement');
+    }
+    
     if (!interactTimeoutRef.current) {
       submitOperation((document) => ({
         ...document,
@@ -101,7 +132,7 @@ export const CodeEditor = ({
         allowGlobals,
         enableAutoFollowRef,
         openTab,
-        aiCopilotEndpoint,
+        // splitPaneView,
       }),
     [
       activePane,
@@ -114,7 +145,6 @@ export const CodeEditor = ({
       editorCache,
       usernameRef,
       typeScriptWorker,
-      aiCopilotEndpoint,
     ],
   );
 
