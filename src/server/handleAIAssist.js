@@ -4,7 +4,12 @@ const debug = false;
 
 export const handleAIAssist =
   (shareDBDoc) => async (req, res) => {
-    const { inputText, insertionCursor, fileId } = req.body;
+    const {
+      inputText,
+      insertionCursor,
+      fileId,
+      aiModel = 'openai',
+    } = req.body; // Added aiModel parameter with default 'openai'
 
     if (debug) {
       console.log('[handleAIAssist] inputText:', inputText);
@@ -13,6 +18,7 @@ export const handleAIAssist =
         insertionCursor,
       );
       console.log('[handleAIAssist] fileId:', fileId);
+      console.log('[handleAIAssist] aiModel:', aiModel); // Log aiModel for debugging
     }
 
     try {
@@ -21,6 +27,7 @@ export const handleAIAssist =
         insertionCursor,
         fileId,
         shareDBDoc,
+        aiModel, // Pass aiModel to the generateAIResponse function
       });
 
       res
@@ -38,8 +45,6 @@ export const handleAIAssist =
 export function haltGeneration(streamId) {
   const stream = streams[streamId];
 
-  // Stream can be undefined here if the user
-  // clicks start and stop very quickly.
   if (stream) {
     stream.controller.abort();
   }

@@ -90,6 +90,9 @@ export const generateAIResponse = async ({
   shareDBDoc,
   aiModel = 'openai', // Can be 'openai' or 'claude'
 }) => {
+  console.log(isAIEnabled, isClaudeEnabled);
+  console.log(VZCODE_AI_API_KEY, VZCODE_CLAUDE_API_KEY);
+  console.log(VZCODE_AI_BASE_URL, VZCODE_CLAUDE_BASE_URL);
   if (!isAIEnabled && !isClaudeEnabled) {
     console.log('[generateAIResponse] AI is not enabled.');
     return;
@@ -142,7 +145,7 @@ export const generateAIResponse = async ({
 
     streams[streamId] =
       await openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages,
         stream: true,
       });
