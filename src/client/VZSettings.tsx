@@ -220,6 +220,18 @@ export const VZSettings = ({
             Select a font size for the editor
           </Form.Text>
         </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Rainbow Brackets</Form.Label>
+          <select className="form-select">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+          <Form.Text className="text-muted">
+            Toggle Rainbow Brackets
+          </Form.Text>
+        </Form.Group>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={closeSettings}>
