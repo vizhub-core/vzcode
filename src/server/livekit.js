@@ -4,11 +4,12 @@ import {
 } from 'livekit-server-sdk';
 import { v4 } from 'uuid';
 
-const { LIVEKIT_API_KEY, LIVEKIT_API_SECRET } = process.env;
+const { LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } =
+  process.env;
 const roomService = new RoomServiceClient(
-  livekitHost,
-  'api-key',
-  'secret-key',
+  'wss://testing-idbzy6rb.livekit.cloud',
+  LIVEKIT_API_KEY,
+  LIVEKIT_API_SECRET,
 );
 
 export const createToken = async () => {
