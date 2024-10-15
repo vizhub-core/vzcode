@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../../ot';
 import { Username } from '../../types';
@@ -67,6 +67,8 @@ function App() {
     connection,
   });
 
+  const [token, setToken] = useState('');
+
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
 
@@ -77,6 +79,14 @@ function App() {
   // in the same browser window as the VZCode editor,
   // so that multiple browser windows are not required.
   const enableRightPanel = true;
+
+  useEffect(() => {
+    const response = fetch('/livekitToken', {
+      method: 'GET',
+    }).then(async (res) => {
+      setToken(await res.text());
+    });
+  }, []);
 
   return (
     <SplitPaneResizeProvider>
@@ -91,7 +101,11 @@ function App() {
         initialUsername={initialUsername}
         connected={connected}
       >
-        <LiveKitRoom audio={true} token={``} serverUrl={``}>
+        <LiveKitRoom
+          audio={true}
+          token={token}
+          serverUrl={'wss://testing-idbzy6rb.livekit.cloud'}
+        >
           <div className="app">
             <VZLeft />
             <VZMiddle allowGlobals={true} />
