@@ -14,6 +14,7 @@ import bodyParser from 'body-parser';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
+import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
 
 // The time in milliseconds by which auto-saving is debounced.
@@ -101,6 +102,13 @@ app.post(
   '/ai-assist',
   bodyParser.json(),
   handleAIAssist(shareDBDoc),
+);
+
+// Handle AI Copilot requests.
+app.post(
+  '/ai-copilot',
+  bodyParser.json(),
+  handleAICopilot(shareDBDoc),
 );
 
 // The state of the document when files were last auto-saved.

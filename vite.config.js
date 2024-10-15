@@ -12,7 +12,9 @@ export default defineConfig({
       },
       '/ai-assist': {
         target: 'http://localhost:3030',
-        ws: true,
+      },
+      '/ai-copilot': {
+        target: 'http://localhost:3030',
       },
     },
   },
@@ -23,5 +25,14 @@ export default defineConfig({
       'sharedb-client-browser/dist/sharedb-client-umd.cjs',
       'sharedb-client-browser/dist/ot-json1-presence-umd.cjs',
     ],
+  },
+
+  // Fix CSS warnings
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+      },
+    },
   },
 });
