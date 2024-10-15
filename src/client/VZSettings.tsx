@@ -10,7 +10,7 @@ import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 import { fonts } from './Fonts/fonts';
 
-const fontSizes = ['16px', '18px', '20px', '24px'];
+const fontSizes = ['10px','12px','14px','16px', '18px', '20px', '24px'];
 
 export const VZSettings = ({
   enableUsernameField = true,
