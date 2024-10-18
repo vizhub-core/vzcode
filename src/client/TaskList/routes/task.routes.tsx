@@ -76,4 +76,14 @@ router.delete('/tasks/:id', async (req, res) => {
     }
 });
 
+// Get tasks by priority
+router.get('/tasks/priority/:priority', async (req, res) => {
+    try {
+        const tasks = await Task.find({ priority: req.params.priority });
+        res.json(tasks);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;
