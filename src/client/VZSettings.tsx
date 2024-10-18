@@ -10,12 +10,11 @@ import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 import { fonts } from './Fonts/fonts';
 
-const fontSizes = ['10px','12px','14px','16px', '18px', '20px', '24px'];
+const fontSizes = ['16px', '18px', '20px', '24px'];
 
 export const VZSettings = ({
   enableUsernameField = true,
 }: {
-  // Feature flag to enable/disable username field
   enableUsernameField?: boolean;
 }) => {
   const {
@@ -25,6 +24,8 @@ export const VZSettings = ({
     setTheme,
     username,
     setUsername,
+    rainbowBracketsEnabled, // <-- Add rainbowBracketsEnabled from context
+    setRainbowBracketsEnabled, // <-- Add method to set rainbowBracketsEnabled
   } = useContext(VZCodeContext);
 
   const handleThemeChange = useCallback(
@@ -35,45 +36,26 @@ export const VZSettings = ({
   );
 
   // Initialize font and size from localStorage or defaults
-  // const [selectedFont, setSelectedFont] = useState(
-  //   localStorage.getItem('vzcodeSelectedFont') ||
-  //     'Roboto Mono',
-  // );
-  // const [selectedFontSize, setSelectedFontSize] = useState(
-  //   localStorage.getItem('vzcodeSelectedFontSize') ||
-  //     '16px',
-  // );
-  const [selectedFont, setSelectedFont] =
-    useState('Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] =
-    useState('16px');
+  const [selectedFont, setSelectedFont] = useState('Roboto Mono');
+  const [selectedFontSize, setSelectedFontSize] = useState('16px');
 
   useEffect(() => {
-    // If we're in the browser,
     if (typeof window !== 'undefined') {
       const selectedFontFromLocalStorage: string | null =
         window.localStorage.getItem('vzcodeSelectedFont');
 
-      const selectedFontSizeFromLocalStorage:
-        | string
-        | null = window.localStorage.getItem(
-        'vzcodeSelectedFontSize',
-      );
+      const selectedFontSizeFromLocalStorage: string | null = 
+        window.localStorage.getItem('vzcodeSelectedFontSize');
 
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
       }
       if (selectedFontSizeFromLocalStorage !== null) {
-        setSelectedFontSize(
-          selectedFontSizeFromLocalStorage,
-        );
+        setSelectedFontSize(selectedFontSizeFromLocalStorage);
       }
-    } else {
-      // If we're not in the browser, use the default initial width.
     }
   }, []);
 
-  // Called when the user selects a different font
   const handleFontChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newFont = event.target.value;
@@ -83,14 +65,10 @@ export const VZSettings = ({
     [],
   );
 
-  // Called when the user selects a different font size
   const handleFontSizeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newSize = event.target.value;
-      localStorage.setItem(
-        'vzcodeSelectedFontSize',
-        newSize,
-      );
+      localStorage.setItem('vzcodeSelectedFontSize', newSize);
       setSelectedFontSize(newSize);
     },
     [],
@@ -134,6 +112,14 @@ export const VZSettings = ({
       };
     }
   }, [isSettingsOpen, closeSettings]);
+
+  // Handle rainbow brackets toggle
+  const handleRainbowBracketsChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setRainbowBracketsEnabled(event.target.value === 'on');
+    },
+    [setRainbowBracketsEnabled],
+  );
 
   return isSettingsOpen ? (
     <Modal
@@ -221,9 +207,14 @@ export const VZSettings = ({
           </Form.Text>
         </Form.Group>
 
+        {/* Toggle for Rainbow Brackets */}
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Rainbow Brackets</Form.Label>
-          <select className="form-select">
+          <select
+            className="form-select"
+            value={rainbowBracketsEnabled ? 'on' : 'off'}
+            onChange={handleRainbowBracketsChange}
+          >
             <option value="on">On</option>
             <option value="off">Off</option>
           </select>
