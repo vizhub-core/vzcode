@@ -10,7 +10,8 @@ export const useShareDB = ({
   connection: any;
 }) => {
   // The ShareDB document.
-  const [shareDBDoc, setShareDBDoc] = useState<ShareDBDoc<VZCodeContent> | null>(null);
+  const [shareDBDoc, setShareDBDoc] =
+    useState<ShareDBDoc<VZCodeContent> | null>(null);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -25,15 +26,27 @@ export const useShareDB = ({
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
   const [content, setContent] = useState<VZCodeContent | null>(null);
+  const [content, setContent] =
+    useState<VZCodeContent | null>(null);
 
-  const [connected, setConnected] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState<boolean>(false);
-  const [isSaved, setIsSaved] = useState<boolean>(false);
+  const [connected, setConnected] =
+    useState<boolean>(false);
 
+  const [isSaving, setIsSaving] = 
+    useState<boolean>(false);
+
+  const [isSaved, setIsSaved] = 
+    useState<boolean>(false);
+  
   useEffect(() => {
     // Listen for connection state changes
-    connection.on('connected', () => setConnected(true)); // Simplified
-    connection.on('disconnected', () => setConnected(false)); // Simplified
+    connection.on('connected', () => {
+      setConnected(true);
+    });
+
+    connection.on('disconnected', () => {
+      setConnected(false);
+    }); 
 
     // Since there is only ever a single document,
     // these things are pretty arbitrary.
@@ -43,26 +56,32 @@ export const useShareDB = ({
     const id = '1';
 
     // Initialize the ShareDB document.
-    const doc = connection.get(collection, id); // Renamed to `doc` for brevity
+    const shareDBDoc = connection.get(collection, id);
 
     // Subscribe to the document to get updates.
     // This callback gets called once only.
-    doc.subscribe(() => {
+    shareDBDoc.subscribe(() => {
       // Expose ShareDB doc to downstream logic.
-      setShareDBDoc(doc);
+      setShareDBDoc(shareDBDoc);
 
       // Set initial data.
-      setContent(doc.data);
+      setContent(shareDBDoc.data);
 
       // Listen for all changes and update `data`.
       // This decouples rendering logic from ShareDB.
       // This callback gets called on each change.
-      doc.on('op', () => {
+      shareDBDoc.on('op', () => {
+        // TODO consider excluding file contents from this,
+        // because currently we are re-rendering the entire
+        // document on each file change (each keystroke while editing).
+        // This is not required, because no part of the app outside
+        // of the CodeMirror integration uses those file contents.
+        // The Sidebar only needs to know file names, not contents.
         // Start saving process when there’s an operation.
         setIsSaving(true);
         setIsSaved(false);
 
-        setContent(doc.data);
+        setContent(shareDBDoc.data);
 
         // Simulate a saving process and switch status to "saved"
         const timeoutId = setTimeout(() => {
@@ -71,38 +90,47 @@ export const useShareDB = ({
         }, 1000); // Adjust the timeout to reflect saving duration
 
         // Cleanup to avoid memory leaks
-        return () => clearTimeout(timeoutId); // Moved cleanup inline
+        return () => clearTimeout(timeoutId);
       });
 
       // Set up presence.
       // See https://github.com/share/sharedb/blob/master/examples/rich-text-presence/client.js#L53
-      const presence = connection.getDocPresence(collection, id); // Renamed for clarity
+      const docPresence = connection.getDocPresence(
+        collection,
+        id,
+      );
 
       // Subscribe to receive remote presence updates.
-      presence.subscribe(function (error) {
+      docPresence.subscribe(function (error) {
         if (error) throw error;
       });
 
       // Set up our local presence for broadcasting this client's presence.
-      const generateTimestampedId = () => `${Date.now().toString(36)}-${randomId()}`; // Simplified
-
-      setLocalPresence(presence.create(generateTimestampedId())); // Simplified presence setup
+      const generateTimestampedId = () => {
+        const timestamp = Date.now().toString(36);
+        const randomPart = randomId();
+        return `${timestamp}-${randomPart}`;
+      };
+      setLocalPresence(
+        docPresence.create(generateTimestampedId()),
+      );
 
       // Store docPresence so child components can listen for changes.
-      setDocPresence(presence);
+      setDocPresence(docPresence);
     });
 
     // TODO unsubscribe from presence
     // TODO unsubscribe from doc
     return () => {
-      // doc.destroy(); // Unsubscribe when fully implemented
-      // presence.destroy();
+      // shareDBDoc.destroy();
+      // docPresence.destroy();
     };
-  }, [connection]); // Added `connection` as dependency
+  }, []);
 
   // A convenience function for mutating the ShareDB document
   // based submitting OT ops generated by diffing the JSON.
-  const submitOperation = useSubmitOperation<VZCodeContent>(shareDBDoc);
+  const submitOperation =
+    useSubmitOperation<VZCodeContent>(shareDBDoc);
 
   return {
     shareDBDoc,
@@ -111,7 +139,7 @@ export const useShareDB = ({
     docPresence,
     submitOperation,
     connected,
-    isSaving,
-    isSaved,
+    isSaving, 
+    isSaved,    
   };
 };
