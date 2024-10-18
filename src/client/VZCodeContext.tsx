@@ -41,8 +41,9 @@ import { useRunCode } from './useRunCode';
 import { findPane } from './vzReducer/findPane';
 
 // This context centralizes all the "smart" logic
-// related to the application state. This includes
-// accessing and manipulating ShareDB data and centralized state.
+// to do with the application state. This includes
+//  * Accessing and manipulating ShareDB data
+//  * Centralized application state
 export const VZCodeContext =
   createContext<VZCodeContextValue>(null);
 
@@ -53,15 +54,24 @@ export type VZCodeContextValue = {
   submitOperation: (
     next: (content: VZCodeContent) => VZCodeContent,
   ) => void;
+  // TODO pull in this type from ShareDB if possible
   localPresence: any;
+  // TODO pull in this type from ShareDB if possible
   docPresence: any;
 
   files: Files | null;
   createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
-  createDirectory: (fileName: string, text?: string) => void;
-  renameDirectory: (directoryId: string, directoryName: string) => void;
+  createDirectory: (
+    fileName: string,
+    text?: string,
+  ) => void;
+  renameDirectory: (
+    directoryId: string,
+    directoryOldName: string,
+    directoryName: string,
+  ) => void;
   deleteDirectory: (directoryId: string) => void;
 
   setActiveFileId: (fileId: string | null) => void;
@@ -94,7 +104,9 @@ export type VZCodeContextValue = {
 
   editorCache: EditorCache;
 
+  // Whether the editor should be focused.
   editorWantsFocus: boolean;
+  // Signals that the editor no longer wants focus.
   editorNoLongerWantsFocus: () => void;
 
   errorMessage: string | null;
@@ -105,7 +117,9 @@ export type VZCodeContextValue = {
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
-  setSearchResults: (files: ShareDBDoc<VZCodeContent>) => void;
+  setSearchResults: (
+    files: ShareDBDoc<VZCodeContent>,
+  ) => void;
   setSearchFileVisibility: (
     files: ShareDBDoc<VZCodeContent>,
     id: string,
@@ -132,7 +146,9 @@ export type VZCodeContextValue = {
   handleCloseCreateDirModal: () => void;
   handleCreateDirClick: (newFileName: string) => void;
 
-  runPrettierRef: React.MutableRefObject<null | (() => void)>;
+  runPrettierRef: React.MutableRefObject<
+    null | (() => void)
+  >;
   runCodeRef: React.MutableRefObject<null | (() => void)>;
 
   sidebarRef: React.RefObject<HTMLDivElement>;
@@ -149,7 +165,9 @@ export type VZCodeContextValue = {
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
 
-  updatePresenceIndicator: (presenceIndicator: PresenceIndicator) => void;
+  updatePresenceIndicator: (
+    presenceIndicator: PresenceIndicator,
+  ) => void;
 
   sidebarPresenceIndicators: Array<PresenceIndicator>;
   splitCurrentPane: () => void;
@@ -168,7 +186,7 @@ export const VZCodeProvider = ({
   codeError = null,
   connected,
   isSaved,
-  isSaving,
+  isSaving
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -183,32 +201,60 @@ export const VZCodeProvider = ({
   connected: boolean;
   isSaving: boolean;
   isSaved: boolean;
+
 }) => {
+  // Auto-run Pretter after local changes.
   const {
     prettierError,
     runPrettierRef,
   }: {
     prettierError: string | null;
-    runPrettierRef: React.MutableRefObject<null | (() => void)>;
-  } = usePrettier({ shareDBDoc, submitOperation, prettierWorker });
+    runPrettierRef: React.MutableRefObject<
+      null | (() => void)
+    >;
+  } = usePrettier({
+    shareDBDoc,
+    submitOperation,
+    prettierWorker,
+  });
 
   const runCodeRef = useRunCode(submitOperation);
 
   const sidebarRef = useRef(null);
+
   const codeEditorRef = useRef(null);
 
+  // The error message shows either:
+  // * `prettierError` - errors from Prettier, client-side only
+  // * `codeError` - errors from an external source, such as
+  //   build-time errors or intercepted runtime errors.
+  // Since `prettierError` surfaces syntax errors, it's more likely to be
+  // useful to the user, so we prioritize it.
   const errorMessage: string | null = prettierError
     ? prettierError
     : codeError;
 
-  useTypeScript({ content, typeScriptWorker });
+  // Set up the TypeScript Language Server worker.
+  // This acts as a central "brain" for features powered
+  // by the TypeScript Language Server including:
+  //  * Completions
+  //  * Linting
+  useTypeScript({
+    content,
+    typeScriptWorker,
+  });
 
+  // Set up the reducer that manages much of the application state.
+  // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
     { defaultTheme, initialUsername },
     createInitialState,
   );
 
+  // Unpack state.
+  // print the state object to see what it contains
+  // console.log('state: ', state);
   const {
     pane,
     activePaneId,
@@ -225,9 +271,11 @@ export const VZCodeProvider = ({
 
   const activePane = findPane(pane, activePaneId);
   if (activePane.type !== 'leafPane') {
+    // Should never happen
     throw new Error('Expected leafPane');
   }
 
+  // Functions for dispatching actions to the reducer.
   const {
     setActiveFileId,
     setActiveFileLeft,
@@ -253,6 +301,7 @@ export const VZCodeProvider = ({
     splitCurrentPane,
   } = useActions(dispatch);
 
+  // Sync tab state to the URL.
   useURLSync({
     content,
     openTab,
@@ -261,10 +310,18 @@ export const VZCodeProvider = ({
     activeFileId: activePane.activeFileId,
   });
 
-  const { isDirectoryOpen, toggleDirectory } = useOpenDirectories();
+  // The set of open directories.
+  // TODO move this into reducer/useActions
+  const { isDirectoryOpen, toggleDirectory } =
+    useOpenDirectories();
+
+  // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
+
+  // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
 
+  // Handle file CRUD operations (Create, Read, Update, Delete)
   const {
     createFile,
     renameFile,
@@ -278,13 +335,18 @@ export const VZCodeProvider = ({
     openTab,
   });
 
-  const [isCreateFileModalOpen, setIsCreateFileModalOpen] = useState(false);
+  // State to control the create file modal's visibility
+  const [isCreateFileModalOpen, setIsCreateFileModalOpen] =
+    useState(false);
+
   const handleOpenCreateFileModal = useCallback(() => {
     setIsCreateFileModalOpen(true);
   }, []);
+
   const handleCloseCreateFileModal = useCallback(() => {
     setIsCreateFileModalOpen(false);
   }, []);
+
   const handleCreateFileClick = useCallback(
     (newFileName: string) => {
       createFile(newFileName);
@@ -293,13 +355,18 @@ export const VZCodeProvider = ({
     [createFile, setIsCreateFileModalOpen],
   );
 
-  const [isCreateDirModalOpen, setIsCreateDirModalOpen] = useState(false);
+  // State to control the create directory modal's visibility
+  const [isCreateDirModalOpen, setIsCreateDirModalOpen] =
+    useState(false);
+
   const handleOpenCreateDirModal = useCallback(() => {
     setIsCreateDirModalOpen(true);
   }, []);
+
   const handleCloseCreateDirModal = useCallback(() => {
     setIsCreateDirModalOpen(false);
   }, []);
+
   const handleCreateDirClick = useCallback(
     (newDirName: string) => {
       createDirectory(newDirName);
@@ -308,78 +375,124 @@ export const VZCodeProvider = ({
     [createDirectory, setIsCreateDirModalOpen],
   );
 
+  // Isolate the files object from the document.
+  const files: Files | null = content
+    ? content.files
+    : null;
+
+  useKeyboardShortcuts({
+    closeTabs,
+    // TODO verify that this makes sense
+    activeFileId: activePane.activeFileId,
+    activePaneId,
+    handleOpenCreateFileModal,
+    setActiveFileLeft,
+    setActiveFileRight,
+    toggleSearchFocused,
+    runPrettierRef,
+    runCodeRef,
+    sidebarRef,
+    editorCache,
+    codeEditorRef,
+  });
+
+  // Track the currently hovered file id.
+  const [hoveredItemId, setHoveredItemId] =
+    useState<ItemId | null>(null);
+
+  // The value provided by this context.
+  const value: VZCodeContextValue = {
+    content,
+    shareDBDoc,
+    submitOperation,
+    localPresence,
+    docPresence,
+
+    files,
+    createFile,
+    renameFile,
+    deleteFile,
+    createDirectory,
+    renameDirectory,
+    deleteDirectory,
+
+    setActiveFileId,
+    setActiveFileLeft,
+    setActiveFileRight,
+
+    activePaneId,
+    // Root pane
+    pane,
+    // Active leaf pane
+    activePane,
+
+    openTab,
+    closeTabs,
+
+    search,
+    isSearchOpen,
+    setIsSearchOpen,
+    setSearch,
+    setSearchResults,
+    setSearchFileVisibility,
+    setSearchLineVisibility,
+    setSearchFocusedIndex,
+    toggleSearchFocused,
+
+    isSettingsOpen,
+    setIsSettingsOpen,
+    closeSettings,
+
+    isDocOpen,
+    setIsDocOpen,
+    closeDoc,
+
+    theme,
+    setTheme,
+
+    username,
+    setUsername,
+
+    isDirectoryOpen,
+    toggleDirectory,
+
+    editorCache,
+    editorWantsFocus,
+    editorNoLongerWantsFocus,
+
+    errorMessage,
+
+    typeScriptWorker,
+
+    isCreateFileModalOpen,
+    handleOpenCreateFileModal,
+    handleCloseCreateFileModal,
+    handleCreateFileClick,
+    isCreateDirModalOpen,
+    handleOpenCreateDirModal,
+    handleCloseCreateDirModal,
+    handleCreateDirClick,
+    runPrettierRef,
+    runCodeRef,
+    sidebarRef,
+    codeEditorRef,
+
+    connected,
+    isSaving,
+    isSaved,
+
+    hoveredItemId,
+    setHoveredItemId,
+
+    enableAutoFollow,
+    toggleAutoFollow,
+    updatePresenceIndicator,
+    sidebarPresenceIndicators,
+    splitCurrentPane,
+  };
+
   return (
-    <VZCodeContext.Provider
-      value={{
-        content,
-        shareDBDoc,
-        submitOperation,
-        localPresence,
-        docPresence,
-        files: content?.files || null,
-        createFile,
-        renameFile,
-        deleteFile,
-        createDirectory,
-        renameDirectory,
-        deleteDirectory,
-        setActiveFileId,
-        setActiveFileLeft,
-        setActiveFileRight,
-        activePaneId,
-        pane,
-        activePane,
-        openTab,
-        closeTabs,
-        isSettingsOpen,
-        setIsSettingsOpen,
-        closeSettings,
-        isDocOpen,
-        setIsDocOpen,
-        closeDoc,
-        theme,
-        setTheme,
-        username,
-        setUsername,
-        isDirectoryOpen,
-        toggleDirectory,
-        editorCache,
-        editorWantsFocus,
-        editorNoLongerWantsFocus,
-        errorMessage,
-        typeScriptWorker,
-        search,
-        isSearchOpen,
-        setIsSearchOpen,
-        setSearch,
-        setSearchResults,
-        setSearchFileVisibility,
-        setSearchLineVisibility,
-        setSearchFocusedIndex,
-        toggleSearchFocused,
-        isCreateFileModalOpen,
-        handleOpenCreateFileModal,
-        handleCloseCreateFileModal,
-        handleCreateFileClick,
-        isCreateDirModalOpen,
-        handleOpenCreateDirModal,
-        handleCloseCreateDirModal,
-        handleCreateDirClick,
-        runPrettierRef,
-        runCodeRef,
-        sidebarRef,
-        codeEditorRef,
-        connected,
-        isSaving,
-        isSaved,
-        hoveredItemId: state.hoveredItemId,
-        setHoveredItemId: dispatch.bind(null, { type: 'SET_HOVERED_ITEM_ID' }),
-        enableAutoFollow,
-        toggleAutoFollow,
-        updatePresenceIndicator,
-        sidebarPresenceIndicators,
-        splitCurrentPane,
-      }}>
+    <VZCodeContext.Provider value={value}>
       {children}
     </VZCodeContext.Provider>
   );
