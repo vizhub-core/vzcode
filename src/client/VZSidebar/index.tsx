@@ -39,6 +39,25 @@ import './styles.scss';
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
+  export const VZSidebar = () => {
+    const { broadcastFollowMe } = useContext(VZCodeContext);
+  
+    return (
+      <div className="vz-sidebar">
+        <div className="sidebar-section-buttons">
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip id="follow-me-tooltip">Follow Me</Tooltip>}
+          >
+            <button className="follow-me-button" onClick={broadcastFollowMe}>
+              Follow Me
+            </button>
+          </OverlayTrigger>
+        </div>
+      </div>
+    );
+  };
+
   createFileTooltipText = (
     <>
       <strong>New file</strong>
@@ -255,6 +274,18 @@ export const VZSidebar = ({
               <SearchSVG />
             </i>
           </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip id="follow-me-tooltip">Follow Me</Tooltip>}
+          >
+            <button
+              className="follow-me-button"
+              onClick={() => broadcastFollowMe()}
+            >
+              Follow Me
+            </button>
+            </OverlayTrigger>
 
           <OverlayTrigger
             placement="right"
