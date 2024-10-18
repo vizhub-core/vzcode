@@ -296,6 +296,27 @@ export const useKeyboardShortcuts = ({
           .getElementById(sideBarKeyBoardMap['S'])
           ?.click();
       }
+      if ((event.altKey || event.ctrlKey) && event.key === '/') {
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const { from, to } = editor.state.selection.main;
+          const selectedText = editor.state.doc.sliceString(from, to);
+      
+          if (selectedText.startsWith('//')) {
+            // Uncomment the selected block or line
+            editor.dispatch({
+              changes: { from, to, insert: selectedText.replace(/^\/\//gm, '') }
+            });
+          } else {
+            // Comment out the selected block or line
+            editor.dispatch({
+              changes: { from, to, insert: selectedText.replace(/^/gm, '//') }
+            });
+          }
+        }
+        return;
+      }
+      
 
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
@@ -316,7 +337,7 @@ export const useKeyboardShortcuts = ({
           }
           return;
         }
-
+        
         // Alt-n: Open the create file modal
         if (event.key === 'n') {
           handleOpenCreateFileModal();
