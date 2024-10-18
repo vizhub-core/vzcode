@@ -68,7 +68,7 @@ export const VZSidebar = ({
   reportBugTooltipText = (
     <div>
       <strong>Report Bug</strong>
-      {/* TODO get this keyboard shortcut working? */}
+      {/* TODO get this keyboard shortcut working? */} 
       {/* <div>(Ctrl + Shift + B)</div> */}
     </div>
   ),
@@ -118,6 +118,8 @@ export const VZSidebar = ({
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
+    isSaved,
+    isSaving,
     sidebarRef,
     enableAutoFollow,
     toggleAutoFollow,
@@ -130,16 +132,16 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
-  }, []);
+  }, [setIsDocOpen]);
+
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
-  }, []);
+  }, [setIsSettingsOpen]);
 
-  const { sidebarWidth } = useContext(
-    SplitPaneResizeContext,
-  );
+  const { sidebarWidth } = useContext(SplitPaneResizeContext);
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
@@ -174,8 +176,10 @@ export const VZSidebar = ({
   // Track presence of remote users across files
   // so that they can be displayed in the sidebar.
   useEffect(() => {
-    docPresence;
-  }, []);
+    if (docPresence) {
+      docPresence; // Keeping for potential future use
+    }
+  }, [docPresence]);
 
   // Track the presence indicators for display in sidebar
   useEffect(() => {
@@ -190,10 +194,8 @@ export const VZSidebar = ({
         };
 
         // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
+        // console.log({presenceId, update});
+        // console.log(JSON.stringify(presenceIndicator, null, 2));
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -203,7 +205,7 @@ export const VZSidebar = ({
         docPresence.off('receive', handleReceive);
       };
     }
-  }, [docPresence]);
+  }, [docPresence, updatePresenceIndicator]);
 
   // console.log(sidebarPresenceIndicators);
 
@@ -224,11 +226,7 @@ export const VZSidebar = ({
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="files-tooltip">
-                {filesToolTipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="files-tooltip">{filesToolTipText}</Tooltip>}
           >
             <i
               id="files-icon"
@@ -241,11 +239,7 @@ export const VZSidebar = ({
 
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="search-tooltip">
-                {searchToolTipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="search-tooltip">{searchToolTipText}</Tooltip>}
           >
             <i
               id="search-icon"
@@ -258,11 +252,7 @@ export const VZSidebar = ({
 
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="open-keyboard-shortcuts">
-                {openKeyboardShortcuts}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="open-keyboard-shortcuts">{openKeyboardShortcuts}</Tooltip>}
           >
             <i
               id="shortcut-icon"
@@ -275,11 +265,7 @@ export const VZSidebar = ({
 
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="report-bug-tooltip">
-                {reportBugTooltipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="report-bug-tooltip">{reportBugTooltipText}</Tooltip>}
           >
             <a
               href="https://github.com/vizhub-core/vzcode/issues/new"
@@ -297,11 +283,7 @@ export const VZSidebar = ({
 
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="open-settings-tooltip">
-                {openSettingsTooltipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="open-settings-tooltip">{openSettingsTooltipText}</Tooltip>}
           >
             <i
               id="settings-icon"
@@ -314,11 +296,7 @@ export const VZSidebar = ({
 
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="create-file-tooltip">
-                {createFileTooltipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="create-file-tooltip">{createFileTooltipText}</Tooltip>}
           >
             <i
               id="new-file-icon"
@@ -332,11 +310,7 @@ export const VZSidebar = ({
           {/*Directory Rename*/}
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="create-dir-tooltip">
-                {createDirTooltipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="create-dir-tooltip">{createDirTooltipText}</Tooltip>}
           >
             <i
               id="new-directory-icon"
@@ -350,21 +324,11 @@ export const VZSidebar = ({
           {/*Toggle Follow*/}
           <OverlayTrigger
             placement="right"
-            overlay={
-              <Tooltip id="toggle-auto-follow">
-                {enableAutoFollow
-                  ? disableAutoFollowTooltipText
-                  : enableAutoFollowTooltipText}
-              </Tooltip>
-            }
+            overlay={<Tooltip id="toggle-auto-follow">{enableAutoFollow ? disableAutoFollowTooltipText : enableAutoFollowTooltipText}</Tooltip>}
           >
             <i
               id="auto-focus-icon"
-              className={`icon-button icon-button-dark${
-                enableAutoFollow
-                  ? ' vh-color-success-01'
-                  : ''
-              }`}
+              className={`icon-button icon-button-dark${enableAutoFollow ? ' vh-color-success-01' : ''}`}
               onClick={toggleAutoFollow}
             >
               <PinSVG />
@@ -376,9 +340,7 @@ export const VZSidebar = ({
             <div className="sidebar-files">
               {isDragOver ? (
                 <div className="empty">
-                  <div className="empty-text">
-                    Drop files here!
-                  </div>
+                  <div className="empty-text">Drop files here!</div>
                 </div>
               ) : filesExist ? (
                 fileTree.children.map((entity) => {
@@ -390,9 +352,7 @@ export const VZSidebar = ({
                       key={key}
                       entity={entity}
                       handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
+                      handleFileDoubleClick={handleFileDoubleClick}
                     />
                   );
                 })
@@ -415,12 +375,14 @@ export const VZSidebar = ({
       </div>
       {enableConnectionStatus && (
         <div className="connection-status">
-          {connected ? 'Connected' : 'Connection Lost'}
+          {isSaving && connected
+            ? 'Saving...'
+            : connected
+              ? (isSaved ? 'Connected, all changes saved!' : 'Connected')
+              : 'Connection Lost'}
           <div className="connection">
             <div
-              className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
-              }`}
+              className={`connection-status-indicator ${connected ? 'connected' : 'disconnected'}`}
             />
           </div>
         </div>
