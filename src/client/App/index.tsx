@@ -8,41 +8,32 @@ import PrettierWorker from '../usePrettier/worker?worker';
 import TypeScriptWorker from '../useTypeScript/worker?worker';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 import { VZResizer } from '../VZResizer';
-import {
-  useInitialUsername,
-  usePersistUsername,
-} from '../usernameLocalStorage';
+import { useInitialUsername, usePersistUsername } from '../usernameLocalStorage';
 import { useShareDB } from './useShareDB';
-import { VZLeft } from '../VZLeft';
-import { VZMiddle } from '../VZMiddle';
-import { VZRight } from '../VZRight';
-import {
-  VZCodeContext,
-  VZCodeProvider,
-} from '../VZCodeContext';
+import { VZLeft, VZMiddle, VZRight } from '../VZPanels';
+import { VZCodeContext, VZCodeProvider } from '../VZCodeContext';
 import './style.scss';
 
-// Instantiate the Prettier worker.
-const prettierWorker = new PrettierWorker();
+// Group Prettier and TypeScript workers initialization
+const initializeWorkers = () => ({
+  prettierWorker: new PrettierWorker(),
+  typeScriptWorker: new TypeScriptWorker(),
+});
 
-// Instantiate the TypeScript worker.
-const typeScriptWorker = new TypeScriptWorker();
+// Instantiate the Prettier and TypeScript workers using the function
+const { prettierWorker, typeScriptWorker } = initializeWorkers(); // CHANGED
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
 ShareDBClient.types.register(json1Presence.type);
 
-// Establish the singleton ShareDB connection over WebSockets.
-// TODO consider using reconnecting WebSocket
-const { Connection } = ShareDBClient;
-const wsProtocol =
-  window.location.protocol === 'https:'
-    ? 'wss://'
-    : 'ws://';
-const socket = new WebSocket(
-  wsProtocol + window.location.host + '/ws',
-);
-const connection = new Connection(socket);
+// Refactor WebSocket setup
+const setupConnection = () => {
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  const socket = new WebSocket(wsProtocol + window.location.host + '/ws');
+  return new ShareDBClient.Connection(socket);
+};
+const connection = setupConnection(); // CHANGED
 
 // Stores the username to local storage.
 // TODO consider if there's a cleaner pattern for this.
@@ -54,6 +45,9 @@ const PersistUsername = () => {
   return null;
 };
 
+// Extract the logic for enabling the right panel
+const isRightPanelEnabled = () => true; // CHANGED
+
 function App() {
   const {
     shareDBDoc,
@@ -62,6 +56,8 @@ function App() {
     docPresence,
     submitOperation,
     connected,
+    isSaving,  
+    isSaved,    
   } = useShareDB({
     connection,
   });
@@ -75,8 +71,6 @@ function App() {
   // for running the code that the VZCode user is developing
   // in the same browser window as the VZCode editor,
   // so that multiple browser windows are not required.
-  const enableRightPanel = true;
-
   return (
     <SplitPaneResizeProvider>
       <VZCodeProvider
@@ -89,15 +83,15 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
+        isSaving={isSaving} 
+        isSaved={isSaved}
       >
         <div className="app">
           <VZLeft />
           <VZMiddle allowGlobals={true} />
-          {enableRightPanel ? <VZRight /> : null}
+          {isRightPanelEnabled() && <VZRight />} {/* CHANGED */}
           <VZResizer side="left" />
-          {enableRightPanel ? (
-            <VZResizer side="right" />
-          ) : null}
+          {isRightPanelEnabled() && <VZResizer side="right" />} {/* CHANGED */}
         </div>
         <PersistUsername />
       </VZCodeProvider>
