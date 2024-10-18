@@ -39,6 +39,11 @@ import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useRunCode } from './useRunCode';
 import { findPane } from './vzReducer/findPane';
+import { 
+  broadcastPresenceUpdate, 
+  subscribeToPresence, 
+  unsubscribeFromPresence 
+} from '../presence'
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -196,7 +201,27 @@ export const VZCodeProvider = ({
   codeError?: string | null;
   connected: boolean;
 }) => {
-  // Auto-run Pretter after local changes.
+  const [enableAutoFollow, setEnableAutoFollow] = useState(false); // Auto-follow state
+
+// Function to broadcast the "Follow Me" event
+const broadcastFollowMe = useCallback(() => {
+  const userId = getCurrentUserId(); // Get the current user's ID
+  const event = { action: 'follow-me', userId };
+
+  broadcastPresenceUpdate(event); // Notify all users
+}, []);
+
+useEffect(() => {
+  const handlePresenceUpdate = (presence) => {
+    if (presence.action === 'follow-me' && presence.userId !== getCurrentUserId()) {
+      setEnableAutoFollow(true); // Enable auto-follow for this user
+    }
+  };
+  subscribeToPresence(handlePresenceUpdate);
+  return () => unsubscribeFromPresence(handlePresenceUpdate);
+}, []);
+
+
   const {
     prettierError,
     runPrettierRef,
@@ -340,6 +365,8 @@ export const VZCodeProvider = ({
     setIsCreateFileModalOpen(false);
   }, []);
 
+
+
   const handleCreateFileClick = useCallback(
     (newFileName: string) => {
       createFile(newFileName);
@@ -477,6 +504,7 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
+    broadcastFollowMe,
     updatePresenceIndicator,
     sidebarPresenceIndicators,
     splitCurrentPane,
