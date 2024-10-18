@@ -130,6 +130,27 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+  const handleFileFocusShortcut = useCallback(() => {
+    if (fileTree && fileTree.children.length > 0) {
+      const { fileId } = fileTree.children[0] as FileTreeFile;
+      openTab({ fileId, isTransient: false });
+    }
+  }, [fileTree, openTab]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === '1') {
+        event.preventDefault();
+        handleFileFocusShortcut();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleFileFocusShortcut]);
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
