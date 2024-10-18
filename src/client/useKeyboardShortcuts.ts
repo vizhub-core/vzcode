@@ -316,7 +316,30 @@ export const useKeyboardShortcuts = ({
         }
         return;
       }
-      
+
+      if (event.ctrlKey === true && event.key === 'l') {
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const { from } = editor.state.selection.main;
+          const line = editor.state.doc.lineAt(from);
+          editor.dispatch({
+            selection: { anchor: line.from, head: line.to }
+          });
+        }
+        return;
+      }
+      if (event.ctrlKey === true && event.key === 'k') {
+        const editor = editorCache.get(cacheKey)?.editor;
+        if (editor) {
+          const { from } = editor.state.selection.main;
+          const line = editor.state.doc.lineAt(from);
+          editor.dispatch({
+            changes: { from: line.from, to: line.to, insert: '' }
+          });
+        }
+        return;
+      }
+            
 
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
