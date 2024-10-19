@@ -156,6 +156,8 @@ export type VZCodeContextValue = {
   codeEditorRef: React.RefObject<HTMLDivElement>;
 
   connected: boolean;
+  isSaving: boolean;
+  isSaved: boolean;
 
   hoveredItemId: ItemId | null;
   setHoveredItemId: (itemId: ItemId | null) => void;
@@ -183,6 +185,8 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   connected,
+  isSaved,
+  isSaving
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -195,6 +199,9 @@ export const VZCodeProvider = ({
   children: React.ReactNode;
   codeError?: string | null;
   connected: boolean;
+  isSaving: boolean;
+  isSaved: boolean;
+
 }) => {
   // Auto-run Pretter after local changes.
   const {
@@ -471,6 +478,8 @@ export const VZCodeProvider = ({
     codeEditorRef,
 
     connected,
+    isSaving,
+    isSaved,
 
     hoveredItemId,
     setHoveredItemId,

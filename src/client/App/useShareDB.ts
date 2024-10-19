@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import { randomId } from '../../randomId';
 import { ShareDBDoc, VZCodeContent } from '../../types';
 import { useSubmitOperation } from '../useSubmitOperation';
@@ -30,6 +30,14 @@ export const useShareDB = ({
 
   const [connected, setConnected] =
     useState<boolean>(false);
+
+  const [isSaving, setIsSaving] = 
+    useState<boolean>(false);
+
+  const [isSaved, setIsSaved] = 
+    useState<boolean>(false);
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     // Listen for connection state changes
     connection.on('connected', () => {
@@ -38,7 +46,7 @@ export const useShareDB = ({
 
     connection.on('disconnected', () => {
       setConnected(false);
-    });
+    }); 
 
     // Since there is only ever a single document,
     // these things are pretty arbitrary.
@@ -69,7 +77,31 @@ export const useShareDB = ({
         // This is not required, because no part of the app outside
         // of the CodeMirror integration uses those file contents.
         // The Sidebar only needs to know file names, not contents.
+        // Start saving process when there’s an operation.
+        setIsSaving(true);
+        setIsSaved(false);
+
         setContent(shareDBDoc.data);
+
+        // Simulate a saving process and switch status to "saved"
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+
+        // Set up a debounce timer to switch from "saving" to "saved" after 2 seconds of inactivity.
+        debounceTimeoutRef.current = setTimeout(() => {
+          setIsSaving(false);
+          setIsSaved(true); // Only set isSaved to true after 2 seconds of inactivity
+
+          const resetSavedTimeout = setTimeout(() => {
+            setIsSaved(false);
+          }, 1000); // 1 second delay after `isSaved` becomes true.
+          
+          return () => clearTimeout(resetSavedTimeout);
+
+        }, 1800); // 1.8-second delay for detecting inactivity
+
+
       });
 
       // Set up presence.
@@ -101,6 +133,7 @@ export const useShareDB = ({
     // TODO unsubscribe from presence
     // TODO unsubscribe from doc
     return () => {
+      if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
       // shareDBDoc.destroy();
       // docPresence.destroy();
     };
@@ -118,5 +151,7 @@ export const useShareDB = ({
     docPresence,
     submitOperation,
     connected,
+    isSaving, 
+    isSaved,    
   };
 };
