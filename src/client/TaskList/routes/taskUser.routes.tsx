@@ -37,3 +37,27 @@ router.get('/api/task-users/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+//Update a TaskUser
+router.put('/api/task-users/:id', async (req, res) => {
+    try {
+        const taskUser = await TaskUser.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { 
+                new: true, 
+                runValidators: true 
+            }
+        );
+        if (!taskUser) {
+            return res.status(404).json({ 
+                error: 'TaskUser not found' 
+            });
+        }
+        res.json(taskUser);
+    } catch (error) {
+        res.status(400).json({ 
+            error: error.message 
+        });
+    }
+});
