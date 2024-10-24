@@ -241,24 +241,25 @@ export const useKeyboardShortcuts = ({
           .getElementById(sideBarKeyBoardMap['S'])
           ?.click();
       }
-            // Handle Ctrl + <key> actions
-            if (event.ctrlKey) {
-              // Ctrl + 1 to focus on sidebar (files)
-              if (event.key === '1') {
-                if (sidebarRef.current) {
-                  sidebarRef.current.focus();
-                  console.log('Focused on the sidebar');
-                }
-              }
-      
-              // Ctrl + 2 to focus on the code editor
-              if (event.key === '2') {
-                if (codeEditorRef.current) {
-                  codeEditorRef.current.focus();
-                  console.log('Focused on the code editor');
-                }
-              }
-            }
+
+      // Handle Ctrl + <key> actions
+      if (event.ctrlKey) {
+        // Ctrl + 1 to focus on sidebar (files)
+        if (event.key === '1') {
+          if (sidebarRef.current) {
+            sidebarRef.current.focus();
+            console.log('Focused on the sidebar');
+          }
+        }
+
+        // Ctrl + 2 to focus on the code editor
+        if (event.key === '2') {
+          if (codeEditorRef.current) {
+            codeEditorRef.current.focus();
+            console.log('Focused on the code editor');
+          }
+        }
+      }
 
       if (event.ctrlKey === true) {
         // On holding CTRL key, search for a potential definition jump using mouse location
@@ -271,9 +272,6 @@ export const useKeyboardShortcuts = ({
       if (event.altKey === true) {
         // Alt-w: Close the current tab
         if (event.key === 'w') {
-          // TODO clean this up so we can remove `activeFileId`
-          // as a dependency
-          // TODO closeActiveTab()
           if (activeFileId) {
             closeTabs([activeFileId]);
           }

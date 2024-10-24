@@ -70,5 +70,7 @@
   .tooltip_hover_circle div {
     font-size: 12px;
   }
-
+  .vz-sidebar:focus {
+    outline: 2px solid blue;
+  }
 }
