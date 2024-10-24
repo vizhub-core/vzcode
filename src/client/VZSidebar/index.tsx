@@ -130,6 +130,30 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+
+  // Custom function to handle keyboard navigation in the sidebar
+  const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
+    switch (event.key) {
+      case 'ArrowUp':
+        console.log('Navigate up in sidebar');
+        // Logic for moving focus up in the sidebar
+        break;
+      case 'ArrowDown':
+        console.log('Navigate down in sidebar');
+        // Logic for moving focus down in the sidebar
+        break;
+      case 'Tab':
+        console.log('Tab key pressed');
+        break;
+      case 'Enter':
+        console.log('Enter key pressed');
+        // Logic for selecting/opening the focused item
+        break;
+      default:
+        break;
+    }
+  };
+
   const handleFileFocusShortcut = useCallback(() => {
     if (fileTree && fileTree.children.length > 0) {
       const { fileId } = fileTree.children[0] as FileTreeFile;
@@ -151,16 +175,16 @@ export const VZSidebar = ({
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleFileFocusShortcut]);
+
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
+  
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
 
-  const { sidebarWidth } = useContext(
-    SplitPaneResizeContext,
-  );
+  const { sidebarWidth } = useContext(SplitPaneResizeContext);
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
@@ -192,8 +216,7 @@ export const VZSidebar = ({
     handleDrop,
   } = useDragAndDrop();
 
-  // Track presence of remote users across files
-  // so that they can be displayed in the sidebar.
+  // Track presence of remote users across files so that they can be displayed in the sidebar.
   useEffect(() => {
     docPresence;
   }, []);
@@ -201,20 +224,11 @@ export const VZSidebar = ({
   // Track the presence indicators for display in sidebar
   useEffect(() => {
     if (docPresence) {
-      const handleReceive = (
-        presenceId: PresenceId,
-        update: Presence,
-      ) => {
+      const handleReceive = (presenceId: PresenceId, update: Presence) => {
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
           fileId: update.start[1] as FileId,
         };
-
-        // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -226,8 +240,6 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
-  // console.log(sidebarPresenceIndicators);
-
   return (
     <div
       className="vz-sidebar"
@@ -236,12 +248,11 @@ export const VZSidebar = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      tabIndex={0} // Ensures the sidebar is focusable
+      onKeyDown={handleSidebarKeyDown} // Handles keyboard navigation
+      ref={sidebarRef}
     >
-      <div
-        className="full-box"
-        ref={sidebarRef}
-        tabIndex={-1}
-      >
+      <div className="full-box">
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
@@ -350,7 +361,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Directory Rename*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -368,7 +378,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Toggle Follow*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -411,18 +420,14 @@ export const VZSidebar = ({
                       key={key}
                       entity={entity}
                       handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
+                      handleFileDoubleClick={handleFileDoubleClick}
                     />
                   );
                 })
               ) : (
                 <div className="empty">
                   <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
+                    It looks like you don't have any files yet! Click the "Create file" button above to create your first file.
                   </div>
                 </div>
               )}

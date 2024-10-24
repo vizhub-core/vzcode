@@ -70,7 +70,15 @@
   .tooltip_hover_circle div {
     font-size: 12px;
   }
-  .vz-sidebar:focus {
-    outline: 2px solid blue;
+  .vz-sidebar {
+    /* Ensure the sidebar itself can receive focus */
+    outline: none; /* Remove default outline */
+    position: relative;
   }
+  
+  .vz-sidebar:focus-visible {
+    outline: 3px solid blue; /* Add visual focus indicator */
+    box-shadow: 0 0 5px rgba(0, 0, 255, 0.5); /* Optional glow effect */
+  }
+  
 }
