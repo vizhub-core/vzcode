@@ -132,7 +132,7 @@ export const VZSidebar = ({
   );
 
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null); // Track currently focused item
-  const [focusedFileId, setFocusedFileId] = useState<FileId | null>(null); // Track focused file ID
+  const fileRefs = useMemo(() => [], []); // Array of refs to focusable file items
 
   // Custom function to handle keyboard navigation in the sidebar
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
@@ -143,27 +143,28 @@ export const VZSidebar = ({
 
     switch (event.key) {
       case 'ArrowUp':
-        if (focusedIndex !== null) {
+        if (focusedIndex !== null && focusedIndex > 0) {
           const newIndex = Math.max(focusedIndex - 1, 0);
           setFocusedIndex(newIndex);
-          setFocusedFileId(filesArray[newIndex].fileId);
+          fileRefs[newIndex]?.focus(); // Focus the new element
         }
         event.preventDefault();
         break;
       case 'ArrowDown':
-        if (focusedIndex !== null) {
+        if (focusedIndex !== null && focusedIndex < filesArray.length - 1) {
           const newIndex = Math.min(focusedIndex + 1, filesArray.length - 1);
           setFocusedIndex(newIndex);
-          setFocusedFileId(filesArray[newIndex].fileId);
+          fileRefs[newIndex]?.focus(); // Focus the new element
         } else if (filesArray.length > 0) {
           setFocusedIndex(0);
-          setFocusedFileId(filesArray[0].fileId);
+          fileRefs[0]?.focus(); // Focus the first element
         }
         event.preventDefault();
         break;
       case 'Enter':
-        if (focusedFileId) {
-          openTab({ fileId: focusedFileId, isTransient: false });
+        if (focusedIndex !== null) {
+          const fileId = filesArray[focusedIndex].fileId;
+          openTab({ fileId, isTransient: false });
         }
         event.preventDefault();
         break;
@@ -434,11 +435,13 @@ export const VZSidebar = ({
                   const { path } = entity as FileTree;
                   const key = fileId ? fileId : path;
                   const isFocused = focusedIndex === index;
+
                   return (
                     <div
                       key={key}
                       className={`sidebar-file-item ${isFocused ? 'focused' : ''}`}
-                      tabIndex={-1}
+                      tabIndex={0}
+                      ref={(el) => (fileRefs[index] = el)} // Assign ref to each file item
                       onClick={() => handleFileClick(fileId)}
                       onDoubleClick={() => handleFileDoubleClick(fileId)}
                     >
