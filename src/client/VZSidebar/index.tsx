@@ -132,14 +132,12 @@ export const VZSidebar = ({
   );
 
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null); // Track currently focused item
-  const fileRefs = useMemo(() => [], []); // Array of refs to focusable file items
+  const fileRefs = useMemo(() => [], []); // Array of refs to focusable file/folder items
 
   // Custom function to handle keyboard navigation in the sidebar
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
-    if (!fileTree || !fileTree.children) return; // Exit if no files are available
-    const filesArray = fileTree.children.filter(
-      (entity): entity is FileTreeFile => 'fileId' in entity
-    ); // Filter out files only
+    if (!fileTree || !fileTree.children) return; // Exit if no files/folders are available
+    const itemsArray = fileTree.children; // Includes both files and folders
 
     switch (event.key) {
       case 'ArrowUp':
@@ -151,11 +149,11 @@ export const VZSidebar = ({
         event.preventDefault();
         break;
       case 'ArrowDown':
-        if (focusedIndex !== null && focusedIndex < filesArray.length - 1) {
-          const newIndex = Math.min(focusedIndex + 1, filesArray.length - 1);
+        if (focusedIndex !== null && focusedIndex < itemsArray.length - 1) {
+          const newIndex = Math.min(focusedIndex + 1, itemsArray.length - 1);
           setFocusedIndex(newIndex);
           fileRefs[newIndex]?.focus(); // Focus the new element
-        } else if (filesArray.length > 0) {
+        } else if (itemsArray.length > 0) {
           setFocusedIndex(0);
           fileRefs[0]?.focus(); // Focus the first element
         }
@@ -163,8 +161,11 @@ export const VZSidebar = ({
         break;
       case 'Enter':
         if (focusedIndex !== null) {
-          const fileId = filesArray[focusedIndex].fileId;
-          openTab({ fileId, isTransient: false });
+          const entity = itemsArray[focusedIndex];
+          if ('fileId' in entity) {
+            const fileId = entity.fileId;
+            openTab({ fileId, isTransient: false });
+          }
         }
         event.preventDefault();
         break;
@@ -175,8 +176,10 @@ export const VZSidebar = ({
 
   const handleFileFocusShortcut = useCallback(() => {
     if (fileTree && fileTree.children.length > 0) {
-      const { fileId } = fileTree.children[0] as FileTreeFile;
-      openTab({ fileId, isTransient: false });
+      const firstItem = fileTree.children[0];
+      if ('fileId' in firstItem) {
+        openTab({ fileId: firstItem.fileId, isTransient: false });
+      }
     }
   }, [fileTree, openTab]);
 
@@ -431,9 +434,8 @@ export const VZSidebar = ({
                 </div>
               ) : filesExist ? (
                 fileTree.children.map((entity, index) => {
-                  const { fileId } = entity as FileTreeFile;
                   const { path } = entity as FileTree;
-                  const key = fileId ? fileId : path;
+                  const key = path;
                   const isFocused = focusedIndex === index;
 
                   return (
@@ -441,9 +443,13 @@ export const VZSidebar = ({
                       key={key}
                       className={`sidebar-file-item ${isFocused ? 'focused' : ''}`}
                       tabIndex={0}
-                      ref={(el) => (fileRefs[index] = el)} // Assign ref to each file item
-                      onClick={() => handleFileClick(fileId)}
-                      onDoubleClick={() => handleFileDoubleClick(fileId)}
+                      ref={(el) => (fileRefs[index] = el)} // Assign ref to each file/folder item
+                      onClick={() => {
+                        if ('fileId' in entity) handleFileClick(entity.fileId);
+                      }}
+                      onDoubleClick={() => {
+                        if ('fileId' in entity) handleFileDoubleClick(entity.fileId);
+                      }}
                     >
                       <Listing
                         entity={entity}
