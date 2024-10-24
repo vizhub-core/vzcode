@@ -131,23 +131,41 @@ export const VZSidebar = ({
     [files],
   );
 
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null); // Track currently focused item
+  const [focusedFileId, setFocusedFileId] = useState<FileId | null>(null); // Track focused file ID
+
   // Custom function to handle keyboard navigation in the sidebar
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
+    if (!fileTree || !fileTree.children) return; // Exit if no files are available
+    const filesArray = fileTree.children.filter(
+      (entity): entity is FileTreeFile => 'fileId' in entity
+    ); // Filter out files only
+
     switch (event.key) {
       case 'ArrowUp':
-        console.log('Navigate up in sidebar');
-        // Logic for moving focus up in the sidebar
+        if (focusedIndex !== null) {
+          const newIndex = Math.max(focusedIndex - 1, 0);
+          setFocusedIndex(newIndex);
+          setFocusedFileId(filesArray[newIndex].fileId);
+        }
+        event.preventDefault();
         break;
       case 'ArrowDown':
-        console.log('Navigate down in sidebar');
-        // Logic for moving focus down in the sidebar
-        break;
-      case 'Tab':
-        console.log('Tab key pressed');
+        if (focusedIndex !== null) {
+          const newIndex = Math.min(focusedIndex + 1, filesArray.length - 1);
+          setFocusedIndex(newIndex);
+          setFocusedFileId(filesArray[newIndex].fileId);
+        } else if (filesArray.length > 0) {
+          setFocusedIndex(0);
+          setFocusedFileId(filesArray[0].fileId);
+        }
+        event.preventDefault();
         break;
       case 'Enter':
-        console.log('Enter key pressed');
-        // Logic for selecting/opening the focused item
+        if (focusedFileId) {
+          openTab({ fileId: focusedFileId, isTransient: false });
+        }
+        event.preventDefault();
         break;
       default:
         break;
@@ -411,17 +429,25 @@ export const VZSidebar = ({
                   </div>
                 </div>
               ) : filesExist ? (
-                fileTree.children.map((entity) => {
+                fileTree.children.map((entity, index) => {
                   const { fileId } = entity as FileTreeFile;
                   const { path } = entity as FileTree;
                   const key = fileId ? fileId : path;
+                  const isFocused = focusedIndex === index;
                   return (
-                    <Listing
+                    <div
                       key={key}
-                      entity={entity}
-                      handleFileClick={handleFileClick}
-                      handleFileDoubleClick={handleFileDoubleClick}
-                    />
+                      className={`sidebar-file-item ${isFocused ? 'focused' : ''}`}
+                      tabIndex={-1}
+                      onClick={() => handleFileClick(fileId)}
+                      onDoubleClick={() => handleFileDoubleClick(fileId)}
+                    >
+                      <Listing
+                        entity={entity}
+                        handleFileClick={handleFileClick}
+                        handleFileDoubleClick={handleFileDoubleClick}
+                      />
+                    </div>
                   );
                 })
               ) : (
