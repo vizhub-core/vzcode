@@ -203,19 +203,23 @@ export const useKeyboardShortcuts = ({
 
       // Handle Ctrl + 1 or Ctrl + 2
       if (event.ctrlKey) {
+        // Ctrl + 1: Focus on code editor
+        if (event.key === '1') {
+          if (codeEditorRef.current) {
+            event.preventDefault();
+            // Focus the editor correctly
+            const editor = editorCache.get(cacheKey)?.editor;
+            if (editor) {
+              editor.focus(); // Ensure the editor is focused
+              console.log('Focused on the code editor');
+            }
+          }
+        }
         // Ctrl + 2: Focus on sidebar
         if (event.key === '2') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
             console.log('Focused on the sidebar');
-            event.preventDefault();
-          }
-        }
-        // Ctrl + 1: Focus on code editor
-        if (event.key === '1') {
-          if (codeEditorRef.current) {
-            codeEditorRef.current.focus();
-            console.log('Focused on the code editor');
             event.preventDefault();
           }
         }
