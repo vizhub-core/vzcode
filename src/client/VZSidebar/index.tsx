@@ -131,20 +131,19 @@ export const VZSidebar = ({
     [files],
   );
 
-  const [focusedIndex, setFocusedIndex] = useState<number | null>(null); // Track currently focused item
-  const fileRefs = useMemo(() => [], []); // Array of refs to focusable file/folder items
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const fileRefs = useMemo(() => [], []);
 
-  // Custom function to handle keyboard navigation in the sidebar
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
-    if (!fileTree || !fileTree.children) return; // Exit if no files/folders are available
-    const itemsArray = fileTree.children; // Includes both files and folders
+    if (!fileTree || !fileTree.children) return; 
+    const itemsArray = fileTree.children;
 
     switch (event.key) {
       case 'ArrowUp':
         if (focusedIndex !== null && focusedIndex > 0) {
           const newIndex = Math.max(focusedIndex - 1, 0);
           setFocusedIndex(newIndex);
-          fileRefs[newIndex]?.focus(); // Focus the new element
+          fileRefs[newIndex]?.focus(); 
         }
         event.preventDefault();
         break;
@@ -152,10 +151,10 @@ export const VZSidebar = ({
         if (focusedIndex !== null && focusedIndex < itemsArray.length - 1) {
           const newIndex = Math.min(focusedIndex + 1, itemsArray.length - 1);
           setFocusedIndex(newIndex);
-          fileRefs[newIndex]?.focus(); // Focus the new element
+          fileRefs[newIndex]?.focus();
         } else if (itemsArray.length > 0) {
           setFocusedIndex(0);
-          fileRefs[0]?.focus(); // Focus the first element
+          fileRefs[0]?.focus();
         }
         event.preventDefault();
         break;
@@ -270,8 +269,8 @@ export const VZSidebar = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      tabIndex={0} // Ensures the sidebar is focusable
-      onKeyDown={handleSidebarKeyDown} // Handles keyboard navigation
+      tabIndex={0} 
+      onKeyDown={handleSidebarKeyDown} 
       ref={sidebarRef}
     >
       <div className="full-box">
@@ -443,7 +442,7 @@ export const VZSidebar = ({
                       key={key}
                       className={`sidebar-file-item ${isFocused ? 'focused' : ''}`}
                       tabIndex={0}
-                      ref={(el) => (fileRefs[index] = el)} // Assign ref to each file/folder item
+                      ref={(el) => (fileRefs[index] = el)}
                       onClick={() => {
                         if ('fileId' in entity) handleFileClick(entity.fileId);
                       }}

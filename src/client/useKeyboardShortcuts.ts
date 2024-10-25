@@ -152,6 +152,8 @@ const sideBarKeyBoardMap = {
 // * Alt-PageDown: Change the active tab to the next one
 // * Ctrl-s or Shift-Enter: Run the code and format it with Prettier
 // * Ctrl-Click: Jump to closest definition for a potential identifier
+// * Ctrl-1: Focus on editor
+// * Ctrl-2: Focus on sidebar
 export const useKeyboardShortcuts = ({
   closeTabs,
   activeFileId,
@@ -201,21 +203,17 @@ export const useKeyboardShortcuts = ({
         }
       }
 
-      // Handle Ctrl + 1 or Ctrl + 2
       if (event.ctrlKey) {
-        // Ctrl + 1: Focus on code editor
         if (event.key === '1') {
           if (codeEditorRef.current) {
             event.preventDefault();
-            // Focus the editor correctly
             const editor = editorCache.get(cacheKey)?.editor;
             if (editor) {
-              editor.focus(); // Ensure the editor is focused
+              editor.focus();
               console.log('Focused on the code editor');
             }
           }
         }
-        // Ctrl + 2: Focus on sidebar
         if (event.key === '2') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
