@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ThemeLabel } from './themes';
 import {
   FileId,
@@ -8,6 +9,7 @@ import {
   TabState,
   Username,
   VZCodeContent,
+  detect_history_change,  
 } from '../types';
 import { VZAction } from './vzReducer';
 
@@ -54,6 +56,28 @@ export const useActions = (
     },
     [dispatch],
   );
+
+  // WIP for issue #495 Back Button Broken
+  // Thought process:
+  /*
+    Create an action detectchange
+    whenever a user presses forward or backward on browser tab
+    update the current page displayed to be the same as one on url
+    Approach:
+    In src/client/useActions.ts introduced an action called detectHistoryChange
+    in the useURLSync.ts make the use effect sync when the internal state of the url 
+    whenever tablist, activefileid change 
+  */
+
+  const location = useLocation();
+  
+
+  const detectHistoryChange = useCallback(() => {
+    dispatch({
+      type: 'detect_history_change',
+    });
+  }, [dispatch]);
+  
 
   const setTheme = useCallback(
     (themeLabel: ThemeLabel) => {
@@ -241,5 +265,6 @@ export const useActions = (
     toggleAutoFollow,
     updatePresenceIndicator,
     splitCurrentPane,
+    detectHistoryChange,
   };
 };

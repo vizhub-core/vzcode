@@ -34,7 +34,9 @@ import {
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
+import { detectHistoryChangeReducer } from './detectHistoryChangeReducer';
 export { createInitialState } from './createInitialState';
+
 
 // The shape of the state managed by the reducer.
 export type VZState = {
@@ -102,6 +104,12 @@ export type VZAction =
       fileIdsToClose: Array<FileId>;
       // The pane id to close tabs from.
     }
+
+  // 'detect_history_change'
+  // * WIP detects when user tab history changes
+  |{
+    type: 'detect_history_change';
+  }
 
   // `set_theme`
   //  * Sets the theme.
@@ -200,6 +208,8 @@ const reducers = [
   toggleAutoFollowReducer,
   updatePresenceIndicatorReducer,
   splitCurrentPaneReducer,
+  detectHistoryChangeReducer,
+
 ];
 
 export const vzReducer = (

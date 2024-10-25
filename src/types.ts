@@ -235,3 +235,5 @@ export type Username = string;
 export type SubmitOperation = (
   next: (content: VZCodeContent) => VZCodeContent,
 ) => void;
+
+export type detect_history_change = string;
