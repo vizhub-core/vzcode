@@ -5,7 +5,11 @@ import { Username } from '../../types';
 // @ts-ignore
 import PrettierWorker from '../usePrettier/worker?worker';
 // @ts-ignore
-import { LiveKitRoom } from '@livekit/components-react';
+import {
+  GridLayout,
+  LiveKitRoom,
+  ParticipantTile,
+} from '@livekit/components-react';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 import {
   VZCodeContext,
@@ -119,6 +123,9 @@ function App() {
             ) : null}
           </div>
           <PersistUsername />
+          <GridLayout>
+            <ParticipantTile />
+          </GridLayout>
         </LiveKitRoom>
       </VZCodeProvider>
     </SplitPaneResizeProvider>
