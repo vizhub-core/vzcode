@@ -61,3 +61,26 @@ router.put('/api/task-users/:id', async (req, res) => {
         });
     }
 });
+
+//Delete a TaskUser
+router.delete('/api/task-users/:id', async (req, res) => {
+    try {
+        const taskUser = await TaskUser.findByIdAndDelete(req.params.id);
+        if (!taskUser) {
+            return res.status(404).json({ error: 'TaskUser not found' });
+        }
+        res.json({ message: 'TaskUser deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//Get All TaskUsers by Status
+router.get('/api/task-users/status/:status', async (req, res) => {
+    try {
+        const taskUsers = await TaskUser.find({ status: req.params.status });
+        res.json(taskUsers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
