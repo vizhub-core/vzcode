@@ -67,7 +67,7 @@ function App() {
     connection,
   });
 
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState(undefined);
 
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
@@ -81,10 +81,13 @@ function App() {
   const enableRightPanel = true;
 
   useEffect(() => {
-    const response = fetch('/livekitToken', {
+    const response = fetch('localhost:3030/livekitToken', {
       method: 'GET',
     }).then(async (res) => {
-      setToken(await res.text());
+      console.log(res);
+      let text = await res.text();
+      setToken(text);
+      console.log(text);
     });
   }, []);
 

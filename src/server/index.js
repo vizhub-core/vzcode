@@ -15,7 +15,7 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
-import { createRoom, createToken } from './livekit.js';
+import { createToken } from './livekit.js';
 import './setupEnv.js';
 
 // The time in milliseconds by which auto-saving is debounced.
@@ -114,7 +114,7 @@ app.post(
 
 // Livekit Token Generator
 app.get('/livekitToken', async (req, res) => {
-  await createRoom();
+  // let resd = await createRoom();
   res.send(await createToken());
 });
 

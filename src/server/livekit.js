@@ -30,6 +30,7 @@ export const createToken = async () => {
     },
   );
   at.addGrant({ roomJoin: true, room: roomName });
+  console.log(at);
 
   return await at.toJwt();
 };
