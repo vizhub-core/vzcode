@@ -38,36 +38,35 @@ import './styles.scss';
 // See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
-const collectFilesRecursively = (fileTree) => {
-  const files = [];
+const collectFilesRecursively = (node, path = '', files = []) => {
+  const currentPath = path ? `${path}/${node.name}` : node.name;
 
-  const traverse = (node, path = '') => {
-    if (node.type === 'file') {
-      // Add the file path to the list
-      files.push(`${path}/${node.name}`);
-    } else if (node.type === 'directory') {
-      // Traverse through the directory’s children
-      node.children.forEach((child) => traverse(child, `${path}/${node.name}`));
-    }
-  };
+  if (node.type === 'file') {
+    files.push(currentPath); // Add the file path
+  } else if (node.type === 'directory' && node.children) {
+    node.children.forEach((child) =>
+      collectFilesRecursively(child, currentPath, files)
+    );
+  }
 
-  traverse(fileTree);
   return files;
 };
 
-const copyFileList = (fileTree) => {
-  const allFiles = collectFilesRecursively(fileTree);
-  const fileListString = allFiles.join('\n');
-
-  navigator.clipboard.writeText(fileListString)
-    .then(() => {
-      alert('Full file list copied to clipboard!');
-    })
-    .catch((err) => {
-      console.error('Could not copy text: ', err);
-    });
+const copyFileList = async (fileTree) => {
+  try {
+    const allFiles = collectFilesRecursively(fileTree);
+    const fileListString = allFiles.join('\n');
+    await navigator.clipboard.writeText(fileListString);
+    alert('File list copied to clipboard!');
+  } catch (error) {
+    console.error('Could not copy the file list:', error);
+    alert('Failed to copy the file list. Please try again.');
+  }
 };
+
 export const VZSidebar = ({
+
+
   createFileTooltipText = (
     <>
       <strong>New file</strong>
@@ -305,6 +304,18 @@ export const VZSidebar = ({
             >
               <SearchSVG />
             </i>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip id="copy-files-tooltip">Copy File List</Tooltip>}
+          >
+            <button
+              className="copy-file-list-button"
+              onClick={() => copyFileList(fileTree)}
+            >
+              Copy File List
+            </button>
           </OverlayTrigger>
 
           <OverlayTrigger
