@@ -6,9 +6,8 @@ import { Username } from '../../types';
 import PrettierWorker from '../usePrettier/worker?worker';
 // @ts-ignore
 import {
-  GridLayout,
   LiveKitRoom,
-  ParticipantTile,
+  RoomAudioRenderer,
 } from '@livekit/components-react';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 import {
@@ -123,9 +122,7 @@ function App() {
             ) : null}
           </div>
           <PersistUsername />
-          <GridLayout>
-            <ParticipantTile />
-          </GridLayout>
+          <RoomAudioRenderer />
         </LiveKitRoom>
       </VZCodeProvider>
     </SplitPaneResizeProvider>
