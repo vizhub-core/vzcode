@@ -42,7 +42,7 @@ const collectFilesRecursively = (node, path = '', files = []) => {
   const currentPath = path ? `${path}/${node.name}` : node.name;
 
   if (node.type === 'file') {
-    files.push(currentPath); // Add the file path
+    files.push(currentPath); // Collect the file path
   } else if (node.type === 'directory' && node.children) {
     node.children.forEach((child) =>
       collectFilesRecursively(child, currentPath, files)
@@ -54,18 +54,23 @@ const collectFilesRecursively = (node, path = '', files = []) => {
 
 const copyFileList = async (fileTree) => {
   try {
+    if (!fileTree) {
+      alert('No files to copy.');
+      return;
+    }
+
     const allFiles = collectFilesRecursively(fileTree);
     const fileListString = allFiles.join('\n');
+
     await navigator.clipboard.writeText(fileListString);
     alert('File list copied to clipboard!');
   } catch (error) {
-    console.error('Could not copy the file list:', error);
+    console.error('Error copying file list:', error);
     alert('Failed to copy the file list. Please try again.');
   }
 };
 
 export const VZSidebar = ({
-
 
   createFileTooltipText = (
     <>
@@ -306,17 +311,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          <OverlayTrigger
-            placement="right"
-            overlay={<Tooltip id="copy-files-tooltip">Copy File List</Tooltip>}
-          >
-            <button
-              className="copy-file-list-button"
-              onClick={() => copyFileList(fileTree)}
-            >
-              Copy File List
-            </button>
-          </OverlayTrigger>
+  
 
           <OverlayTrigger
             placement="right"
