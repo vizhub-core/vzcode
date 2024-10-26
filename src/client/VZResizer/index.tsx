@@ -1,3 +1,5 @@
+// The split pane resizer component.
+// This is what users drag to resize the split pane.
 import {
   useContext,
   useEffect,
@@ -11,9 +13,17 @@ import {
 import { VZCodeContext } from '../VZCodeContext';
 import './styles.scss';
 
-const RESIZER_INTERACTION_WIDTH = 20;
-const RESIZER_DRAGGING_WIDTH = 200;
-const RESIZER_THUMB_WIDTH = 4;
+// This is the width of the resizer interaction surface.
+// On this surface, the cursor changes to a resize cursor.
+const resizerInteractionSurfaceWidth = 20;
+
+// Expand while dragging to make it easier to hit.
+// Without this, various sidebar elements get hovered on and change style.
+const resizerInteractionSurfaceWidthWhileDragging = 200;
+
+// This is the width of the resizer visible area.
+// This is the part of the resizer that is visible to the user.
+const resizerThumbWidth = 4;
 
 export const VZResizer = ({
   side,
@@ -31,15 +41,14 @@ export const VZResizer = ({
     setIsDragging,
   } = useContext(SplitPaneResizeContext);
 
+  // If there is no active file, don't render the resizer
+  // for the right side.
   const { activePane } = useContext(VZCodeContext);
-  const previousClientX = useRef<number>(0);
 
   const shouldRenderResizer =
-    side === 'left' || !!activePane.activeFileId;
+    side === 'left' || activePane.activeFileId;
 
-  const isDragging =
-    (side === 'left' && isDraggingLeft) ||
-    (side === 'right' && isDraggingRight);
+  const previousClientX = useRef<number>(0);
 
   const onMouseDown = useCallback(
     (event: React.MouseEvent) => {
@@ -54,7 +63,8 @@ export const VZResizer = ({
   const onMouseMove = useCallback(
     (event: MouseEvent) => {
       event.preventDefault();
-      const movementX = event.clientX - previousClientX.current;
+      const movementX =
+        event.clientX - previousClientX.current;
       previousClientX.current = event.clientX;
       moveSplitPane(movementX, side);
     },
@@ -66,47 +76,53 @@ export const VZResizer = ({
     document.body.style.cursor = 'default';
   }, [setIsDragging, side]);
 
+  // Is the resizer currently being dragged?
+  const isDragging =
+    (side === 'left' && isDraggingLeft) ||
+    (side === 'right' && isDraggingRight);
+
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
       return () => {
-        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener(
+          'mousemove',
+          onMouseMove,
+        );
         document.removeEventListener('mouseup', onMouseUp);
       };
     }
   }, [isDragging, onMouseMove, onMouseUp]);
 
-  if (!shouldRenderResizer) return null;
-
   const resizerWidth = isDragging
-    ? RESIZER_DRAGGING_WIDTH
-    : RESIZER_INTERACTION_WIDTH;
+    ? resizerInteractionSurfaceWidthWhileDragging
+    : resizerInteractionSurfaceWidth;
 
-  const leftPosition =
+  const left =
     (side === 'left'
       ? sidebarWidth
       : isSidebarVisible
-      ? sidebarWidth + codeEditorWidth
-      : codeEditorWidth) -
+        ? sidebarWidth + codeEditorWidth
+        : codeEditorWidth) -
     resizerWidth / 2;
 
-  return (
+  return shouldRenderResizer ? (
     <div
       className="vz-resizer"
       onMouseDown={onMouseDown}
       style={{
-        left: leftPosition + resizerWidth / 2 - 1.5,
+        left: left + resizerWidth / 2 - 1.5,
         width: resizerWidth,
       }}
     >
       <div
         className="vz-resizer-thumb"
         style={{
-          left: RESIZER_THUMB_WIDTH / 2 - 1.5,
-          width: RESIZER_THUMB_WIDTH,
+          left: resizerThumbWidth / 2 - 1.5,
+          width: resizerThumbWidth,
         }}
       />
     </div>
-  );
+  ) : null;
 };
