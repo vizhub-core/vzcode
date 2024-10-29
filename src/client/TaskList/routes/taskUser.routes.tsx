@@ -84,3 +84,28 @@ router.get('/api/task-users/status/:status', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+//Get All TaskUsers Assigned to a Specific Task
+router.get('/api/tasks/:taskId/task-users', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.taskId).populate('collaborators');
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+        res.json(task.collaborators);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//Add a TaskUser to a Task
+router.post('/api/tasks/:taskId/task-users/:userId', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.taskId);
+
+
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
