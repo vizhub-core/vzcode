@@ -181,6 +181,24 @@ export const VZSidebar = ({
         });
         event.preventDefault();
         break;
+        case 'ArrowRight':
+          if (focusedIndex !== null) {
+            const item = flattenedItems[focusedIndex];
+            if (item.type === 'folder') {
+              expandFolder(item.path);
+            }
+          }
+          event.preventDefault();
+          break;
+          case 'ArrowLeft':
+            if (focusedIndex !== null) {
+              const item = flattenedItems[focusedIndex];
+              if (item.type === 'folder') {
+                foldFolder(item.path);
+              }
+            }
+            event.preventDefault();
+            break;
       case 'Enter':
         if (focusedIndex !== null) {
           const item = flattenedItems[focusedIndex];
@@ -205,8 +223,20 @@ export const VZSidebar = ({
       return newExpanded;
     });
   };
-
-
+  const foldFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+      newExpanded.delete(path);
+      return newExpanded;
+    });
+  };
+  const expandFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+       newExpanded.add(path);
+      return newExpanded;
+    });
+  };
   const handleFileFocusShortcut = useCallback(() => {
     if (flattenedItems.length > 0) {
       setFocusedIndex(0);
