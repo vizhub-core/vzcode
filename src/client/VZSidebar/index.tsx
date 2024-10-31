@@ -135,39 +135,59 @@ export const VZSidebar = ({
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const fileRefs = useMemo(() => [], []);
 
+  const flattenFileTree = useCallback(
+    (tree: Array<FileTree | FileTreeFile>, parentPath = ''): Array<any> => {
+      const items = [];
+      tree.forEach((item) => {
+        if ('fileId' in item) {
+          items.push(item);
+        } else {
+          items.push({ ...item, type: 'folder' });
+          if (expandedFolders.has(item.path)) {
+            items.push(...flattenFileTree(item.children, item.path));
+          }
+        }
+      });
+      return items;
+    },
+    [expandedFolders],
+  );
+
+  const flattenedItems = useMemo(() => {
+    return fileTree ? flattenFileTree(fileTree.children) : [];
+  }, [fileTree, flattenFileTree]);
+
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
-    if (!fileTree || !fileTree.children) return; 
-    const itemsArray = fileTree.children;
+    if (!flattenedItems.length) return;
+
 
     switch (event.key) {
       case 'ArrowUp':
-        if (focusedIndex !== null && focusedIndex > 0) {
-          const newIndex = Math.max(focusedIndex - 1, 0);
-          setFocusedIndex(newIndex);
-          fileRefs[newIndex]?.focus(); 
-        }
+        setFocusedIndex((prevIndex) => {
+          const newIndex = prevIndex === null ? 0 : Math.max(prevIndex - 1, 0);
+          fileRefs[newIndex]?.focus();
+          return newIndex;
+        });
         event.preventDefault();
         break;
       case 'ArrowDown':
-        if (focusedIndex !== null && focusedIndex < itemsArray.length - 1) {
-          const newIndex = Math.min(focusedIndex + 1, itemsArray.length - 1);
-          setFocusedIndex(newIndex);
+        setFocusedIndex((prevIndex) => {
+          const newIndex =
+            prevIndex === null
+              ? 0
+              : Math.min(prevIndex + 1, flattenedItems.length - 1);
           fileRefs[newIndex]?.focus();
-        } else if (itemsArray.length > 0) {
-          setFocusedIndex(0);
-          fileRefs[0]?.focus();
-        }
+          return newIndex;
+        });
         event.preventDefault();
         break;
       case 'Enter':
         if (focusedIndex !== null) {
-          const entity = itemsArray[focusedIndex];
-          if ('fileId' in entity) {
-            const fileId = entity.fileId;
-            openTab({ fileId, isTransient: false });
-          } else if (entity.children) {
-            // Handle folder expand/collapse
-            toggleFolder(entity.path);
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            toggleFolder(item.path);
+          } else if ('fileId' in item) {
+            openTab({ fileId: item.fileId, isTransient: false });
           }
         }
         event.preventDefault();
@@ -178,26 +198,21 @@ export const VZSidebar = ({
   };
 
   const toggleFolder = (path: string) => {
-    setExpandedFolders((prevExpandedFolders) => {
-      const newExpandedFolders = new Set(prevExpandedFolders);
-      if (newExpandedFolders.has(path)) {
-        newExpandedFolders.delete(path); // Collapse folder
-      } else {
-        newExpandedFolders.add(path); // Expand folder
-      }
-      return newExpandedFolders;
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(path)) newExpanded.delete(path);
+      else newExpanded.add(path);
+      return newExpanded;
     });
   };
 
 
   const handleFileFocusShortcut = useCallback(() => {
-    if (fileTree && fileTree.children.length > 0) {
-      const firstItem = fileTree.children[0];
-      if ('fileId' in firstItem) {
-        openTab({ fileId: firstItem.fileId, isTransient: false });
-      }
+    if (flattenedItems.length > 0) {
+      setFocusedIndex(0);
+      fileRefs[0]?.focus();
     }
-  }, [fileTree, openTab]);
+  }, [flattenedItems]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -449,35 +464,28 @@ export const VZSidebar = ({
                   </div>
                 </div>
               ) : filesExist ? (
-                fileTree.children.map((entity, index) => {
-                  const { path } = entity as FileTree;
-                  const key = path;
-                  const isFocused = focusedIndex === index;
-                  const isExpanded = expandedFolders.has(path);
-
-                  return (
-                    <div
-                      key={key}
-                      className={`sidebar-file-item ${isFocused ? 'focused' : ''}`}
-                      tabIndex={0}
-                      ref={(el) => (fileRefs[index] = el)}
-                      onClick={() => {
-                        if ('fileId' in entity) handleFileClick(entity.fileId);
-                        else if (entity.children) toggleFolder(path);
-                      }}
-                      onDoubleClick={() => {
-                        if ('fileId' in entity) handleFileDoubleClick(entity.fileId);
-                      }}
-                    >
-                      <Listing
-                        entity={entity}
-                        handleFileClick={handleFileClick}
-                        handleFileDoubleClick={handleFileDoubleClick}
-                        isExpanded={isExpanded}
-                      />
-                    </div>
-                  );
-                })
+                flattenedItems.map((item, index) => (
+                  <div
+                    key={item.fileId || item.path}
+                    className={`sidebar-file-item ${focusedIndex === index ? 'focused' : ''}`}
+                    tabIndex={0}
+                    ref={(el) => (fileRefs[index] = el)}
+                    onClick={() => {
+                      if (item.type === 'folder') toggleFolder(item.path);
+                      else handleFileClick(item.fileId);
+                    }}
+                    onDoubleClick={() => {
+                      if ('fileId' in item) handleFileDoubleClick(item.fileId);
+                    }}
+                  >
+                    <Listing
+                      entity={item}
+                      handleFileClick={handleFileClick}
+                      handleFileDoubleClick={handleFileDoubleClick}
+                      isExpanded={expandedFolders.has(item.path)}
+                    />
+                  </div>
+                ))
               ) : (
                 <div className="empty">
                   <div className="empty-text">
