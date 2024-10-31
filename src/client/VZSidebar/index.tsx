@@ -159,6 +159,12 @@ export const VZSidebar = ({
 
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
     if (!flattenedItems.length) return;
+  
+    const moveItem = (fromIndex: number, toIndex: number) => {
+      const updatedItems = [...flattenedItems];
+      const [movedItem] = updatedItems.splice(fromIndex, 1);
+      updatedItems.splice(toIndex, 0, movedItem);
+    };
 
 
     switch (event.key) {
@@ -212,6 +218,32 @@ export const VZSidebar = ({
         break;
       default:
         break;
+        case 'Home':
+          setFocusedIndex(0);
+          fileRefs[0]?.focus();
+          event.preventDefault();
+          break;
+        case 'End':
+          setFocusedIndex(flattenedItems.length - 1);
+          fileRefs[flattenedItems.length - 1]?.focus();
+          event.preventDefault();
+          break;
+          case '[':
+          if (focusedIndex !== null && focusedIndex > 0) {
+            moveItem(focusedIndex, focusedIndex - 1);
+            setFocusedIndex(focusedIndex - 1);
+            fileRefs[focusedIndex - 1]?.focus();
+          }
+          event.preventDefault();
+          break;
+          case ']':
+          if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
+            moveItem(focusedIndex, focusedIndex + 1);
+            setFocusedIndex(focusedIndex + 1);
+            fileRefs[focusedIndex + 1]?.focus();
+          }
+          event.preventDefault();
+          break;
     }
   };
 
