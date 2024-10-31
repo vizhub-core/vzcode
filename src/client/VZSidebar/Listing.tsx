@@ -14,10 +14,12 @@ export const Listing = ({
   entity,
   handleFileClick,
   handleFileDoubleClick,
+  isExpanded = false,
 }: {
   entity: FileTree | FileTreeFile;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
+  isExpanded?: boolean;
 }) => {
   const { activePane, sidebarPresenceIndicators } =
     useContext(VZCodeContext);
@@ -45,6 +47,7 @@ export const Listing = ({
       children={children}
       handleFileClick={handleFileClick}
       handleFileDoubleClick={handleFileDoubleClick}
+      isExpanded={isExpanded}
     />
   );
 };

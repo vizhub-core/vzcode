@@ -204,7 +204,7 @@ export const useKeyboardShortcuts = ({
       }
 
       if (event.ctrlKey) {
-        if (event.key === '1') {
+        if (event.key === '2') {
           if (codeEditorRef.current) {
             event.preventDefault();
             const editor = editorCache.get(cacheKey)?.editor;
@@ -214,7 +214,7 @@ export const useKeyboardShortcuts = ({
             }
           }
         }
-        if (event.key === '2') {
+        if (event.key === '1') {
           if (sidebarRef.current) {
             sidebarRef.current.focus();
             console.log('Focused on the sidebar');
@@ -255,19 +255,25 @@ export const useKeyboardShortcuts = ({
           return;
         }
 
-        if (event.key === '1') {
-          if (sidebarRef.current) {
-            sidebarRef.current.focus();
+          if (event.key === '2') {
+            if (codeEditorRef.current) {
+              event.preventDefault();
+              const editor = editorCache.get(cacheKey)?.editor;
+              if (editor) {
+                editor.focus();
+                console.log('Focused on the code editor');
+              }
+            }
+          }
+          if (event.key === '1') {
+            if (sidebarRef.current) {
+              sidebarRef.current.focus();
+              console.log('Focused on the sidebar');
+              event.preventDefault();
+            }
           }
         }
-
-        if (event.key === '2') {
-          if (codeEditorRef.current) {
-            codeEditorRef.current.focus();
-          }
-        }
-      }
-    };
+      };
 
     const resetActiveJumpingElement = (): void => {
       if (activeJumpingElement) {

@@ -11,17 +11,18 @@ export const DirectoryListing = ({
   children,
   handleFileClick,
   handleFileDoubleClick,
+  isExpanded = false,
 }: {
   name: string;
   path: string;
   children: Array<FileTree | FileTreeFile>;
   handleFileClick: (fileId: string) => void;
   handleFileDoubleClick: (fileId: string) => void;
+  isExpanded?: boolean;
 }) => {
   const {
     renameDirectory,
     deleteDirectory,
-    isDirectoryOpen,
     toggleDirectory,
     sidebarPresenceIndicators,
   } = useContext(VZCodeContext);
@@ -41,11 +42,6 @@ export const DirectoryListing = ({
     [renameDirectory, path, name],
   );
 
-  const isOpen = useMemo(
-    () => isDirectoryOpen(path),
-    [isDirectoryOpen, path],
-  );
-
   return (
     <>
       <Item
@@ -59,14 +55,14 @@ export const DirectoryListing = ({
         <div
           className="arrow-wrapper"
           style={{
-            transform: `rotate(${isOpen ? 90 : 0}deg)`,
+            transform: `rotate(${isExpanded ? 90 : 0}deg)`,
           }}
         >
           <DirectoryArrowSVG />
         </div>
         <div className="name">{name}</div>
       </Item>
-      {children && isOpen ? (
+      {children && isExpanded ? (
         <div className="indentation">
           {children.map((entity) => {
             const { fileId } = entity as FileTreeFile;

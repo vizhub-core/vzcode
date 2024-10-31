@@ -132,6 +132,7 @@ export const VZSidebar = ({
   );
 
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const fileRefs = useMemo(() => [], []);
 
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
@@ -164,6 +165,9 @@ export const VZSidebar = ({
           if ('fileId' in entity) {
             const fileId = entity.fileId;
             openTab({ fileId, isTransient: false });
+          } else if (entity.children) {
+            // Handle folder expand/collapse
+            toggleFolder(entity.path);
           }
         }
         event.preventDefault();
@@ -172,6 +176,19 @@ export const VZSidebar = ({
         break;
     }
   };
+
+  const toggleFolder = (path: string) => {
+    setExpandedFolders((prevExpandedFolders) => {
+      const newExpandedFolders = new Set(prevExpandedFolders);
+      if (newExpandedFolders.has(path)) {
+        newExpandedFolders.delete(path); // Collapse folder
+      } else {
+        newExpandedFolders.add(path); // Expand folder
+      }
+      return newExpandedFolders;
+    });
+  };
+
 
   const handleFileFocusShortcut = useCallback(() => {
     if (fileTree && fileTree.children.length > 0) {
@@ -436,6 +453,7 @@ export const VZSidebar = ({
                   const { path } = entity as FileTree;
                   const key = path;
                   const isFocused = focusedIndex === index;
+                  const isExpanded = expandedFolders.has(path);
 
                   return (
                     <div
@@ -445,6 +463,7 @@ export const VZSidebar = ({
                       ref={(el) => (fileRefs[index] = el)}
                       onClick={() => {
                         if ('fileId' in entity) handleFileClick(entity.fileId);
+                        else if (entity.children) toggleFolder(path);
                       }}
                       onDoubleClick={() => {
                         if ('fileId' in entity) handleFileDoubleClick(entity.fileId);
@@ -454,6 +473,7 @@ export const VZSidebar = ({
                         entity={entity}
                         handleFileClick={handleFileClick}
                         handleFileDoubleClick={handleFileDoubleClick}
+                        isExpanded={isExpanded}
                       />
                     </div>
                   );
