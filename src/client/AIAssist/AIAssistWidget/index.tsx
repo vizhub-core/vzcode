@@ -49,6 +49,7 @@ export const AIAssistWidget = ({
   const [selectedModel, setSelectedModel] = useState(
     modelOptions[0],
   ); // Default to first model
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
@@ -113,12 +114,20 @@ export const AIAssistWidget = ({
     : aiStreamId === null;
 
   return (
-    <div className="vz-code-ai-assist-widget">
+    <div
+      className="vz-code-ai-assist-widget"
+      style={{ display: 'flex', alignItems: 'center' }}
+    >
       {aiStreamId ? (
         <Spinner />
       ) : (
         showWidget && (
-          <div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
             <OverlayTrigger
               placement="left"
               overlay={
@@ -136,20 +145,75 @@ export const AIAssistWidget = ({
                 <SparklesSVG />
               </i>
             </OverlayTrigger>
-            <select
-              value={selectedModel}
-              onChange={(e) =>
-                setSelectedModel(e.target.value)
-              }
-              className="model-dropdown"
-              style={{ marginLeft: '10px' }}
+
+            <div
+              style={{
+                position: 'relative',
+                marginLeft: '10px',
+              }}
             >
-              {modelOptions.map((model) => (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              ))}
-            </select>
+              <button
+                onClick={() =>
+                  setDropdownOpen(!dropdownOpen)
+                }
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  padding: '6px 12px',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                {selectedModel} ▼
+              </button>
+              {dropdownOpen && (
+                <ul
+                  style={{
+                    position: 'absolute',
+                    bottom: '100%',
+                    left: '0',
+                    backgroundColor: 'white',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    marginTop: '4px',
+                    boxShadow:
+                      '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    zIndex: 10,
+                    minWidth: '100%',
+                    padding: 0,
+                    listStyleType: 'none',
+                  }}
+                >
+                  {modelOptions.map((model) => (
+                    <li
+                      key={model}
+                      onClick={() => {
+                        setSelectedModel(model);
+                        setDropdownOpen(false);
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s ease',
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          '#f0f0f0')
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor =
+                          'white')
+                      }
+                    >
+                      {model}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )
       )}
