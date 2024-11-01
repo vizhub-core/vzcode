@@ -16,10 +16,7 @@ describe('tabsSearchParameters', () => {
     },
     {
       name: 'single active tab',
-      tabStateParams: {
-        file: 'index.html',
-      },
-
+      tabStateParams: { file: 'index.html' },
       tabList: [{ fileId: '789' }],
       activeFileId: '789',
     },
@@ -49,10 +46,21 @@ describe('tabsSearchParameters', () => {
       ],
       activeFileId: '456',
     },
+    {
+      name: 'empty tab list and null active file',
+      tabStateParams: { file: null, tabs: '' },
+      tabList: [],
+      activeFileId: null,
+    },
+    {
+      name: 'invalid tab state params',
+      tabStateParams: { file: 'unknown.html', tabs: 'unknown.html' },
+      tabList: [],
+      activeFileId: null,
+    },
   ])(
     'round trip: $name',
     ({ tabStateParams, tabList, activeFileId }) => {
-      // Fake Content object
       const content: VZCodeContent = {
         files: {
           '123': { name: 'index.js', text: 'abc' },
@@ -67,12 +75,20 @@ describe('tabsSearchParameters', () => {
       });
       const expected = { tabList, activeFileId };
       expect(decoded).toStrictEqual(expected);
+
       const encoded = encodeTabs({
         tabList,
         activeFileId,
         content,
       });
       expect(encoded).toEqual(tabStateParams);
+
+      // Consistency check
+      const redecoded = decodeTabs({
+        tabStateParams: encoded,
+        content,
+      });
+      expect(redecoded).toStrictEqual(expected);
     },
   );
 });
