@@ -114,7 +114,6 @@ app.post(
 
 // Livekit Token Generator
 app.get('/livekit-token', async (req, res) => {
-  console.log('In livekitToken backend');
   res.send(await createToken());
 });
 
