@@ -62,8 +62,7 @@ function App() {
     docPresence,
     submitOperation,
     connected,
-    isSaving,  
-    isSaved,    
+    pending,
   } = useShareDB({
     connection,
   });
@@ -91,8 +90,7 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
-        isSaving={isSaving} 
-        isSaved={isSaved}
+        pending={pending}
       >
         <div className="app">
           <VZLeft />

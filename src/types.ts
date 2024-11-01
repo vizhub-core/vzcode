@@ -173,6 +173,7 @@ export type ShareDBDoc<T> = {
     options?: any,
     callback?: () => void,
   ) => void;
+  whenNothingPending: (callback: () => void) => void;
 };
 
 // A unique ID for an AI stream.

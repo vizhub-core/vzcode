@@ -118,8 +118,7 @@ export const VZSidebar = ({
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
-    isSaved,
-    isSaving,
+    pending,
     sidebarRef,
     enableAutoFollow,
     toggleAutoFollow,
@@ -417,15 +416,21 @@ export const VZSidebar = ({
       </div>
       {enableConnectionStatus && (
         <div className="connection-status">
-          {isSaving && connected 
-            ? 'Saving...' 
-            : (connected 
-              ? (isSaved ? 'Connected, all changes saved!' : 'Connected') 
-              : 'Connection Lost')}
+          {pending && connected
+            ? 'Saving...'
+            : connected
+              ? !pending
+                ? 'Saved.'
+                : 'Connected'
+              : 'Connection Lost'}
           <div className="connection">
             <div
               className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
+                connected
+                  ? pending
+                    ? 'pending'
+                    : 'connected'
+                  : 'disconnected'
               }`}
             />
           </div>
