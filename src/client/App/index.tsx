@@ -84,14 +84,19 @@ function App() {
   const enableRightPanel = true;
 
   useEffect(() => {
-    const response = fetch('localhost:3030/livekitToken', {
-      method: 'GET',
-    }).then(async (res) => {
-      console.log(res);
-      let text = await res.text();
-      setToken(text);
-      console.log(text);
-    });
+    const fetchToken = async () => {
+      try {
+        const res = await fetch('/livekit-token', {
+          method: 'GET',
+        });
+        const tokenResponse = await res.text();
+        setToken(tokenResponse);
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+
+    fetchToken();
   }, []);
 
   return (
@@ -111,6 +116,7 @@ function App() {
           audio={true}
           token={token}
           serverUrl={'wss://testing-idbzy6rb.livekit.cloud'}
+          connect={true}
         >
           <div className="app">
             <VZLeft />

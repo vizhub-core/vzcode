@@ -113,8 +113,8 @@ app.post(
 );
 
 // Livekit Token Generator
-app.get('/livekitToken', async (req, res) => {
-  // let resd = await createRoom();
+app.get('/livekit-token', async (req, res) => {
+  console.log('In livekitToken backend');
   res.send(await createToken());
 });
 
