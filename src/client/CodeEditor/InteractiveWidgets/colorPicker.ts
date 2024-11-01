@@ -4,46 +4,84 @@ import { InteractRule } from '@replit/codemirror-interact';
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 
 // hex color picker
-// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
-// Works without quotes to support CSS.
 export const colorPicker = (
   onInteract?: () => void,
 ): InteractRule => {
   // Create the color picker element when the page loads
   const sel: HTMLInputElement = document.createElement('input');
   sel.type = 'color';
-  sel.style.position = 'fixed'; 
-  sel.style.left = '-9999px'; // Position off-screen initially
+  sel.style.position = 'fixed';
+  sel.style.left = '-9999px'; // Initially off-screen
   sel.style.top = '-9999px';
   document.body.appendChild(sel);
+
+  // Create a close button element to hide the color picker
+  const closeButton: HTMLButtonElement = document.createElement('button');
+  closeButton.innerText = 'X';
+  closeButton.style.position = 'absolute';
+  closeButton.style.width = '20px';
+  closeButton.style.height = '20px';
+  closeButton.style.borderRadius = '50%';
+  closeButton.style.border = 'none';
+  closeButton.style.backgroundColor = '#ff4d4f';
+  closeButton.style.color = 'white';
+  closeButton.style.fontSize = '12px';
+  closeButton.style.display = 'none'; // Initially hidden
+  closeButton.style.cursor = 'pointer';
+  closeButton.style.top = '-10px'; // Adjust position relative to color picker
+  closeButton.style.right = '-10px';
+  sel.parentElement?.appendChild(closeButton); // Add button to the same container
+
+  // Function to hide the color picker and close button
+  const hideColorPicker = () => {
+    sel.style.left = '-9999px';
+    sel.style.top = '-9999px';
+    closeButton.style.display = 'none';
+  };
+
+  // Add event listener to the close button to hide color picker
+  closeButton.addEventListener('click', (event) => {
+    event.stopPropagation(); // Prevent click event from bubbling to document
+    hideColorPicker();
+  });
+
+  // Add event listener for clicks outside the color picker
+  document.addEventListener('click', (event: MouseEvent) => {
+    if (event.target !== sel && event.target !== closeButton) {
+      hideColorPicker();
+    }
+  });
 
   return {
     regexp: colorPickerRegex,
     cursor: 'pointer',
-    
+
     onClick(
       text: string,
       setText: (newText: string) => void,
-      event: MouseEvent // Capture the event object
+      event: MouseEvent
     ) {
       const startingColor: string = text;
 
       // Set the initial value of the color picker
       sel.value = startingColor.toLowerCase();
 
-      // Calculate the position of the cursor within the document
+      // Position the color picker near the cursor
       const cursorX = event.clientX;
       const cursorY = event.clientY;
-
-      // Position the color picker relative to the cursor position
       sel.style.left = cursorX + 'px';
       sel.style.top = cursorY + 'px';
 
+      // Show and position the close button
+      closeButton.style.display = 'block';
+      closeButton.style.left = `${cursorX + sel.offsetWidth - 15}px`; // Adjust to place in corner
+      closeButton.style.top = `${cursorY - 15}px`;
+
+      // Update the color selection and setText on change
       const updateHex = (e: Event) => {
-        const el: HTMLInputElement =
-          e.target as HTMLInputElement;
+        const el: HTMLInputElement = e.target as HTMLInputElement;
         if (el.value) {
-          setText(el.value.toUpperCase()); // Always use upper case
+          setText(el.value.toUpperCase()); // Use uppercase for consistency
         }
         if (onInteract) onInteract();
       };
@@ -56,6 +94,7 @@ export const colorPicker = (
     },
   };
 };
+
 
 // TODO get this working
 // rgb color picker
