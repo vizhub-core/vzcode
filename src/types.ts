@@ -23,8 +23,9 @@ export interface Files {
 // File
 //  * A file with `name` and `text`.
 export interface File {
-  // The file name.
+  // The file name, including the path.
   // e.g. "index.html".
+  // e.g. "some-folder/index.html".
   name: string;
 
   // The text content of the file.
