@@ -102,10 +102,39 @@ router.get('/api/tasks/:taskId/task-users', async (req, res) => {
 router.post('/api/tasks/:taskId/task-users/:userId', async (req, res) => {
     try {
         const task = await Task.findById(req.params.taskId);
-
-
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+        const taskUser = await TaskUser.findById(req.params.userId);
+        if (!taskUser) {
+            return res.status(404).json({ error: 'TaskUser not found' });
+        }
+        if (!task.collaborators.includes(taskUser._id)) {
+            task.collaborators.push(taskUser._id);
+            await task.save();
+        }
+        res.json(task);
         
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+//Remove a TaskUser from a Task
+router.delete('/api/tasks/:taskId/task-users/:userId', async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.taskId);
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+        task.collaborators = task.collaborators.filter(
+            (collaboratorId) => collaboratorId.toString() !== req.params.userId
+        );
+        await task.save();
+        res.json(task);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+module.exports = router;
