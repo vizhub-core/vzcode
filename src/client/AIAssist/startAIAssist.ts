@@ -1,6 +1,5 @@
 import { EditorView } from 'codemirror';
 import {
-  File,
   FileId,
   ShareDBDoc,
   TabState,
@@ -24,6 +23,7 @@ export const startAIAssist = async ({
   aiAssistEndpoint = defaultAIAssistEndpoint,
   aiAssistOptions = {},
   aiStreamId,
+  selectedModel, // Add selectedModel to parameter list
 }: {
   view: EditorView;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -34,6 +34,7 @@ export const startAIAssist = async ({
     [key: string]: any;
   };
   aiStreamId: RequestId;
+  selectedModel: string; // Add selectedModel to type definition
 }) => {
   const currentFileName =
     shareDBDoc.data.files[fileId].name;
@@ -72,27 +73,16 @@ export const startAIAssist = async ({
   }
 
   if (debug) {
-    // console.log('[startAIAssist] sending HTTP request:');
-    // console.log(
-    //   '[startAIAssist]   aiAssistEndpoint:',
-    //   aiAssistEndpoint,
-    // );
-    // console.log(
-    //   '[startAIAssist]   aiAssistOptions:',
-    //   aiAssistOptions,
-    // );
+    // Log debug information to help trace the input and options being sent
     console.log(
-      '[startAIAssist]   inputText:\n`' + inputText + '`',
+      '[startAIAssist] inputText:\n`' + inputText + '`',
     );
+    // console.log('[startAIAssist]   aiAssistEndpoint:', aiAssistEndpoint);
+    // console.log('[startAIAssist]   aiAssistOptions:', aiAssistOptions);
     // console.log('[startAIAssist]   fileId:', fileId);
-    // console.log(
-    //   '[startAIAssist]   insertionCursor:',
-    //   insertionCursor,
-    // );
-    // console.log(
-    //   '[startAIAssist]   aiStreamId:',
-    //   aiStreamId,
-    // );
+    // console.log('[startAIAssist]   insertionCursor:', insertionCursor);
+    // console.log('[startAIAssist]   aiStreamId:', aiStreamId);
+    // console.log('[startAIAssist]   selectedModel:', selectedModel);
   }
 
   const response = await fetch(aiAssistEndpoint, {
@@ -106,6 +96,7 @@ export const startAIAssist = async ({
       fileId,
       insertionCursor,
       aiStreamId,
+      selectedModel, // Include selectedModel in the request body
     }),
   });
 

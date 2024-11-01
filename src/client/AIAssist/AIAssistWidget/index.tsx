@@ -13,6 +13,7 @@ import { Spinner } from '../Spinner';
 import './style.scss';
 
 const enableStopGeneration = false;
+const modelOptions = ['GPT-4o', 'Claude']; // Customize models here
 
 export const AIAssistWidget = ({
   aiAssistEndpoint,
@@ -45,6 +46,10 @@ export const AIAssistWidget = ({
   const [aiStreamId, setAiStreamId] =
     useState<RequestId | null>(null);
 
+  const [selectedModel, setSelectedModel] = useState(
+    modelOptions[0],
+  ); // Default to first model
+
   const handleClick = useCallback(async () => {
     const isCurrentlyGenerationg = aiStreamId !== null;
     if (isCurrentlyGenerationg) {
@@ -64,6 +69,7 @@ export const AIAssistWidget = ({
         aiStreamId: newAiStreamId,
         aiAssistEndpoint,
         aiAssistOptions,
+        selectedModel: 'defaultModel', // Add the appropriate model here
       });
 
       // Introduce a delay before running Prettier
@@ -109,24 +115,42 @@ export const AIAssistWidget = ({
   return (
     <div className="vz-code-ai-assist-widget">
       {aiStreamId ? (
-        <Spinner /> // Show spinner when aiStreamId is not null
+        <Spinner />
       ) : (
         showWidget && (
-          <OverlayTrigger
-            placement="left"
-            overlay={
-              <Tooltip id="ai-assist-widget-tooltip">
-                {aiAssistTooltipText}
-              </Tooltip>
-            }
-          >
-            <i
-              className="icon-button icon-button-dark"
-              onClick={aiAssistClickOverride || handleClick}
+          <div>
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id="ai-assist-widget-tooltip">
+                  {aiAssistTooltipText}
+                </Tooltip>
+              }
             >
-              <SparklesSVG />
-            </i>
-          </OverlayTrigger>
+              <i
+                className="icon-button icon-button-dark"
+                onClick={
+                  aiAssistClickOverride || handleClick
+                }
+              >
+                <SparklesSVG />
+              </i>
+            </OverlayTrigger>
+            <select
+              value={selectedModel}
+              onChange={(e) =>
+                setSelectedModel(e.target.value)
+              }
+              className="model-dropdown"
+              style={{ marginLeft: '10px' }}
+            >
+              {modelOptions.map((model) => (
+                <option key={model} value={model}>
+                  {model}
+                </option>
+              ))}
+            </select>
+          </div>
         )
       )}
     </div>
