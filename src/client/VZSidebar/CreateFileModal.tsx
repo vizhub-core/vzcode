@@ -12,6 +12,7 @@ export const CreateFileModal = ({
   initialFileName = '',
 }) => {
   const [newName, setNewName] = useState(initialFileName);
+  const [error, setError] = useState('');
   const inputRef = useRef(null);
 
   const {
@@ -29,30 +30,24 @@ export const CreateFileModal = ({
 
   const handleNameChange = useCallback((event) => {
     setNewName(event.target.value);
+    setError(''); // Clear error on new input
   }, []);
 
   const onCreateClick = useCallback(() => {
-    handleCreateFileClick(newName);
-    setNewName('');
-  }, [newName, handleCreateFileClick]);
+    if (validateFileName(newName)) {
+      handleCreateFileClick(newName);
+      setNewName('');
+      setError('');
+    } else {
+      setError('Invalid or duplicate filename.');
+    }
+  }, [newName, handleCreateFileClick, validateFileName]);
 
-  // Returns true if file name is valid, false otherwise.
   const validateFileName = useCallback(
-    (fileName: string) => {
-      let valid;
-      //General Character Check
-      const regex =
-        /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
-      valid = regex.test(fileName);
-
-      //Check for Duplicate Filename
-      for (const key in files) {
-        if (fileName === files[key].name) {
-          valid = false;
-        }
-      }
-
-      return valid;
+    (fileName) => {
+      const regex = /^[a-zA-Z0-9](?:[a-zA-Z0-9 ./+=_-]*[a-zA-Z0-9])?$/;
+      if (!regex.test(fileName)) return false;
+      return !Object.values(files).some((file) => file.name === fileName);
     },
     [files],
   );
@@ -91,10 +86,13 @@ export const CreateFileModal = ({
             onChange={handleNameChange}
             ref={inputRef}
             spellCheck="false"
+            aria-describedby="fileNameHelp"
+            isInvalid={!!error}
           />
-          <Form.Text className="text-muted">
-            Enter the name for your file
+          <Form.Text id="fileNameHelp" className="text-muted">
+            Enter the name for your file.
           </Form.Text>
+          {error && <Form.Text className="text-danger">{error}</Form.Text>}
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
