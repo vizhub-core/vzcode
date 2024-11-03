@@ -21,8 +21,11 @@ import {
   LeafPane,
 } from '../types';
 import { usePrettier } from './usePrettier';
+import { useEffect } from 'react';
 import { useTypeScript } from './useTypeScript';
 import { createInitialState, vzReducer } from './vzReducer';
+import { json1PresenceDisplay } from './CodeEditor/json1PresenceDisplay';
+
 import {
   ThemeLabel,
   defaultTheme,
@@ -39,11 +42,7 @@ import { useURLSync } from './useURLSync';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useRunCode } from './useRunCode';
 import { findPane } from './vzReducer/findPane';
-import { 
-  broadcastPresenceUpdate, 
-  subscribeToPresence, 
-  unsubscribeFromPresence 
-} from '../presence'
+
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -167,6 +166,7 @@ export type VZCodeContextValue = {
 
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
+  broadcastFollowMe: () => void;
 
   updatePresenceIndicator: (
     presenceIndicator: PresenceIndicator,
@@ -201,8 +201,28 @@ export const VZCodeProvider = ({
   codeError?: string | null;
   connected: boolean;
 }) => {
-  const [enableAutoFollow, setEnableAutoFollow] = useState(false); // Auto-follow state
 
+  const getCurrentUserId = () => {
+    // Replace this with how you fetch or assign the user ID
+    return localStorage.getItem('userId') || 'defaultUserId';
+};
+const broadcastPresenceUpdate = (event: any) => {
+  // Implement actual broadcasting logic, for example, using WebSocket or a custom presence system
+  console.log("Broadcasting presence update:", event);
+};
+const subscribeToPresence = (callback: (presence: any) => void) => {
+  console.log("Subscribed to presence updates.");
+  // Implement real subscription logic or call the callback with test data
+};
+
+const unsubscribeFromPresence = (callback: (presence: any) => void) => {
+  console.log("Unsubscribed from presence updates.");
+  // Implement unsubscription logic
+};
+
+
+  // Auto-follow state
+// state variable that tracks whether the auto-follow feature is enabled for this user.
 // Function to broadcast the "Follow Me" event
 const broadcastFollowMe = useCallback(() => {
   const userId = getCurrentUserId(); // Get the current user's ID
@@ -214,7 +234,7 @@ const broadcastFollowMe = useCallback(() => {
 useEffect(() => {
   const handlePresenceUpdate = (presence) => {
     if (presence.action === 'follow-me' && presence.userId !== getCurrentUserId()) {
-      setEnableAutoFollow(true); // Enable auto-follow for this user
+      //dispatch({ type: 'ENABLE_AUTO_FOLLOW' }); // Enable auto-follow for this user
     }
   };
   subscribeToPresence(handlePresenceUpdate);
