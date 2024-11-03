@@ -256,17 +256,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          <OverlayTrigger
-            placement="right"
-            overlay={<Tooltip id="follow-me-tooltip">Follow Me</Tooltip>}
-          >
-            <button
-              className="follow-me-button"
-              onClick={() => broadcastFollowMe()}
-            >
-              Follow Me
-            </button>
-            </OverlayTrigger>
+          
 
           <OverlayTrigger
             placement="right"
