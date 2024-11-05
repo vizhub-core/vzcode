@@ -3,7 +3,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from 'react';
 import {
   FileId,
@@ -13,25 +12,26 @@ import {
   PresenceId,
   PresenceIndicator,
 } from '../../types';
-import { Tooltip, OverlayTrigger } from '../bootstrap';
-import { Search } from './Search';
+import { OverlayTrigger, Tooltip } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
-import { sortFileTree } from '../sortFileTree';
-import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import {
-  FolderSVG,
-  SearchSVG,
   BugSVG,
+  FileSVG,
+  FolderSVG,
   GearSVG,
   NewSVG,
-  FileSVG,
-  QuestionMarkSVG,
   PinSVG,
+  QuestionMarkSVG,
+  SearchSVG,
 } from '../Icons';
+import { MicSVG } from '../Icons/MicSVG';
+import { sortFileTree } from '../sortFileTree';
+import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
-import { useDragAndDrop } from './useDragAndDrop';
+import { Search } from './Search';
 import './styles.scss';
+import { useDragAndDrop } from './useDragAndDrop';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -97,6 +97,12 @@ export const VZSidebar = ({
       <div>(Ctrl + Shift + A)</div>
     </div>
   ),
+  voiceChatToolTipText = (
+    <div>
+      <strong>Open Voice Chat Menu</strong>
+      <div>WIP</div>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -107,6 +113,7 @@ export const VZSidebar = ({
   filesToolTipText?: React.ReactNode;
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
+  voiceChatToolTipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -367,7 +374,25 @@ export const VZSidebar = ({
               }`}
               onClick={toggleAutoFollow}
             >
+              <i></i>
               <PinSVG />
+            </i>
+          </OverlayTrigger>
+          {/* Start Voice Chat */}
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="voice-chat">
+                {voiceChatToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              id="mic-icon"
+              className="icon-button icon-button-dark"
+              onClick={handleOpenCreateDirModal}
+            >
+              <MicSVG />
             </i>
           </OverlayTrigger>
         </div>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../../ot';
 import { Username } from '../../types';
@@ -9,6 +9,7 @@ import {
   LiveKitRoom,
   RoomAudioRenderer,
 } from '@livekit/components-react';
+import { v4 } from 'uuid';
 import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 import {
   VZCodeContext,
@@ -70,8 +71,14 @@ function App() {
     connection,
   });
 
-  const [token, setToken] = useState(undefined);
+  //state for the voice channel
 
+  const [liveKitToken, setLiveKitToken] =
+    useState(undefined);
+  const [liveKitRoomName, setLiveKitRoomName] =
+    useState(v4()); //default room name will be an arbitrary uuid
+  const [liveKitConnection, setLiveKitConnection] =
+    useState(false);
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
 
@@ -83,21 +90,24 @@ function App() {
   // so that multiple browser windows are not required.
   const enableRightPanel = true;
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const res = await fetch('/livekit-token', {
-          method: 'GET',
-        });
-        const tokenResponse = await res.text();
-        setToken(tokenResponse);
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchToken = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `/livekit-token?room=${liveKitRoomName}`,
+  //         {
+  //           method: 'GET',
+  //         },
+  //       );
+  //       const tokenResponse = await res.text();
+  //       setToken(tokenResponse);
+  //     } catch (error) {
+  //       console.error('Error fetching token:', error);
+  //     }
+  //   };
 
-    fetchToken();
-  }, []);
+  //   fetchToken();
+  // }, []);
 
   return (
     <SplitPaneResizeProvider>
@@ -111,12 +121,18 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
+        liveKitRoom={liveKitRoomName}
+        setLiveKitRoom={setLiveKitRoomName}
+        liveKitToken={liveKitToken}
+        setLiveKitToken={setLiveKitToken}
+        liveKitConnection={liveKitConnection}
+        setLiveKitConnection={setLiveKitConnection}
       >
         <LiveKitRoom
           audio={true}
-          token={token}
+          token={liveKitToken}
           serverUrl={'wss://testing-idbzy6rb.livekit.cloud'}
-          connect={true}
+          connect={liveKitConnection}
         >
           <div className="app">
             <VZLeft />

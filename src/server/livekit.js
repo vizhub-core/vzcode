@@ -12,10 +12,9 @@ const roomService = new RoomServiceClient(
   LIVEKIT_API_SECRET,
 );
 
-export const createToken = async () => {
+export const createToken = async (roomName) => {
   // If this room doesn't exist, it'll be automatically created when the first
   // client joins
-  const roomName = 'room';
   // Identifier to be used for participant.
   // It's available as LocalParticipant.identity with livekit-client SDK
   const participantName = `${v4()}`;
