@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { json1Presence } from '../ot.js';
+import { useState } from 'react';
 
 // This module implements the generation of the AI response,
 // using the OpenAI client.
@@ -29,6 +30,7 @@ const slowdown = false;
 // The options passed into the OpenAI client
 // new OpenAI(openAIOptions)
 const openAIOptions = {};
+const togetherAIOptions = {};
 
 // Support specifying the API key via an environment variable
 // If VZCODE_AI_API_KEY is not set, note that the OpenAI client
@@ -80,101 +82,151 @@ export const generateAIResponse = async ({
   streamId,
   shareDBDoc,
 }) => {
-  if (!isAIEnabled) {
-    console.log(
-      '[generateAIResponse] AI is not enabled. Skipping AI generation.',
-    );
-    console.log(
-      '[generateAIResponse] To enable AI, see .env.sample for the required environment variables.',
-    );
-    return;
-  }
-
-  if (debug) {
-    console.log(
-      '[generateAIResponse] inputText:',
-      inputText,
-    );
-    console.log(
-      '[generateAIResponse] insertionCursor:',
-      insertionCursor,
-    );
-    console.log('[generateAIResponse] fileId:', fileId);
-    console.log('[generateAIResponse] streamId:', streamId);
-    console.log(
-      '[generateAIResponse] shareDBDoc:',
-      shareDBDoc,
-    );
-  }
-
-  // Handle the case that a user edits the text in the document
-  // that comes becofore the insertion cursor.
-  const accomodateDocChanges = (op, source) => {
-    if (!opComesFromAIAssist(op, source)) {
-      if (op !== null) {
-        insertionCursor = type
-          .transformPosition(
-            ['files', fileId, 'text', insertionCursor],
-            op,
-          )
-          .slice(-1)[0];
-      }
-    }
-  };
-  shareDBDoc.on('op', accomodateDocChanges);
-
-  // The prompt!
-  const messages = [
+  //Note from https://github.com/Nutlope/llamacoder/blob/main/app/(main)/page.tsx
+  let [status, setStatus] =
+    (useState < 'initial') |
+    'creating' |
+    'created' |
+    'updating' |
+    ('updated' > 'initial');
+  let [prompt, setPrompt] = useState('');
+  let models = [
     {
-      role: 'system',
-      content: [
-        'You are an expert programmer.',
-        'Your task is to output ONLY the code that replaces <FILL_ME> correctly.',
-        'Do not add any markdown around.',
-        'Do not duplicate the code before or after <FILL_ME>.',
-        'Do not make any changes outside of <FILL_ME>.',
-        'Do not enclose the output with backticks.',
-        'If any additional instructions are required, they will be provided in comments.',
-      ].join(' '),
+      label: 'Llama 3.1 405B',
+      value:
+        'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
     },
-    { role: 'user', content: inputText },
+    {
+      label: 'Llama 3.2 90B',
+      value:
+        'meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo',
+    },
+    {
+      label: 'Qwen 2.5 72B',
+      value: 'Qwen/Qwen2.5-72B-Instruct-Turbo',
+    },
+    {
+      label: 'Gemma 2 27B',
+      value: 'google/gemma-2-27b-it',
+    },
   ];
-
-  if (debug) {
-    console.log('[generateAIResponse] messages:');
-    console.log(JSON.stringify(messages, null, 2));
-  }
-
-  streams[streamId] = await openai.chat.completions.create({
-    // model: 'gpt-3.5-turbo',
-    model: 'gpt-4',
-    messages,
-    stream: true,
+  let [model, setModel] = useState(models[0].value);
+  let [shadcn, setShadcn] = useState(false);
+  let [modification, setModification] = useState('');
+  let [generatedCode, setGeneratedCode] = useState('');
+  let [initialAppConfig, setInitialAppConfig] = useState({
+    model: '',
+    shadcn: true,
   });
+  let [messages, setMessages] = useState([]);
+  let [isPublishing, setIsPublishing] = useState(false);
 
-  for await (const part of streams[streamId]) {
-    const op = editOp(
-      ['files', fileId, 'text'],
-      'text-unicode',
-      [
-        insertionCursor,
-        part.choices[0]?.delta?.content || '',
-      ],
-    );
-
-    shareDBDoc.submitOp(op, {
-      source: AIShareDBSourceName,
-    });
-
-    if (slowdown) {
-      await new Promise((resolve) => {
-        setTimeout(resolve, 2000);
-      });
-    }
-
-    insertionCursor += (
-      part.choices[0]?.delta?.content || ''
-    ).length;
-  }
-  shareDBDoc.off('op', accomodateDocChanges);
+  let loading =
+    status === 'creating' || status === 'updating';
 };
+
+// export const generateAIResponse = async ({
+//   inputText,
+//   insertionCursor,
+//   fileId,
+//   streamId,
+//   shareDBDoc,
+// }) => {
+//   if (!isAIEnabled) {
+//     console.log(
+//       '[generateAIResponse] AI is not enabled. Skipping AI generation.',
+//     );
+//     console.log(
+//       '[generateAIResponse] To enable AI, see .env.sample for the required environment variables.',
+//     );
+//     return;
+//   }
+
+//   if (debug) {
+//     console.log(
+//       '[generateAIResponse] inputText:',
+//       inputText,
+//     );
+//     console.log(
+//       '[generateAIResponse] insertionCursor:',
+//       insertionCursor,
+//     );
+//     console.log('[generateAIResponse] fileId:', fileId);
+//     console.log('[generateAIResponse] streamId:', streamId);
+//     console.log(
+//       '[generateAIResponse] shareDBDoc:',
+//       shareDBDoc,
+//     );
+//   }
+
+//   // Handle the case that a user edits the text in the document
+//   // that comes becofore the insertion cursor.
+//   const accomodateDocChanges = (op, source) => {
+//     if (!opComesFromAIAssist(op, source)) {
+//       if (op !== null) {
+//         insertionCursor = type
+//           .transformPosition(
+//             ['files', fileId, 'text', insertionCursor],
+//             op,
+//           )
+//           .slice(-1)[0];
+//       }
+//     }
+//   };
+//   shareDBDoc.on('op', accomodateDocChanges);
+
+//   // The prompt!
+//   const messages = [
+//     {
+//       role: 'system',
+//       content: [
+//         'You are an expert programmer.',
+//         'Your task is to output ONLY the code that replaces <FILL_ME> correctly.',
+//         'Do not add any markdown around.',
+//         'Do not duplicate the code before or after <FILL_ME>.',
+//         'Do not make any changes outside of <FILL_ME>.',
+//         'Do not enclose the output with backticks.',
+//         'If any additional instructions are required, they will be provided in comments.',
+//       ].join(' '),
+//     },
+//     { role: 'user', content: inputText },
+//   ];
+
+//   if (debug) {
+//     console.log('[generateAIResponse] messages:');
+//     console.log(JSON.stringify(messages, null, 2));
+//   }
+
+//   streams[streamId] = await openai.chat.completions.create({
+//     // model: 'gpt-3.5-turbo',
+//     model: 'gpt-4',
+//     messages,
+//     stream: true,
+//   });
+
+//   for await (const part of streams[streamId]) {
+//     const op = editOp(
+//       ['files', fileId, 'text'],
+//       'text-unicode',
+//       [
+//         insertionCursor,
+//         part.choices[0]?.delta?.content || '',
+//       ],
+//     );
+
+//     shareDBDoc.submitOp(op, {
+//       source: AIShareDBSourceName,
+//     });
+
+//     if (slowdown) {
+//       await new Promise((resolve) => {
+//         setTimeout(resolve, 2000);
+//       });
+//     }
+
+//     insertionCursor += (
+//       part.choices[0]?.delta?.content || ''
+//     ).length;
+//   }
+//   shareDBDoc.off('op', accomodateDocChanges);
+// };
