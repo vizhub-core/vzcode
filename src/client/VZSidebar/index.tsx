@@ -216,6 +216,17 @@ export const VZSidebar = ({
         }
         event.preventDefault();
         break;
+        case ' ':
+          if (focusedIndex !== null) {
+            const item = flattenedItems[focusedIndex];
+            if (item.type === 'folder') {
+              toggleFolder(item.path);
+            } else if ('fileId' in item) {
+              openTab({ fileId: item.fileId, isTransient: false });
+            }
+          }
+          event.preventDefault();
+          break;
       default:
         break;
         case 'Home':
@@ -229,21 +240,22 @@ export const VZSidebar = ({
           event.preventDefault();
           break;
           case '[':
-          if (focusedIndex !== null && focusedIndex > 0) {
-            moveItem(focusedIndex, focusedIndex - 1);
-            setFocusedIndex(focusedIndex - 1);
-            fileRefs[focusedIndex - 1]?.focus();
-          }
-          event.preventDefault();
-          break;
+            if (focusedIndex !== null && focusedIndex > 0) {
+              moveItem(focusedIndex, focusedIndex - 1);
+              setFocusedIndex(focusedIndex - 1);
+              fileRefs[focusedIndex - 1]?.focus();
+            }
+            event.preventDefault();
+            break;
           case ']':
-          if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
-            moveItem(focusedIndex, focusedIndex + 1);
-            setFocusedIndex(focusedIndex + 1);
-            fileRefs[focusedIndex + 1]?.focus();
-          }
-          event.preventDefault();
-          break;
+            if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
+              moveItem(focusedIndex, focusedIndex + 1);
+              setFocusedIndex(focusedIndex + 1);
+              fileRefs[focusedIndex + 1]?.focus();
+            }
+            event.preventDefault();
+            break;
+          
     }
   };
 
