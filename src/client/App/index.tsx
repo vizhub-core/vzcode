@@ -72,7 +72,6 @@ function App() {
   });
 
   //state for the voice channel
-
   const [liveKitToken, setLiveKitToken] =
     useState(undefined);
   const [liveKitRoomName, setLiveKitRoomName] =
@@ -121,7 +120,7 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
-        liveKitRoom={liveKitRoomName}
+        liveKitRoomName={liveKitRoomName}
         setLiveKitRoom={setLiveKitRoomName}
         liveKitToken={liveKitToken}
         setLiveKitToken={setLiveKitToken}

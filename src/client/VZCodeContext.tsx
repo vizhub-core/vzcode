@@ -172,10 +172,12 @@ export type VZCodeContextValue = {
 
   liveKitToken: string;
   setLiveKitToken: (state: string) => void;
-  liveKitRoom: string;
+  liveKitRoomName: string;
   setLiveKitRoom: (state: string) => void;
   liveKitConnection: boolean;
   setLiveKitConnection: (state: boolean) => void;
+  voiceChatModalOpen: boolean;
+  setVoiceChatModalOpen: (state: boolean) => void;
 };
 
 export const VZCodeProvider = ({
@@ -192,7 +194,7 @@ export const VZCodeProvider = ({
   connected,
   liveKitToken,
   setLiveKitToken,
-  liveKitRoom,
+  liveKitRoomName,
   setLiveKitRoom,
   liveKitConnection,
   setLiveKitConnection,
@@ -210,7 +212,7 @@ export const VZCodeProvider = ({
   connected: boolean;
   liveKitToken: string | undefined;
   setLiveKitToken: (state: string) => void;
-  liveKitRoom: string | undefined;
+  liveKitRoomName: string | undefined;
   setLiveKitRoom: (state: string) => void;
   liveKitConnection: boolean;
   setLiveKitConnection: (state: boolean) => void;
@@ -412,6 +414,18 @@ export const VZCodeProvider = ({
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
 
+  // Livekit Voice Chat Modal
+
+  const [voiceChatModalOpen, setVCModalOpen] =
+    useState(false);
+
+  const setVoiceChatModalOpen = useCallback(
+    (state: boolean) => {
+      setVCModalOpen(state);
+    },
+    [],
+  );
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -499,12 +513,14 @@ export const VZCodeProvider = ({
     updatePresenceIndicator,
     sidebarPresenceIndicators,
     splitCurrentPane,
-    liveKitRoom,
+    liveKitRoomName,
     setLiveKitRoom,
     liveKitToken,
     setLiveKitToken,
     liveKitConnection,
     setLiveKitConnection,
+    voiceChatModalOpen,
+    setVoiceChatModalOpen,
   };
 
   return (
