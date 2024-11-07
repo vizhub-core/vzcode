@@ -48,6 +48,10 @@ export const VZSettings = ({
   const [selectedFontSize, setSelectedFontSize] =
     useState('16px');
 
+  // Initialize rainbowBrackets setting from localStorage or default to 'on'
+  const [rainbowBrackets, setRainbowBrackets] =
+    useState('on');
+
   useEffect(() => {
     // If we're in the browser,
     if (typeof window !== 'undefined') {
@@ -60,6 +64,12 @@ export const VZSettings = ({
         'vzcodeSelectedFontSize',
       );
 
+      const rainbowBracketsFromLocalStorage:
+        | string
+        | null = window.localStorage.getItem(
+        'vzcodeRainbowBrackets',
+      );
+
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
       }
@@ -67,6 +77,9 @@ export const VZSettings = ({
         setSelectedFontSize(
           selectedFontSizeFromLocalStorage,
         );
+      }
+      if (rainbowBracketsFromLocalStorage !== null) {
+        setRainbowBrackets(rainbowBracketsFromLocalStorage);
       }
     } else {
       // If we're not in the browser, use the default initial width.
@@ -92,6 +105,16 @@ export const VZSettings = ({
         newSize,
       );
       setSelectedFontSize(newSize);
+    },
+    [],
+  );
+
+  // Called when the user changes the Rainbow Brackets setting
+  const handleRainbowBracketsChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newSetting = event.target.value;
+      localStorage.setItem('vzcodeRainbowBrackets', newSetting);
+      setRainbowBrackets(newSetting);
     },
     [],
   );
@@ -223,7 +246,11 @@ export const VZSettings = ({
         
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Rainbow Brackets</Form.Label>
-          <select className="form-select">
+          <select
+            className="form-select"
+            onChange={handleRainbowBracketsChange}
+            value={rainbowBrackets}
+          >
             <option value="on">On</option>
             <option value="off">Off</option>
           </select>
