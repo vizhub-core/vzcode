@@ -107,6 +107,13 @@ const getAtPath = (obj, path) => {
   return current;
 };
 
+// Extend the EditorCacheValue type to include the compartments and the updateRainbowBrackets method
+interface ExtendedEditorCacheValue extends EditorCacheValue {
+  themeCompartment: Compartment;
+  rainbowBracketsCompartment: Compartment;
+  updateRainbowBrackets: (enabled: boolean) => void;
+}
+
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
@@ -166,13 +173,13 @@ export const getOrCreateEditor = ({
   openTab: (tabState: TabState) => void;
   aiCopilotEndpoint: string;
   rainbowBracketsEnabled?: boolean; // New parameter type
-}): EditorCacheValue => {
+}): ExtendedEditorCacheValue => {
   // Cache hit
 
   const cacheKey = editorCacheKey(fileId, paneId);
 
   if (editorCache.has(cacheKey)) {
-    return editorCache.get(cacheKey);
+    return editorCache.get(cacheKey) as ExtendedEditorCacheValue;
   }
 
   // Cache miss
@@ -413,17 +420,14 @@ export const getOrCreateEditor = ({
     }),
   });
 
-  const editorCacheValue = { editor, themeCompartment, rainbowBracketsCompartment }; // Include rainbowBracketsCompartment in editorCacheValue
-
-  // Populate the cache.
-  editorCache.set(cacheKey, editorCacheValue);
-
-  // Function to update rainbow brackets based on toggle
-  editorCacheValue.updateRainbowBrackets = (enabled) => {
+  const editorCacheValue: ExtendedEditorCacheValue = { editor, themeCompartment, rainbowBracketsCompartment, updateRainbowBrackets: (enabled) => {
     editor.dispatch({
       effects: rainbowBracketsCompartment.reconfigure(enabled ? rainbowBrackets() : []),
     });
-  };
+  }};
+
+  // Populate the cache.
+  editorCache.set(cacheKey, editorCacheValue);
 
   // Initialize rainbow brackets based on the toggle state
   editorCacheValue.updateRainbowBrackets(rainbowBracketsEnabled);
