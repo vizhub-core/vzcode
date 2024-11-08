@@ -342,7 +342,20 @@ export const VZCodeProvider = ({
 
   const handleCreateFileClick = useCallback(
     (newFileName: string) => {
-      createFile(newFileName);
+      let initialContent = '';
+
+      if (
+        newFileName.endsWith('.js') ||
+        newFileName.endsWith('.ts')
+      ) {
+        const baseName = newFileName.replace(
+          /\.[^/.]+$/,
+          '',
+        ); // Strip the extension
+        initialContent = `export const ${baseName};\n`;
+      }
+
+      createFile(newFileName, initialContent);
       setIsCreateFileModalOpen(false);
     },
     [createFile, setIsCreateFileModalOpen],
