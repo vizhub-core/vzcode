@@ -341,24 +341,20 @@ export const VZCodeProvider = ({
   }, []);
 
   const handleCreateFileClick = useCallback(
-    (newFileName: string) => {
+    (newFileName: string,directoryPath: string) => {
       let initialContent = '';
 
-      if (
-        newFileName.endsWith('.js') ||
-        newFileName.endsWith('.ts')
-      ) {
-        const baseName = newFileName.replace(
-          /\.[^/.]+$/,
-          '',
-        ); // Strip the extension
-        initialContent = `export const ${baseName};\n`;
+      if (newFileName.endsWith('.js') || newFileName.endsWith('.ts')) {
+        const baseName = newFileName;
+        const directoryName = directoryPath.split('/').pop(); // Extract directory name
+        initialContent = `export const ${directoryName}_${baseName} = '${directoryName}/${baseName}';\n`;
       }
-
-      createFile(newFileName, initialContent);
+  
+      createFile(`${directoryPath}/${newFileName}`, initialContent);
+      
       setIsCreateFileModalOpen(false);
     },
-    [createFile, setIsCreateFileModalOpen],
+    [createFile, setIsCreateFileModalOpen]
   );
 
   // State to control the create directory modal's visibility
