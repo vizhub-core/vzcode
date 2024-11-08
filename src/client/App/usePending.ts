@@ -8,7 +8,7 @@ import { ShareDBDoc, VZCodeContent } from '../../types';
 
 // import { runDelay } from '../constants';
 // TODO understand what this part is for
-const runDelay = 500;
+const runDelay = 1000;
 
 export const usePending = (
   shareDBDoc: ShareDBDoc<VZCodeContent>,

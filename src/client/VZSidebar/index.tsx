@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useRef
 } from 'react';
 import {
   FileId,
@@ -206,7 +207,31 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
-  // console.log(sidebarPresenceIndicators);
+  const [saved, setSaved] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
+  const previousPendingRef = useRef<boolean>(pending);
+
+  // Handle connection status transitions
+  useEffect(() => {
+    if (isConnecting && connected) {
+      setIsConnecting(false);
+    }
+  }, [connected, isConnecting]);
+
+  // Handle 'saved' state based on 'pending' transition
+  useEffect(() => {
+    // Check if 'pending' transitioned from true to false
+    if (previousPendingRef.current && !pending && connected && !isConnecting) {
+      setSaved(true);
+      const timer = setTimeout(() => {
+        setSaved(false);
+      }, 1500); // Reset after 2 seconds
+      return () => clearTimeout(timer);
+    }
+    // Update the ref with the current 'pending' state
+    previousPendingRef.current = pending;
+  }, [pending, connected, isConnecting]);
+
 
   return (
     <div
@@ -416,22 +441,22 @@ export const VZSidebar = ({
       </div>
       {enableConnectionStatus && (
         <div className="connection-status">
-          {pending && connected
-            ? 'Saving...'
-            : connected
-              ? !pending
-                ? 'Saved.'
-                : 'Connected'
-              : 'Connection Lost'}
+          {isConnecting ? 'Connecting...' :
+            !connected ? 'Connection Lost' :
+              pending ? 'Saving...' :
+                saved ? 'Saved.' :
+                  'Connected'}
           <div className="connection">
             <div
               className={`connection-status-indicator ${
-                connected
-                  ? pending
-                    ? 'pending'
-                    : 'connected'
-                  : 'disconnected'
-              }`}
+                isConnecting
+                  ? 'pending'
+                  : !connected
+                    ? 'disconnected'
+                    : pending
+                      ? 'pending'
+                      : 'connected'
+            }`}
             />
           </div>
         </div>
