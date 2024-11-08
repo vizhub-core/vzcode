@@ -54,6 +54,29 @@ export const colorPicker = (
     }
   });
 
+  // Function to set the text and color
+  const setText = (newText: string) => {
+    console.log('Applying color to the element:', newText);
+
+    // Assuming you're applying the color to a circle element with id 'colorCircle'
+    const colorCircle = document.getElementById('colorCircle');
+    if (colorCircle) {
+      colorCircle.style.backgroundColor = newText;
+      console.log(`Color applied to colorCircle: ${newText}`);
+    } else {
+      console.log('colorCircle element not found');
+    }
+
+    // If there is any other text element (like an input or div for displaying hex color), update it too.
+    const hexDisplay = document.getElementById('hexDisplay');
+    if (hexDisplay) {
+      hexDisplay.textContent = newText;
+      console.log(`Hex value applied to hexDisplay: ${newText}`);
+    } else {
+      console.log('hexDisplay element not found');
+    }
+  };
+
   return {
     regexp: colorPickerRegex,
     cursor: 'pointer',
@@ -66,7 +89,9 @@ export const colorPicker = (
       const startingColor: string = text;
 
       // Set the initial value of the color picker
+      console.log('Initial color:', startingColor);
       sel.value = startingColor.toLowerCase();
+      console.log('Color picker initial value set to:', sel.value);
 
       // Position the color picker near the cursor
       const cursorX = event.clientX;
@@ -82,10 +107,24 @@ export const colorPicker = (
       // Update the color selection and setText on change
       const updateHex = (e: Event) => {
         const el: HTMLInputElement = e.target as HTMLInputElement;
+        console.log('Hex color value selected:', el.value);
+
         if (el.value) {
           setText(el.value.toUpperCase()); // Use uppercase for consistency
         }
-        if (onInteract) onInteract();
+        if (onInteract) {
+          console.log('onInteract called');
+          onInteract();
+        }
+
+        // Update color display directly (for example, changing the background color of an element)
+        const colorDisplay = document.getElementById('colorDisplay');
+        if (colorDisplay) {
+          colorDisplay.style.backgroundColor = el.value;
+          console.log(`colorDisplay updated to: ${el.value}`);
+        } else {
+          console.log('colorDisplay element not found');
+        }
       };
 
       // Add input event listener to handle color selection
@@ -96,6 +135,8 @@ export const colorPicker = (
     },
   };
 };
+
+
 
 // TODO get this working
 // rgb color picker
