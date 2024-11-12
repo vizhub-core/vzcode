@@ -1,3 +1,6 @@
+const ENABLE_RAINBOW_BRACKETS =
+  process.env.ENABLE_RAINBOW_BRACKETS === 'true';
+
 import {
   EditorView,
   Decoration,
@@ -90,6 +93,8 @@ const rainbowBracketsPlugin = ViewPlugin.fromClass(
 );
 
 export default function rainbowBrackets() {
+  if (!ENABLE_RAINBOW_BRACKETS) return []; // Disable rainbow brackets if the flag is off
+
   return [
     rainbowBracketsPlugin,
     EditorView.baseTheme({
