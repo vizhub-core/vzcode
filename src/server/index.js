@@ -114,7 +114,8 @@ app.post(
 
 // Livekit Token Generator
 app.get('/livekit-token', async (req, res) => {
-  res.send(await createToken());
+  const { room, username } = req.query;
+  res.send(await createToken(room, username));
 });
 
 // The state of the document when files were last auto-saved.

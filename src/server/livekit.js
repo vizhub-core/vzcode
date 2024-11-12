@@ -2,7 +2,6 @@ import {
   AccessToken,
   RoomServiceClient,
 } from 'livekit-server-sdk';
-import { v4 } from 'uuid';
 
 const { LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } =
   process.env;
@@ -12,12 +11,13 @@ const roomService = new RoomServiceClient(
   LIVEKIT_API_SECRET,
 );
 
-export const createToken = async (roomName) => {
+export const createToken = async (roomName, username) => {
   // If this room doesn't exist, it'll be automatically created when the first
   // client joins
   // Identifier to be used for participant.
   // It's available as LocalParticipant.identity with livekit-client SDK
-  const participantName = `${v4()}`;
+  console.log(username);
+  const participantName = `${username}`;
 
   const at = new AccessToken(
     LIVEKIT_API_KEY,
