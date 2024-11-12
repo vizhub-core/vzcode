@@ -131,6 +131,11 @@ export const VZSidebar = ({
     [files],
   );
 
+
+  const [flattenedItems, setFlattenedItems] = useState(() =>
+    fileTree ? flattenFileTree(fileTree.children) : []
+  );
+
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const fileRefs = useMemo(() => [], []);
@@ -153,13 +158,30 @@ export const VZSidebar = ({
     [expandedFolders],
   );
 
-  const flattenedItems = useMemo(() => {
-    return fileTree ? flattenFileTree(fileTree.children) : [];
+  useEffect(() => {
+    // Reset flattenedItems whenever fileTree changes
+    if (fileTree) {
+      setFlattenedItems(flattenFileTree(fileTree.children));
+    }
   }, [fileTree, flattenFileTree]);
+
+  // Function to reorder items based on dragged and drop targets
+  const handleReorderItems = (draggedId: string, dropTargetId: string) => {
+    const fromIndex = flattenedItems.findIndex(item => item.fileId === draggedId || item.path === draggedId);
+    const toIndex = flattenedItems.findIndex(item => item.fileId === dropTargetId || item.path === dropTargetId);
+
+    if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+    const updatedItems = [...flattenedItems];
+    const [movedItem] = updatedItems.splice(fromIndex, 1);
+    updatedItems.splice(toIndex, 0, movedItem);
+
+    setFlattenedItems(updatedItems); // Update state to reflect the reordered items
+  };
 
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
     if (!flattenedItems.length) return;
-  
+
     const moveItem = (fromIndex: number, toIndex: number) => {
       const updatedItems = [...flattenedItems];
       const [movedItem] = updatedItems.splice(fromIndex, 1);
@@ -187,24 +209,24 @@ export const VZSidebar = ({
         });
         event.preventDefault();
         break;
-        case 'ArrowRight':
-          if (focusedIndex !== null) {
-            const item = flattenedItems[focusedIndex];
-            if (item.type === 'folder') {
-              expandFolder(item.path);
-            }
+      case 'ArrowRight':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            expandFolder(item.path);
           }
-          event.preventDefault();
-          break;
-          case 'ArrowLeft':
-            if (focusedIndex !== null) {
-              const item = flattenedItems[focusedIndex];
-              if (item.type === 'folder') {
-                foldFolder(item.path);
-              }
-            }
-            event.preventDefault();
-            break;
+        }
+        event.preventDefault();
+        break;
+      case 'ArrowLeft':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            foldFolder(item.path);
+          }
+        }
+        event.preventDefault();
+        break;
       case 'Enter':
         if (focusedIndex !== null) {
           const item = flattenedItems[focusedIndex];
@@ -216,46 +238,43 @@ export const VZSidebar = ({
         }
         event.preventDefault();
         break;
-        case ' ':
-          if (focusedIndex !== null) {
-            const item = flattenedItems[focusedIndex];
-            if (item.type === 'folder') {
-              toggleFolder(item.path);
-            } else if ('fileId' in item) {
-              openTab({ fileId: item.fileId, isTransient: false });
-            }
+      case ' ':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            toggleFolder(item.path);
+          } else if ('fileId' in item) {
+            openTab({ fileId: item.fileId, isTransient: false });
           }
-          event.preventDefault();
-          break;
-      default:
+        }
+        event.preventDefault();
         break;
-        case 'Home':
-          setFocusedIndex(0);
-          fileRefs[0]?.focus();
-          event.preventDefault();
-          break;
-        case 'End':
-          setFocusedIndex(flattenedItems.length - 1);
-          fileRefs[flattenedItems.length - 1]?.focus();
-          event.preventDefault();
-          break;
-          case '[':
-            if (focusedIndex !== null && focusedIndex > 0) {
-              moveItem(focusedIndex, focusedIndex - 1);
-              setFocusedIndex(focusedIndex - 1);
-              fileRefs[focusedIndex - 1]?.focus();
-            }
-            event.preventDefault();
-            break;
-          case ']':
-            if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
-              moveItem(focusedIndex, focusedIndex + 1);
-              setFocusedIndex(focusedIndex + 1);
-              fileRefs[focusedIndex + 1]?.focus();
-            }
-            event.preventDefault();
-            break;
-          
+      case 'Home':
+        setFocusedIndex(0);
+        fileRefs[0]?.focus();
+        event.preventDefault();
+        break;
+      case 'End':
+        setFocusedIndex(flattenedItems.length - 1);
+        fileRefs[flattenedItems.length - 1]?.focus();
+        event.preventDefault();
+        break;
+      case '[':
+        if (focusedIndex !== null && focusedIndex > 0) {
+          moveItem(focusedIndex, focusedIndex - 1);
+          setFocusedIndex(focusedIndex - 1);
+          fileRefs[focusedIndex - 1]?.focus();
+        }
+        event.preventDefault();
+        break;
+      case ']':
+        if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
+          moveItem(focusedIndex, focusedIndex + 1);
+          setFocusedIndex(focusedIndex + 1);
+          fileRefs[focusedIndex + 1]?.focus();
+        }
+        event.preventDefault();
+        break;
     }
   };
 
@@ -306,7 +325,7 @@ export const VZSidebar = ({
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
-  
+
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
@@ -337,6 +356,7 @@ export const VZSidebar = ({
 
   const {
     isDragOver,
+    handleDragStart,
     handleDragEnter,
     handleDragOver,
     handleDragLeave,
@@ -374,9 +394,9 @@ export const VZSidebar = ({
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      tabIndex={0} 
-      onKeyDown={handleSidebarKeyDown} 
+      onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, null, handleReorderItems)}
+      tabIndex={0}
+      onKeyDown={handleSidebarKeyDown}
       ref={sidebarRef}
     >
       <div className="full-box">
@@ -557,6 +577,9 @@ export const VZSidebar = ({
                       handleFileClick={handleFileClick}
                       handleFileDoubleClick={handleFileDoubleClick}
                       isExpanded={expandedFolders.has(item.path)}
+                      onDragStart={() => handleDragStart(item.fileId || item.path)}
+                      onDragOver={(event) => handleDragOver(event)}
+                      onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, item.fileId || item.path, handleReorderItems)}
                     />
                   </div>
                 ))

@@ -15,39 +15,59 @@ export const Listing = ({
   handleFileClick,
   handleFileDoubleClick,
   isExpanded = false,
+  onDragStart,
+  onDragOver,
+  onDrop,
 }: {
   entity: FileTree | FileTreeFile;
   handleFileClick: (fileId: FileId) => void;
   handleFileDoubleClick: (fileId: FileId) => void;
   isExpanded?: boolean;
+  onDragStart: (itemId: string) => void;
+  onDragOver: (event: React.DragEvent<Element>, itemId: string) => void;
+  onDrop: (event: React.DragEvent<Element>, itemId: string) => void;
 }) => {
-  const { activePane, sidebarPresenceIndicators } =
-    useContext(VZCodeContext);
+  const { activePane, sidebarPresenceIndicators } = useContext(VZCodeContext);
   const { name, file, fileId } = entity as FileTreeFile;
   const { path, children } = entity as FileTree;
 
-  const presence =
-    sidebarPresenceIndicators?.filter(
-      (indicator) => indicator.fileId === fileId,
-    ) || [];
+  const presence = sidebarPresenceIndicators?.filter(
+    (indicator) => indicator.fileId === fileId,
+  ) || [];
+
+  const itemId = fileId || path;
 
   return file ? (
-    <FileListing
-      fileId={fileId}
-      name={name}
-      handleFileClick={handleFileClick}
-      handleFileDoubleClick={handleFileDoubleClick}
-      isActive={fileId === activePane.activeFileId}
-      presence={presence}
-    />
+    <div
+      draggable
+      onDragStart={() => onDragStart(itemId)}
+      onDragOver={(event) => onDragOver(event, itemId)}
+      onDrop={(event) => onDrop(event, itemId)}
+    >
+      <FileListing
+        fileId={fileId}
+        name={name}
+        handleFileClick={handleFileClick}
+        handleFileDoubleClick={handleFileDoubleClick}
+        isActive={fileId === activePane.activeFileId}
+        presence={presence}
+      />
+    </div>
   ) : (
-    <DirectoryListing
-      name={name}
-      path={path}
-      children={children}
-      handleFileClick={handleFileClick}
-      handleFileDoubleClick={handleFileDoubleClick}
-      isExpanded={isExpanded}
-    />
+    <div
+      draggable
+      onDragStart={() => onDragStart(itemId)}
+      onDragOver={(event) => onDragOver(event, itemId)}
+      onDrop={(event) => onDrop(event, itemId)}
+    >
+      <DirectoryListing
+        name={name}
+        path={path}
+        children={children}
+        handleFileClick={handleFileClick}
+        handleFileDoubleClick={handleFileDoubleClick}
+        isExpanded={isExpanded}
+      />
+    </div>
   );
 };

@@ -6,7 +6,12 @@ const debug = false;
 
 export const useDragAndDrop = () => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null); // Track the dragged item
   const { createFile } = useContext(VZCodeContext);
+
+  const handleDragStart = useCallback((itemId: string) => {
+    setDraggedItemId(itemId);
+  }, []);
 
   const handleDragEnter = useCallback((event) => {
     event.preventDefault();
@@ -32,14 +37,22 @@ export const useDragAndDrop = () => {
     [],
   );
 
+  // Handle dropping for file reordering or external file upload
   const handleDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
+    (event: React.DragEvent<HTMLDivElement>, dropTargetId: string | null = null, onReorderItems?: (draggedId: string, dropTargetId: string) => void) => {
       event.preventDefault();
       event.stopPropagation();
       setIsDragOver(false);
 
-      const items = event.dataTransfer.items;
+      // If dragging within sidebar, reorder items
+      if (draggedItemId && dropTargetId && onReorderItems) {
+        onReorderItems(draggedItemId, dropTargetId);
+        setDraggedItemId(null);
+        return;
+      }
 
+      // Otherwise, handle external file drop
+      const items = event.dataTransfer.items;
       const processEntry = (entry, path) => {
         if (entry.isFile) {
           entry.file((file) => {
@@ -60,6 +73,7 @@ export const useDragAndDrop = () => {
           });
         }
       };
+
       const itemsArray = Array.from(items);
       itemsArray.forEach((item) => {
         const entry = item.webkitGetAsEntry();
@@ -68,11 +82,12 @@ export const useDragAndDrop = () => {
         }
       });
     },
-    [createFile],
+    [createFile, draggedItemId],
   );
 
   return {
     isDragOver,
+    handleDragStart, 
     handleDragEnter,
     handleDragOver,
     handleDragLeave,
