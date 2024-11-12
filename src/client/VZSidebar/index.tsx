@@ -133,6 +133,7 @@ export const VZSidebar = ({
     sidebarPresenceIndicators,
     liveKitConnection,
     setLiveKitConnection,
+    setVoiceChatModalOpen,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -394,7 +395,7 @@ export const VZSidebar = ({
               className="icon-button icon-button-dark"
               onClick={() => {
                 console.log('clicking', liveKitConnection);
-                setLiveKitConnection(true);
+                setVoiceChatModalOpen(true);
               }}
             >
               <MicSVG />

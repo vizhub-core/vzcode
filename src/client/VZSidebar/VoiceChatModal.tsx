@@ -20,8 +20,27 @@ export function VoiceChatModal() {
   const [token, setToken] = useState(liveKitToken || '');
 
   const handleConnect = () => {
+    //api call here WIP
     setLiveKitRoom(roomName);
     setLiveKitToken(token);
+
+    const fetchToken = async () => {
+      try {
+        const res = await fetch(
+          `/livekit-token?room=${roomName}`,
+          {
+            method: 'GET',
+          },
+        );
+        const tokenResponse = await res.text();
+        setLiveKitToken(tokenResponse);
+        setLiveKitConnection(true);
+      } catch (error) {
+        console.error('Error fetching token:', error);
+      }
+    };
+
+    fetchToken();
     setVoiceChatModalOpen(false);
   };
 
@@ -54,18 +73,6 @@ export function VoiceChatModal() {
               placeholder="Enter room name"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group
-            controlId="formToken"
-            className="mt-3"
-          >
-            <Form.Label>Token</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter token"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
             />
           </Form.Group>
         </Form>
