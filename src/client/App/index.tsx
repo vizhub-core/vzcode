@@ -130,7 +130,7 @@ function App() {
         <LiveKitRoom
           audio={true}
           token={liveKitToken}
-          serverUrl={'wss://testing-idbzy6rb.livekit.cloud'}
+          serverUrl={process.env.LIVEKIT_URL}
           connect={liveKitConnection}
         >
           <div className="app">

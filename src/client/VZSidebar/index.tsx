@@ -100,7 +100,6 @@ export const VZSidebar = ({
   voiceChatToolTipText = (
     <div>
       <strong>Open Voice Chat Menu</strong>
-      <div>WIP</div>
     </div>
   ),
 }: {
