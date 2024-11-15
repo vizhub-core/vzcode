@@ -17,6 +17,37 @@
     overflow: hidden;
   }
 
+  .follow-me-button-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .follow-me-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: var(--vh-color-primary-01);
+    color: var(--vh-color-neutral-01);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition:
+      background-color 0.3s ease,
+      transform 0.2s ease;
+  }
+
+  .follow-me-button.active {
+    background-color: var(--vh-color-success-01);
+  }
+
+  .follow-me-button:hover {
+    background-color: var(--vh-color-primary-02);
+    transform: scale(1.05);
+  }
+
   .files {
     margin-top: 6px;
     display: flex;
