@@ -24,4 +24,22 @@ describe('GET /api/task-users', () => {
         expect(res.body[0]).to.include(users[0]);
         expect(res.body[1]).to.include(users[1]);
     });
+
+    it('should retrieve a single TaskUser by ID', async () => {
+        const user = await TaskUser.create({
+            name: 'Alice Johnson',
+            email: 'alice.johnson@example.com',
+            status: 'active',
+            role: 'manager'
+        });
+
+        const res = await chai.request(server).get(`/api/task-users/${user._id}`);
+        expect(res).to.have.status(200);
+        expect(res.body).to.include({
+            name: 'Alice Johnson',
+            email: 'alice.johnson@example.com',
+            status: 'active',
+            role: 'manager'
+        });
+    });
 });
