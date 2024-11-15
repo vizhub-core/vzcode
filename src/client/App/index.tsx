@@ -81,6 +81,9 @@ function App() {
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
 
+  //@ts-ignore
+  const serverUrl = import.meta.env.VITE_LIVEKIT_URL; //Vite only parses VITE_ prefixed environment variables
+
   // Feature flag for enabling the right-side panel.
   // Useful for debugging dual split pane functionality.
   // We may want to add this as an actual VZCode feature,
@@ -88,25 +91,6 @@ function App() {
   // in the same browser window as the VZCode editor,
   // so that multiple browser windows are not required.
   const enableRightPanel = true;
-
-  // useEffect(() => {
-  //   const fetchToken = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         `/livekit-token?room=${liveKitRoomName}`,
-  //         {
-  //           method: 'GET',
-  //         },
-  //       );
-  //       const tokenResponse = await res.text();
-  //       setToken(tokenResponse);
-  //     } catch (error) {
-  //       console.error('Error fetching token:', error);
-  //     }
-  //   };
-
-  //   fetchToken();
-  // }, []);
 
   return (
     <SplitPaneResizeProvider>
@@ -130,7 +114,7 @@ function App() {
         <LiveKitRoom
           audio={true}
           token={liveKitToken}
-          serverUrl={process.env.LIVEKIT_URL}
+          serverUrl={serverUrl}
           connect={liveKitConnection}
         >
           <div className="app">
