@@ -9,6 +9,7 @@ import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 import { fonts } from './Fonts/fonts';
+import { toggleRainbowBrackets } from './CodeEditor/rainbowBrackets';
 
 const fontSizes = ['10px','12px','14px','16px', '18px', '20px', '24px'];
 
@@ -115,6 +116,7 @@ export const VZSettings = ({
       const newSetting = event.target.value;
       localStorage.setItem('vzcodeRainbowBrackets', newSetting);
       setRainbowBrackets(newSetting);
+      toggleRainbowBrackets(newSetting === 'on');
     },
     [],
   );
