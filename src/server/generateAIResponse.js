@@ -97,6 +97,15 @@ export const generateAIResponse = async ({
         'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
     },
     {
+      label: 'Llama 3.2 90B',
+      value:
+        'meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo',
+    },
+    {
+      label: 'Qwen 2.5 72B',
+      value: 'Qwen/Qwen2.5-72B-Instruct-Turbo',
+    },
+    {
       label: 'Gemma 2 27B',
       value: 'google/gemma-2-27b-it',
     },
@@ -114,46 +123,6 @@ export const generateAIResponse = async ({
 
   let loading =
     status === 'creating' || status === 'updating';
-};
-const handleModelChange = (event) => {
-  setSelectedModel(event.target.value);
-};
-
-// Function to send the inputText to the AI model
-const fetchAIResponse = async () => {
-  setStatus('creating'); // Update status to show process is starting
-  setPrompt(inputText); // Set the prompt to the input text
-
-  try {
-    // Send a request to the AI model API
-    const apiResponse = await fetch(
-      'https://api.example.com/generate',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: selectedModel,
-          inputText,
-          fileId,
-          streamId,
-          cursorPosition: insertionCursor,
-        }),
-      },
-    );
-
-    if (!apiResponse.ok)
-      throw new Error('Failed to fetch AI response');
-
-    const data = await apiResponse.json();
-    setResponse(data.responseText); // Set response text from AI model
-    setStatus('created'); // Update status to show completion
-  } catch (error) {
-    console.error('Error generating AI response:', error);
-    setError('Failed to generate AI response');
-    setStatus('error');
-  }
 };
 
 // export const generateAIResponse = async ({
