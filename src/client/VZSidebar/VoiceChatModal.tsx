@@ -4,7 +4,7 @@ import {
   useParticipants,
   useRoomContext,
 } from '@livekit/components-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { v4 } from 'uuid';
 import { VZCodeContext } from '../VZCodeContext';
@@ -29,7 +29,6 @@ export function VoiceChatModal() {
   const room = useRoomContext();
 
   const handleConnect = () => {
-    //api call here WIP
     if (liveKitConnection) {
       setLiveKitConnection(false);
       setLiveKitRoom(`${v4()}`);
@@ -61,12 +60,6 @@ export function VoiceChatModal() {
     setVoiceChatModalOpen(false);
   };
 
-  useEffect(() => {
-    console.log(
-      'FJKDNFKJNDALKJFNDLKJN',
-      voiceChatModalOpen,
-    );
-  }, [voiceChatModalOpen]);
   return (
     <Modal
       className="vz-settings"

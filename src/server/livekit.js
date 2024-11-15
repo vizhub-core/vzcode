@@ -1,15 +1,6 @@
-import {
-  AccessToken,
-  RoomServiceClient,
-} from 'livekit-server-sdk';
+import { AccessToken } from 'livekit-server-sdk';
 
-const { LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } =
-  process.env;
-const roomService = new RoomServiceClient(
-  'wss://testing-idbzy6rb.livekit.cloud',
-  LIVEKIT_API_KEY,
-  LIVEKIT_API_SECRET,
-);
+const { LIVEKIT_API_KEY, LIVEKIT_API_SECRET } = process.env;
 
 export const createToken = async (roomName, username) => {
   // If this room doesn't exist, it'll be automatically created when the first
@@ -30,16 +21,4 @@ export const createToken = async (roomName, username) => {
   );
   at.addGrant({ roomJoin: true, room: roomName });
   return await at.toJwt();
-};
-
-export const createRoom = async () => {
-  if (
-    (await roomService.listRooms()).find((val) => {
-      val.name === 'room';
-    })
-  ) {
-    return false;
-  }
-  await roomService.createRoom({ name: 'room' });
-  return true;
 };

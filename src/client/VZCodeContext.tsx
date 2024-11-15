@@ -416,15 +416,8 @@ export const VZCodeProvider = ({
 
   // Livekit Voice Chat Modal
 
-  const [voiceChatModalOpen, setVCModalOpen] =
+  const [voiceChatModalOpen, setVoiceChatModalOpen] =
     useState(false);
-
-  const setVoiceChatModalOpen = useCallback(
-    (state: boolean) => {
-      setVCModalOpen(state);
-    },
-    [],
-  );
 
   // The value provided by this context.
   const value: VZCodeContextValue = {
