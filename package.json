@@ -149,8 +149,10 @@
     "react-router-dom": "^6.26.2",
     "sharedb": "^5.0.4",
     "sharedb-client-browser": "^5.0.3",
+    "together-ai": "^0.9.0",
     "vizhub-ui": "^3.23.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/react": "^18.3.11",
