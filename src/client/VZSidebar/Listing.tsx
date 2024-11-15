@@ -39,6 +39,7 @@ export const Listing = ({
 
   return file ? (
     <div
+      className="sidebar-file-item"
       draggable
       onDragStart={() => onDragStart(itemId)}
       onDragOver={(event) => onDragOver(event, itemId)}
@@ -55,6 +56,7 @@ export const Listing = ({
     </div>
   ) : (
     <div
+      className="sidebar-file-item"
       draggable
       onDragStart={() => onDragStart(itemId)}
       onDragOver={(event) => onDragOver(event, itemId)}

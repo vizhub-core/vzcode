@@ -138,6 +138,8 @@ export const VZSidebar = ({
 
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+
   const fileRefs = useMemo(() => [], []);
 
   const flattenFileTree = useCallback(
@@ -176,7 +178,8 @@ export const VZSidebar = ({
     const [movedItem] = updatedItems.splice(fromIndex, 1);
     updatedItems.splice(toIndex, 0, movedItem);
 
-    setFlattenedItems(updatedItems); // Update state to reflect the reordered items
+    setFlattenedItems(updatedItems); 
+    setDropTargetIndex(null); 
   };
 
   const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
@@ -361,7 +364,7 @@ export const VZSidebar = ({
     handleDragOver,
     handleDragLeave,
     handleDrop,
-  } = useDragAndDrop();
+  } = useDragAndDrop(setDropTargetIndex);
 
   // Track presence of remote users across files so that they can be displayed in the sidebar.
   useEffect(() => {
@@ -392,7 +395,7 @@ export const VZSidebar = ({
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
       onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
+      onDragOver={(event) => handleDragOver(event, null)}
       onDragLeave={handleDragLeave}
       onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, null, handleReorderItems)}
       tabIndex={0}
@@ -561,7 +564,7 @@ export const VZSidebar = ({
                 flattenedItems.map((item, index) => (
                   <div
                     key={item.fileId || item.path}
-                    className={`sidebar-file-item ${focusedIndex === index ? 'focused' : ''}`}
+                    className={`sidebar-file-item ${focusedIndex === index ? 'focused' : ''} ${dropTargetIndex === index ? 'drag-over' : ''}`}
                     tabIndex={0}
                     ref={(el) => (fileRefs[index] = el)}
                     onClick={() => {
@@ -578,7 +581,7 @@ export const VZSidebar = ({
                       handleFileDoubleClick={handleFileDoubleClick}
                       isExpanded={expandedFolders.has(item.path)}
                       onDragStart={() => handleDragStart(item.fileId || item.path)}
-                      onDragOver={(event) => handleDragOver(event)}
+                      onDragOver={(event) => handleDragOver(event, item.fileId || item.path)}
                       onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, item.fileId || item.path, handleReorderItems)}
                     />
                   </div>

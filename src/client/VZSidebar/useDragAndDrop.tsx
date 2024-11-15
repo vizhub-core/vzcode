@@ -4,13 +4,13 @@ import './styles.scss';
 
 const debug = false;
 
-export const useDragAndDrop = () => {
+export const useDragAndDrop = (setDropTargetIndex: (index: number | null) => void) => {
   const [isDragOver, setIsDragOver] = useState(false);
-  const [draggedItemId, setDraggedItemId] = useState<string | null>(null); // Track the dragged item
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null); // Track the dragged item ID
   const { createFile } = useContext(VZCodeContext);
 
   const handleDragStart = useCallback((itemId: string) => {
-    setDraggedItemId(itemId);
+    setDraggedItemId(itemId); // Track which item is being dragged
   }, []);
 
   const handleDragEnter = useCallback((event) => {
@@ -20,12 +20,17 @@ export const useDragAndDrop = () => {
   }, []);
 
   const handleDragOver = useCallback(
-    (event) => {
+    (event: React.DragEvent, itemId: string | null = null) => {
       event.preventDefault();
       event.stopPropagation();
       if (!isDragOver) setIsDragOver(true);
+
+      if (itemId) {
+        const index = parseInt(itemId);
+        setDropTargetIndex(index);
+      }
     },
-    [isDragOver],
+    [isDragOver, setDropTargetIndex]
   );
 
   const handleDragLeave = useCallback(
@@ -33,21 +38,26 @@ export const useDragAndDrop = () => {
       event.preventDefault();
       event.stopPropagation();
       setIsDragOver(false);
+      setDropTargetIndex(null); // Clear drop target index
     },
-    [],
+    [setDropTargetIndex],
   );
 
-  // Handle dropping for file reordering or external file upload
   const handleDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>, dropTargetId: string | null = null, onReorderItems?: (draggedId: string, dropTargetId: string) => void) => {
+    (
+      event: React.DragEvent<HTMLDivElement>,
+      dropTargetId: string | null = null,
+      onReorderItems?: (draggedId: string, dropTargetId: string) => void
+    ) => {
       event.preventDefault();
       event.stopPropagation();
       setIsDragOver(false);
 
-      // If dragging within sidebar, reorder items
+      // If dragging within the sidebar, reorder items
       if (draggedItemId && dropTargetId && onReorderItems) {
         onReorderItems(draggedItemId, dropTargetId);
         setDraggedItemId(null);
+        setDropTargetIndex(null);
         return;
       }
 
@@ -82,12 +92,12 @@ export const useDragAndDrop = () => {
         }
       });
     },
-    [createFile, draggedItemId],
+    [createFile, draggedItemId, setDropTargetIndex],
   );
 
   return {
     isDragOver,
-    handleDragStart, 
+    handleDragStart,
     handleDragEnter,
     handleDragOver,
     handleDragLeave,
