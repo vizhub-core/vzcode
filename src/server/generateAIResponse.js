@@ -79,6 +79,41 @@ export const generateSummary = async (text) => {
     return '[Error in summary generation]';
   }
 };
+// Define personalized settings
+const userSettings = {
+  tone: 'formal',
+  length: 'concise',
+};
+
+export const generatePersonalizedResponse = async (
+  inputText,
+) => {
+  if (!isAIEnabled) return '[AI disabled]';
+
+  const messages = [
+    {
+      role: 'system',
+      content: `Respond in a ${userSettings.tone} tone and keep responses ${userSettings.length}.`,
+    },
+    { role: 'user', content: inputText },
+  ];
+
+  try {
+    const response = await together.chat.completions.create(
+      {
+        model: 'your-model-name',
+        messages,
+      },
+    );
+    return response?.choices[0]?.message?.content || '';
+  } catch (error) {
+    console.error(
+      'Error generating personalized response:',
+      error,
+    );
+    return '[Error in personalized response]';
+  }
+};
 
 // Generate AI response using TogetherAI
 export const generateAIResponse = async ({
