@@ -67,6 +67,27 @@ export const generateAIResponse = async ({
     );
     return;
   }
+  // Retry attempts for TogetherAI responses
+  const maxRetries = 3;
+
+  const fetchAIResponse = async (params, retries = 0) => {
+    try {
+      return await together.chat.completions.create(params);
+    } catch (error) {
+      if (retries < maxRetries) {
+        console.warn(
+          `Retrying AI request (${retries + 1}/${maxRetries})...`,
+        );
+        return fetchAIResponse(params, retries + 1);
+      } else {
+        console.error(
+          'AI request failed after retries:',
+          error,
+        );
+        return null;
+      }
+    }
+  };
 
   debug &&
     console.log('[generateAIResponse] Input:', {
