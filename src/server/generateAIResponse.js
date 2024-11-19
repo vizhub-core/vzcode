@@ -52,6 +52,33 @@ const opComesFromAIAssist = (ops, source) =>
 
 // Keep track of ongoing AI streams
 const streams = {};
+export const generateSummary = async (text) => {
+  if (!isAIEnabled) return '[Summary feature disabled]';
+
+  const messages = [
+    {
+      role: 'system',
+      content:
+        'Summarize the following text in a few sentences.',
+    },
+    { role: 'user', content: text },
+  ];
+
+  try {
+    const summaryResponse =
+      await together.chat.completions.create({
+        model: 'summary-model', // Replace with TogetherAI model for summaries
+        messages,
+      });
+    return (
+      summaryResponse?.choices[0]?.message?.content ||
+      'No summary available'
+    );
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    return '[Error in summary generation]';
+  }
+};
 
 // Generate AI response using TogetherAI
 export const generateAIResponse = async ({
