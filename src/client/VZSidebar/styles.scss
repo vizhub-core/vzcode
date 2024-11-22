@@ -81,15 +81,25 @@
   }
 
   .sidebar-search-form {
-    padding: 10px;
+    padding: 12px;
+    border: 1px solid var(--vh-color-neutral-04);
+    background-color: var(--vh-color-neutral-02);
+    border-radius: 4px;
   }
 
   .search-file-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
+    border-radius: 4px;
+    background-color: var(--vh-color-neutral-02);
+    transition: background-color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--vh-color-accent-01);
+    }
 
     * {
       margin: 0px;
@@ -129,8 +139,9 @@
   }
 
   .search-results .active {
-    border: 1px solid var(--vh-color-neutral-04);
-    background-color: var(--vh-color-neutral-02);
+    border: 2px solid var(--vh-color-accent-01);
+    background-color: var(--vh-color-neutral-03);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
   }
 
@@ -138,8 +149,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-right: 10px;
+    padding: 8px 12px;
+    transition: background-color 0.2s;
     cursor: pointer;
+
+    &:hover {
+      background-color: var(--vh-color-neutral-03);
+    }
   }
 
   .search-line p {
@@ -153,10 +169,12 @@
   }
 
   .search-file-lines .search-pattern {
-    background: var(--vh-color-neutral-04);
+    background: var(--vh-color-accent-02);
     color: var(--vh-color-neutral-01);
+    font-weight: bold;
+    border-radius: 2px;
+    padding: 2px 4px;
     margin: 0.5px;
-    padding: 1px;
   }
 
   .new-btn {
@@ -172,7 +190,7 @@
 
   .file-or-directory:hover,
   .settings:hover {
-    // background-color: #47546b;
+        // background-color: #47546b;
     background-color: rgba(255, 255, 255, 0.075);
   }
 
@@ -188,6 +206,7 @@
     white-space: nowrap;
     overflow: hidden;
     gap: 6px;
+
     .file-icon,
     .arrow-wrapper {
       opacity: 0.5;
@@ -222,7 +241,7 @@
     border-radius: 4px;
   }
 
-  /* Empty state for when there are no files */
+    /* Empty state for when there are no files */
   .empty {
     display: flex;
     flex: 1;
@@ -231,7 +250,8 @@
     justify-content: space-evenly;
     margin: 10px;
     padding: 20px;
-    border: 1px dashed rgba(255, 255, 255, 0.5); /* White dashed outline */
+    border: 2px dashed var(--vh-color-neutral-03);
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 
     /*
@@ -266,6 +286,7 @@
       }
     }
   }
+
   .name {
     display: flex;
     align-items: center;
