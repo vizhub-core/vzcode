@@ -8,14 +8,39 @@ import React, {
 import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
-import { fonts } from './Fonts/fonts';
 
-const fontSizes = ['10px','12px','14px','16px', '18px', '20px', '24px'];
+const fontSizes = ['10px', '12px', '14px', '16px', '18px', '20px', '24px'];
+const systemFonts = [
+  '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif',
+  'Courier New', 'Georgia', 'Tahoma', 'Verdana', 'Times New Roman', 'Trebuchet MS', 'Comic Sans MS'
+];
+
+const isFontAvailable = (font: string): boolean => {
+  const testString = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const testSize = "72px";
+
+  const span = document.createElement("span");
+  span.style.fontSize = testSize;
+  span.style.visibility = "hidden";
+  span.style.position = "absolute";
+  span.innerHTML = testString;
+  document.body.appendChild(span);
+
+  const defaultFont = "monospace";
+  span.style.fontFamily = defaultFont;
+  const defaultWidth = span.offsetWidth;
+
+  span.style.fontFamily = `${font}, ${defaultFont}`;
+  const newWidth = span.offsetWidth;
+
+  document.body.removeChild(span);
+
+  return newWidth !== defaultWidth;
+};
 
 export const VZSettings = ({
   enableUsernameField = true,
 }: {
-  // Feature flag to enable/disable username field
   enableUsernameField?: boolean;
 }) => {
   const {
@@ -31,49 +56,45 @@ export const VZSettings = ({
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       setTheme(event.target.value as ThemeLabel);
     },
-    [],
+    [setTheme],
   );
 
-  // Initialize font and size from localStorage or defaults
-  // const [selectedFont, setSelectedFont] = useState(
-  //   localStorage.getItem('vzcodeSelectedFont') ||
-  //     'Roboto Mono',
-  // );
-  // const [selectedFontSize, setSelectedFontSize] = useState(
-  //   localStorage.getItem('vzcodeSelectedFontSize') ||
-  //     '16px',
-  // );
-  const [selectedFont, setSelectedFont] =
-    useState('Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] =
-    useState('16px');
+  const [selectedFont, setSelectedFont] = useState('Roboto Mono');
+  const [selectedFontSize, setSelectedFontSize] = useState('16px');
+  const [availableFonts, setAvailableFonts] = useState<string[]>([]);
 
   useEffect(() => {
-    // If we're in the browser,
     if (typeof window !== 'undefined') {
-      const selectedFontFromLocalStorage: string | null =
-        window.localStorage.getItem('vzcodeSelectedFont');
-
-      const selectedFontSizeFromLocalStorage:
-        | string
-        | null = window.localStorage.getItem(
-        'vzcodeSelectedFontSize',
-      );
+      const selectedFontFromLocalStorage: string | null = window.localStorage.getItem('vzcodeSelectedFont');
+      const selectedFontSizeFromLocalStorage: string | null = window.localStorage.getItem('vzcodeSelectedFontSize');
 
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
       }
       if (selectedFontSizeFromLocalStorage !== null) {
-        setSelectedFontSize(
-          selectedFontSizeFromLocalStorage,
-        );
+        setSelectedFontSize(selectedFontSizeFromLocalStorage);
       }
-    } else {
-      // If we're not in the browser, use the default initial width.
     }
   }, []);
 
-  // Called when the user selects a different font
+  useEffect(() => {
+    const detectFonts = () => {
+      const detectedFonts: string[] = [];
+      for (const font of systemFonts) {
+        if (isFontAvailable(font)) {
+          detectedFonts.push(font);
+          console.log(`${font} is available`);
+        } else {
+          console.log(`${font} is not available`);
+        }
+      }
+      setAvailableFonts(detectedFonts);
+      console.log('Detected fonts:', detectedFonts);
+    };
+
+    detectFonts();
+  }, []);
+
   const handleFontChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newFont = event.target.value;
@@ -83,31 +104,21 @@ export const VZSettings = ({
     [],
   );
 
-  // Called when the user selects a different font size
   const handleFontSizeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       const newSize = event.target.value;
-      localStorage.setItem(
-        'vzcodeSelectedFontSize',
-        newSize,
-      );
+      localStorage.setItem('vzcodeSelectedFontSize', newSize);
       setSelectedFontSize(newSize);
     },
     [],
   );
 
   useEffect(() => {
-    document.body.style.setProperty(
-      '--vzcode-font-family',
-      selectedFont,
-    );
+    document.body.style.setProperty('--vzcode-font-family', selectedFont);
   }, [selectedFont]);
 
   useEffect(() => {
-    document.body.style.setProperty(
-      '--vzcode-font-size',
-      selectedFontSize,
-    );
+    document.body.style.setProperty('--vzcode-font-size', selectedFontSize);
   }, [selectedFontSize]);
 
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -116,7 +127,6 @@ export const VZSettings = ({
     setUsername(usernameRef.current?.value || '');
   }, [setUsername]);
 
-  // Function to handle pressing Enter key
   useEffect(() => {
     if (isSettingsOpen) {
       const handleEnterKey = (event: KeyboardEvent) => {
@@ -127,10 +137,7 @@ export const VZSettings = ({
 
       window.addEventListener('keydown', handleEnterKey);
       return () => {
-        window.removeEventListener(
-          'keydown',
-          handleEnterKey,
-        );
+        window.removeEventListener('keydown', handleEnterKey);
       };
     }
   }, [isSettingsOpen, closeSettings]);
@@ -157,8 +164,7 @@ export const VZSettings = ({
               value={username}
             />
             <Form.Text className="text-muted">
-              Enter a username to be displayed on your
-              cursor
+              Enter a username to be displayed on your cursor
             </Form.Text>
           </Form.Group>
         ) : null}
@@ -183,19 +189,17 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font</Form.Label>
-
           <select
             className="form-select"
             onChange={handleFontChange}
             value={selectedFont}
           >
-            {fonts.map((font) => (
+            {availableFonts.map((font) => (
               <option key={font} value={font}>
                 {font}
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select font for the editor
           </Form.Text>
@@ -203,7 +207,6 @@ export const VZSettings = ({
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
-
           <select
             className="form-select"
             onChange={handleFontSizeChange}
@@ -215,7 +218,6 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
           <Form.Text className="text-muted">
             Select a font size for the editor
           </Form.Text>
