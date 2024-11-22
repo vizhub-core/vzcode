@@ -48,27 +48,25 @@
   .cm-line {
     font-family: var(--vzcode-font-family);
   }
+  
+  .cm-search {
+    background-color: #202e46;
+    border: solid;
+    border-width: 4px;
+    border-color: black;
+    padding: 2px !important
+  }
 
-  .tooltip_hover_circle {
-    color: white;
-    text-align: center;
-    position: fixed;
-    background-color: black;
-    padding: 5px;
-    border-radius: 5px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-    pointer-events: none;
+  .cm-textfield{
+    border-color: black;
+    border-width: 1.5px;
+    border-radius: 6px;
   }
-  
-  .tooltip_hover_circle strong {
-    font-size: 14px;
+
+  .cm-button{
+    background-color: #1f2022;
+    border-radius: 6px;
   }
-  
-  .tooltip_hover_circle div {
-    font-size: 12px;
-  }
+
 
 }
