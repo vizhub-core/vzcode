@@ -1,7 +1,4 @@
-// A CodeMirror 6 theme for the VizHub syntax highlighting colors.
-
-// Inspired by https://github.com/uiwjs/react-codemirror/blob/master/themes/vscode/src/index.ts
-
+// A CodeMirror 6 theme for VizHub with extended functionality and clarity.
 import { tags as t } from '@lezer/highlight';
 import {
   createTheme,
@@ -9,7 +6,6 @@ import {
 } from '@uiw/codemirror-themes';
 
 import {
-  // Colors for various things outside the code itself
   backgroundColor,
   lineHighlight,
   light,
@@ -19,8 +15,6 @@ import {
   selectionBackground,
   selectionBackgroundMatch,
   caretColor,
-
-  // Syntax highlighting colors
   MINT,
   AQUA,
   SKY,
@@ -31,28 +25,23 @@ import {
 } from './colors';
 import { EditorView } from 'codemirror';
 
-// Use semi-bold weight for keywords and other important things
-// const boldWeight = 'bold';
-
-// This looks way better as we are pulling in the semi-bold font from Google Fonts
+// Default font weight for improved readability
 const boldWeight = '500';
 
-const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] =
-  {
-    background: backgroundColor,
-    foreground: light,
-    caret: caretColor,
-    selection: selectionBackground,
-    selectionMatch: selectionBackgroundMatch,
-    lineHighlight,
-    gutterBackground: backgroundColor,
-    gutterForeground: lineNumbers,
-    gutterActiveForeground: lineNumbersActive,
-  };
+const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] = {
+  background: backgroundColor,
+  foreground: light,
+  caret: caretColor,
+  selection: selectionBackground,
+  selectionMatch: selectionBackgroundMatch,
+  lineHighlight,
+  gutterBackground: backgroundColor,
+  gutterForeground: lineNumbers,
+  gutterActiveForeground: lineNumbersActive,
+};
 
-function vizhubThemeInit(
-  options?: Partial<CreateThemeOptions>,
-) {
+// Function to initialize VizHub theme
+function vizhubThemeInit(options?: Partial<CreateThemeOptions>) {
   const {
     theme = 'dark',
     settings = {},
@@ -60,7 +49,7 @@ function vizhubThemeInit(
   } = options || {};
   return [
     createTheme({
-      theme: theme,
+      theme,
       settings: {
         ...defaultSettingsVizhubTheme,
         ...settings,
@@ -81,10 +70,12 @@ function vizhubThemeInit(
             t.special(t.variableName),
           ],
           color: MINT,
+          fontWeight: boldWeight,
         },
         {
           tag: [t.controlKeyword, t.moduleKeyword],
           color: MINT,
+          fontWeight: boldWeight,
         },
         {
           tag: [
@@ -92,7 +83,6 @@ function vizhubThemeInit(
             t.deleted,
             t.character,
             t.macroName,
-
             t.variableName,
             t.labelName,
             t.definition(t.name),
@@ -102,6 +92,7 @@ function vizhubThemeInit(
         {
           tag: [t.propertyName],
           color: GOLDENROD,
+          fontStyle: 'italic',
         },
         {
           tag: t.heading,
@@ -166,29 +157,31 @@ function vizhubThemeInit(
           textDecoration: 'underline',
         },
         { tag: t.invalid, color: PANIC },
-        // {
-        //   class: 'cm-nonmatchingBracket',
-        //   // color: "rede",
-        //   backgroundColor: 'red', // Optional: set background color for matching brackets
-        // },
-        // {
-        //   tag: t.nonmatchingBracket,
-        //   color: nonMatchingBracketColor,
-        //   backgroundColor: 'transparent', // Optional: set background color for non-matching brackets
-        // },
+        // Hover effects for better UX
+        {
+          tag: t.string,
+          class: 'hover-highlight',
+          hoverColor: `${LAVENDER}`,
+        },
         ...styles,
       ],
     }),
-    // Theme matching and non-matching brackets.
+    // Theme for brackets
     EditorView.theme(
       {
         '&.cm-focused .cm-matchingBracket': {
           backgroundColor: 'transparent',
           outline: '1px solid #888888',
+          transition: 'outline 0.3s ease-in-out',
         },
         '&.cm-focused .cm-nonmatchingBracket': {
           backgroundColor: 'transparent',
           outline: '1px solid #ff2222',
+          transition: 'outline 0.3s ease-in-out',
+        },
+        '&:hover .hover-highlight': {
+          color: `${AQUA}`,
+          transition: 'color 0.2s ease-in-out',
         },
       },
       { dark: true },
