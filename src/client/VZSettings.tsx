@@ -29,11 +29,21 @@ export const VZSettings = ({
 
   const handleThemeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setTheme(event.target.value as ThemeLabel);
+      const selectedTheme = event.target.value as ThemeLabel;
+      setTheme(selectedTheme);
+      localStorage.setItem('vzcodeSelectedTheme', selectedTheme);
     },
     [],
   );
-
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('vzcodeSelectedTheme') as ThemeLabel | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      setTheme('vizhub');
+    }
+  }, [setTheme]);
   // Initialize font and size from localStorage or defaults
   // const [selectedFont, setSelectedFont] = useState(
   //   localStorage.getItem('vzcodeSelectedFont') ||
