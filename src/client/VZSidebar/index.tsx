@@ -203,7 +203,93 @@ export const VZSidebar = ({
         docPresence.off('receive', handleReceive);
       };
     }
-  }, [docPresence]);
+  }, [docPresence]);]import { useState } from 'react';
+
+  // Add this state inside the VZSidebar component
+  const [favorites, setFavorites] = useState<Set<FileId>>(new Set());
+  
+  // Toggle favorite status
+  const toggleFavorite = useCallback(
+    (fileId: FileId) => {
+      setFavorites((prevFavorites) => {
+        const newFavorites = new Set(prevFavorites);
+        if (newFavorites.has(fileId)) {
+          newFavorites.delete(fileId);
+        } else {
+          newFavorites.add(fileId);
+        }
+        return newFavorites;
+      });
+    },
+    [setFavorites]
+  );
+  
+  // Check if a file is marked as a favorite
+  const isFavorite = useCallback(
+    (fileId: FileId) => favorites.has(fileId),
+    [favorites]
+  );
+  
+  return (
+    <div className="vz-sidebar" style={{ width: sidebarWidth + 'px' }}>
+      {/* Favorites Section */}
+      <div className="favorites-section">
+        <h3>Favorites</h3>
+        {favorites.size > 0 ? (
+          Array.from(favorites).map((fileId) => (
+            <div key={fileId} className="favorite-item">
+              <span>{fileId}</span>
+              <i
+                className="icon-button icon-button-dark"
+                onClick={() => toggleFavorite(fileId)}
+              >
+                ★
+              </i>
+            </div>
+          ))
+        ) : (
+          <div className="empty">
+            <div className="empty-text">No favorites yet!</div>
+          </div>
+        )}
+      </div>
+  
+      {/* Files Section */}
+      <div className="files" id="sidebar-view-container">
+        {!isSearchOpen ? (
+          <div className="sidebar-files">
+            {fileTree.children.map((entity) => {
+              const { fileId } = entity as FileTreeFile;
+              const key = fileId ? fileId : entity.path;
+  
+              return (
+                <div key={key} className="file-item">
+                  <Listing
+                    entity={entity}
+                    handleFileClick={handleFileClick}
+                    handleFileDoubleClick={handleFileDoubleClick}
+                  />
+                  <i
+                    className={`favorite-icon ${
+                      isFavorite(fileId) ? 'favorite' : ''
+                    }`}
+                    onClick={() => toggleFavorite(fileId)}
+                  >
+                    ★
+                  </i>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="sidebar-search">
+            <Search />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+  
 
   // console.log(sidebarPresenceIndicators);
 
