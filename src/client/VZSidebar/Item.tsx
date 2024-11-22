@@ -10,10 +10,13 @@ import { EditSVG, TrashSVG } from '../Icons';
 import { Tooltip, OverlayTrigger } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
 import { FileTypeIcon } from './FileTypeIcon';
+
+// TODO consider moving this up to a higher level of the component tree
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 
 const enableRenameDirectory = true;
 
+// A file or directory in the sidebar.
 export const Item = ({
   id,
   name,
@@ -24,8 +27,12 @@ export const Item = ({
   handleDeleteClick,
   isDirectory = false,
   isActive = false,
-  renameFileTooltipText = isDirectory ? 'Rename Directory' : 'Rename File',
-  deleteFileTooltipText = isDirectory ? 'Delete Directory' : 'Delete File',
+  renameFileTooltipText = isDirectory
+    ? 'Rename Directory'
+    : 'Rename File',
+  deleteFileTooltipText = isDirectory
+    ? 'Delete Directory'
+    : 'Delete File',
 }: {
   id: ItemId;
   name: string;
@@ -39,111 +46,160 @@ export const Item = ({
   renameFileTooltipText?: string;
   deleteFileTooltipText?: string;
 }) => {
-  const { hoveredItemId, setHoveredItemId } = useContext(VZCodeContext);
-
-  // State Management
-  const [isRenaming, setIsRenaming] = useState(false);
-  const [renameValue, setRenameValue] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const { hoveredItemId, setHoveredItemId } =
+    useContext(VZCodeContext);
+  // // Tracks whether the mouse is hovering over the file or directory
+  // const [isHovered, setIsHovered] = useState(false);
   const isHovered = hoveredItemId === id;
-
-  // Ref for renaming input
-  const renameInputRef = useRef<HTMLInputElement>(null);
-
-  // Hover Handlers
   const setIsHovered = useCallback(
-    (hovered: boolean) => setHoveredItemId(hovered ? id : null),
+    (isHovered: boolean) => {
+      if (isHovered) {
+        setHoveredItemId(id);
+      } else {
+        setHoveredItemId(null);
+      }
+    },
     [id, setHoveredItemId],
   );
 
-  // Rename Handlers
-  const startRenaming = useCallback(() => {
-    setIsRenaming(true);
-    setRenameValue(name);
-  }, [name]);
+  // Tracks whether the file is being renamed (inline text input)
+  const [isRenaming, setIsRenaming] = useState(false);
 
-  const stopRenaming = useCallback(() => setIsRenaming(false), []);
+  // Tracks the value of the input field when renaming
+  const [renameValue, setRenameValue] = useState('');
 
-  const handleRenameConfirm = useCallback(() => {
-    if (renameInputRef.current?.value.trim()) {
-      handleRenameClick(renameInputRef.current.value);
-    } else {
-      setShowModal(true);
-    }
-    stopRenaming();
-  }, [handleRenameClick, stopRenaming]);
+  // Tracks whether the delete confirmation modal is open
+  const [showModal, setShowModal] = useState(false);
 
-  // Delete Handlers
-  const openModal = useCallback(() => setShowModal(true), []);
-  const closeModal = useCallback(() => setShowModal(false), []);
-  const confirmDelete = useCallback(() => {
-    handleDeleteClick();
-    closeModal();
-  }, [handleDeleteClick, closeModal]);
+  // Ref to track the input DOM, so that we can focus and blur it
+  const renameInputRef = useRef(null);
 
-  // Input Handlers
-  const handleInputKeyDown = useCallback(
+  const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Escape') {
-        stopRenaming();
+        setIsRenaming(false);
       } else if (event.key === 'Enter') {
-        handleRenameConfirm();
+        renameInputRef.current.blur();
       }
     },
-    [handleRenameConfirm, stopRenaming],
+    [],
   );
 
-  const handleInputBlur = useCallback(() => {
-    handleRenameConfirm();
-  }, [handleRenameConfirm]);
+  const onBlur = useCallback(() => {
+    setIsRenaming(false);
+    if (renameInputRef.current.value.trim() === '') {
+      // Renaming to empty signals deletion
+      setShowModal(true);
+    } else {
+      handleRenameClick(renameInputRef.current.value);
+    }
+  }, [handleRenameClick]);
 
-  // Focus on the input field when renaming starts
+  const handleRenameIconClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setIsRenaming(!isRenaming);
+      setRenameValue(name);
+    },
+    [name, isRenaming],
+  );
+
+  // Focus the input field when renaming
   useEffect(() => {
     if (isRenaming) {
-      renameInputRef.current?.focus();
+      renameInputRef.current.focus();
     }
   }, [isRenaming]);
 
+  // Function to open the delete file confirmation modal
+  const handleModalOpen = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      setShowModal(true);
+    },
+    [],
+  );
+
+  // Function to close the modal
+  const handleModalClose = useCallback(() => {
+    setShowModal(false);
+  }, []);
+
+  // Function to handle confirmation on modal
+  const handleConfirmModal = useCallback(
+    (event: React.MouseEvent | undefined) => {
+      // TODO clean this up.
+      // This was added to prevent parent listeners from firing
+      // when the modal is confirmed.
+      event?.stopPropagation();
+      setShowModal(false);
+      handleDeleteClick();
+    },
+    [handleDeleteClick],
+  );
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+  }, []);
+
+  const onChange = useCallback(() => {
+    setRenameValue(renameInputRef.current.value);
+  }, []);
+
   return (
     <div
-      className={`file-or-directory user-select-none ${isActive ? 'active-file' : ''}`}
-      onClick={!isRenaming ? handleClick : undefined}
-      onDoubleClick={!isRenaming && handleDoubleClick ? handleDoubleClick : undefined}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`file-or-directory user-select-none ${
+        isActive ? 'active-file' : ''
+      }`}
+      onClick={isRenaming ? null : handleClick}
+      onDoubleClick={
+        isRenaming || !handleDoubleClick
+          ? null
+          : handleDoubleClick
+      }
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="name">
         {isRenaming ? (
           <>
             <FileTypeIcon name={renameValue} />
             <input
-              ref={renameInputRef}
               className="rename-input"
+              ref={renameInputRef}
               type="text"
+              aria-label="Field name"
               value={renameValue}
-              onChange={(e) => setRenameValue(e.target.value)}
-              onKeyDown={handleInputKeyDown}
-              onBlur={handleInputBlur}
-              aria-label="Rename file or directory"
+              onKeyDown={onKeyDown}
+              onBlur={onBlur}
+              onChange={onChange}
             />
           </>
         ) : (
           children
         )}
       </div>
-      {isHovered && !isRenaming && (
-        <div className="utils" style={{ position: 'relative' }}>
-          {enableRenameDirectory || !isDirectory ? (
+      {isHovered && !isRenaming ? (
+        <div
+          className="utils"
+          style={{ position: 'relative' }}
+        >
+          {(isDirectory ? enableRenameDirectory : true) ? (
             <OverlayTrigger
               placement="top"
-              overlay={<Tooltip>{renameFileTooltipText}</Tooltip>}
+              overlay={
+                <Tooltip id="rename-file-tooltip">
+                  {renameFileTooltipText}
+                </Tooltip>
+              }
             >
               <i
+                onClick={handleRenameIconClick}
                 className="icon-button icon-button-dark"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  startRenaming();
-                }}
               >
                 <EditSVG />
               </i>
@@ -151,25 +207,27 @@ export const Item = ({
           ) : null}
           <OverlayTrigger
             placement="top"
-            overlay={<Tooltip>{deleteFileTooltipText}</Tooltip>}
+            overlay={
+              <Tooltip id="delete-file-tooltip">
+                {deleteFileTooltipText}
+              </Tooltip>
+            }
           >
             <i
+              onClick={handleModalOpen}
               className="icon-button icon-button-dark"
-              onClick={(e) => {
-                e.stopPropagation();
-                openModal();
-              }}
             >
               <TrashSVG />
             </i>
           </OverlayTrigger>
         </div>
-      )}
+      ) : null}
+      {/* TODO Move this up to a higher level of the tree */}
       {showModal && (
         <DeleteConfirmationModal
           show={showModal}
-          onClose={closeModal}
-          onConfirm={confirmDelete}
+          onClose={handleModalClose}
+          onConfirm={handleConfirmModal}
           isDirectory={isDirectory}
           name={name}
         />
