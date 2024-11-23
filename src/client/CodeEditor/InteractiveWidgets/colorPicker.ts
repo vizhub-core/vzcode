@@ -1,5 +1,6 @@
 import { InteractRule } from '@replit/codemirror-interact';
 import * as d3 from "d3"; 
+import './style.css';
 
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
@@ -110,10 +111,18 @@ export const colorPicker = (
     document.createElement('div');
     colorpick.style.position = 'absolute'
     colorpick.style.background = 'white'
-    colorpick.style.left = '200px'
-    colorpick.style.top = '200px'
+    colorpick.style.left = '300px'
+    colorpick.style.top = '300px'
+    colorpick.style.borderRadius = '10px'
+    colorpick.style.padding = '20px'
+    colorpick.style.width = '190px'
+    colorpick.style.height = 'auto'
 
     //hcl sliders
+
+    const hname: HTMLLabelElement = 
+    document.createElement('label');
+    hname.textContent = "h: "
 
     const h: HTMLInputElement =
     document.createElement('input');
@@ -121,7 +130,11 @@ export const colorPicker = (
     h.min = '0'
     h.max = '360'
     h.value = '0'
-    
+    h.className = 'hi'
+
+    const cname: HTMLLabelElement = 
+    document.createElement('label');
+    cname.textContent = "c: "
 
     const c: HTMLInputElement = 
     document.createElement('input');
@@ -129,7 +142,11 @@ export const colorPicker = (
     c.min = '0'
     c.max = '150' //i think this value can be change but generally should be 150
     c.value = '0'
- 
+    c.className = 'hi'
+
+    const lname: HTMLLabelElement = 
+    document.createElement('label');
+    lname.textContent = "l: "
 
     const l: HTMLInputElement = 
     document.createElement('input');
@@ -137,6 +154,7 @@ export const colorPicker = (
     l.min = '0'
     l.max = '100'
     l.value = '0'
+    l.className = 'hi'
 
     const boxcolor: HTMLDivElement =
     document.createElement('div');
@@ -152,10 +170,34 @@ export const colorPicker = (
     document.createElement('button');
     ok.textContent = "ok"
 
+    const hdiv: HTMLDivElement =
+    document.createElement('div');
+    hdiv.style.display = 'flex'
+    hdiv.style.alignItems = 'center'
+
+    hdiv.appendChild(hname)
+    hdiv.appendChild(h)
+
+    const cdiv: HTMLDivElement =
+    document.createElement('div');
+    cdiv.style.display = 'flex'
+    cdiv.style.alignItems = 'center'
+
+    cdiv.appendChild(cname)
+    cdiv.appendChild(c)
+
+    const ldiv: HTMLDivElement =
+    document.createElement('div');
+    ldiv.style.display = 'flex'
+    ldiv.style.alignItems = 'center'
+
+    ldiv.appendChild(lname)
+    ldiv.appendChild(l)
+    
     document.body.appendChild(colorpick);
-    colorpick.appendChild(h)
-    colorpick.appendChild(c)
-    colorpick.appendChild(l)
+    colorpick.append(hdiv)
+    colorpick.append(cdiv)
+    colorpick.append(ldiv)
     colorpick.appendChild(boxcolor)
     colorpick.appendChild(colortext)
     colorpick.appendChild(ok)
@@ -178,11 +220,26 @@ export const colorPicker = (
       //now can make hex for set text
       const hexd3 = d3.color(rgbd3).formatHex()
       console.log(hexd3)
-
-      setText(hexd3) //this is bugged idk why but works when I hardcode a hex like #a10111 but even though hexd3 is in same format it just has a bug it wont change it idk
-
+      console.log(hexd3.length)
+      //setText("#002e74")
+     // setText(hexd3.toString()) //this is bugged idk why but works when I hardcode a hex like #a10111 but even though hexd3 is in same format it just has a bug it wont change it idk
+      console.log(hexd3)
       colortext.textContent = hexd3
       boxcolor.style.background = hexd3
+     // setText(String(hexd3))
+     // setText("#ff1000")
+      let fix = "#"
+      fix += String(hexd3[1])
+      fix += String(hexd3[2])
+      fix += String(hexd3[3])
+      fix += String(hexd3[4])
+      fix += String(hexd3[5])
+      fix += String(hexd3[6])
+      setText(fix)
+
+      h.style.setProperty('--color',hexd3)
+      c.style.setProperty('--color',hexd3)
+      l.style.setProperty('--color',hexd3)
     }
     h.addEventListener('input', update);
     c.addEventListener('input', update);
@@ -197,3 +254,4 @@ export const colorPicker = (
     update();
   },
 });
+
