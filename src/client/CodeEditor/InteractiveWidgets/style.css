@@ -1,0 +1,21 @@
+.hi 
+{
+    appearance: none;
+}
+      
+.hi::-webkit-slider-runnable-track 
+{
+    appearance: none;
+    border-radius: 8px;
+    background: var(--color);
+    height: 17px;
+}
+
+.hi::-webkit-slider-thumb 
+{
+    appearance: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    background: white;
+}
