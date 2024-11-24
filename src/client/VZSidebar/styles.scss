@@ -29,6 +29,38 @@
     height: 100%;
   }
 
+  .context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  
+    li {
+      padding: 8px 12px;
+      cursor: pointer;
+  
+      &:hover {
+        background: #f0f0f0;
+      }
+    }
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    cursor: pointer;
+  
+    &:hover {
+      background: #f9f9f9;
+    }
+  }
+  
+
   .file-or-directory {
     min-height: 40px;
     display: flex;
