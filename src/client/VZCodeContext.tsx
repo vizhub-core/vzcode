@@ -245,6 +245,18 @@ export const VZCodeProvider = ({
     createInitialState,
   );
 
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    fileId: FileId | null;
+  }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    fileId: null,
+  });
+
   // Unpack state.
   // print the state object to see what it contains
   // console.log('state: ', state);
@@ -342,7 +354,17 @@ export const VZCodeProvider = ({
 
   const handleCreateFileClick = useCallback(
     (newFileName: string) => {
-      createFile(newFileName);
+      let initialContent = '';
+
+      if (
+        newFileName.endsWith('.js') ||
+        newFileName.endsWith('.ts')
+      ) {
+        const baseName = newFileName;
+        initialContent = `export const ${baseName} = '${baseName}';\n`;
+      }
+
+      createFile(newFileName, initialContent);
       setIsCreateFileModalOpen(false);
     },
     [createFile, setIsCreateFileModalOpen],
