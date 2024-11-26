@@ -97,6 +97,7 @@ export const VZSidebar = ({
       <div>(Ctrl + Shift + A)</div>
     </div>
   ),
+  previewUrl, // New prop for the preview URL
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -107,6 +108,7 @@ export const VZSidebar = ({
   filesToolTipText?: React.ReactNode;
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
+  previewUrl?: string; // New prop type for preview URL
 }) => {
   const {
     files,
@@ -141,7 +143,7 @@ export const VZSidebar = ({
     SplitPaneResizeContext,
   );
 
-  // On single-click, open the file in a transient tab.
+    // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
     (fileId: FileId) => {
       openTab({ fileId, isTransient: true });
@@ -157,7 +159,7 @@ export const VZSidebar = ({
     [openTab],
   );
 
-  // True if files exist.
+    // True if files exist.
   const filesExist =
     fileTree &&
     fileTree.children &&
@@ -188,8 +190,8 @@ export const VZSidebar = ({
           username: update.username,
           fileId: update.start[1] as FileId,
         };
-
-        // console.log('Got presence!');
+        
+ // console.log('Got presence!');
         // // console.log({presenceId,update})
         // console.log(
         //   JSON.stringify(presenceIndicator, null, 2),
@@ -205,224 +207,245 @@ export const VZSidebar = ({
     }
   }, [docPresence]);
 
-  // console.log(sidebarPresenceIndicators);
+  const isPreviewEnabled = !!previewUrl;
 
   return (
-    <div
-      className="vz-sidebar"
-      style={{ width: sidebarWidth + 'px' }}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      <div
-        className="full-box"
-        ref={sidebarRef}
-        tabIndex={-1}
-      >
-        <div className="sidebar-section-buttons">
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="files-tooltip">
-                {filesToolTipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="files-icon"
-              className="icon-button icon-button-dark"
-              onClick={() => setIsSearchOpen(false)}
-            >
-              <FolderSVG />
-            </i>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="search-tooltip">
-                {searchToolTipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="search-icon"
-              className="icon-button icon-button-dark"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <SearchSVG />
-            </i>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="open-keyboard-shortcuts">
-                {openKeyboardShortcuts}
-              </Tooltip>
-            }
-          >
-            <i
-              id="shortcut-icon"
-              className="icon-button icon-button-dark"
-              onClick={handleQuestionMarkClick}
-            >
-              <QuestionMarkSVG />
-            </i>
-          </OverlayTrigger>
-
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="report-bug-tooltip">
-                {reportBugTooltipText}
-              </Tooltip>
-            }
-          >
-            <a
-              href="https://github.com/vizhub-core/vzcode/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i
-                id="bug-icon"
-                className="icon-button icon-button-dark"
+    <div className="vz-layout">
+      <div className="vz-main">
+        <div
+          className="vz-sidebar"
+          style={{ width: sidebarWidth + 'px' }}
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className="full-box" ref={sidebarRef} tabIndex={-1}>
+            <div className="sidebar-section-buttons">
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="files-tooltip">
+                    {filesToolTipText}
+                  </Tooltip>
+                }
               >
-                <BugSVG />
-              </i>
-            </a>
-          </OverlayTrigger>
+                <i
+                  id="files-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  <FolderSVG />
+                </i>
+              </OverlayTrigger>
 
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="open-settings-tooltip">
-                {openSettingsTooltipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="settings-icon"
-              className="icon-button icon-button-dark"
-              onClick={handleSettingsClick}
-            >
-              <GearSVG />
-            </i>
-          </OverlayTrigger>
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="search-tooltip">
+                    {searchToolTipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="search-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={() => setIsSearchOpen(true)}
+                >
+                  <SearchSVG />
+                </i>
+              </OverlayTrigger>
 
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="create-file-tooltip">
-                {createFileTooltipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="new-file-icon"
-              className="icon-button icon-button-dark"
-              onClick={handleOpenCreateFileModal}
-            >
-              <NewSVG />
-            </i>
-          </OverlayTrigger>
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="open-keyboard-shortcuts">
+                    {openKeyboardShortcuts}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="shortcut-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={handleQuestionMarkClick}
+                >
+                  <QuestionMarkSVG />
+                </i>
+              </OverlayTrigger>
 
-          {/*Directory Rename*/}
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="create-dir-tooltip">
-                {createDirTooltipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="new-directory-icon"
-              className="icon-button icon-button-dark"
-              onClick={handleOpenCreateDirModal}
-            >
-              <FileSVG />
-            </i>
-          </OverlayTrigger>
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="report-bug-tooltip">
+                    {reportBugTooltipText}
+                  </Tooltip>
+                }
+              >
+                <a
+                  href="https://github.com/vizhub-core/vzcode/issues/new"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i
+                    id="bug-icon"
+                    className="icon-button icon-button-dark"
+                  >
+                    <BugSVG />
+                  </i>
+                </a>
+              </OverlayTrigger>
 
-          {/*Toggle Follow*/}
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="toggle-auto-follow">
-                {enableAutoFollow
-                  ? disableAutoFollowTooltipText
-                  : enableAutoFollowTooltipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="auto-focus-icon"
-              className={`icon-button icon-button-dark${
-                enableAutoFollow
-                  ? ' vh-color-success-01'
-                  : ''
-              }`}
-              onClick={toggleAutoFollow}
-            >
-              <PinSVG />
-            </i>
-          </OverlayTrigger>
-        </div>
-        <div className="files" id="sidebar-view-container">
-          {!isSearchOpen ? (
-            <div className="sidebar-files">
-              {isDragOver ? (
-                <div className="empty">
-                  <div className="empty-text">
-                    Drop files here!
-                  </div>
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="open-settings-tooltip">
+                    {openSettingsTooltipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="settings-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={handleSettingsClick}
+                >
+                  <GearSVG />
+                </i>
+              </OverlayTrigger>
+
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="create-file-tooltip">
+                    {createFileTooltipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="new-file-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={handleOpenCreateFileModal}
+                >
+                  <NewSVG />
+                </i>
+              </OverlayTrigger>
+
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="create-dir-tooltip">
+                    {createDirTooltipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="new-directory-icon"
+                  className="icon-button icon-button-dark"
+                  onClick={handleOpenCreateDirModal}
+                >
+                  <FileSVG />
+                </i>
+              </OverlayTrigger>
+
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="toggle-auto-follow">
+                    {enableAutoFollow
+                      ? disableAutoFollowTooltipText
+                      : enableAutoFollowTooltipText}
+                  </Tooltip>
+                }
+              >
+                <i
+                  id="auto-focus-icon"
+                  className={`icon-button icon-button-dark${
+                    enableAutoFollow
+                      ? ' vh-color-success-01'
+                      : ''
+                  }`}
+                  onClick={toggleAutoFollow}
+                >
+                  <PinSVG />
+                </i>
+              </OverlayTrigger>
+            </div>
+            <div className="files" id="sidebar-view-container">
+              {!isSearchOpen ? (
+                <div className="sidebar-files">
+                  {isDragOver ? (
+                    <div className="empty">
+                      <div className="empty-text">
+                        Drop files here!
+                      </div>
+                    </div>
+                  ) : filesExist ? (
+                    fileTree.children.map((entity) => {
+                      const { fileId } = entity as FileTreeFile;
+                      const { path } = entity as FileTree;
+                      const key = fileId ? fileId : path;
+                      return (
+                        <Listing
+                          key={key}
+                          entity={entity}
+                          handleFileClick={handleFileClick}
+                          handleFileDoubleClick={
+                            handleFileDoubleClick
+                          }
+                        />
+                      );
+                    })
+                  ) : (
+                    <div className="empty">
+                      <div className="empty-text">
+                        It looks like you don't have any files
+                        yet! Click the "Create file" button
+                        above to create your first file.
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ) : filesExist ? (
-                fileTree.children.map((entity) => {
-                  const { fileId } = entity as FileTreeFile;
-                  const { path } = entity as FileTree;
-                  const key = fileId ? fileId : path;
-                  return (
-                    <Listing
-                      key={key}
-                      entity={entity}
-                      handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
-                    />
-                  );
-                })
               ) : (
-                <div className="empty">
-                  <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
-                  </div>
+                <div className="sidebar-search">
+                  <Search />
                 </div>
               )}
             </div>
-          ) : (
-            <div className="sidebar-search">
-              <Search />
+          </div>
+          {enableConnectionStatus && (
+            <div className="connection-status">
+              {connected ? 'Connected' : 'Connection Lost'}
+              <div className="connection">
+                <div
+                  className={`connection-status-indicator ${
+                    connected ? 'connected' : 'disconnected'
+                  }`}
+                />
+              </div>
             </div>
           )}
         </div>
+
+        <div
+          className={`vz-editor ${
+            isPreviewEnabled ? 'with-preview' : ''
+          }`}
+        >
+          {/* Editor content here */}
+        </div>
       </div>
-      {enableConnectionStatus && (
-        <div className="connection-status">
-          {connected ? 'Connected' : 'Connection Lost'}
-          <div className="connection">
-            <div
-              className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
-              }`}
-            />
-          </div>
+
+      {isPreviewEnabled ? (
+        <div className="vz-preview">
+          <iframe
+            src={previewUrl}
+            className="vz-preview-iframe"
+            frameBorder="0"
+            title="Live Preview"
+          ></iframe>
+        </div>
+      ) : (
+        <div className="vz-placeholder">
+          <p>Start a local devserver to see the preview here.</p>
         </div>
       )}
     </div>

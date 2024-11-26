@@ -294,3 +294,48 @@
     z-index: 1;
   }
 }
+
+.vz-layout {
+  display: flex;
+  height: 100vh;
+
+  .vz-main {
+    display: flex;
+    flex: 1;
+  }
+
+  .vz-sidebar {
+    width: 300px; // Sidebar width
+    background-color: var(--vh-color-neutral-01);
+  }
+
+  .vz-editor {
+    flex: 1;
+    overflow: auto;
+
+    &.with-preview {
+      flex: 0.5; // Adjust editor width when preview is visible
+    }
+  }
+
+  .vz-preview {
+    width: 50%; // Adjust width as needed
+    max-width: 800px;
+    border-left: 2px solid var(--vh-color-neutral-02);
+
+    .vz-preview-iframe {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.vz-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--vh-color-neutral-04);
+}
