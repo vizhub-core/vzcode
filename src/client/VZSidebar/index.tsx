@@ -550,3 +550,26 @@ export const VZSidebar = ({
     Retry Connection
   </button>
 </div>
+const [splitRatio, setSplitRatio] = useState(50); // Default 50%
+
+const handleSplitChange = (event) => {
+  const value = Math.max(20, Math.min(80, parseInt(event.target.value))); // Limit between 20% and 80%
+  setSplitRatio(value);
+};
+<div className="vz-editor" style={{ flex: `${100 - splitRatio}%` }}>
+  {/* Editor content */}
+</div>
+<div className="vz-preview" style={{ flex: `${splitRatio}%` }}>
+  {/* Preview content */}
+</div>
+<div className="split-ratio-slider">
+  <label htmlFor="splitRatio">Editor/Preview Split:</label>
+  <input
+    type="range"
+    id="splitRatio"
+    min="20"
+    max="80"
+    value={splitRatio}
+    onChange={handleSplitChange}
+  />
+</div>

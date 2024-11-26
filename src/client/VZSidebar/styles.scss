@@ -420,3 +420,15 @@
     }
   }
 }
+.split-ratio-slider {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  font-size: 14px;
+  color: var(--vh-color-neutral-04);
+
+  input[type='range'] {
+    margin-left: 10px;
+    width: 200px;
+  }
+}
