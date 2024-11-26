@@ -508,3 +508,29 @@ export const VZSidebar = ({
     Reset Layout
   </button>
 </div>
+<div className="vz-utility-buttons">
+  <button
+    className="refresh-preview"
+    onClick={() => {
+      const iframe = document.querySelector('.vz-preview-iframe');
+      if (iframe) iframe.src = iframe.src;
+    }}
+  >
+    Refresh Preview
+  </button>
+  <button
+    className="reset-layout"
+    onClick={() => {
+      setIsPreviewEnabled(false);
+    }}
+  >
+    Reset Layout
+  </button>
+</div>
+
+<div className="vz-debug">
+  <button className="debug-button" onClick={handleDebugLog}>
+    Log Debug Info
+  </button>
+  <span className="action-counter">Actions: {actionCount}</span>
+</div>
