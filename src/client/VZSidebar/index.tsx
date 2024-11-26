@@ -449,5 +449,43 @@ export const VZSidebar = ({
         </div>
       )}
     </div>
+    {/* ARIA roles for better accessibility */}
+<div 
+  className="vz-sidebar" 
+  style={{ width: sidebarWidth + 'px' }}
+  role="navigation"
+  aria-label="File Explorer Sidebar"
+>
+  {/* Sidebar content */}
+</div>
+
+<div
+  className={`vz-editor ${isPreviewEnabled ? 'with-preview' : ''}`}
+  role="main"
+  aria-label="Code Editor"
+>
+  {/* Editor content */}
+</div>
+
+<div
+  className="vz-preview"
+  role="region"
+  aria-label="Live Preview"
+>
+  {isPreviewEnabled ? (
+    <iframe
+      src={previewUrl}
+      className="vz-preview-iframe"
+      frameBorder="0"
+      title="Live Preview"
+      aria-live="polite"
+    ></iframe>
+  ) : (
+    <div className="vz-placeholder">
+      <p>Start a local devserver to see the preview here.</p>
+    </div>
+  )}
+</div>
+
   );
 };
