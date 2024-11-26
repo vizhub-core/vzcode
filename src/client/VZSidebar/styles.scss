@@ -339,3 +339,23 @@
   font-size: 16px;
   color: var(--vh-color-neutral-04);
 }
+.vz-utility-buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  gap: 10px;
+
+  button {
+    background-color: var(--vh-color-neutral-02);
+    color: var(--vh-color-neutral-04);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+
+    &:hover {
+      background-color: var(--vh-color-neutral-03);
+    }
+  }
+}
