@@ -489,3 +489,22 @@ export const VZSidebar = ({
 
   );
 };
+<div className="vz-utility-buttons">
+  <button
+    className="refresh-preview"
+    onClick={() => {
+      const iframe = document.querySelector('.vz-preview-iframe');
+      if (iframe) iframe.src = iframe.src;
+    }}
+  >
+    Refresh Preview
+  </button>
+  <button
+    className="reset-layout"
+    onClick={() => {
+      setIsPreviewEnabled(false);
+    }}
+  >
+    Reset Layout
+  </button>
+</div>
