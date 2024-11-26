@@ -359,3 +359,27 @@
     }
   }
 }
+.vz-debug {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+
+  .debug-button {
+    background-color: var(--vh-color-neutral-02);
+    color: var(--vh-color-neutral-04);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--vh-color-neutral-03);
+    }
+  }
+
+  .action-counter {
+    font-size: 14px;
+    color: var(--vh-color-neutral-04);
+  }
+}
