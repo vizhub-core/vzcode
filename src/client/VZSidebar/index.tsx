@@ -534,3 +534,19 @@ export const VZSidebar = ({
   </button>
   <span className="action-counter">Actions: {actionCount}</span>
 </div>
+
+<div className="vz-placeholder">
+  <h3>No Preview Available</h3>
+  <p>
+    It looks like you don't have a running devserver.
+    Start your devserver to see a live preview here.
+  </p>
+  <ol>
+    <li>Run <code>npm run dev</code> in your project directory.</li>
+    <li>Ensure the server is accessible at <code>http://localhost:5173</code>.</li>
+    <li>Reload this page if the preview doesn't appear automatically.</li>
+  </ol>
+  <button onClick={() => window.location.reload()}>
+    Retry Connection
+  </button>
+</div>
