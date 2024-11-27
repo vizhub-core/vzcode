@@ -16,6 +16,9 @@ export default defineConfig({
       '/ai-copilot': {
         target: 'http://localhost:3030',
       },
+      '/livekit-token': {
+        target: 'http://localhost:3030',
+      },
     },
   },
 

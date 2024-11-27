@@ -9,6 +9,7 @@ import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 import { fonts } from './Fonts/fonts';
+import { toggleRainbowBrackets } from './CodeEditor/rainbowBrackets';
 
 const fontSizes = ['10px','12px','14px','16px', '18px', '20px', '24px'];
 
@@ -29,11 +30,21 @@ export const VZSettings = ({
 
   const handleThemeChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setTheme(event.target.value as ThemeLabel);
+      const selectedTheme = event.target.value as ThemeLabel;
+      setTheme(selectedTheme);
+      localStorage.setItem('vzcodeSelectedTheme', selectedTheme);
     },
     [],
   );
-
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('vzcodeSelectedTheme') as ThemeLabel | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      setTheme('vizhub');
+    }
+  }, [setTheme]);
   // Initialize font and size from localStorage or defaults
   // const [selectedFont, setSelectedFont] = useState(
   //   localStorage.getItem('vzcodeSelectedFont') ||
@@ -48,6 +59,10 @@ export const VZSettings = ({
   const [selectedFontSize, setSelectedFontSize] =
     useState('16px');
 
+  // Initialize rainbowBrackets setting from localStorage or default to 'on'
+  const [rainbowBrackets, setRainbowBrackets] =
+    useState('on');
+
   useEffect(() => {
     // If we're in the browser,
     if (typeof window !== 'undefined') {
@@ -60,6 +75,12 @@ export const VZSettings = ({
         'vzcodeSelectedFontSize',
       );
 
+      const rainbowBracketsFromLocalStorage:
+        | string
+        | null = window.localStorage.getItem(
+        'vzcodeRainbowBrackets',
+      );
+
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
       }
@@ -67,6 +88,9 @@ export const VZSettings = ({
         setSelectedFontSize(
           selectedFontSizeFromLocalStorage,
         );
+      }
+      if (rainbowBracketsFromLocalStorage !== null) {
+        setRainbowBrackets(rainbowBracketsFromLocalStorage);
       }
     } else {
       // If we're not in the browser, use the default initial width.
@@ -92,6 +116,17 @@ export const VZSettings = ({
         newSize,
       );
       setSelectedFontSize(newSize);
+    },
+    [],
+  );
+
+  // Called when the user changes the Rainbow Brackets setting
+  const handleRainbowBracketsChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newSetting = event.target.value;
+      localStorage.setItem('vzcodeRainbowBrackets', newSetting);
+      setRainbowBrackets(newSetting);
+      toggleRainbowBrackets(newSetting === 'on');
     },
     [],
   );
@@ -220,6 +255,22 @@ export const VZSettings = ({
             Select a font size for the editor
           </Form.Text>
         </Form.Group>
+        
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Rainbow Brackets</Form.Label>
+          <select
+            className="form-select"
+            onChange={handleRainbowBracketsChange}
+            value={rainbowBrackets}
+          >
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+          <Form.Text className="text-muted">
+            Toggle Rainbow Brackets
+          </Form.Text>
+        </Form.Group>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={closeSettings}>
