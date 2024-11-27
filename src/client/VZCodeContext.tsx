@@ -2,42 +2,42 @@ import {
   createContext,
   useCallback,
   useReducer,
-  useState,
   useRef,
+  useState,
 } from 'react';
 import {
   Files,
   ItemId,
-  ShareDBDoc,
-  SubmitOperation,
-  Username,
-  VZCodeContent,
-  SearchResults,
-  SearchFileVisibility,
-  TabState,
-  PresenceIndicator,
+  LeafPane,
   Pane,
   PaneId,
-  LeafPane,
+  PresenceIndicator,
+  SearchFileVisibility,
+  SearchResults,
+  ShareDBDoc,
+  SubmitOperation,
+  TabState,
+  Username,
+  VZCodeContent,
 } from '../types';
-import { usePrettier } from './usePrettier';
-import { useTypeScript } from './useTypeScript';
-import { createInitialState, vzReducer } from './vzReducer';
 import {
   ThemeLabel,
   defaultTheme,
   useDynamicTheme,
 } from './themes';
 import { useActions } from './useActions';
-import { useOpenDirectories } from './useOpenDirectories';
-import { useFileCRUD } from './useFileCRUD';
 import {
   EditorCache,
   useEditorCache,
 } from './useEditorCache';
-import { useURLSync } from './useURLSync';
+import { useFileCRUD } from './useFileCRUD';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { useOpenDirectories } from './useOpenDirectories';
+import { usePrettier } from './usePrettier';
 import { useRunCode } from './useRunCode';
+import { useTypeScript } from './useTypeScript';
+import { useURLSync } from './useURLSync';
+import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
 
 // This context centralizes all the "smart" logic
@@ -169,6 +169,15 @@ export type VZCodeContextValue = {
 
   sidebarPresenceIndicators: Array<PresenceIndicator>;
   splitCurrentPane: () => void;
+
+  liveKitToken: string;
+  setLiveKitToken: (state: string) => void;
+  liveKitRoomName: string;
+  setLiveKitRoom: (state: string) => void;
+  liveKitConnection: boolean;
+  setLiveKitConnection: (state: boolean) => void;
+  voiceChatModalOpen: boolean;
+  setVoiceChatModalOpen: (state: boolean) => void;
 };
 
 export const VZCodeProvider = ({
@@ -183,6 +192,12 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   connected,
+  liveKitToken,
+  setLiveKitToken,
+  liveKitRoomName,
+  setLiveKitRoom,
+  liveKitConnection,
+  setLiveKitConnection,
 }: {
   content: VZCodeContent;
   shareDBDoc: ShareDBDoc<VZCodeContent>;
@@ -195,6 +210,12 @@ export const VZCodeProvider = ({
   children: React.ReactNode;
   codeError?: string | null;
   connected: boolean;
+  liveKitToken: string | undefined;
+  setLiveKitToken: (state: string) => void;
+  liveKitRoomName: string | undefined;
+  setLiveKitRoom: (state: string) => void;
+  liveKitConnection: boolean;
+  setLiveKitConnection: (state: boolean) => void;
 }) => {
   // Auto-run Pretter after local changes.
   const {
@@ -393,6 +414,11 @@ export const VZCodeProvider = ({
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
 
+  // Livekit Voice Chat Modal
+
+  const [voiceChatModalOpen, setVoiceChatModalOpen] =
+    useState(false);
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -480,6 +506,14 @@ export const VZCodeProvider = ({
     updatePresenceIndicator,
     sidebarPresenceIndicators,
     splitCurrentPane,
+    liveKitRoomName,
+    setLiveKitRoom,
+    liveKitToken,
+    setLiveKitToken,
+    liveKitConnection,
+    setLiveKitConnection,
+    voiceChatModalOpen,
+    setVoiceChatModalOpen,
   };
 
   return (

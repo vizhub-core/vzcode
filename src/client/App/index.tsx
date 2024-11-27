@@ -1,26 +1,31 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../../ot';
 import { Username } from '../../types';
 // @ts-ignore
 import PrettierWorker from '../usePrettier/worker?worker';
 // @ts-ignore
-import TypeScriptWorker from '../useTypeScript/worker?worker';
-import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
-import { VZResizer } from '../VZResizer';
 import {
-  useInitialUsername,
-  usePersistUsername,
-} from '../usernameLocalStorage';
-import { useShareDB } from './useShareDB';
-import { VZLeft } from '../VZLeft';
-import { VZMiddle } from '../VZMiddle';
-import { VZRight } from '../VZRight';
+  LiveKitRoom,
+  RoomAudioRenderer,
+} from '@livekit/components-react';
+import { v4 } from 'uuid';
+import { SplitPaneResizeProvider } from '../SplitPaneResizeContext';
 import {
   VZCodeContext,
   VZCodeProvider,
 } from '../VZCodeContext';
+import { VZLeft } from '../VZLeft';
+import { VZMiddle } from '../VZMiddle';
+import { VZResizer } from '../VZResizer';
+import { VZRight } from '../VZRight';
+import TypeScriptWorker from '../useTypeScript/worker?worker';
+import {
+  useInitialUsername,
+  usePersistUsername,
+} from '../usernameLocalStorage';
 import './style.scss';
+import { useShareDB } from './useShareDB';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -66,8 +71,18 @@ function App() {
     connection,
   });
 
+  //state for the voice channel
+  const [liveKitToken, setLiveKitToken] =
+    useState(undefined);
+  const [liveKitRoomName, setLiveKitRoomName] =
+    useState(v4()); //default room name will be an arbitrary uuid
+  const [liveKitConnection, setLiveKitConnection] =
+    useState(false);
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
+
+  //@ts-ignore
+  const serverUrl = import.meta.env.VITE_LIVEKIT_URL; //Vite only parses VITE_ prefixed environment variables
 
   // Feature flag for enabling the right-side panel.
   // Useful for debugging dual split pane functionality.
@@ -89,17 +104,31 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
+        liveKitRoomName={liveKitRoomName}
+        setLiveKitRoom={setLiveKitRoomName}
+        liveKitToken={liveKitToken}
+        setLiveKitToken={setLiveKitToken}
+        liveKitConnection={liveKitConnection}
+        setLiveKitConnection={setLiveKitConnection}
       >
-        <div className="app">
-          <VZLeft />
-          <VZMiddle allowGlobals={true} />
-          {enableRightPanel ? <VZRight /> : null}
-          <VZResizer side="left" />
-          {enableRightPanel ? (
-            <VZResizer side="right" />
-          ) : null}
-        </div>
-        <PersistUsername />
+        <LiveKitRoom
+          audio={true}
+          token={liveKitToken}
+          serverUrl={serverUrl}
+          connect={liveKitConnection}
+        >
+          <div className="app">
+            <VZLeft />
+            <VZMiddle allowGlobals={true} />
+            {enableRightPanel ? <VZRight /> : null}
+            <VZResizer side="left" />
+            {enableRightPanel ? (
+              <VZResizer side="right" />
+            ) : null}
+          </div>
+          <PersistUsername />
+          <RoomAudioRenderer />
+        </LiveKitRoom>
       </VZCodeProvider>
     </SplitPaneResizeProvider>
   );
