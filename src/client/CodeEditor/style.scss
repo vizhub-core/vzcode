@@ -48,4 +48,27 @@
   .cm-line {
     font-family: var(--vzcode-font-family);
   }
+
+  .tooltip_hover_circle {
+    color: white;
+    text-align: center;
+    position: fixed;
+    background-color: black;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+  }
+  
+  .tooltip_hover_circle strong {
+    font-size: 14px;
+  }
+  
+  .tooltip_hover_circle div {
+    font-size: 12px;
+  }
+
 }

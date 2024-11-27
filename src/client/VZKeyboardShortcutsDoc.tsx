@@ -46,41 +46,41 @@ export const VZKeyboardShortcutsDoc = ({
           {/* <Form.Label>WINDOWS</Form.Label> */}
           <ul>
             <li>
-              <strong>Ctrl + s</strong> or{' '}
-              <strong>Shift + Enter</strong> <br />
+              <strong><kbd>Ctrl</kbd> + <kbd>S</kbd></strong> or{' '}
+              <strong><kbd>Shift↑</kbd> + <kbd>Enter←</kbd></strong> <br />
               <span>Run and format code</span>
             </li>
             <li>
-              <strong>Alt + drag on a number</strong>
+              <strong><kbd>Alt</kbd> + Drag on a number</strong>
               <br />
               <span>
                 Modify the number by dragging left or right
               </span>
             </li>
             <li>
-              <strong>Alt + click on a hex color</strong>
+              <strong><kbd>Alt</kbd> + Click on a hex color</strong>
               <br />
               <span>
                 Open a color picker to modify the color
               </span>
             </li>
             <li>
-              <strong>Alt + w</strong> <br />
+              <strong><kbd>Alt</kbd> + <kbd>W</kbd></strong> <br />
               <span>Close the current tab</span>
             </li>
             <li>
-              <strong>Alt + n or Ctrl + Shift + n</strong>{' '}
+              <strong><kbd>Alt</kbd> + <kbd>N</kbd></strong> or{' '} <strong><kbd>Ctrl</kbd> + <kbd>Shift↑</kbd> + <kbd>N</kbd></strong>{' '}
               <br />
               <span>Open the create file modal</span>
             </li>
             <li>
-              <strong>Alt + Page Up</strong> <br />
+              <strong><kbd>Alt</kbd> + <kbd>PgUp↑</kbd></strong> <br />
               <span>
                 Change the active tab to the previous one
               </span>
             </li>
             <li>
-              <strong>Alt + Page Down</strong> <br />
+              <strong><kbd>Alt</kbd> + <kbd>PgDn↓</kbd></strong> <br />
               <span>
                 Change the active tab to the next one
               </span>

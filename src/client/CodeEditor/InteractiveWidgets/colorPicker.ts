@@ -8,39 +8,135 @@ export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 // Works without quotes to support CSS.
 export const colorPicker = (
   onInteract?: () => void,
-): InteractRule => ({
-  regexp: colorPickerRegex,
-  cursor: 'pointer',
-  onClick(
-    text: string,
-    setText: (newText: string) => void,
-  ) {
-    const startingColor: string = text;
+):  InteractRule => {
+  // Create the color picker element when the page loads
+  const sel: HTMLInputElement = document.createElement('input');
+  sel.type = 'color';
+  sel.style.position = 'fixed';
+  sel.style.left = '-9999px'; // Initially off-screen
+  sel.style.top = '-9999px';
+  document.body.appendChild(sel);
 
-    const sel: HTMLInputElement =
-      document.createElement('input');
-    sel.type = 'color';
-    sel.value = startingColor.toLowerCase();
+  // Create a close button element to hide the color picker
+  const closeButton: HTMLButtonElement = document.createElement('button');
+  closeButton.innerText = 'X';
+  closeButton.style.position = 'absolute';
+  closeButton.style.width = '20px';
+  closeButton.style.height = '20px';
+  closeButton.style.borderRadius = '50%';
+  closeButton.style.border = 'none';
+  closeButton.style.backgroundColor = '#ff4d4f';
+  closeButton.style.color = 'white';
+  closeButton.style.fontSize = '12px';
+  closeButton.style.display = 'none'; // Initially hidden
+  closeButton.style.cursor = 'pointer';
+  closeButton.style.top = '-10px'; // Adjust position relative to color picker
+  closeButton.style.right = '-10px';
+  sel.parentElement?.appendChild(closeButton); // Add button to the same container
 
-    // `valueIsUpper` maintains the style of the user's code.
-    // It keeps the case of a-f the same case as the original.
-    const valueIsUpper: boolean =
-      startingColor.toUpperCase() === startingColor;
+  // Function to hide the color picker and close button
+  const hideColorPicker = () => {
+    sel.style.left = '-9999px';
+    sel.style.top = '-9999px';
+    closeButton.style.display = 'none';
+  };
 
-    const updateHex = (e: Event) => {
-      const el: HTMLInputElement =
-        e.target as HTMLInputElement;
-      if (el.value) {
-        setText(
-          valueIsUpper ? el.value.toUpperCase() : el.value,
-        );
-      }
-      if (onInteract) onInteract();
-    };
-    sel.addEventListener('input', updateHex);
-    sel.click();
-  },
-});
+  // Add event listener to the close button to hide color picker
+  closeButton.addEventListener('click', (event) => {
+    event.stopPropagation(); // Prevent click event from bubbling to document
+    hideColorPicker();
+  });
+
+  // Add event listener for clicks outside the color picker
+  document.addEventListener('click', (event: MouseEvent) => {
+    if (event.target !== sel && event.target !== closeButton) {
+      hideColorPicker();
+    }
+  });
+
+  // Function to set the text and color
+  const setText = (newText: string) => {
+    console.log('Applying color to the element:', newText);
+
+    // Assuming you're applying the color to a circle element with id 'colorCircle'
+    const colorCircle = document.getElementById('colorCircle');
+    if (colorCircle) {
+      colorCircle.style.backgroundColor = newText;
+      console.log(`Color applied to colorCircle: ${newText}`);
+    } else {
+      console.log('colorCircle element not found');
+    }
+
+    // If there is any other text element (like an input or div for displaying hex color), update it too.
+    const hexDisplay = document.getElementById('hexDisplay');
+    if (hexDisplay) {
+      hexDisplay.textContent = newText;
+      console.log(`Hex value applied to hexDisplay: ${newText}`);
+    } else {
+      console.log('hexDisplay element not found');
+    }
+  };
+
+  return {
+    regexp: colorPickerRegex,
+    cursor: 'pointer',
+
+    onClick(
+      text: string,
+      setText: (newText: string) => void,
+      event: MouseEvent
+    ) {
+      const startingColor: string = text;
+
+      // Set the initial value of the color picker
+      console.log('Initial color:', startingColor);
+      sel.value = startingColor.toLowerCase();
+      console.log('Color picker initial value set to:', sel.value);
+
+      // Position the color picker near the cursor
+      const cursorX = event.clientX;
+      const cursorY = event.clientY;
+      sel.style.left = cursorX + 'px';
+      sel.style.top = cursorY + 'px';
+
+      // Show and position the close button
+      closeButton.style.display = 'block';
+      closeButton.style.left = `${cursorX + sel.offsetWidth - 15}px`; // Adjust to place in corner
+      closeButton.style.top = `${cursorY - 15}px`;
+
+      // Update the color selection and setText on change
+      const updateHex = (e: Event) => {
+        const el: HTMLInputElement = e.target as HTMLInputElement;
+        console.log('Hex color value selected:', el.value);
+
+        if (el.value) {
+          setText(el.value.toUpperCase()); // Use uppercase for consistency
+        }
+        if (onInteract) {
+          console.log('onInteract called');
+          onInteract();
+        }
+
+        // Update color display directly (for example, changing the background color of an element)
+        const colorDisplay = document.getElementById('colorDisplay');
+        if (colorDisplay) {
+          colorDisplay.style.backgroundColor = el.value;
+          console.log(`colorDisplay updated to: ${el.value}`);
+        } else {
+          console.log('colorDisplay element not found');
+        }
+      };
+
+      // Add input event listener to handle color selection
+      sel.addEventListener('input', updateHex);
+
+      // Trigger click event on the color picker to display it
+      sel.click();
+    },
+  };
+};
+
+
 
 // TODO get this working
 // rgb color picker
