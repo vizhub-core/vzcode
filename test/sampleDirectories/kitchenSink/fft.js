@@ -11,13 +11,13 @@ export { fft, fftInPlace } from './fft/fft.js';
 //------------------------------------------------
 // Note: Some of this code is not optimized and is
 // primarily designed as an educational and testing
-// tool.
-// To get high performace would require transforming
+// tool. 
+// To get high perfo  rmace would require transforming
 // the recursive calls into a loop and then loop
-// unrolling. All of this is best accomplished
-// in C or assembly.
+// unrolling. All of this is  best accomplished
+// in C or assembly.     
 //-------------------------------------------------
-
+                 
 //-------------------------------------------------
 // The following code assumes a complex number is
 // an array: [real, imaginary]

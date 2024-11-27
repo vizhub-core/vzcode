@@ -156,6 +156,7 @@ export type VZCodeContextValue = {
   codeEditorRef: React.RefObject<HTMLDivElement>;
 
   connected: boolean;
+  pending: boolean;
 
   hoveredItemId: ItemId | null;
   setHoveredItemId: (itemId: ItemId | null) => void;
@@ -192,6 +193,7 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   connected,
+  pending,
   liveKitToken,
   setLiveKitToken,
   liveKitRoomName,
@@ -210,6 +212,7 @@ export const VZCodeProvider = ({
   children: React.ReactNode;
   codeError?: string | null;
   connected: boolean;
+  pending: boolean;
   liveKitToken: string | undefined;
   setLiveKitToken: (state: string) => void;
   liveKitRoomName: string | undefined;
@@ -497,6 +500,7 @@ export const VZCodeProvider = ({
     codeEditorRef,
 
     connected,
+    pending,
 
     hoveredItemId,
     setHoveredItemId,

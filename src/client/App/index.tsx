@@ -67,6 +67,7 @@ function App() {
     docPresence,
     submitOperation,
     connected,
+    pending,
   } = useShareDB({
     connection,
   });
@@ -104,6 +105,7 @@ function App() {
         typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
+        pending={pending}
         liveKitRoomName={liveKitRoomName}
         setLiveKitRoom={setLiveKitRoomName}
         liveKitToken={liveKitToken}
