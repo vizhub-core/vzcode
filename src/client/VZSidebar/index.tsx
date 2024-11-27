@@ -38,6 +38,50 @@ import './styles.scss';
 // See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
+const collectFilesRecursively = (
+  node,
+  path = '',
+  files = [],
+) => {
+  const currentPath = path
+    ? `${path}/${node.name}`
+    : node.name;
+
+  if (node.type === 'file') {
+    files.push(currentPath); // Collect the file path
+  } else if (node.type === 'directory' && node.children) {
+    node.children.forEach((child) =>
+      collectFilesRecursively(child, currentPath, files),
+    );
+  }
+
+  return files;
+};
+
+const copyFileList = async (fileNames: string[]) => {
+  try {
+    if (!fileNames || fileNames.length === 0) {
+      alert('No files to copy.');
+      return;
+    }
+
+    console.log('fileNames', fileNames);
+
+    // const allFiles = collectFilesRecursively(fileTree);
+    const fileListString = fileNames.join('\n');
+
+    console.log('fileListString', fileListString);
+
+    await navigator.clipboard.writeText(fileListString);
+    alert('File list copied to clipboard!');
+  } catch (error) {
+    console.error('Error copying file list:', error);
+    alert(
+      'Failed to copy the file list. Please try again.',
+    );
+  }
+};
+
 export const VZSidebar = ({
   createFileTooltipText = (
     <>
@@ -158,10 +202,7 @@ export const VZSidebar = ({
   );
 
   // True if files exist.
-  const filesExist =
-    fileTree &&
-    fileTree.children &&
-    fileTree.children.length > 0;
+  const filesExist = !!files;
 
   const {
     isDragOver,
@@ -206,6 +247,34 @@ export const VZSidebar = ({
   }, [docPresence]);
 
   // console.log(sidebarPresenceIndicators);
+  const fileNames: string[] = useMemo(
+    () =>
+      files
+        ? Object.keys(files).map(
+            (fileId: FileId) => files[fileId].name,
+          )
+        : [],
+    [files],
+  );
+
+  useEffect(() => {
+    const copyFilesElement = document.querySelector(
+      '.copy-files-list-blurb',
+    );
+    if (copyFilesElement) {
+      copyFilesElement.addEventListener('click', () =>
+        copyFileList(fileNames),
+      );
+    }
+
+    return () => {
+      if (copyFilesElement) {
+        copyFilesElement.removeEventListener('click', () =>
+          copyFileList(fileNames),
+        );
+      }
+    };
+  }, [fileNames]);
 
   return (
     <div
@@ -413,6 +482,24 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
+
+      {enableConnectionStatus && (
+        <div className="connection-status">
+          {connected ? 'Connected' : 'Connection Lost'}
+          <div className="connection">
+            <div
+              className={`connection-status-indicator ${
+                connected ? 'connected' : 'disconnected'
+              }`}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="copy-files-list-blurb">
+        Copy files list
+      </div>
+
       {enableConnectionStatus && (
         <div className="connection-status">
           {connected ? 'Connected' : 'Connection Lost'}
