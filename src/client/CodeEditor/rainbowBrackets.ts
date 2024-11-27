@@ -8,6 +8,12 @@ function generateColors() {
   return ['red', 'orange', 'yellow', 'green'];
 }
 
+let isRainbowEnabled = true;
+
+export const toggleRainbowBrackets = (enabled: boolean) => {
+  isRainbowEnabled = enabled;
+};
+
 const rainbowBracketsPlugin = ViewPlugin.fromClass(
   class {
     decorations;
@@ -50,12 +56,16 @@ const rainbowBracketsPlugin = ViewPlugin.fromClass(
           ) {
             const color =
               colors[stack.length % colors.length];
+            const bracketClass = isRainbowEnabled
+              ? `rainbow-bracket-${color}`
+              : `default-bracket`;
+
             decorations.push(
               Decoration.mark({
-                class: `rainbow-bracket-${color}`,
+                class: bracketClass,
               }).range(open.from, open.from + 1),
               Decoration.mark({
-                class: `rainbow-bracket-${color}`,
+                class: bracketClass,
               }).range(pos, pos + 1),
             );
           }
@@ -105,6 +115,8 @@ export default function rainbowBrackets() {
       },
       '.rainbow-bracket-green': { color: '#B2FFB2' },
       '.rainbow-bracket-green > span': { color: '#B2FFB2' },
+      '.default-bracket': { color: 'currentColor' },
+      '.default-bracket > span': { color: 'currentColor' },
     }),
   ];
 }

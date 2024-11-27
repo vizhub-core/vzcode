@@ -79,6 +79,7 @@ const htmlConfig = {
   ],
   nestedAttributes: [],
 };
+
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -106,6 +107,13 @@ const getAtPath = (obj, path) => {
   return current;
 };
 
+// Extend the EditorCacheValue type to include the compartments and the updateRainbowBrackets method
+interface ExtendedEditorCacheValue extends EditorCacheValue {
+  themeCompartment: Compartment;
+  rainbowBracketsCompartment: Compartment;
+  updateRainbowBrackets: (enabled: boolean) => void;
+}
+
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
@@ -126,6 +134,7 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef,
   openTab,
   aiCopilotEndpoint,
+  rainbowBracketsEnabled = true, // New parameter to enable or disable Rainbow Brackets
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -163,13 +172,14 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef: React.MutableRefObject<boolean>;
   openTab: (tabState: TabState) => void;
   aiCopilotEndpoint: string;
-}): EditorCacheValue => {
+  rainbowBracketsEnabled?: boolean; // New parameter type
+}): ExtendedEditorCacheValue => {
   // Cache hit
 
   const cacheKey = editorCacheKey(fileId, paneId);
 
   if (editorCache.has(cacheKey)) {
-    return editorCache.get(cacheKey);
+    return editorCache.get(cacheKey) as ExtendedEditorCacheValue;
   }
 
   // Cache miss
@@ -184,6 +194,9 @@ export const getOrCreateEditor = ({
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
   let themeCompartment = new Compartment();
+  
+  // Create a compartment for rainbow brackets so that it can be enabled/disabled dynamically.
+  let rainbowBracketsCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
   // const extensions = [autocompletion(), html(htmlConfig)]
@@ -242,6 +255,13 @@ export const getOrCreateEditor = ({
   // This supports dynamic changing of the theme.
   extensions.push(
     themeCompartment.of(themeOptionsByLabel[theme].value),
+  );
+
+  // Adds compartment for rainbow brackets with initial toggle state.
+  extensions.push(
+    rainbowBracketsCompartment.of(
+      rainbowBracketsEnabled ? rainbowBrackets() : []
+    ),
   );
 
   // TODO handle dynamic changing of the file extension.
@@ -387,8 +407,6 @@ export const getOrCreateEditor = ({
       }),
     ),
   );
-  // adds rainbow brackets
-  extensions.push(rainbowBrackets());
 
   // adds copilot
   if (enableCopilot) {
@@ -402,10 +420,17 @@ export const getOrCreateEditor = ({
     }),
   });
 
-  const editorCacheValue = { editor, themeCompartment };
+  const editorCacheValue: ExtendedEditorCacheValue = { editor, themeCompartment, rainbowBracketsCompartment, updateRainbowBrackets: (enabled) => {
+    editor.dispatch({
+      effects: rainbowBracketsCompartment.reconfigure(enabled ? rainbowBrackets() : []),
+    });
+  }};
 
   // Populate the cache.
   editorCache.set(cacheKey, editorCacheValue);
+
+  // Initialize rainbow brackets based on the toggle state
+  editorCacheValue.updateRainbowBrackets(rainbowBracketsEnabled);
 
   return editorCacheValue;
 };
