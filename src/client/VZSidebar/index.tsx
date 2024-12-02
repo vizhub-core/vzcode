@@ -143,16 +143,210 @@ export const VZSidebar = ({
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
+
+
+  const [flattenedItems, setFlattenedItems] = useState(() =>
+    fileTree ? flattenFileTree(fileTree.children) : []
+  );
+
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+
+  const fileRefs = useMemo(() => [], []);
+
+  const flattenFileTree = useCallback(
+    (tree: Array<FileTree | FileTreeFile>, parentPath = ''): Array<any> => {
+      const items = [];
+      tree.forEach((item) => {
+        if ('fileId' in item) {
+          items.push(item);
+        } else {
+          items.push({ ...item, type: 'folder' });
+          if (expandedFolders.has(item.path)) {
+            items.push(...flattenFileTree(item.children, item.path));
+          }
+        }
+      });
+      return items;
+    },
+    [expandedFolders],
+  );
+
+  useEffect(() => {
+    // Reset flattenedItems whenever fileTree changes
+    if (fileTree) {
+      setFlattenedItems(flattenFileTree(fileTree.children));
+    }
+  }, [fileTree, flattenFileTree]);
+
+  // Function to reorder items based on dragged and drop targets
+  const handleReorderItems = (draggedId: string, dropTargetId: string) => {
+    const fromIndex = flattenedItems.findIndex(item => item.fileId === draggedId || item.path === draggedId);
+    const toIndex = flattenedItems.findIndex(item => item.fileId === dropTargetId || item.path === dropTargetId);
+
+    if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+
+    const updatedItems = [...flattenedItems];
+    const [movedItem] = updatedItems.splice(fromIndex, 1);
+    updatedItems.splice(toIndex, 0, movedItem);
+
+    setFlattenedItems(updatedItems); 
+    setDropTargetIndex(null); 
+  };
+
+  const handleSidebarKeyDown = (event: React.KeyboardEvent) => {
+    if (!flattenedItems.length) return;
+
+    const moveItem = (fromIndex: number, toIndex: number) => {
+      const updatedItems = [...flattenedItems];
+      const [movedItem] = updatedItems.splice(fromIndex, 1);
+      updatedItems.splice(toIndex, 0, movedItem);
+    };
+
+
+    switch (event.key) {
+      case 'ArrowUp':
+        setFocusedIndex((prevIndex) => {
+          const newIndex = prevIndex === null ? 0 : Math.max(prevIndex - 1, 0);
+          fileRefs[newIndex]?.focus();
+          return newIndex;
+        });
+        event.preventDefault();
+        break;
+      case 'ArrowDown':
+        setFocusedIndex((prevIndex) => {
+          const newIndex =
+            prevIndex === null
+              ? 0
+              : Math.min(prevIndex + 1, flattenedItems.length - 1);
+          fileRefs[newIndex]?.focus();
+          return newIndex;
+        });
+        event.preventDefault();
+        break;
+      case 'ArrowRight':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            expandFolder(item.path);
+          }
+        }
+        event.preventDefault();
+        break;
+      case 'ArrowLeft':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            foldFolder(item.path);
+          }
+        }
+        event.preventDefault();
+        break;
+      case 'Enter':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            toggleFolder(item.path);
+          } else if ('fileId' in item) {
+            openTab({ fileId: item.fileId, isTransient: false });
+          }
+        }
+        event.preventDefault();
+        break;
+      case ' ':
+        if (focusedIndex !== null) {
+          const item = flattenedItems[focusedIndex];
+          if (item.type === 'folder') {
+            toggleFolder(item.path);
+          } else if ('fileId' in item) {
+            openTab({ fileId: item.fileId, isTransient: false });
+          }
+        }
+        event.preventDefault();
+        break;
+      case 'Home':
+        setFocusedIndex(0);
+        fileRefs[0]?.focus();
+        event.preventDefault();
+        break;
+      case 'End':
+        setFocusedIndex(flattenedItems.length - 1);
+        fileRefs[flattenedItems.length - 1]?.focus();
+        event.preventDefault();
+        break;
+      case '[':
+        if (focusedIndex !== null && focusedIndex > 0) {
+          moveItem(focusedIndex, focusedIndex - 1);
+          setFocusedIndex(focusedIndex - 1);
+          fileRefs[focusedIndex - 1]?.focus();
+        }
+        event.preventDefault();
+        break;
+      case ']':
+        if (focusedIndex !== null && focusedIndex < flattenedItems.length - 1) {
+          moveItem(focusedIndex, focusedIndex + 1);
+          setFocusedIndex(focusedIndex + 1);
+          fileRefs[focusedIndex + 1]?.focus();
+        }
+        event.preventDefault();
+        break;
+    }
+  };
+
+  const toggleFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+      if (newExpanded.has(path)) newExpanded.delete(path);
+      else newExpanded.add(path);
+      return newExpanded;
+    });
+  };
+  const foldFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+      newExpanded.delete(path);
+      return newExpanded;
+    });
+  };
+  const expandFolder = (path: string) => {
+    setExpandedFolders((prev) => {
+      const newExpanded = new Set(prev);
+       newExpanded.add(path);
+      return newExpanded;
+    });
+  };
+  const handleFileFocusShortcut = useCallback(() => {
+    if (flattenedItems.length > 0) {
+      setFocusedIndex(0);
+      fileRefs[0]?.focus();
+    }
+  }, [flattenedItems]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === '1') {
+        event.preventDefault();
+        handleFileFocusShortcut();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleFileFocusShortcut]);
+
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
   }, []);
+
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
 
-  const { sidebarWidth } = useContext(
-    SplitPaneResizeContext,
-  );
+  const { sidebarWidth } = useContext(SplitPaneResizeContext);
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
@@ -178,14 +372,14 @@ export const VZSidebar = ({
 
   const {
     isDragOver,
+    handleDragStart,
     handleDragEnter,
     handleDragOver,
     handleDragLeave,
     handleDrop,
-  } = useDragAndDrop();
+  } = useDragAndDrop(setDropTargetIndex);
 
-  // Track presence of remote users across files
-  // so that they can be displayed in the sidebar.
+  // Track presence of remote users across files so that they can be displayed in the sidebar.
   useEffect(() => {
     docPresence;
   }, []);
@@ -193,20 +387,11 @@ export const VZSidebar = ({
   // Track the presence indicators for display in sidebar
   useEffect(() => {
     if (docPresence) {
-      const handleReceive = (
-        presenceId: PresenceId,
-        update: Presence,
-      ) => {
+      const handleReceive = (presenceId: PresenceId, update: Presence) => {
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
           fileId: update.start[1] as FileId,
         };
-
-        // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -253,15 +438,14 @@ export const VZSidebar = ({
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
       onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
+      onDragOver={(event) => handleDragOver(event, null)}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, null, handleReorderItems)}
+      tabIndex={0}
+      onKeyDown={handleSidebarKeyDown}
+      ref={sidebarRef}
     >
-      <div
-        className="full-box"
-        ref={sidebarRef}
-        tabIndex={-1}
-      >
+      <div className="full-box">
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
@@ -370,7 +554,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Directory Rename*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -388,7 +571,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Toggle Follow*/}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -448,27 +630,35 @@ export const VZSidebar = ({
                   </div>
                 </div>
               ) : filesExist ? (
-                fileTree.children.map((entity) => {
-                  const { fileId } = entity as FileTreeFile;
-                  const { path } = entity as FileTree;
-                  const key = fileId ? fileId : path;
-                  return (
+                flattenedItems.map((item, index) => (
+                  <div
+                    key={item.fileId || item.path}
+                    className={`sidebar-file-item ${focusedIndex === index ? 'focused' : ''} ${dropTargetIndex === index ? 'drag-over' : ''}`}
+                    tabIndex={0}
+                    ref={(el) => (fileRefs[index] = el)}
+                    onClick={() => {
+                      if (item.type === 'folder') toggleFolder(item.path);
+                      else handleFileClick(item.fileId);
+                    }}
+                    onDoubleClick={() => {
+                      if ('fileId' in item) handleFileDoubleClick(item.fileId);
+                    }}
+                  >
                     <Listing
-                      key={key}
-                      entity={entity}
+                      entity={item}
                       handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
+                      handleFileDoubleClick={handleFileDoubleClick}
+                      isExpanded={expandedFolders.has(item.path)}
+                      onDragStart={() => handleDragStart(item.fileId || item.path)}
+                      onDragOver={(event) => handleDragOver(event, item.fileId || item.path)}
+                      onDrop={(event) => handleDrop(event as React.DragEvent<HTMLDivElement>, item.fileId || item.path, handleReorderItems)}
                     />
-                  );
-                })
+                  </div>
+                ))
               ) : (
                 <div className="empty">
                   <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
+                    It looks like you don't have any files yet! Click the "Create file" button above to create your first file.
                   </div>
                 </div>
               )}

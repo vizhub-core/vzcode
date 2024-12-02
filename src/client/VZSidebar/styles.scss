@@ -50,7 +50,18 @@
     font-family: Poppins;
     color: var(--vh-color-neutral-04);
   }
+  .sidebar-file-item {
+    transition: background-color 0.2s ease-in-out;
+  }
 
+  .sidebar-file-item.drag-over {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px dashed var(--vh-color-neutral-04); 
+  }
+
+  .sidebar-file-item:active {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
   .sidebar-section-buttons {
     border-right: 2px solid var(--vh-color-neutral-02);
     height: 100%;
