@@ -118,6 +118,7 @@ function App() {
           token={liveKitToken}
           serverUrl={serverUrl}
           connect={liveKitConnection}
+          style={{ height: '100%' }}
         >
           <div className="app">
             <VZLeft />
