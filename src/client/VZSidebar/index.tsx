@@ -4,7 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
-  useRef
+  useRef,
 } from 'react';
 import {
   FileId,
@@ -34,6 +34,7 @@ import { Listing } from './Listing';
 import { Search } from './Search';
 import './styles.scss';
 import { useDragAndDrop } from './useDragAndDrop';
+import { enableLiveKit } from '../featureFlags';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -231,7 +232,12 @@ export const VZSidebar = ({
   // Handle 'saved' state based on 'pending' transition
   useEffect(() => {
     // Check if 'pending' transitioned from true to false
-    if (previousPendingRef.current && !pending && connected && !isConnecting) {
+    if (
+      previousPendingRef.current &&
+      !pending &&
+      connected &&
+      !isConnecting
+    ) {
       setSaved(true);
       const timer = setTimeout(() => {
         setSaved(false);
@@ -241,7 +247,6 @@ export const VZSidebar = ({
     // Update the ref with the current 'pending' state
     previousPendingRef.current = pending;
   }, [pending, connected, isConnecting]);
-
 
   return (
     <div
@@ -408,25 +413,30 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
           {/* Start Voice Chat */}
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="voice-chat">
-                {voiceChatToolTipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="mic-icon"
-              className="icon-button icon-button-dark"
-              onClick={() => {
-                console.log('clicking', liveKitConnection);
-                setVoiceChatModalOpen(true);
-              }}
+          {enableLiveKit && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="voice-chat">
+                  {voiceChatToolTipText}
+                </Tooltip>
+              }
             >
-              <MicSVG />
-            </i>
-          </OverlayTrigger>
+              <i
+                id="mic-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  console.log(
+                    'clicking',
+                    liveKitConnection,
+                  );
+                  setVoiceChatModalOpen(true);
+                }}
+              >
+                <MicSVG />
+              </i>
+            </OverlayTrigger>
+          )}
         </div>
         <div className="files" id="sidebar-view-container">
           {!isSearchOpen ? (
@@ -472,11 +482,15 @@ export const VZSidebar = ({
       </div>
       {enableConnectionStatus && (
         <div className="connection-status">
-          {isConnecting ? 'Connecting...' :
-            !connected ? 'Connection Lost' :
-              pending ? 'Saving...' :
-                saved ? 'Saved.' :
-                  'Connected'}
+          {isConnecting
+            ? 'Connecting...'
+            : !connected
+              ? 'Connection Lost'
+              : pending
+                ? 'Saving...'
+                : saved
+                  ? 'Saved.'
+                  : 'Connected'}
           <div className="connection">
             <div
               className={`connection-status-indicator ${
@@ -487,7 +501,7 @@ export const VZSidebar = ({
                     : pending
                       ? 'pending'
                       : 'connected'
-            }`}
+              }`}
             />
           </div>
         </div>

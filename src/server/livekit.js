@@ -7,7 +7,7 @@ export const createToken = async (roomName, username) => {
   // client joins
   // Identifier to be used for participant.
   // It's available as LocalParticipant.identity with livekit-client SDK
-  console.log(username);
+  // console.log(username);
   const participantName = `${username}`;
 
   const at = new AccessToken(

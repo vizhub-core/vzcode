@@ -1,3 +1,4 @@
+import { enableLiveKit } from './featureFlags';
 import { VZKeyboardShortcutsDoc } from './VZKeyboardShortcutsDoc';
 import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
@@ -21,7 +22,7 @@ export const VZLeft = ({ enableUsernameField = true }) => {
       />
       <CreateFileModal />
       <CreateDirModal />
-      <VoiceChatModal />
+      {enableLiveKit && <VoiceChatModal />}
     </div>
   );
 };
