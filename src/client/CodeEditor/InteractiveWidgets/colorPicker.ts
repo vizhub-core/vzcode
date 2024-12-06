@@ -133,7 +133,6 @@ export const colorPicker = (
     hcl.appendChild(ok)
     colorpick.appendChild(hcl);
 
-
     //hcl sliders
 
     const hname: HTMLLabelElement = 
@@ -146,7 +145,7 @@ export const colorPicker = (
     h.min = '0'
     h.max = '360'
     h.value = '0'
-    h.className = 'hi'
+    h.className = 'hslide';
 
     const cname: HTMLLabelElement = 
     document.createElement('label');
@@ -158,7 +157,7 @@ export const colorPicker = (
     c.min = '0'
     c.max = '150' //i think this value can be change but generally should be 150
     c.value = '0'
-    c.className = 'hi'
+    c.className = 'cslide';
 
     const lname: HTMLLabelElement = 
     document.createElement('label');
@@ -170,7 +169,7 @@ export const colorPicker = (
     l.min = '0'
     l.max = '100'
     l.value = '0'
-    l.className = 'hi'
+    l.className = 'lslide';
 
     const boxcolor: HTMLDivElement =
     document.createElement('div');
@@ -207,12 +206,10 @@ export const colorPicker = (
     colorpick.append(cdiv)
     colorpick.append(ldiv)
 
-
     function update() {
       const hval = parseFloat(h.value)
       const cval = parseFloat(c.value)
-      const lval = parseFloat(l.value)
-
+      const lval = 100 - parseFloat(l.value);
       //https://d3js.org/d3-color#hcl
       //I guess there are some ways to do this differently but I have experience with d3 and they just give a function that does this for me
 
@@ -230,8 +227,9 @@ export const colorPicker = (
       //setText("#002e74")
      // setText(hexd3.toString()) //this is bugged idk why but works when I hardcode a hex like #a10111 but even though hexd3 is in same format it just has a bug it wont change it idk
       console.log(hexd3)
+    //  colortext.textContent = hexd3
       colortext.textContent = hexd3
-      boxcolor.style.background = hexd3
+    //  boxcolor.style.background = hexd3
      // setText(String(hexd3))
      // setText("#ff1000")
       let fix = "#"
@@ -243,14 +241,21 @@ export const colorPicker = (
       fix += String(hexd3[6])
       setText(fix)
 
-      h.style.setProperty('--color', hexd3)
-      c.style.setProperty('--color',hexd3)
-      l.style.setProperty('--color',hexd3)
+      c.style.setProperty('--color', hexd3)
+    
+      const gradient = `
+        linear-gradient(
+        to right,
+        hsl(0, 0%, 100%), 
+        hsl(0, 0%, 0%)    
+        )
+        `;
+     
+      l.style.setProperty('--gradient', gradient)
     }
     h.addEventListener('input', update);
     c.addEventListener('input', update);
     l.addEventListener('input', update);
-
     function closeok() {
       colorpick.remove()
     }
