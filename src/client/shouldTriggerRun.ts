@@ -18,12 +18,14 @@ export const shouldTriggerRun = (event: KeyboardEvent) => {
     // (ctrlOrCmd && event.key === 'r') || // Ctrl+R or Cmd+R
 
     (event.altKey && event.key === 'Enter') || // Alt+Enter
-    (ctrlOrCmd &&
-      event.shiftKey &&
+    (ctrlOrCmd && event.shiftKey &&
       (event.key === 'B' || event.key === 'b')) || // Ctrl+Shift+B or Cmd+Shift+B
     (ctrlOrCmd && event.shiftKey && event.key === 'F10') || // Ctrl+Shift+F10 or Cmd+Shift+F10
     event.key === 'F8' ||
-    event.key === 'F9'
+    event.key === 'F9' 
+    // (ctrlOrCmd && event.shiftKey && event.key === 'n') // Ctrl + Shift + N
+    // Browser level shortcuts like Ctrl + Shift + N are reserved for critical functions
+    // They cannot be overriden by preventDefault() or stopPropogation()
   ) {
     return true;
   }

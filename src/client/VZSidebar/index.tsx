@@ -36,32 +36,44 @@ import './styles.scss';
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
 // See https://github.com/vizhub-core/vzcode/issues/456
+
+// IDEA: Override browsers natural shortcuts?
+// All windows edge shortcuts https://support.microsoft.com/en-us/microsoft-edge/keyboard-shortcuts-in-microsoft-edge-50d3edab-30d9-c7e4-21ce-37fe2713cfad#ID0EBD=Windows
+// stack overflow solutions: https://stackoverflow.com/questions/3680919/overriding-browsers-keyboard-shortcuts
+// Edit: Cannot override some browser level shortcuts
+
+
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
   createFileTooltipText = (
     <>
       <strong>New file</strong>
-      {/* TODO verify that Ctrl + Shift + N works - does not work in Linux */}
-      <div>(Alt + N or Ctrl + Shift + N)</div>
+      {/* Cannot override browser level shortcut of Ctrl+Shift+N for private tab */}
+      <div>(Alt + N)</div>
     </>
   ),
   createDirTooltipText = (
     <div>
       <strong>New Directory</strong>
       {/* TODO consider Alt+D, as Ctrl + Shift + D does not work in Linux */}
+      {/* TODO Ctrl + Shift + D, Does not work on Microsoft Edge on Windows 
+        Attempts to add all tabs to favorite bar */}
       <div>(Ctrl + Shift + D)</div>
     </div>
   ),
   openSettingsTooltipText = (
     <div>
       <strong>Open Settings</strong>
+      {/* TODO Ctrl + Shift + S, Does not work on Microsoft Edge 
+      */}
       <div>(Ctrl + Shift + S or Ctrl + ,)</div>
     </div>
   ),
   openKeyboardShortcuts = (
     <div>
       <strong>Keyboard Shortcuts</strong>
+      {/* TODO consider Alt + K, as Ctrl + Shift + K duplicates the current tab on Microsoft Edge*/}
       <div>(Ctrl + Shift + K)</div>
     </div>
   ),
