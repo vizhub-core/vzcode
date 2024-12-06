@@ -1,0 +1,159 @@
+/*
+Document Future Proof Code:
+(Note this code is currently only for webkit brwoser ie chrome)
+Default out appearance for sliders to apply own styling use both  -webkit-appearance: none; , appearance: none;
+-webkit-slider-thumb currently just opaque to with a border to see thumb and the color you are hovering this is same for h,c,l
+-webkit-slider-runnable-track this is the actual slider 
+h slider use a gradient from 0-360 for 12 different hue (hue)
+c slider just updates slider color based on c value tried using gradient to maybe show how you could impact color failed misereably (chroma)
+l slider also had issue with generating gradient based on color so decided to go with gradient from white to black (luminance)
+Additional code will include slider for alpha value
+Future Bug Fixes + Features:
+Nicer looking sliders
+Fixes to gradient issues mentioned above
+Addition of alpha sliders placeholder code below
+All browser support
+Font Changes
+Animations for sliders + thumb!
+Other css libraries maybe can replace this
+*/
+
+.hslide
+{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%
+}
+.hslide::-webkit-slider-runnable-track
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    hsl(0, 80%, 75%),
+    hsl(30, 80%, 75%),
+    hsl(60, 80%, 75%),
+    hsl(90, 80%, 75%),
+    hsl(120, 80%, 75%),
+    hsl(150, 80%, 75%),
+    hsl(180, 80%, 75%),
+    hsl(210, 80%, 75%),
+    hsl(240, 80%, 75%),
+    hsl(270, 80%, 75%),
+    hsl(300, 80%, 75%),
+    hsl(330, 80%, 75%),
+    hsl(360, 80%, 75%)
+    );
+  height: 15px;
+}
+.hslide::-webkit-slider-thumb 
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.cslide
+{
+    -webkit-appearance: none;
+    appearance: none;
+    border: none; 
+    padding: 0; 
+    background: transparent; 
+    outline: none; 
+    width: 100%
+}
+.cslide::-webkit-slider-runnable-track
+{
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color, black); 
+  border-radius: 8px;
+  height: 15px;
+  border: none; 
+}
+.cslide::-webkit-slider-thumb 
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.lslide
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border: none; 
+  padding: 0; 
+  background: transparent; 
+  outline: none; 
+  width: 100%
+}
+.lslide::-webkit-slider-runnable-track
+{
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--gradient, black); 
+  border-radius: 8px;
+  height: 15px;
+  border: none; 
+}
+.lslide::-webkit-slider-thumb 
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+/*
+Future code for alpha slider
+.aslide
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border: none; 
+  padding: 0; 
+  background: transparent; 
+  outline: none; 
+  width: 100%
+}
+.aslide::-webkit-slider-runnable-track
+{
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--gradient, black); 
+  border-radius: 8px;
+  height: 15px;
+  border: none; 
+}
+.aslide::-webkit-slider-thumb 
+{
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  background: transparent;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+
+*/
+
