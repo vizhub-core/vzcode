@@ -1,6 +1,7 @@
 import { InteractRule } from '@replit/codemirror-interact';
 import * as d3 from "d3"; 
 import './style.css';
+import './tailstuff.css';
 
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
@@ -109,14 +110,29 @@ export const colorPicker = (
  
     const colorpick: HTMLDivElement =
     document.createElement('div');
-    colorpick.style.position = 'absolute'
-    colorpick.style.background = 'white'
-    colorpick.style.left = '300px'
-    colorpick.style.top = '300px'
-    colorpick.style.borderRadius = '10px'
-    colorpick.style.padding = '20px'
-    colorpick.style.width = '190px'
-    colorpick.style.height = 'auto'
+    colorpick.className = 'absolute bg-white rounded-lg shadow-lg p-3 w-80 space-y-1';
+    colorpick.style.left = '300px';
+    colorpick.style.top = '300px';
+
+    const ok: HTMLButtonElement =
+    document.createElement('button');
+    ok.textContent = "ok"
+
+  
+    const colortext: HTMLSpanElement = document.createElement('span'); 
+    colortext.textContent = "hi"; 
+
+    const hcl: HTMLDivElement = document.createElement('div');
+    hcl.className = 'flex justify-between items-center border-b pb-1 mb-2';
+    
+    const words: HTMLSpanElement = document.createElement('span'); 
+    words.textContent = 'color space: hcl';
+
+    hcl.appendChild(words);
+    hcl.appendChild(colortext);
+    hcl.appendChild(ok)
+    colorpick.appendChild(hcl);
+
 
     //hcl sliders
 
@@ -162,14 +178,6 @@ export const colorPicker = (
     boxcolor.style.height = '20px'
     boxcolor.style.background = 'white'
 
-    const colortext: HTMLDivElement =
-    document.createElement('div');
-    colortext.textContent = "hilol"
-
-    const ok: HTMLButtonElement =
-    document.createElement('button');
-    ok.textContent = "ok"
-
     const hdiv: HTMLDivElement =
     document.createElement('div');
     hdiv.style.display = 'flex'
@@ -198,9 +206,7 @@ export const colorPicker = (
     colorpick.append(hdiv)
     colorpick.append(cdiv)
     colorpick.append(ldiv)
-    colorpick.appendChild(boxcolor)
-    colorpick.appendChild(colortext)
-    colorpick.appendChild(ok)
+
 
     function update() {
       const hval = parseFloat(h.value)
@@ -237,7 +243,7 @@ export const colorPicker = (
       fix += String(hexd3[6])
       setText(fix)
 
-      h.style.setProperty('--color',hexd3)
+      h.style.setProperty('--color', hexd3)
       c.style.setProperty('--color',hexd3)
       l.style.setProperty('--color',hexd3)
     }
