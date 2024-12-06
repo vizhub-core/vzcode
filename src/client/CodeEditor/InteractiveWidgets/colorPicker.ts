@@ -1,8 +1,8 @@
 import { InteractRule } from '@replit/codemirror-interact';
 import * as d3 from "d3"; 
-import './style.css';
+import './sliderstyle.css';
 import './tailstuff.css';
-
+import './otherstyle.css';
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 
@@ -62,16 +62,19 @@ export const colorPicker = (
  
     const colorpick: HTMLDivElement =
     document.createElement('div');
-    colorpick.className = 'absolute bg-white rounded-lg shadow-lg p-3 w-80 space-y-1';
+    //tried different background but white is really the best
+    colorpick.className = 'colorpicking absolute bg-white rounded-lg shadow-xl p-3 w-80 space-y-1';
     colorpick.style.left = `${pos.clientX}px`; 
     colorpick.style.top = `${pos.clientY}px`;  
     const ok: HTMLButtonElement =
     document.createElement('button');
     ok.textContent = "ok"
+    ok.className = 'cursor-pointer py-1 px-2 rounded';
 
+    //tested button here too really hated it span is just better it looks better as plain text but ok button with box looks nice
     const switchh: HTMLSpanElement = document.createElement('span');
     switchh.textContent = 'switch';
-    switchh.className = 'cursor-pointer text-grey-500 text-sm';
+    switchh.className = 'text-sm cursor-pointer ';
     switchh.addEventListener('click', () => {
       closeok(); 
       defcolorPicker(onInteract).onClick(text, setText, new MouseEvent('click')); 
@@ -97,6 +100,8 @@ export const colorPicker = (
     const hname: HTMLLabelElement = 
     document.createElement('label');
     hname.textContent = "h: "
+    hname.style.width = '15px'
+    hname.style.textAlign = 'right'
 
     const h: HTMLInputElement =
     document.createElement('input');
@@ -106,21 +111,35 @@ export const colorPicker = (
     h.value = '0'
     h.className = 'hslide';
 
+    const hvale: HTMLSpanElement = 
+    document.createElement('span');
+    hvale.textContent = h.value
+    hvale.style.width = '25px'
+    
     const cname: HTMLLabelElement = 
     document.createElement('label');
     cname.textContent = "c: "
+    cname.style.width = '15px'
+    cname.style.textAlign = 'right'
 
     const c: HTMLInputElement = 
     document.createElement('input');
     c.type = 'range'
     c.min = '0'
-    c.max = '150' //i think this value can be change but generally should be 150
+    c.max = '150' //i think this value can hdibe change but generally should be 150
     c.value = '0'
     c.className = 'cslide';
+
+    const cvale: HTMLSpanElement = 
+    document.createElement('span');
+    cvale.textContent = c.value
+    cvale.style.width = '25px'
 
     const lname: HTMLLabelElement = 
     document.createElement('label');
     lname.textContent = "l: "
+    lname.style.width = '15px'
+    lname.style.textAlign = 'left'
 
     const l: HTMLInputElement = 
     document.createElement('input');
@@ -129,6 +148,11 @@ export const colorPicker = (
     l.max = '100'
     l.value = '0'
     l.className = 'lslide';
+
+    const lvale: HTMLSpanElement = 
+    document.createElement('span');
+    lvale.textContent = c.value
+    lvale.style.width = '25px'
 
     const boxcolor: HTMLDivElement =
     document.createElement('div');
@@ -143,6 +167,7 @@ export const colorPicker = (
 
     hdiv.appendChild(hname)
     hdiv.appendChild(h)
+    hdiv.appendChild(hvale)
 
     const cdiv: HTMLDivElement =
     document.createElement('div');
@@ -151,6 +176,7 @@ export const colorPicker = (
 
     cdiv.appendChild(cname)
     cdiv.appendChild(c)
+    cdiv.appendChild(cvale)
 
     const ldiv: HTMLDivElement =
     document.createElement('div');
@@ -159,7 +185,7 @@ export const colorPicker = (
 
     ldiv.appendChild(lname)
     ldiv.appendChild(l)
-    
+    ldiv.appendChild(lvale)
     document.body.appendChild(colorpick);
     colorpick.append(hdiv)
     colorpick.append(cdiv)
@@ -172,6 +198,9 @@ export const colorPicker = (
       //https://d3js.org/d3-color#hcl
       //I guess there are some ways to do this differently but I have experience with d3 and they just give a function that does this for me
 
+      hvale.textContent = h.value;
+      cvale.textContent = c.value;
+      lvale.textContent = l.value;
       const hcld3 = d3.hcl(hval,cval,lval)
       console.log(hcld3)
 
@@ -200,9 +229,19 @@ export const colorPicker = (
       fix += String(hexd3[5])
       fix += String(hexd3[6])
       setText(fix)
+      setText("#fff333")
+      const valueIsUpper: boolean =
+      startingColor.toUpperCase() === startingColor;
 
+      setText(valueIsUpper ? fix.toUpperCase() : fix)
+      console.log(colorPickerRegex.test(fix))
+      ok.style.backgroundColor = hexd3
       c.style.setProperty('--color', hexd3)
-    
+
+      if (colorPickerRegex.test(fix)) {
+        setText(fix);
+      }
+    //idk this bug wont go away ever no matter what I try
       const gradient = `
         linear-gradient(
         to right,
@@ -213,10 +252,14 @@ export const colorPicker = (
      
       l.style.setProperty('--gradient', gradient)
     }
+
+  
+
     h.addEventListener('input', update);
     c.addEventListener('input', update);
     l.addEventListener('input', update);
     function closeok() {
+      setText("#fff444")
       colorpick.remove()
     }
 
@@ -225,5 +268,4 @@ export const colorPicker = (
     update();
   },
 });
-
 
