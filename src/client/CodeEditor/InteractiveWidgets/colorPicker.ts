@@ -1,8 +1,17 @@
+/*
+Document Future Proof Code:
+Import D3 used for update function just has good stuff related to color/visualization
+sliderstyle.css has styling for the sliders
+tailstuff.css has @tailwind stuff
+otherstyle.css will have styling for other components i dont wanna have hear / maybe imports for fonts
+*/
+
 import { InteractRule } from '@replit/codemirror-interact';
 import * as d3 from "d3"; 
 import './sliderstyle.css';
 import './tailstuff.css';
 import './otherstyle.css';
+
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 
@@ -45,6 +54,40 @@ export const defcolorPicker = (
   },
 });
 
+/*
+Perceptual HCL Color Picker
+Same Logic as base color picker to open
+Use of tailwind CSS (Really glad I got to learn about this on this semester its really helpful and cool honestly helps alot with CSS)
+Colorpick - Div that holds everything its the white box used tailwind css to style it
+HCL- Div that holds the top part of the color picker that is words (span),switchh(span),colortext(span),ok(button)
+words - holds text color space: HCL
+switchh - used to switch to default color picker
+colortext - used to display hex code of color currently chosen and changes color based on it
+ok - button used to confirm color change button color changes color based on current color chosen (same as colortext)
+Slider breakdown:
+h slider - slider created to control hue
+c slider - slider created to control chroma
+l slider - slider created to control luminance
+sliders have a corresponding slider name such as hslide the styling for sliders can be found in sliderstyle.css
+each slider has its own corresponding div for example hdiv
+hdiv - contains the elements hname (label), h (input), hvale(span)
+hname - contains text with label name for h this is h: some styling is applying inline to ensure all sliders start at same spot
+h - contains the actual slider and its values styling for this can be found in sliderstyle.css
+hvale - contains the current value for slider and displays it as text
+This div styling is consistent for all sliders (h, c, and l)
+update function - tldr updates color based on position of thumb of slider (val slider is on)
+update function - non tldr makes use of d3.js to give the correct color based on the h,c,l values, makes updates to the color of ok button, colortext, and eventually set(text), 
+update function currently has bug where it wont settext you can see some of my debugging I did however it works when I hardcode a hexcode even though hexd3 is in same exact formatting I will hopefully resolve this soon
+closeok - closes the color picker
+Fixed bug with set te
+Future Plans:
+Expirement with more css libraries tailwind was fun to use and I think more css libraries could give me more control over what I want to do
+Fix bug with set text (this is not the colortext that was a seperate bug I fixed this is for incode text aswell as the color of dot im assuming its some issue with codemirror) (I managed to sort of fix this bug earlier with the default color picker however not with perceptual picker although hardcoding works fix is the same value as hardcoded hex yet still wont work)
+Talk more with Curran I am very interested in all things data visualization as its one of my passions so id improve more on this color picker outside of rcos
+Graphical Color Picker Option for those interested
+Improve working with visualizations in general
+*/
+
 //perceptual hcl color
 export const colorPicker = (
   onInteract?: () => void,
@@ -66,6 +109,8 @@ export const colorPicker = (
     colorpick.className = 'colorpicking absolute bg-white rounded-lg shadow-xl p-3 w-80 space-y-1';
     colorpick.style.left = `${pos.clientX}px`; 
     colorpick.style.top = `${pos.clientY}px`;  
+    //originaly wasnt button but I really like it now its pretty much colorbox I had before but now within ok button its just very nice and I really like it it gives the user some more idea of 
+    //how the color looks not through just color text or slider
     const ok: HTMLButtonElement =
     document.createElement('button');
     ok.textContent = "ok"
@@ -74,7 +119,8 @@ export const colorPicker = (
     //tested button here too really hated it span is just better it looks better as plain text but ok button with box looks nice
     const switchh: HTMLSpanElement = document.createElement('span');
     switchh.textContent = 'switch';
-    switchh.className = 'text-sm cursor-pointer ';
+    //tested lil bit with text colors i think stone at 950 looks good but this is just nitpicky lol its just blakc but little better but tailwind has lots of options im really liking it
+    switchh.className = 'cursor-pointer text-stone-950 text-sm';
     switchh.addEventListener('click', () => {
       closeok(); 
       defcolorPicker(onInteract).onClick(text, setText, new MouseEvent('click')); 
@@ -88,6 +134,7 @@ export const colorPicker = (
     
     const words: HTMLSpanElement = document.createElement('span'); 
     words.textContent = 'color space: hcl';
+    words.className = 'text-stone-950'
 
     hcl.appendChild(words);
     hcl.appendChild(switchh); 
@@ -111,6 +158,7 @@ export const colorPicker = (
     h.value = '0'
     h.className = 'hslide';
 
+    //these just hold the value of h slider and displays to right of slider
     const hvale: HTMLSpanElement = 
     document.createElement('span');
     hvale.textContent = h.value
@@ -230,6 +278,8 @@ export const colorPicker = (
       fix += String(hexd3[6])
       setText(fix)
       setText("#fff333")
+
+      //some more debugging no luck
       const valueIsUpper: boolean =
       startingColor.toUpperCase() === startingColor;
 
@@ -241,6 +291,9 @@ export const colorPicker = (
       if (colorPickerRegex.test(fix)) {
         setText(fix);
       }
+
+     // setText("#df865b")
+    
     //idk this bug wont go away ever no matter what I try
       const gradient = `
         linear-gradient(
@@ -259,7 +312,7 @@ export const colorPicker = (
     c.addEventListener('input', update);
     l.addEventListener('input', update);
     function closeok() {
-      setText("#fff444")
+    //  setText("#fff444")
       colorpick.remove()
     }
 
@@ -268,4 +321,5 @@ export const colorPicker = (
     update();
   },
 });
+
 
