@@ -11,6 +11,10 @@ function generateColors() {
   return ['red', 'orange', 'yellow', 'green'];
 }
 
+function generateDarkModeColors() {
+  return ['#FF6F61', '#FFB74D', '#FFF176', '#81C784'];
+}
+
 const rainbowBracketsPlugin = ViewPlugin.fromClass(
   class {
     decorations;
@@ -36,6 +40,12 @@ const rainbowBracketsPlugin = ViewPlugin.fromClass(
       const decorations = [];
       const stack = [];
       const colors = generateColors();
+      const isDarkMode = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+      const colors = isDarkMode
+        ? generateDarkModeColors()
+        : generateColors();
 
       for (let pos = 0; pos < doc.length; pos += 1) {
         const char = doc.sliceString(pos, pos + 1);
