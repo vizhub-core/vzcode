@@ -3,154 +3,155 @@
   display: flex;
   font-family: var(--vzcode-font-family);
   overflow-x: auto;
+}
 
-  .cm-editor {
-    flex: 1;
-    width: 100%;
-  }
+.vz-code-editor .cm-editor,
+.vz-code-editor .cm-line {
+  flex: 1;
+  width: 100%;
+  font-family: var(--vzcode-font-family);
+}
 
-  .cm-scroller {
-    font-family: var(--vzcode-font-family);
-    font-size: var(--vzcode-font-size);
-  }
+.vz-code-editor .cm-scroller {
+  font-size: var(--vzcode-font-size);
+}
 
-  .remote-cursor-username {
-    transition: opacity 1s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-  }
+.vz-code-editor .remote-cursor-username {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: opacity 1s ease-in-out;
+}
 
-  .cm-tooltip-lint {
-    max-width: 500px;
-  }
+.vz-code-editor .cm-tooltip-lint {
+  max-width: 500px;
+}
 
-  /* Style the completion tooltip container */
-  .cm-tooltip.cm-tooltip-autocomplete {
-    border: 1px solid #888;
-    background-color: #1f2022;
-  }
+/* Autocomplete Tooltip Styles */
+.vz-code-editor .cm-tooltip.cm-tooltip-autocomplete {
+  border: 1px solid #888;
+  background-color: #1f2022;
+}
 
-  /* Style the individual completion items */
-  .cm-tooltip-autocomplete .cm-completionLabel {
-    color: #bdc7dc;
-  }
+.vz-code-editor .cm-tooltip-autocomplete .cm-completionLabel {
+  color: #bdc7dc;
+}
 
-  /* Style the selected completion item */
-  .cm-tooltip-autocomplete
-    .cm-completionLabel
-    .cm-completion-active {
-    background-color: #0077cc;
-    color: white;
-  }
+.vz-code-editor .cm-tooltip-autocomplete .cm-completion-active {
+  background-color: #0077cc;
+  color: white;
+}
 
-  .cm-line {
-    font-family: var(--vzcode-font-family);
-  }
+/* Tooltip Hover Circle */
+.tooltip_hover_circle {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+  white-space: nowrap;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
 
-  .tooltip_hover_circle {
-    color: white;
-    text-align: center;
-    position: fixed;
-    background-color: black;
-    padding: 5px;
-    border-radius: 5px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-    pointer-events: none;
-  }
+.tooltip_hover_circle strong {
+  font-size: 14px;
+}
 
-  .tooltip_hover_circle strong {
-    font-size: 14px;
-  }
+.tooltip_hover_circle div {
+  font-size: 12px;
+}
 
-  .tooltip_hover_circle div {
-    font-size: 12px;
-  }
-  
-  .cm-panel.cm-search {
-    padding: 5px;
-    position: relative;
-    background-color: var(--vh-color-neutral-01);
-    border-radius: 6px;
-    color: var(--vh-color-neutral-04);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  }
-  
-  .cm-panels {
-    background-color: #333338;
-    color: var(--vh-color-neutral-04);
-    border: 2px solid var(--vh-color-neutral-02);
-    border-radius: 6px;
-  }
-  
-  .cm-textfield {
-    background-color: var(--vh-color-neutral-01);
-    color: #efe7dc;
-    border: 1px solid var(--vh-color-neutral-04);
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  .cm-button {
-    background-color: var(--vh-color-neutral-01);
-        border: 1px solid #193350;
-    color: var(--vh-color-neutral-04);
-    border: 1px solid var(--vh-color-neutral-04);
-    border-radius: 5px;
-    padding: 6px 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  .cm-button:hover {
-    background-color: #50c878;
-    color: #ffffff;
-    transform: scale(1.1);
-  }
-  
-  .cm-button:active {
-    background-color: #202e46;
-    transform: scale(0.95);
-  }
-  
-  .cm-searchMatch {
-    background-color: rgba(255, 255, 0, 0.5);
-    border-radius: 2px;
-  }
-  
-  .cm-searchMatch-selected {
-    background-color: rgba(255, 140, 0, 0.5);
-    border: 2px solid #ff8800;
-    border-radius: 2px;
-  }
-  .cm-panel.cm-search [name="close"] {
-    position: absolute;
-    top: 0;
-    right: 4px;
-    background-color: var(--vh-color-neutral-01); 
-    color: var(--vh-color-neutral-04);
-    border: none; 
-    font: inherit; 
-    padding: 4px 8px; 
-    margin: 4px;
-    border-radius: 4px; 
-    cursor: pointer; 
-    transition: all 0.3s ease-in-out; 
-  }
-  
-  .cm-panel.cm-search [name="close"]:hover {
-    background-color: var(--vh-color-caution-01); 
-    color: #ffffff; 
-  }
-  
-  .cm-panel.cm-search [name="close"]:active {
-    background-color: var(--vh-color-caution-02); 
-    transform: scale(0.95); 
-  }
+/* Search Panel */
+.cm-panel.cm-search {
+  position: relative;
+  padding: 5px;
+  background-color: var(--vh-color-neutral-01);
+  color: var(--vh-color-neutral-04);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.cm-panels {
+  background-color: #333338;
+  color: var(--vh-color-neutral-04);
+  border: 2px solid var(--vh-color-neutral-02);
+  border-radius: 6px;
+}
+
+/* Search Field and Button */
+.cm-textfield {
+  background-color: var(--vh-color-neutral-01);
+  color: #efe7dc;
+  border: 1px solid var(--vh-color-neutral-04);
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.cm-button {
+  background-color: var(--vh-color-neutral-01);
+  color: var(--vh-color-neutral-04);
+  border: 1px solid var(--vh-color-neutral-04);
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.cm-button:hover {
+  background-color: #50c878;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.cm-button:active {
+  background-color: #202e46;
+  transform: scale(0.95);
+}
+
+/* Search Matches */
+.cm-searchMatch {
+  background-color: rgba(255, 255, 0, 0.5);
+  border-radius: 2px;
+}
+
+.cm-searchMatch-selected {
+  background-color: rgba(255, 140, 0, 0.5);
+  border: 2px solid #ff8800;
+  border-radius: 2px;
+}
+
+/* Search Panel Close Button */
+.cm-panel.cm-search [name="close"] {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  padding: 4px 8px;
+  margin: 4px;
+  background-color: var(--vh-color-neutral-01);
+  color: var(--vh-color-neutral-04);
+  border: none;
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.cm-panel.cm-search [name="close"]:hover {
+  background-color: var(--vh-color-caution-01);
+  color: #ffffff;
+}
+
+.cm-panel.cm-search [name="close"]:active {
+  background-color: var(--vh-color-caution-02);
+  transform: scale(0.95);
 }
