@@ -1,17 +1,19 @@
-.vz-code-run-code-widget {
+.vz-code-widget {
   position: absolute;
-  right: 16px;
   top: 9px;
   color: var(--vh-color-neutral-04);
-  .rotate-icon {
-    animation: spin 1s linear;
-  }
 }
+
+.vz-code-run-code-widget {
+  right: 16px;
+}
+
 .vz-code-split-view-widget {
-  position: absolute;
   right: 51px;
-  top: 9px;
-  color: var(--vh-color-neutral-04);
+}
+
+.vz-code-run-code-widget .rotate-icon {
+  animation: spin 1s linear;
 }
 
 @keyframes spin {
