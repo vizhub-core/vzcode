@@ -9,27 +9,28 @@ import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 
-// Constants
+// Font size options for the editor
 const fontSizes = ['10px', '12px', '14px', '16px', '18px', '20px', '24px'];
+
+// List of system fonts to be detected for availability
 const systemFonts = [
-  '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue',
-  'Arial', 'sans-serif', 'Courier New', 'Georgia', 'Tahoma', 'Verdana',
-  'Times New Roman', 'Trebuchet MS', 'Comic Sans MS',
+  '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif',
+  'Courier New', 'Georgia', 'Tahoma', 'Verdana', 'Times New Roman', 'Trebuchet MS', 'Comic Sans MS'
 ];
 
-// Utility: Detect if a font is available
+// Utility function to detect if a given font is available
 const isFontAvailable = (font: string): boolean => {
-  const testString = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  const testSize = '72px';
+  const testString = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const testSize = "72px";
 
-  const span = document.createElement('span');
+  const span = document.createElement("span");
   span.style.fontSize = testSize;
-  span.style.visibility = 'hidden';
-  span.style.position = 'absolute';
+  span.style.visibility = "hidden";
+  span.style.position = "absolute";
   span.innerHTML = testString;
   document.body.appendChild(span);
 
-  const defaultFont = 'monospace';
+  const defaultFont = "monospace";
   span.style.fontFamily = defaultFont;
   const defaultWidth = span.offsetWidth;
 
@@ -41,12 +42,12 @@ const isFontAvailable = (font: string): boolean => {
   return newWidth !== defaultWidth;
 };
 
-// Component
 export const VZSettings = ({
   enableUsernameField = true,
 }: {
   enableUsernameField?: boolean;
 }) => {
+  // Extracting context values for managing settings state
   const {
     isSettingsOpen,
     closeSettings,
@@ -56,85 +57,90 @@ export const VZSettings = ({
     setUsername,
   } = useContext(VZCodeContext);
 
+  // State variables for managing font and font size
   const [selectedFont, setSelectedFont] = useState('Roboto Mono');
   const [selectedFontSize, setSelectedFontSize] = useState('16px');
   const [availableFonts, setAvailableFonts] = useState<string[]>([]);
 
-  const usernameRef = useRef<HTMLInputElement>(null);
-
-  // Load settings from localStorage on mount
+  // Load saved settings from local storage on initial render
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setSelectedFont(localStorage.getItem('vzcodeSelectedFont') || 'Roboto Mono');
-      setSelectedFontSize(localStorage.getItem('vzcodeSelectedFontSize') || '16px');
+      const selectedFontFromLocalStorage = window.localStorage.getItem('vzcodeSelectedFont');
+      const selectedFontSizeFromLocalStorage = window.localStorage.getItem('vzcodeSelectedFontSize');
+
+      if (selectedFontFromLocalStorage !== null) {
+        setSelectedFont(selectedFontFromLocalStorage);
+      }
+      if (selectedFontSizeFromLocalStorage !== null) {
+        setSelectedFontSize(selectedFontSizeFromLocalStorage);
+      }
     }
   }, []);
 
-  // Detect available fonts
+  // Detect available system fonts and update the state
   useEffect(() => {
     const detectFonts = () => {
-      setAvailableFonts(systemFonts.filter(isFontAvailable));
+      const detectedFonts: string[] = [];
+      for (const font of systemFonts) {
+        if (isFontAvailable(font)) {
+          detectedFonts.push(font);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`${font} is available`);
+          }
+        } else if (process.env.NODE_ENV === 'development') {
+          console.log(`${font} is not available`);
+        }
+      }
+      setAvailableFonts(detectedFonts);
     };
+
     detectFonts();
   }, []);
 
-  // Apply selected font and font size to document
+  // Reset all settings to default values
+  const resetSettings = useCallback(() => {
+    setSelectedFont('Roboto Mono');
+    setSelectedFontSize('16px');
+    setTheme(themes[0].label);
+    if (enableUsernameField) {
+      setUsername('');
+    }
+    localStorage.removeItem('vzcodeSelectedFont');
+    localStorage.removeItem('vzcodeSelectedFontSize');
+  }, [enableUsernameField, setTheme, setUsername]);
+
+  // Update font family in the document's style
   useEffect(() => {
     document.body.style.setProperty('--vzcode-font-family', selectedFont);
   }, [selectedFont]);
 
+  // Update font size in the document's style
   useEffect(() => {
     document.body.style.setProperty('--vzcode-font-size', selectedFontSize);
   }, [selectedFontSize]);
 
-  // Event Handlers
-  const handleThemeChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setTheme(event.target.value as ThemeLabel);
-    },
-    [setTheme],
-  );
+  const usernameRef = useRef<HTMLInputElement>(null);
 
-  const handleFontChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newFont = event.target.value;
-    localStorage.setItem('vzcodeSelectedFont', newFont);
-    setSelectedFont(newFont);
-  }, []);
-
-  const handleFontSizeChange = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSize = event.target.value;
-    localStorage.setItem('vzcodeSelectedFontSize', newSize);
-    setSelectedFontSize(newSize);
-  }, []);
-
+  // Handle username input change
   const handleUsernameChange = useCallback(() => {
     setUsername(usernameRef.current?.value || '');
   }, [setUsername]);
 
+  // Close settings modal on Enter key press
   useEffect(() => {
     if (isSettingsOpen) {
       const handleEnterKey = (event: KeyboardEvent) => {
-        if (event.key === 'Enter') closeSettings();
+        if (event.key === 'Enter') {
+          closeSettings();
+        }
       };
 
       window.addEventListener('keydown', handleEnterKey);
-      return () => window.removeEventListener('keydown', handleEnterKey);
+      return () => {
+        window.removeEventListener('keydown', handleEnterKey);
+      };
     }
   }, [isSettingsOpen, closeSettings]);
-
-  // Reusable Form Group
-  const renderFormGroup = (label: string, value: string, options: string[], onChange: React.ChangeEventHandler<HTMLSelectElement>) => (
-    <Form.Group className="mb-3">
-      <Form.Label>{label}</Form.Label>
-      <select className="form-select" value={value} onChange={onChange}>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </Form.Group>
-  );
 
   return isSettingsOpen ? (
     <Modal
@@ -147,24 +153,71 @@ export const VZSettings = ({
         <Modal.Title>Editor Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {enableUsernameField && (
-          <Form.Group className="mb-3" controlId="usernameField">
+        {enableUsernameField ? (
+          <Form.Group className="mb-3" controlId="formFork">
             <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
               ref={usernameRef}
-              value={username}
               onChange={handleUsernameChange}
               placeholder="Enter username"
+              value={username}
             />
+            <Form.Text className="text-muted">
+              Enter a username to be displayed on your cursor
+            </Form.Text>
           </Form.Group>
-        )}
+        ) : null}
 
-        {renderFormGroup('Theme', theme, themes.map(({ label }) => label), handleThemeChange)}
-        {renderFormGroup('Font', selectedFont, availableFonts, handleFontChange)}
-        {renderFormGroup('Font Size', selectedFontSize, fontSizes, handleFontSizeChange)}
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Theme</Form.Label>
+          <select
+            className="form-select"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as ThemeLabel)}
+          >
+            {themes.map(({ label }) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Font</Form.Label>
+          <select
+            className="form-select"
+            onChange={(e) => setSelectedFont(e.target.value)}
+            value={selectedFont}
+          >
+            {availableFonts.map((font) => (
+              <option key={font} value={font}>
+                {font}
+              </option>
+            ))}
+          </select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formFork">
+          <Form.Label>Font Size</Form.Label>
+          <select
+            className="form-select"
+            onChange={(e) => setSelectedFontSize(e.target.value)}
+            value={selectedFontSize}
+          >
+            {fontSizes.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </Form.Group>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="secondary" onClick={resetSettings}>
+          Reset to Default
+        </Button>
         <Button variant="primary" onClick={closeSettings}>
           Done
         </Button>
