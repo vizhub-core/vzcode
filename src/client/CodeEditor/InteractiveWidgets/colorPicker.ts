@@ -1,5 +1,33 @@
 import { InteractRule } from '@replit/codemirror-interact';
+import {
+  EditorView,
+  WidgetType,
+  Decoration,
+  StateEffect,
+} from '@codemirror/view';
 
+class ColorPickerWidget extends WidgetType {
+  constructor(
+    public color: string,
+    public onChange: (newColor: string) => void,
+  ) {
+    super();
+  }
+
+  toDOM() {
+    const picker = document.createElement('input');
+    picker.type = 'color';
+    picker.value = this.color;
+
+    picker.oninput = (event) => {
+      const newColor = (event.target as HTMLInputElement)
+        .value;
+      this.onChange(newColor);
+    };
+
+    return picker;
+  }
+}
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 
