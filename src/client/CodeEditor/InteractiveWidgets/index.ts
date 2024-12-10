@@ -27,7 +27,10 @@ export const widgets = ({
 }: {
   onInteract?: () => void;
   customInteractRules?: Array<InteractRule>;
-}) => {
+  editorView: EditorView;
+}) => { if (editorView) {
+  activateColorPicker(editorView); // Ensure this runs for applicable files
+}
   const rules: Array<InteractRule> = [
     colorPicker(onInteract),
     numberDragger(onInteract),

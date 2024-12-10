@@ -28,6 +28,32 @@ class ColorPickerWidget extends WidgetType {
     return picker;
   }
 }
+
+const addColorPreview = (
+  editorView: EditorView,
+  from: number,
+  color: string,
+) => {
+  const preview = document.createElement('span');
+  preview.style.display = 'inline-block';
+  preview.style.width = '10px';
+  preview.style.height = '10px';
+  preview.style.backgroundColor = color;
+  preview.style.marginLeft = '5px';
+  preview.style.border = '1px solid #000';
+
+  const deco = Decoration.widget({
+    widget: { toDOM: () => preview },
+    side: 1,
+  });
+
+  editorView.dispatch({
+    effects: StateEffect.appendConfig.of(
+      EditorView.decorations.of(deco),
+    ),
+  });
+};
+
 // Regular expression for hex colors.
 export const colorPickerRegex = /#[0-9A-Fa-f]{6}/g;
 
