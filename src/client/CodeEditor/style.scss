@@ -71,6 +71,12 @@
     font-size: 12px;
   }
   
+  .sidebar-file-item.focused {
+    background-color: #e0e0e0; /* Light gray background for focused item */
+    outline: 2px solid blue; /* Blue outline to indicate focus */
+    box-shadow: 0 0 5px rgba(0, 0, 255, 0.5); 
+  }
+  
   .cm-panel.cm-search {
     padding: 5px;
     position: relative;
