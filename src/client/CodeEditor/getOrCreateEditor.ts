@@ -108,7 +108,8 @@ const getAtPath = (obj, path) => {
 };
 
 // Extend the EditorCacheValue type to include the compartments and the updateRainbowBrackets method
-interface ExtendedEditorCacheValue extends EditorCacheValue {
+interface ExtendedEditorCacheValue
+  extends EditorCacheValue {
   themeCompartment: Compartment;
   rainbowBracketsCompartment: Compartment;
   updateRainbowBrackets: (enabled: boolean) => void;
@@ -179,7 +180,9 @@ export const getOrCreateEditor = ({
   const cacheKey = editorCacheKey(fileId, paneId);
 
   if (editorCache.has(cacheKey)) {
-    return editorCache.get(cacheKey) as ExtendedEditorCacheValue;
+    return editorCache.get(
+      cacheKey,
+    ) as ExtendedEditorCacheValue;
   }
 
   // Cache miss
@@ -194,7 +197,7 @@ export const getOrCreateEditor = ({
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
   let themeCompartment = new Compartment();
-  
+
   // Create a compartment for rainbow brackets so that it can be enabled/disabled dynamically.
   let rainbowBracketsCompartment = new Compartment();
 
@@ -260,7 +263,7 @@ export const getOrCreateEditor = ({
   // Adds compartment for rainbow brackets with initial toggle state.
   extensions.push(
     rainbowBracketsCompartment.of(
-      rainbowBracketsEnabled ? rainbowBrackets() : []
+      rainbowBracketsEnabled ? rainbowBrackets() : [],
     ),
   );
 
@@ -420,17 +423,26 @@ export const getOrCreateEditor = ({
     }),
   });
 
-  const editorCacheValue: ExtendedEditorCacheValue = { editor, themeCompartment, rainbowBracketsCompartment, updateRainbowBrackets: (enabled) => {
-    editor.dispatch({
-      effects: rainbowBracketsCompartment.reconfigure(enabled ? rainbowBrackets() : []),
-    });
-  }};
+  const editorCacheValue: ExtendedEditorCacheValue = {
+    editor,
+    themeCompartment,
+    rainbowBracketsCompartment,
+    updateRainbowBrackets: (enabled) => {
+      editor.dispatch({
+        effects: rainbowBracketsCompartment.reconfigure(
+          enabled ? rainbowBrackets() : [],
+        ),
+      });
+    },
+  };
 
   // Populate the cache.
   editorCache.set(cacheKey, editorCacheValue);
 
   // Initialize rainbow brackets based on the toggle state
-  editorCacheValue.updateRainbowBrackets(rainbowBracketsEnabled);
+  editorCacheValue.updateRainbowBrackets(
+    rainbowBracketsEnabled,
+  );
 
   return editorCacheValue;
 };

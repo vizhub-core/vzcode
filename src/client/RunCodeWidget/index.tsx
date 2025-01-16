@@ -1,4 +1,9 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { PlaySVG } from '../Icons';
 import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import { VZCodeContext } from '../VZCodeContext';
@@ -17,7 +22,7 @@ export const RunCodeWidget = ({
     </>
   ),
 }: {
-    runCodeWidgetTooltipText?: JSX.Element;
+  runCodeWidgetTooltipText?: JSX.Element;
 }) => {
   const { runCodeRef, runPrettierRef, splitCurrentPane } =
     useContext(VZCodeContext);
@@ -51,7 +56,10 @@ export const RunCodeWidget = ({
   // Add the keyboard event listener for Ctrl+S and Shift+Enter
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.ctrlKey && event.key === 's') || (event.shiftKey && event.key === 'Enter')) {
+      if (
+        (event.ctrlKey && event.key === 's') ||
+        (event.shiftKey && event.key === 'Enter')
+      ) {
         event.preventDefault();
         handleClick();
       }

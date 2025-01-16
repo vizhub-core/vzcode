@@ -38,8 +38,8 @@ if (isCopilotEnabled) {
   openai = new OpenAI(openAIOptions);
 }
 
-export const handleAICopilot =
-  (/*TODO shareDBDoc*/) => async (req, res) => {
+export const handleAICopilot = (/*TODO shareDBDoc*/) =>
+  async (req, res) => {
     // Don't break if the AI is not enabled.
     // This is useful for local development.
     if (!isCopilotEnabled) {

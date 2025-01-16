@@ -10,27 +10,47 @@ import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 
 // Font size options for the editor
-const fontSizes = ['10px', '12px', '14px', '16px', '18px', '20px', '24px'];
+const fontSizes = [
+  '10px',
+  '12px',
+  '14px',
+  '16px',
+  '18px',
+  '20px',
+  '24px',
+];
 
 // List of system fonts to be detected for availability
 const systemFonts = [
-  '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif',
-  'Courier New', 'Georgia', 'Tahoma', 'Verdana', 'Times New Roman', 'Trebuchet MS', 'Comic Sans MS'
+  '-apple-system',
+  'BlinkMacSystemFont',
+  'Segoe UI',
+  'Roboto',
+  'Helvetica Neue',
+  'Arial',
+  'sans-serif',
+  'Courier New',
+  'Georgia',
+  'Tahoma',
+  'Verdana',
+  'Times New Roman',
+  'Trebuchet MS',
+  'Comic Sans MS',
 ];
 
 // Utility function to detect if a given font is available
 const isFontAvailable = (font: string): boolean => {
-  const testString = "abcdefghijklmnopqrstuvwxyz0123456789";
-  const testSize = "72px";
+  const testString = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const testSize = '72px';
 
-  const span = document.createElement("span");
+  const span = document.createElement('span');
   span.style.fontSize = testSize;
-  span.style.visibility = "hidden";
-  span.style.position = "absolute";
+  span.style.visibility = 'hidden';
+  span.style.position = 'absolute';
   span.innerHTML = testString;
   document.body.appendChild(span);
 
-  const defaultFont = "monospace";
+  const defaultFont = 'monospace';
   span.style.fontFamily = defaultFont;
   const defaultWidth = span.offsetWidth;
 
@@ -58,21 +78,31 @@ export const VZSettings = ({
   } = useContext(VZCodeContext);
 
   // State variables for managing font and font size
-  const [selectedFont, setSelectedFont] = useState('Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] = useState('16px');
-  const [availableFonts, setAvailableFonts] = useState<string[]>([]);
+  const [selectedFont, setSelectedFont] =
+    useState('Roboto Mono');
+  const [selectedFontSize, setSelectedFontSize] =
+    useState('16px');
+  const [availableFonts, setAvailableFonts] = useState<
+    string[]
+  >([]);
 
   // Load saved settings from local storage on initial render
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const selectedFontFromLocalStorage = window.localStorage.getItem('vzcodeSelectedFont');
-      const selectedFontSizeFromLocalStorage = window.localStorage.getItem('vzcodeSelectedFontSize');
+      const selectedFontFromLocalStorage =
+        window.localStorage.getItem('vzcodeSelectedFont');
+      const selectedFontSizeFromLocalStorage =
+        window.localStorage.getItem(
+          'vzcodeSelectedFontSize',
+        );
 
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
       }
       if (selectedFontSizeFromLocalStorage !== null) {
-        setSelectedFontSize(selectedFontSizeFromLocalStorage);
+        setSelectedFontSize(
+          selectedFontSizeFromLocalStorage,
+        );
       }
     }
   }, []);
@@ -111,12 +141,18 @@ export const VZSettings = ({
 
   // Update font family in the document's style
   useEffect(() => {
-    document.body.style.setProperty('--vzcode-font-family', selectedFont);
+    document.body.style.setProperty(
+      '--vzcode-font-family',
+      selectedFont,
+    );
   }, [selectedFont]);
 
   // Update font size in the document's style
   useEffect(() => {
-    document.body.style.setProperty('--vzcode-font-size', selectedFontSize);
+    document.body.style.setProperty(
+      '--vzcode-font-size',
+      selectedFontSize,
+    );
   }, [selectedFontSize]);
 
   const usernameRef = useRef<HTMLInputElement>(null);
@@ -137,7 +173,10 @@ export const VZSettings = ({
 
       window.addEventListener('keydown', handleEnterKey);
       return () => {
-        window.removeEventListener('keydown', handleEnterKey);
+        window.removeEventListener(
+          'keydown',
+          handleEnterKey,
+        );
       };
     }
   }, [isSettingsOpen, closeSettings]);
@@ -164,7 +203,8 @@ export const VZSettings = ({
               value={username}
             />
             <Form.Text className="text-muted">
-              Enter a username to be displayed on your cursor
+              Enter a username to be displayed on your
+              cursor
             </Form.Text>
           </Form.Group>
         ) : null}
@@ -174,7 +214,9 @@ export const VZSettings = ({
           <select
             className="form-select"
             value={theme}
-            onChange={(e) => setTheme(e.target.value as ThemeLabel)}
+            onChange={(e) =>
+              setTheme(e.target.value as ThemeLabel)
+            }
           >
             {themes.map(({ label }) => (
               <option key={label} value={label}>
@@ -188,7 +230,9 @@ export const VZSettings = ({
           <Form.Label>Font</Form.Label>
           <select
             className="form-select"
-            onChange={(e) => setSelectedFont(e.target.value)}
+            onChange={(e) =>
+              setSelectedFont(e.target.value)
+            }
             value={selectedFont}
           >
             {availableFonts.map((font) => (
@@ -203,7 +247,9 @@ export const VZSettings = ({
           <Form.Label>Font Size</Form.Label>
           <select
             className="form-select"
-            onChange={(e) => setSelectedFontSize(e.target.value)}
+            onChange={(e) =>
+              setSelectedFontSize(e.target.value)
+            }
             value={selectedFontSize}
           >
             {fontSizes.map((size) => (
