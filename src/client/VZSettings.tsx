@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
@@ -8,6 +8,8 @@ import React, {
 import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
+
+const DEBUG = false;
 
 // Font size options for the editor
 const fontSizes = [
@@ -114,10 +116,10 @@ export const VZSettings = ({
       for (const font of systemFonts) {
         if (isFontAvailable(font)) {
           detectedFonts.push(font);
-          if (process.env.NODE_ENV === 'development') {
+          if (DEBUG) {
             console.log(`${font} is available`);
           }
-        } else if (process.env.NODE_ENV === 'development') {
+        } else if (DEBUG) {
           console.log(`${font} is not available`);
         }
       }
