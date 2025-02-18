@@ -3,10 +3,9 @@
 // Inspired by https://github.com/uiwjs/react-codemirror/blob/master/themes/vscode/src/index.ts
 
 import { tags as t } from '@lezer/highlight';
-import {
-  createTheme,
-  CreateThemeOptions,
-} from '@uiw/codemirror-themes';
+import * as codemirrorThemes from '@uiw/codemirror-themes';
+
+const { createTheme } = codemirrorThemes;
 
 import {
   // Colors for various things outside the code itself
@@ -37,7 +36,7 @@ import { EditorView } from 'codemirror';
 // This looks way better as we are pulling in the semi-bold font from Google Fonts
 const boldWeight = '500';
 
-const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] =
+const defaultSettingsVizhubTheme: codemirrorThemes.CreateThemeOptions['settings'] =
   {
     background: backgroundColor,
     foreground: light,
@@ -51,7 +50,7 @@ const defaultSettingsVizhubTheme: CreateThemeOptions['settings'] =
   };
 
 function vizhubThemeInit(
-  options?: Partial<CreateThemeOptions>,
+  options?: Partial<codemirrorThemes.CreateThemeOptions>,
 ) {
   const {
     theme = 'dark',
