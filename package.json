@@ -112,7 +112,7 @@
     "@codemirror/lang-markdown": "^6.3.2",
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.36.2",
+    "@codemirror/view": "^6.36.3",
     "@lezer/highlight": "^1.2.1",
     "@livekit/components-react": "^2.8.1",
     "@livekit/components-styles": "^1.1.4",
@@ -142,15 +142,15 @@
     "express": "^4.21.2",
     "ignore": "^7.0.3",
     "json0-ot-diff": "^1.1.2",
-    "livekit-client": "^2.9.1",
+    "livekit-client": "^2.9.2",
     "livekit-server-sdk": "^2.10.1",
     "ngrok": "^4.3.3",
     "open": "^10.1.0",
     "openai": "^4.85.1",
     "prettier-plugin-svelte": "^3.3.3",
-    "react": "^19.0.0",
+    "react": "^18",
     "react-bootstrap": "^2.10.9",
-    "react-dom": "^19.0.0",
+    "react-dom": "^18",
     "react-router-dom": "^7.1.5",
     "sharedb": "^5.1.1",
     "sharedb-client-browser": "^5.1.1",
@@ -159,8 +159,8 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.3.4",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
@@ -168,7 +168,7 @@
     "sass": "^1.85.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.6"
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.34.8",
