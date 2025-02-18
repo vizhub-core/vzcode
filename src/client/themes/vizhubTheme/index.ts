@@ -3,9 +3,7 @@
 // Inspired by https://github.com/uiwjs/react-codemirror/blob/master/themes/vscode/src/index.ts
 
 import { tags as t } from '@lezer/highlight';
-import * as codemirrorThemes from '@uiw/codemirror-themes';
-
-const { createTheme } = codemirrorThemes;
+import { createTheme } from '../uiwImports';
 
 import {
   // Colors for various things outside the code itself

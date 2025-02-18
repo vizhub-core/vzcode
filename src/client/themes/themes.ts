@@ -1,22 +1,16 @@
 import { oneDark } from '@codemirror/theme-one-dark';
-import * as okaidiaModule from '@uiw/codemirror-theme-okaidia';
-import * as abcdefModule from '@uiw/codemirror-theme-abcdef';
-import * as draculaModule from '@uiw/codemirror-theme-dracula';
-import * as eclipseModule from '@uiw/codemirror-theme-eclipse';
-import * as githubDarkModule from '@uiw/codemirror-theme-github';
-import * as materialModule from '@uiw/codemirror-theme-material';
-import * as nordModule from '@uiw/codemirror-theme-nord';
-import * as xcodeLightModule from '@uiw/codemirror-theme-xcode';
-import { vizhubTheme } from './vizhubTheme';
 
-const { okaidia } = okaidiaModule;
-const { abcdef } = abcdefModule;
-const { dracula } = draculaModule;
-const { eclipse } = eclipseModule;
-const { githubDark } = githubDarkModule;
-const { material } = materialModule;
-const { nord } = nordModule;
-const { xcodeLight } = xcodeLightModule;
+import { vizhubTheme } from './vizhubTheme';
+import {
+  okaidia,
+  abcdef,
+  dracula,
+  eclipse,
+  githubDark,
+  material,
+  nord,
+  xcodeLight,
+} from './uiwImports';
 
 // CodeMirror themes
 export type ThemeLabel =
