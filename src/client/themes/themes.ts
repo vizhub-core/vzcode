@@ -1,13 +1,22 @@
 import { oneDark } from '@codemirror/theme-one-dark';
-import { okaidia } from '@uiw/codemirror-theme-okaidia';
-import { abcdef } from '@uiw/codemirror-theme-abcdef';
-import { dracula } from '@uiw/codemirror-theme-dracula';
-import { eclipse } from '@uiw/codemirror-theme-eclipse';
-import { githubDark } from '@uiw/codemirror-theme-github';
-import { material } from '@uiw/codemirror-theme-material';
-import { nord } from '@uiw/codemirror-theme-nord';
-import { xcodeLight } from '@uiw/codemirror-theme-xcode';
+import * as okaidiaModule from '@uiw/codemirror-theme-okaidia';
+import * as abcdefModule from '@uiw/codemirror-theme-abcdef';
+import * as draculaModule from '@uiw/codemirror-theme-dracula';
+import * as eclipseModule from '@uiw/codemirror-theme-eclipse';
+import * as githubDarkModule from '@uiw/codemirror-theme-github';
+import * as materialModule from '@uiw/codemirror-theme-material';
+import * as nordModule from '@uiw/codemirror-theme-nord';
+import * as xcodeLightModule from '@uiw/codemirror-theme-xcode';
 import { vizhubTheme } from './vizhubTheme';
+
+const { okaidia } = okaidiaModule;
+const { abcdef } = abcdefModule;
+const { dracula } = draculaModule;
+const { eclipse } = eclipseModule;
+const { githubDark } = githubDarkModule;
+const { material } = materialModule;
+const { nord } = nordModule;
+const { xcodeLight } = xcodeLightModule;
 
 // CodeMirror themes
 export type ThemeLabel =
