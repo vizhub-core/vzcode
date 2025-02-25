@@ -23,7 +23,7 @@ export const CodeEditor = ({
 }: {
   customInteractRules?: Array<InteractRule>;
   allowGlobals: boolean;
-  aiCopilotEndpoint: string;
+  aiCopilotEndpoint?: string;
 }) => {
   const {
     activePane,

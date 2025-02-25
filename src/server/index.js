@@ -109,7 +109,7 @@ app.post(
 app.post(
   '/ai-copilot',
   bodyParser.json(),
-  handleAICopilot(shareDBDoc),
+  handleAICopilot(),
 );
 
 // Livekit Token Generator

@@ -122,7 +122,10 @@ function App() {
         >
           <div className="app">
             <VZLeft />
-            <VZMiddle allowGlobals={true} />
+            <VZMiddle
+              allowGlobals={true}
+              aiCopilotEndpoint={'/ai-copilot'}
+            />
             {enableRightPanel ? <VZRight /> : null}
             <VZResizer side="left" />
             {enableRightPanel ? (
