@@ -50,7 +50,12 @@ import { javascriptLanguage } from '@codemirror/lang-javascript';
 import { copilot } from './Copilot';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
-const enableTypeScriptLinter = true;
+// This is disabled by default because it's buggy and glitchy.
+// It's overly aggressive and shows warnings where it should not.
+// Path forward:
+//  * Remove this entire TypeScript linter implementation
+//  * Use val-town/codemirror-ts: https://github.com/vizhub-core/vzcode/issues/844
+const enableTypeScriptLinter = false;
 
 const DEBUG = false;
 
@@ -134,7 +139,7 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef,
   openTab,
   aiCopilotEndpoint,
-  rainbowBracketsEnabled = true, // New parameter to enable or disable Rainbow Brackets
+  rainbowBracketsEnabled = true,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
