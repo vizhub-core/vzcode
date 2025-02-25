@@ -79,7 +79,7 @@ const PaneView = ({
 // * The presence notifications
 // * The UI for AI Assist
 export const VZMiddle = ({
-  enableAIAssist = true,
+  enableAIAssist = false,
   aiAssistEndpoint,
   aiAssistOptions,
   aiAssistTooltipText,

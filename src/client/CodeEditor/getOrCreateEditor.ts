@@ -52,8 +52,7 @@ import { copilot } from './Copilot';
 // Feature flag to enable TypeScript completions & TypeScript Linter.
 const enableTypeScriptLinter = true;
 
-// Feature flag to enable AI copilot
-const enableCopilot = true;
+const DEBUG = false;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -172,7 +171,7 @@ export const getOrCreateEditor = ({
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
   openTab: (tabState: TabState) => void;
-  aiCopilotEndpoint: string;
+  aiCopilotEndpoint?: string;
   rainbowBracketsEnabled?: boolean; // New parameter type
 }): ExtendedEditorCacheValue => {
   // Cache hit
@@ -411,8 +410,13 @@ export const getOrCreateEditor = ({
     ),
   );
 
-  // adds copilot
-  if (enableCopilot) {
+  // Adds copilot completions
+  DEBUG &&
+    console.log(
+      '[getOrCreateEditor] aiCopilotEndpoint: ',
+      aiCopilotEndpoint,
+    );
+  if (aiCopilotEndpoint) {
     extensions.push(copilot({ aiCopilotEndpoint }));
   }
 
