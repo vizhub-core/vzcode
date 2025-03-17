@@ -78,7 +78,6 @@ export const handleAICopilot = () => {
       );
     }
     try {
-      console.log(messages);
       const result = await chatModel.invoke(messages);
       const parser = new StringOutputParser();
       const text = await parser.invoke(result);
