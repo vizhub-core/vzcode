@@ -44,7 +44,7 @@ export const getFileTree = (files: VizFiles): FileTree => {
     if (file.text !== null) {
       (node.children || (node.children = [])).push({
         name: path[n - 1],
-        file,
+        file: file as any, // Type assertion to resolve compatibility issue
         fileId,
       });
     }

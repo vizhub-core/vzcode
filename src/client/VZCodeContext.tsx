@@ -198,8 +198,8 @@ export const VZCodeProvider = ({
   liveKitConnection,
   setLiveKitConnection,
 }: {
-  content: VZCodeContent;
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  content: VizContent;
+  shareDBDoc: ShareDBDoc<VizContent>;
   submitOperation: SubmitOperation;
   localPresence: any;
   docPresence: any;

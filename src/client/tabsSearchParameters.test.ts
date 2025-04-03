@@ -54,6 +54,7 @@ describe('tabsSearchParameters', () => {
     ({ tabStateParams, tabList, activeFileId }) => {
       // Fake Content object
       const content: VizContent = {
+        id: 'test-viz-id', // Add required id property
         files: {
           '123': { name: 'index.js', text: 'abc' },
           '456': { name: 'README.md', text: 'def' },
