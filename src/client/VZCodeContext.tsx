@@ -6,7 +6,6 @@ import {
   useState,
 } from 'react';
 import {
-  VizFiles,
   ItemId,
   LeafPane,
   Pane,
@@ -18,8 +17,8 @@ import {
   SubmitOperation,
   TabState,
   Username,
-  VZCodeContent,
 } from '../types';
+import { VizFiles, VizContent } from '@vizhub/viz-types';
 import {
   ThemeLabel,
   defaultTheme,
@@ -49,10 +48,10 @@ export const VZCodeContext =
 
 // The type of the object provided by this context.
 export type VZCodeContextValue = {
-  content: VZCodeContent | null;
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+  content: VizContent | null;
+  shareDBDoc: ShareDBDoc<VizContent> | null;
   submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
+    next: (content: VizContent) => VizContent,
   ) => void;
   // TODO pull in this type from ShareDB if possible
   localPresence: any;
@@ -117,16 +116,14 @@ export type VZCodeContextValue = {
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
-  setSearchResults: (
-    files: ShareDBDoc<VZCodeContent>,
-  ) => void;
+  setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
-    files: ShareDBDoc<VZCodeContent>,
+    files: ShareDBDoc<VizContent>,
     id: string,
     visibility: SearchFileVisibility,
   ) => void;
   setSearchLineVisibility: (
-    files: ShareDBDoc<VZCodeContent>,
+    files: ShareDBDoc<VizContent>,
     id: string,
     line: number,
   ) => void;
@@ -221,15 +218,7 @@ export const VZCodeProvider = ({
   setLiveKitConnection: (state: boolean) => void;
 }) => {
   // Auto-run Pretter after local changes.
-  const {
-    prettierError,
-    runPrettierRef,
-  }: {
-    prettierError: string | null;
-    runPrettierRef: React.MutableRefObject<
-      null | (() => void)
-    >;
-  } = usePrettier({
+  const { prettierError, runPrettierRef } = usePrettier({
     shareDBDoc,
     submitOperation,
     prettierWorker,

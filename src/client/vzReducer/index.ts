@@ -1,5 +1,4 @@
 import {
-  VizFileId,
   Pane,
   PaneId,
   PresenceIndicator,
@@ -7,8 +6,8 @@ import {
   SearchResults,
   ShareDBDoc,
   Username,
-  VizContent,
 } from '../../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
 import { openTabReducer } from './openTabReducer';
@@ -131,7 +130,7 @@ export type VZAction =
   //  * Sets the visibility of a current search pattern file
   | {
       type: 'set_search_file_visibility';
-      files: ShareDBDoc<VZCodeContent>;
+      files: ShareDBDoc<VizContent>;
       id: string;
       visibility: SearchFileVisibility;
     }
@@ -140,7 +139,7 @@ export type VZAction =
   //  * Hides a current search pattern file's specific matching line
   | {
       type: 'hide_search_results_line';
-      files: ShareDBDoc<VZCodeContent>;
+      files: ShareDBDoc<VizContent>;
       id: string;
       line: number;
     }

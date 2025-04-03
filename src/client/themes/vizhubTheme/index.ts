@@ -3,7 +3,7 @@
 // Inspired by https://github.com/uiwjs/react-codemirror/blob/master/themes/vscode/src/index.ts
 
 import { tags as t } from '@lezer/highlight';
-import { createTheme } from '../uiwImports';
+import { createTheme } from '@uiw/codemirror-themes';
 
 import {
   // Colors for various things outside the code itself
@@ -34,22 +34,19 @@ import { EditorView } from 'codemirror';
 // This looks way better as we are pulling in the semi-bold font from Google Fonts
 const boldWeight = '500';
 
-const defaultSettingsVizhubTheme: codemirrorThemes.CreateThemeOptions['settings'] =
-  {
-    background: backgroundColor,
-    foreground: light,
-    caret: caretColor,
-    selection: selectionBackground,
-    selectionMatch: selectionBackgroundMatch,
-    lineHighlight,
-    gutterBackground: backgroundColor,
-    gutterForeground: lineNumbers,
-    gutterActiveForeground: lineNumbersActive,
-  };
+const defaultSettingsVizhubTheme = {
+  background: backgroundColor,
+  foreground: light,
+  caret: caretColor,
+  selection: selectionBackground,
+  selectionMatch: selectionBackgroundMatch,
+  lineHighlight,
+  gutterBackground: backgroundColor,
+  gutterForeground: lineNumbers,
+  gutterActiveForeground: lineNumbersActive,
+};
 
-function vizhubThemeInit(
-  options?: Partial<codemirrorThemes.CreateThemeOptions>,
-) {
+function vizhubThemeInit(options?: Partial<any>) {
   const {
     theme = 'dark',
     settings = {},

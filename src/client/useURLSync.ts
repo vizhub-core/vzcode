@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
-import { VizFileId, TabState, VizContent } from '../types';
+import { TabState } from '../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { useEffect, useMemo, useRef } from 'react';
 import {
   TabStateParams,

@@ -7,11 +7,11 @@ import {
 import { Annotation, RangeSet } from '@codemirror/state';
 import { assignUserColor } from '../presenceColor';
 import {
-  FileId,
   Presence,
   PresenceId,
   TabState,
   Username,
+  VizFileId,
 } from '../../types';
 
 const debug = false;
@@ -98,7 +98,7 @@ export const json1PresenceDisplay = ({
               // in the current file, then open the tab of the other user.
               if (enableAutoFollowRef.current) {
                 openTab({
-                  fileId: presence.start[1] as FileId,
+                  fileId: presence.start[1] as VizFileId,
                   isTransient: true,
                 });
               }

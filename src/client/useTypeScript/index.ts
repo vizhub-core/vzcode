@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { VizContent } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 import { autoPrettierDebounceTimeMS } from '../usePrettier';
 
 // We don't want to send the message _before_ Prettier runs,

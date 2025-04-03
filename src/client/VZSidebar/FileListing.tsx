@@ -1,6 +1,7 @@
 import { useCallback, useContext } from 'react';
 import { Item } from './Item';
-import { VizFileId, PresenceIndicator } from '../../types';
+import { PresenceIndicator } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
 import { VZCodeContext } from '../VZCodeContext';
 import { FileTypeIcon } from './FileTypeIcon';
 import { assignUserColor } from '../presenceColor';

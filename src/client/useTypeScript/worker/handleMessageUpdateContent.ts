@@ -2,7 +2,7 @@ import {
   VizFile,
   VizFiles,
   VizContent,
-} from '../../../types';
+} from '@vizhub/viz-types';
 import { getTSFileName } from './getTSFileName';
 import { isTS } from './isTS';
 

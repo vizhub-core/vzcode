@@ -1,10 +1,6 @@
 import { VZAction, VZState } from '.';
-import {
-  VizFileId,
-  Pane,
-  PaneId,
-  TabState,
-} from '../../types';
+import { Pane, PaneId, TabState } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
 import { findPane } from './findPane';
 import { updatePane } from './updatePane';
 

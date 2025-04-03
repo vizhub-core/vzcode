@@ -4,8 +4,8 @@ import {
   SearchFileVisibility,
   SearchResult,
   ShareDBDoc,
-  VizContent,
 } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 
 function searchPattern(
   shareDBDoc: ShareDBDoc<VizContent>,

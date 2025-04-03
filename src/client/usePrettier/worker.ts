@@ -7,7 +7,7 @@ import * as prettierPluginCSS from 'prettier/plugins/postcss';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
 import * as prettierPluginSvelte from 'prettier-plugin-svelte/browser';
 
-import { VizFileId } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
 
 const enableSvelte = true;
 
@@ -41,7 +41,7 @@ const plugins = [
   prettierPluginMarkdown,
   prettierPluginTypescript,
   prettierPluginCSS,
-];
+] as any; // Cast to any to resolve type conflict
 
 if (enableSvelte) {
   // @ts-ignore

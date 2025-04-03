@@ -4,7 +4,8 @@ import {
   useCallback,
   useRef,
 } from 'react';
-import { ShareDBDoc, VizContent } from '../../types';
+import { ShareDBDoc } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 
 // import { runDelay } from '../constants';
 // TODO understand what this part is for

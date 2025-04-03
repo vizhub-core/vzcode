@@ -4,7 +4,7 @@ import {
   decodeTabs,
   delimiter,
 } from './tabsSearchParameters';
-import { VizContent } from '../types';
+import { VizContent } from '@vizhub/viz-types';
 
 describe('tabsSearchParameters', () => {
   test.each([

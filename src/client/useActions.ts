@@ -1,14 +1,13 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import {
-  VizFileId,
   PresenceIndicator,
   SearchFileVisibility,
   ShareDBDoc,
   TabState,
   Username,
-  VizContent,
 } from '../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions

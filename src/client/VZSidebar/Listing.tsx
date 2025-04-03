@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import type {
-  FileId,
   FileTree,
   FileTreeFile,
+  VizFileId,
 } from '../../types';
 import { VZCodeContext } from '../VZCodeContext';
 import { DirectoryListing } from './DirectoryListing';

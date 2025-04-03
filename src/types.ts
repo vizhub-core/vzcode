@@ -1,4 +1,12 @@
-import { VizContent, VizFileId } from '@vizhub/viz-types';
+import {
+  VizContent,
+  VizFileId,
+  VizFile,
+  VizFiles,
+} from '@vizhub/viz-types';
+
+// Re-export core types
+export { VizContent, VizFileId, VizFile, VizFiles };
 
 // TODO adopt new types from @vizhub/viz-types across the codebase:
 //  * FileId --> VizFileId

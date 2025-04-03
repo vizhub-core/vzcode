@@ -19,13 +19,12 @@ import { Diagnostic, linter } from '@codemirror/lint';
 
 import { json1Presence, textUnicode } from '../../ot';
 import {
-  VizFileId,
   PaneId,
   ShareDBDoc,
   TabState,
   Username,
-  VizContent,
 } from '../../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {

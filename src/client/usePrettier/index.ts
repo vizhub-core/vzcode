@@ -1,9 +1,9 @@
 import { shouldTriggerRun } from '../shouldTriggerRun';
 import { JSONOp } from '../../ot';
 import {
-  FileId,
   ShareDBDoc,
-  VZCodeContent,
+  VizFileId,
+  VizContent,
 } from '../../types';
 import { useEffect, useRef, useState } from 'react';
 
@@ -32,16 +32,15 @@ export const usePrettier = ({
   submitOperation,
   prettierWorker,
 }: {
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+  shareDBDoc: ShareDBDoc<VizContent> | null;
   submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
+    next: (content: VizContent) => VizContent,
   ) => void;
   prettierWorker: Worker;
 }) => {
   // The set of files that have been modified
   // since the last Prettier run.
-  // const dirtyFiles: Set<FileId> = new Set<FileId>();
-  const dirtyFilesRef = useRef<Set<FileId>>(new Set());
+  const dirtyFilesRef = useRef<Set<VizFileId>>(new Set());
 
   // State to hold the error from Prettier
   // `null` means no errors
@@ -157,7 +156,7 @@ export const usePrettier = ({
         op[2] === 'text'
       ) {
         // Get the file id
-        const fileId: FileId = op[1];
+        const fileId: VizFileId = op[1];
 
         // Add the file id to the set of dirty files
         dirtyFilesRef.current.add(fileId);

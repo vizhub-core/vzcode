@@ -1,9 +1,5 @@
-import {
-  VizFileId,
-  Pane,
-  PaneId,
-  TabState,
-} from '../../types';
+import { Pane, PaneId, TabState } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
 
 // Immutable update pattern for updating a pane's tab list.
 export const updatePane = ({

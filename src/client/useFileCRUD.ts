@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
-import {
-  VizFileId,
-  FileTreePath,
-  VizContent,
-} from '../types';
+import { FileTreePath } from '../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { randomId } from '../randomId';
 
 // CRUD operations for files and directories

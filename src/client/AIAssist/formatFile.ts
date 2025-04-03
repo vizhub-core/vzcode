@@ -1,4 +1,4 @@
-import { VizFile } from '../../types';
+import { VizFile } from '@vizhub/viz-types';
 
 const maxFileNameLength = 100;
 const maxFileTextLength = 2000;

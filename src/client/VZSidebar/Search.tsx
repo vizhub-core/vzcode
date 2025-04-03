@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
-import { FileId, SearchFile } from '../../types';
+import { SearchFile, VizFileId } from '../../types';
 import { EditorView } from 'codemirror';
 import { CloseSVG, DirectoryArrowSVG } from '../Icons';
 import { FileTypeIcon } from './FileTypeIcon';
@@ -112,12 +112,12 @@ export const Search = () => {
     [focusedIndex, focusedChildIndex],
   );
 
-  const closeResult = useCallback((fileId: FileId) => {
+  const closeResult = useCallback((fileId: VizFileId) => {
     setSearchFileVisibility(shareDBDoc, fileId, 'closed');
   }, []);
 
   const focusFileElement = useCallback(
-    (fileId: FileId, index: number) => {
+    (fileId: VizFileId, index: number) => {
       setActiveFileId(fileId);
       setSearchFocusedIndex(index, null);
     },
@@ -225,7 +225,7 @@ export const Search = () => {
         break;
       case 'Enter':
       case ' ':
-        const fileId: string = files[focusedIndex][0];
+        const fileId: VizFileId = files[focusedIndex][0];
         setActiveFileId(fileId);
 
         if (focusedChildIndex !== null) {

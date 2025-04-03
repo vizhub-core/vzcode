@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { SubmitOperation, VizContent } from '../types';
+import { SubmitOperation } from '../types';
+import { VizContent } from '@vizhub/viz-types';
 
 // Runs the code by flashing `isInteracting` to `true`.
 export const useRunCode = (

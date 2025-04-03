@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { VizContent } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 import { CloseSVG } from '../Icons';
 import './style.scss';
 

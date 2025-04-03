@@ -7,13 +7,13 @@ import {
   useRef,
 } from 'react';
 import {
-  VizFileId,
   FileTree,
   FileTreeFile,
   Presence,
   PresenceId,
   PresenceIndicator,
 } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
 import { OverlayTrigger, Tooltip } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import {
@@ -156,7 +156,7 @@ export const VZSidebar = ({
 
   // On single-click, open the file in a transient tab.
   const handleFileClick = useCallback(
-    (fileId: FileId) => {
+    (fileId: VizFileId) => {
       openTab({ fileId, isTransient: true });
     },
     [openTab],
@@ -164,7 +164,7 @@ export const VZSidebar = ({
 
   // On double-click, open the file in a persistent tab.
   const handleFileDoubleClick = useCallback(
-    (fileId: FileId) => {
+    (fileId: VizFileId) => {
       openTab({ fileId, isTransient: false });
     },
     [openTab],
@@ -199,7 +199,7 @@ export const VZSidebar = ({
       ) => {
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
-          fileId: update.start[1] as FileId,
+          fileId: update.start[1] as VizFileId,
         };
 
         // console.log('Got presence!');

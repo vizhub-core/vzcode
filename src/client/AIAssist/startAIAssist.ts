@@ -1,11 +1,10 @@
 import { EditorView } from 'codemirror';
+import { ShareDBDoc, TabState } from '../../types';
 import {
   VizFile,
   VizFileId,
-  ShareDBDoc,
-  TabState,
   VizContent,
-} from '../../types';
+} from '@vizhub/viz-types';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
 
