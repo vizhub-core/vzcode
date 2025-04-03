@@ -1,9 +1,9 @@
 // Inspired by
 
-import { Files, FileTree } from '../types';
+import { VizFiles, FileTree } from '../types';
 
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/FileTree/getFileTree.js
-export const getFileTree = (files: Files): FileTree => {
+export const getFileTree = (files: VizFiles): FileTree => {
   const tree: FileTree = { name: 'files' };
   for (const fileId of Object.keys(files)) {
     const file = files[fileId];

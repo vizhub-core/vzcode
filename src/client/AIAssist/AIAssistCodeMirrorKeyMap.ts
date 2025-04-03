@@ -2,7 +2,7 @@ import { EditorView, keymap } from '@codemirror/view';
 import {
   ShareDBDoc,
   TabState,
-  VZCodeContent,
+  VizContent,
 } from '../../types';
 
 export const AIAssistCodeMirrorKeyMap = ({
@@ -10,7 +10,7 @@ export const AIAssistCodeMirrorKeyMap = ({
   fileId,
   tabList,
 }: {
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  shareDBDoc: ShareDBDoc<VizContent>;
   fileId: string;
   tabList: Array<TabState>;
 }) =>

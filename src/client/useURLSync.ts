@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { FileId, TabState, VZCodeContent } from '../types';
+import { VizFileId, TabState, VizContent } from '../types';
 import { useEffect, useMemo, useRef } from 'react';
 import {
   TabStateParams,
@@ -15,11 +15,11 @@ export const useURLSync = ({
   tabList,
   activeFileId,
 }: {
-  content: VZCodeContent | null;
+  content: VizContent | null;
   openTab: (tabState: TabState) => void;
-  setActiveFileId: (activeFileId: FileId) => void;
+  setActiveFileId: (activeFileId: VizFileId) => void;
   tabList: Array<TabState>;
-  activeFileId: FileId | null;
+  activeFileId: VizFileId | null;
 }) => {
   // Use React router to get and set the  search parameters.
   const [searchParams, setSearchParams] = useSearchParams();

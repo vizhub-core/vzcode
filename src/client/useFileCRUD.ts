@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import {
-  FileId,
+  VizFileId,
   FileTreePath,
-  VZCodeContent,
+  VizContent,
 } from '../types';
 import { randomId } from '../randomId';
 
@@ -14,14 +14,14 @@ export const useFileCRUD = ({
   openTab,
 }: {
   submitOperation: (
-    operation: (document: VZCodeContent) => VZCodeContent,
+    operation: (document: VizContent) => VizContent,
   ) => void;
-  closeTabs: (idsToDelete: Array<FileId>) => void;
+  closeTabs: (idsToDelete: Array<VizFileId>) => void;
   openTab: ({
     fileId,
     isTransient,
   }: {
-    fileId: FileId;
+    fileId: VizFileId;
     isTransient: boolean;
   }) => void;
 }) => {
@@ -29,8 +29,8 @@ export const useFileCRUD = ({
   const createFile = useCallback(
     (name: string, text = '') => {
       if (name) {
-        const fileId: FileId = randomId();
-        submitOperation((document: VZCodeContent) => ({
+        const fileId: VizFileId = randomId();
+        submitOperation((document: VizContent) => ({
           ...document,
           files: {
             ...document.files,
@@ -49,8 +49,8 @@ export const useFileCRUD = ({
     (name: string, text = null) => {
       if (name) {
         name += '/';
-        const fileId: FileId = randomId();
-        submitOperation((document: VZCodeContent) => ({
+        const fileId: VizFileId = randomId();
+        submitOperation((document: VizContent) => ({
           ...document,
           files: {
             ...document.files,
@@ -64,8 +64,8 @@ export const useFileCRUD = ({
 
   // Called when a file in the sidebar is renamed.
   const renameFile = useCallback(
-    (fileId: FileId, newName: string) => {
-      submitOperation((document: VZCodeContent) => ({
+    (fileId: VizFileId, newName: string) => {
+      submitOperation((document: VizContent) => ({
         ...document,
         files: {
           ...document.files,
@@ -94,7 +94,7 @@ export const useFileCRUD = ({
     ) => {
       console.log(path);
       console.log(oldName);
-      submitOperation((document: VZCodeContent) => {
+      submitOperation((document: VizContent) => {
         const updatedFiles = Object.keys(
           document.files,
         ).reduce((acc, key) => {
@@ -131,7 +131,7 @@ export const useFileCRUD = ({
 
   // Deletes a file
   const deleteFile = useCallback(
-    (fileId: FileId) => {
+    (fileId: VizFileId) => {
       closeTabs([fileId]);
       submitOperation((document) => {
         const updatedFiles = { ...document.files };
@@ -145,8 +145,8 @@ export const useFileCRUD = ({
   // Deletes a directory and all files within it
   const deleteDirectory = useCallback(
     (path: FileTreePath) => {
-      const tabsToClose: Array<FileId> = [];
-      submitOperation((document: VZCodeContent) => {
+      const tabsToClose: Array<VizFileId> = [];
+      submitOperation((document: VizContent) => {
         const updatedFiles = { ...document.files };
         for (const key in updatedFiles) {
           if (updatedFiles[key].name.includes(path + '/')) {

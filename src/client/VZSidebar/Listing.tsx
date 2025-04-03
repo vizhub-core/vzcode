@@ -16,8 +16,8 @@ export const Listing = ({
   handleFileDoubleClick,
 }: {
   entity: FileTree | FileTreeFile;
-  handleFileClick: (fileId: FileId) => void;
-  handleFileDoubleClick: (fileId: FileId) => void;
+  handleFileClick: (fileId: VizFileId) => void;
+  handleFileDoubleClick: (fileId: VizFileId) => void;
 }) => {
   const { activePane, sidebarPresenceIndicators } =
     useContext(VZCodeContext);

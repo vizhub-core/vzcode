@@ -1,11 +1,11 @@
-import { File } from '../../types';
+import { VizFile } from '../../types';
 
 const maxFileNameLength = 100;
 const maxFileTextLength = 2000;
 
 // Formats a file for the prompt.
 export const formatFile = (
-  file: File,
+  file: VizFile,
   truncateText = true,
 ) => {
   const nameTruncated = file.name

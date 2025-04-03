@@ -4,7 +4,7 @@ import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
-import { FileId, PaneId } from '../types';
+import { VizFileId, PaneId } from '../types';
 import { editorCacheKey } from './useEditorCache';
 
 /*
@@ -187,8 +187,8 @@ export const useKeyboardShortcuts = ({
   editorCache,
   codeEditorRef,
 }: {
-  closeTabs: (fileIds: FileId[]) => void;
-  activeFileId: FileId | null;
+  closeTabs: (fileIds: VizFileId[]) => void;
+  activeFileId: VizFileId | null;
   activePaneId: PaneId;
   handleOpenCreateFileModal: () => void;
   setActiveFileLeft: () => void;

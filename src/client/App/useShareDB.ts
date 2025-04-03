@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { randomId } from '../../randomId';
-import { ShareDBDoc, VZCodeContent } from '../../types';
+import { ShareDBDoc, VizContent } from '../../types';
 import { useSubmitOperation } from '../useSubmitOperation';
 import { usePending } from './usePending';
 
@@ -12,7 +12,7 @@ export const useShareDB = ({
 }) => {
   // The ShareDB document.
   const [shareDBDoc, setShareDBDoc] =
-    useState<ShareDBDoc<VZCodeContent> | null>(null);
+    useState<ShareDBDoc<VizContent> | null>(null);
 
   // Local ShareDB presence, for broadcasting our cursor position
   // so other clients can see it.
@@ -26,8 +26,9 @@ export const useShareDB = ({
   // The `doc.data` part of the ShareDB document,
   // updated on each change to decouple rendering from ShareDB.
   // Starts out as `null` until the document is loaded.
-  const [content, setContent] =
-    useState<VZCodeContent | null>(null);
+  const [content, setContent] = useState<VizContent | null>(
+    null,
+  );
 
   const [connected, setConnected] =
     useState<boolean>(false);

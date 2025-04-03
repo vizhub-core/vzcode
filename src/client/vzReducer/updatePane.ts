@@ -1,5 +1,5 @@
 import {
-  FileId,
+  VizFileId,
   Pane,
   PaneId,
   TabState,
@@ -15,7 +15,7 @@ export const updatePane = ({
   pane: Pane;
   activePaneId: PaneId;
   newTabList?: Array<TabState>;
-  newActiveFileId?: FileId | null;
+  newActiveFileId?: VizFileId | null;
 }): Pane =>
   pane.type === 'splitPane'
     ? {

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { VZCodeContent } from '../../types';
+import { VizContent } from '../../types';
 import { CloseSVG } from '../Icons';
 import './style.scss';
 
@@ -10,7 +10,7 @@ export const CodeErrorOverlay = ({
   content,
 }: {
   errorMessage: string | null;
-  content: VZCodeContent;
+  content: VizContent;
 }) => {
   // console.log(
   //   'errorMessage in CodeErrorOverlay: ',

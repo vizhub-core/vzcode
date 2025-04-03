@@ -1,10 +1,10 @@
 import { EditorView } from 'codemirror';
 import {
-  File,
-  FileId,
+  VizFile,
+  VizFileId,
   ShareDBDoc,
   TabState,
-  VZCodeContent,
+  VizContent,
 } from '../../types';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
@@ -26,8 +26,8 @@ export const startAIAssist = async ({
   aiStreamId,
 }: {
   view: EditorView;
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
-  fileId: FileId;
+  shareDBDoc: ShareDBDoc<VizContent>;
+  fileId: VizFileId;
   tabList: Array<TabState>;
   aiAssistEndpoint?: string;
   aiAssistOptions?: {

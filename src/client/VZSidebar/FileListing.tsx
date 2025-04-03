@@ -1,6 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { Item } from './Item';
-import { FileId, PresenceIndicator } from '../../types';
+import { VizFileId, PresenceIndicator } from '../../types';
 import { VZCodeContext } from '../VZCodeContext';
 import { FileTypeIcon } from './FileTypeIcon';
 import { assignUserColor } from '../presenceColor';
@@ -44,9 +44,9 @@ export const FileListing = ({
   presence,
 }: {
   name: string;
-  fileId: FileId;
-  handleFileClick: (fileId: FileId) => void;
-  handleFileDoubleClick: (fileId: FileId) => void;
+  fileId: VizFileId;
+  handleFileClick: (fileId: VizFileId) => void;
+  handleFileDoubleClick: (fileId: VizFileId) => void;
   isActive: boolean;
   presence: PresenceIndicator[];
 }) => {

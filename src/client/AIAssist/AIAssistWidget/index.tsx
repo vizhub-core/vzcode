@@ -1,6 +1,10 @@
 import { useCallback, useContext, useState } from 'react';
 import { OverlayTrigger, Tooltip } from '../../bootstrap';
-import { FileId, PaneId, TabState } from '../../../types';
+import {
+  VizFileId,
+  PaneId,
+  TabState,
+} from '../../../types';
 import { VZCodeContext } from '../../VZCodeContext';
 import {
   RequestId,
@@ -27,7 +31,7 @@ export const AIAssistWidget = ({
   aiAssistOptions: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
-  activeFileId: FileId;
+  activeFileId: VizFileId;
   tabList: Array<TabState>;
   paneId: PaneId;
 }) => {

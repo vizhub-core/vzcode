@@ -7,7 +7,7 @@ import * as prettierPluginCSS from 'prettier/plugins/postcss';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
 import * as prettierPluginSvelte from 'prettier-plugin-svelte/browser';
 
-import { FileId } from '../../types';
+import { VizFileId } from '../../types';
 
 const enableSvelte = true;
 
@@ -68,7 +68,7 @@ onmessage = async ({
     fileExtension: string;
 
     // The file id
-    fileId: FileId;
+    fileId: VizFileId;
   };
 }) => {
   const { fileExtension, fileText, fileId } = data;

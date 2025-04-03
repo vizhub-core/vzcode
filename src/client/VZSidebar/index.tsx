@@ -7,7 +7,7 @@ import {
   useRef,
 } from 'react';
 import {
-  FileId,
+  VizFileId,
   FileTree,
   FileTreeFile,
   Presence,

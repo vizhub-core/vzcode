@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import type { FileId, TabState } from '../../types';
+import type { VizFileId, TabState } from '../../types';
 import { CloseSVG } from '../Icons';
 
 // Supports adding the file's containing folder to the tab name
@@ -20,7 +20,7 @@ export const Tab = ({
   closeTabs,
   fileName,
 }: {
-  fileId: FileId;
+  fileId: VizFileId;
   isTransient?: boolean;
   isActive: boolean;
   setActiveFileId: (fileId: FileId) => void;

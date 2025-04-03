@@ -1,5 +1,5 @@
 import {
-  FileId,
+  VizFileId,
   Pane,
   PaneId,
   PresenceIndicator,
@@ -7,7 +7,7 @@ import {
   SearchResults,
   ShareDBDoc,
   Username,
-  VZCodeContent,
+  VizContent,
 } from '../../types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
@@ -78,7 +78,7 @@ export type VZState = {
 export type VZAction =
   // `set_active_file_id`
   //  * Sets the active file ID.
-  | { type: 'set_active_file_id'; activeFileId: FileId }
+  | { type: 'set_active_file_id'; activeFileId: VizFileId }
 
   // `set_active_file_left' 'set_active_file_right`
   //  * Sets the active file ID to be the tab directly to the left or right
@@ -91,7 +91,7 @@ export type VZAction =
   //  * Also serves to change an already open transient tab to persistent.
   | {
       type: 'open_tab';
-      fileId: FileId;
+      fileId: VizFileId;
       isTransient?: boolean;
     }
 
@@ -99,7 +99,7 @@ export type VZAction =
   //  * Closes a set of tabs.
   | {
       type: 'close_tabs';
-      fileIdsToClose: Array<FileId>;
+      fileIdsToClose: Array<VizFileId>;
       // The pane id to close tabs from.
     }
 
@@ -124,7 +124,7 @@ export type VZAction =
   //  * Sets the current search pattern
   | {
       type: 'set_search_results';
-      files: ShareDBDoc<VZCodeContent>;
+      files: ShareDBDoc<VizContent>;
     }
 
   // `set_search_results_visibility`

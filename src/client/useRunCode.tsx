@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { SubmitOperation, VZCodeContent } from '../types';
+import { SubmitOperation, VizContent } from '../types';
 
 // Runs the code by flashing `isInteracting` to `true`.
 export const useRunCode = (
@@ -8,7 +8,7 @@ export const useRunCode = (
   const runCodeRef = useRef(null);
   useEffect(() => {
     const runCode = () => {
-      submitOperation((content: VZCodeContent) => ({
+      submitOperation((content: VizContent) => ({
         ...content,
         isInteracting: true,
       }));

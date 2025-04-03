@@ -6,7 +6,7 @@ import {
   useState,
 } from 'react';
 import {
-  Files,
+  VizFiles,
   ItemId,
   LeafPane,
   Pane,
@@ -59,7 +59,7 @@ export type VZCodeContextValue = {
   // TODO pull in this type from ShareDB if possible
   docPresence: any;
 
-  files: Files | null;
+  files: VizFiles | null;
   createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
@@ -393,7 +393,7 @@ export const VZCodeProvider = ({
   );
 
   // Isolate the files object from the document.
-  const files: Files | null = content
+  const files: VizFiles | null = content
     ? content.files
     : null;
 

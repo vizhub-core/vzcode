@@ -4,7 +4,7 @@ import {
   decodeTabs,
   delimiter,
 } from './tabsSearchParameters';
-import { VZCodeContent } from '../types';
+import { VizContent } from '../types';
 
 describe('tabsSearchParameters', () => {
   test.each([
@@ -53,7 +53,7 @@ describe('tabsSearchParameters', () => {
     'round trip: $name',
     ({ tabStateParams, tabList, activeFileId }) => {
       // Fake Content object
-      const content: VZCodeContent = {
+      const content: VizContent = {
         files: {
           '123': { name: 'index.js', text: 'abc' },
           '456': { name: 'README.md', text: 'def' },

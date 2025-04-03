@@ -1,6 +1,6 @@
 import { VZAction, VZState } from '.';
 import {
-  FileId,
+  VizFileId,
   Pane,
   PaneId,
   TabState,
@@ -49,7 +49,7 @@ export const closeTabsReducer = (
   }
 
   // Otherwise, we'll need to also find a new active tab.
-  let newActiveFileId: FileId | null = null;
+  let newActiveFileId: VizFileId | null = null;
 
   // The question becomes: which tab should be active now?
   // - Either the tab to the left or right of the closed tab.
