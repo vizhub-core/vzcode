@@ -7,7 +7,8 @@ import {
 } from 'react';
 import { Form } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
-import { SearchFile, VizFileId } from '../../types';
+import { VizFileId } from '@vizhub/viz-types';
+import { SearchFile } from '../../types';
 import { EditorView } from 'codemirror';
 import { CloseSVG, DirectoryArrowSVG } from '../Icons';
 import { FileTypeIcon } from './FileTypeIcon';

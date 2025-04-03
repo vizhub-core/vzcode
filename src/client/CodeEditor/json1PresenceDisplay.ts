@@ -6,12 +6,12 @@ import {
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import { assignUserColor } from '../presenceColor';
+import { VizFileId } from '@vizhub/viz-types';
 import {
   Presence,
   PresenceId,
   TabState,
   Username,
-  VizFileId,
 } from '../../types';
 
 const debug = false;

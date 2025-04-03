@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { PaneId, VizFileId } from '../types';
+import { VizFileId } from '@vizhub/viz-types';
+import { PaneId } from '../types';
 import { EditorView } from 'codemirror';
 
 export type EditorCacheValue = {

@@ -4,7 +4,8 @@ import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
 import { EditorView } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
-import { PaneId, VizFileId } from '../types';
+import { VizFileId } from '@vizhub/viz-types';
+import { PaneId } from '../types';
 import { editorCacheKey } from './useEditorCache';
 
 /*
