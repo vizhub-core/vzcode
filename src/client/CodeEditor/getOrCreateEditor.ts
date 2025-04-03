@@ -19,13 +19,12 @@ import { Diagnostic, linter } from '@codemirror/lint';
 
 import { json1Presence, textUnicode } from '../../ot';
 import {
-  FileId,
   PaneId,
   ShareDBDoc,
   TabState,
   Username,
-  VZCodeContent,
 } from '../../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
@@ -143,7 +142,7 @@ export const getOrCreateEditor = ({
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
-  fileId: FileId;
+  fileId: VizFileId;
 
   // The ShareDB document that contains the file.
   // Used when the editor is created for:
@@ -155,10 +154,10 @@ export const getOrCreateEditor = ({
   // This can be `undefined` in the case where we are
   // viewing files read-only, in which case multiplayer
   // editing is not enabled.
-  shareDBDoc: ShareDBDoc<VZCodeContent> | undefined;
+  shareDBDoc: ShareDBDoc<VizContent> | undefined;
 
   // The initial content to present.
-  content: VZCodeContent;
+  content: VizContent;
 
   filesPath: string[];
   localPresence: any;

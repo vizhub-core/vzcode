@@ -4,14 +4,15 @@ import {
   useCallback,
   useRef,
 } from 'react';
-import { ShareDBDoc, VZCodeContent } from '../../types';
+import { ShareDBDoc } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 
 // import { runDelay } from '../constants';
 // TODO understand what this part is for
 const runDelay = 1000;
 
 export const usePending = (
-  shareDBDoc: ShareDBDoc<VZCodeContent>,
+  shareDBDoc: ShareDBDoc<VizContent>,
 ) => {
   const lastOpTimerRef = useRef<NodeJS.Timeout>();
 

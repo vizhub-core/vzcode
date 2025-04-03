@@ -1,14 +1,13 @@
 import { useCallback } from 'react';
 import { ThemeLabel } from './themes';
 import {
-  FileId,
   PresenceIndicator,
   SearchFileVisibility,
   ShareDBDoc,
   TabState,
   Username,
-  VZCodeContent,
 } from '../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { VZAction } from './vzReducer';
 
 // This is a custom hook that returns a set of functions
@@ -17,7 +16,7 @@ export const useActions = (
   dispatch: (action: VZAction) => void,
 ) => {
   const setActiveFileId = useCallback(
-    (activeFileId: FileId) => {
+    (activeFileId: VizFileId) => {
       dispatch({
         type: 'set_active_file_id',
         activeFileId,
@@ -46,7 +45,7 @@ export const useActions = (
   );
 
   const closeTabs = useCallback(
-    (fileIdsToClose: Array<FileId>) => {
+    (fileIdsToClose: Array<VizFileId>) => {
       dispatch({
         type: 'close_tabs',
         fileIdsToClose,
@@ -89,7 +88,7 @@ export const useActions = (
 
   // Update search results based on current pattern
   const setSearchResults = useCallback(
-    (files: ShareDBDoc<VZCodeContent>) => {
+    (files: ShareDBDoc<VizContent>) => {
       dispatch({
         type: 'set_search_results',
         files: files,
@@ -101,7 +100,7 @@ export const useActions = (
   // Update search results file visibility based on current pattern
   const setSearchFileVisibility = useCallback(
     (
-      files: ShareDBDoc<VZCodeContent>,
+      files: ShareDBDoc<VizContent>,
       id: string,
       visibility: SearchFileVisibility,
     ) => {
@@ -118,7 +117,7 @@ export const useActions = (
   // Update search results file matching line visibility to be
   const setSearchLineVisibility = useCallback(
     (
-      files: ShareDBDoc<VZCodeContent>,
+      files: ShareDBDoc<VizContent>,
       id: string,
       line: number,
     ) => {

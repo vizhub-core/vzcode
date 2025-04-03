@@ -1,9 +1,10 @@
 // Inspired by
 
-import { Files, FileTree } from '../types';
+import { FileTree } from '../types';
+import { VizFiles } from '@vizhub/viz-types';
 
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/FileTree/getFileTree.js
-export const getFileTree = (files: Files): FileTree => {
+export const getFileTree = (files: VizFiles): FileTree => {
   const tree: FileTree = { name: 'files' };
   for (const fileId of Object.keys(files)) {
     const file = files[fileId];
@@ -43,7 +44,7 @@ export const getFileTree = (files: Files): FileTree => {
     if (file.text !== null) {
       (node.children || (node.children = [])).push({
         name: path[n - 1],
-        file,
+        file: file as any, // Type assertion to resolve compatibility issue
         fileId,
       });
     }

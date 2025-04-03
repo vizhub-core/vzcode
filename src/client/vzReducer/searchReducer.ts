@@ -4,11 +4,11 @@ import {
   SearchFileVisibility,
   SearchResult,
   ShareDBDoc,
-  VZCodeContent,
 } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 
 function searchPattern(
-  shareDBDoc: ShareDBDoc<VZCodeContent>,
+  shareDBDoc: ShareDBDoc<VizContent>,
   pattern: string,
 ): SearchResult {
   const files = shareDBDoc.data.files;

@@ -1,4 +1,5 @@
-import { FileId, TabState, VZCodeContent } from '../types';
+import { TabState } from '../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 
 // The delimiter used to separate file names in the `tabs` parameter.
 // We need a character that is both URL-safe (does not get escaped in URLs)
@@ -30,7 +31,7 @@ export const delimiter = '~';
 // Gets the file id of a file with the given name.
 // Returns null if not found.
 const getFileId = (
-  content: VZCodeContent,
+  content: VizContent,
   fileName: string,
 ): string | null => {
   if (content && content.files) {
@@ -48,7 +49,7 @@ const getFileId = (
 // guard against failure cases.
 // Returns null if not found.
 const getFileName = (
-  content: VZCodeContent,
+  content: VizContent,
   fileId: string,
 ): string | null => {
   if (content && content.files) {
@@ -72,10 +73,10 @@ export const decodeTabs = ({
   content,
 }: {
   tabStateParams: TabStateParams;
-  content: VZCodeContent;
+  content: VizContent;
 }): {
   tabList: Array<TabState>;
-  activeFileId: FileId;
+  activeFileId: VizFileId;
 } => {
   const { file, tabs } = tabStateParams;
   const tabList: TabState[] = [];
@@ -106,8 +107,8 @@ export const encodeTabs = ({
   content,
 }: {
   tabList: Array<TabState>;
-  activeFileId: FileId | null;
-  content: VZCodeContent;
+  activeFileId: VizFileId | null;
+  content: VizContent;
 }): TabStateParams => {
   // Get the file name of the active file
   const activeFileName = getFileName(content, activeFileId);

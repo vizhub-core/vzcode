@@ -132,6 +132,7 @@
     "@uiw/codemirror-theme-okaidia": "^4.23.10",
     "@uiw/codemirror-theme-xcode": "^4.23.10",
     "@uiw/codemirror-themes": "^4.23.10",
+    "@vizhub/viz-types": "^0.0.2",
     "body-parser": "^2.2.0",
     "codemirror": "^6.0.1",
     "codemirror-copilot": "^0.0.7",
