@@ -1,13 +1,11 @@
 import { VizContent, VizFileId } from '@vizhub/viz-types';
 
-// Basic types
-export type FileId = VizFileId;
-export type File = {
-  text: string;
-  [key: string]: any;
-};
-export type Files = { [key: string]: File };
-export type VZCodeContent = VizContent;
+// TODO adopt new types from @vizhub/viz-types across the codebase:
+//  * FileId --> VizFileId
+//  * File --> VizFile
+//  * Files --> VizFiles
+//  * VZCodeContent --> VizContent
+
 // ItemId
 //   * A unique ID for an item in the sidebar.
 //   * This could be either a file ID or a directory path.
