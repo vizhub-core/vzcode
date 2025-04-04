@@ -1,4 +1,3 @@
-import * as reactRouterDOM from 'react-router-dom';
 import { TabState } from '../types';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { useEffect, useMemo, useRef } from 'react';
@@ -7,8 +6,7 @@ import {
   decodeTabs,
   encodeTabs,
 } from './tabsSearchParameters';
-
-const { useSearchParams } = reactRouterDOM;
+import { useSearchParams } from '../reactRouterExports';
 
 // Synchronizes the tab state with the URL parameters.
 export const useURLSync = ({
