@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cube of Spheres</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #000;
+      }
+      #container {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.module.js",
+          "three/examples/jsm/controls/OrbitControls": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/controls/OrbitControls.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

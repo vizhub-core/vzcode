@@ -32,9 +32,9 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { Search } from './Search';
-import './styles.scss';
 import { useDragAndDrop } from './useDragAndDrop';
 import { enableLiveKit } from '../featureFlags';
+import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
