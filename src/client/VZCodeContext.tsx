@@ -208,14 +208,14 @@ export const VZCodeProvider = ({
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
-  connected: boolean;
-  pending: boolean;
-  liveKitToken: string | undefined;
-  setLiveKitToken: (state: string) => void;
-  liveKitRoomName: string | undefined;
-  setLiveKitRoom: (state: string) => void;
-  liveKitConnection: boolean;
-  setLiveKitConnection: (state: boolean) => void;
+  connected?: boolean;
+  pending?: boolean;
+  liveKitToken?: string | undefined;
+  setLiveKitToken?: (state: string) => void;
+  liveKitRoomName?: string | undefined;
+  setLiveKitRoom?: (state: string) => void;
+  liveKitConnection?: boolean;
+  setLiveKitConnection?: (state: boolean) => void;
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
