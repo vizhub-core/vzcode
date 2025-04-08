@@ -252,10 +252,6 @@ export const VZSidebar = ({
     <div
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
     >
       <div
         className="full-box"
@@ -438,11 +434,23 @@ export const VZSidebar = ({
             </OverlayTrigger>
           )}
         </div>
-        <div className="files" id="sidebar-view-container">
+        <div
+          className="files"
+          id="sidebar-view-container"
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           {!isSearchOpen ? (
             <div className="sidebar-files">
               {isDragOver ? (
-                <div className="empty">
+                <div className="empty drag-over">
+                  <div className="empty-text">
+                    It looks like you don't have any files
+                    yet! Click the "Create file" button
+                    above to create your first file.
+                  </div>
                   <div className="empty-text">
                     Drop files here!
                   </div>
@@ -469,6 +477,9 @@ export const VZSidebar = ({
                     It looks like you don't have any files
                     yet! Click the "Create file" button
                     above to create your first file.
+                  </div>
+                  <div className="empty-text">
+                    Drop files here!
                   </div>
                 </div>
               )}

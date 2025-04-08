@@ -1,7 +1,6 @@
 import { useState, useContext, useCallback } from 'react';
 import { VZCodeContext } from '../VZCodeContext';
 import './styles.scss';
-import { FALSE } from 'sass';
 
 interface FileSystemEntry {
   isFile: boolean;
@@ -17,7 +16,7 @@ interface FileSystemDirectoryReader {
   ) => void;
 }
 
-const DEBUG = FALSE;
+const DEBUG = false;
 
 export const useDragAndDrop = () => {
   const [isDragOver, setIsDragOver] = useState(false);
