@@ -32,9 +32,9 @@ import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
 import { Search } from './Search';
-import './styles.scss';
 import { useDragAndDrop } from './useDragAndDrop';
 import { enableLiveKit } from '../featureFlags';
+import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -252,10 +252,6 @@ export const VZSidebar = ({
     <div
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
-      onDragEnter={handleDragEnter}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
     >
       <div
         className="full-box"
@@ -426,10 +422,6 @@ export const VZSidebar = ({
                 id="mic-icon"
                 className="icon-button icon-button-dark"
                 onClick={() => {
-                  console.log(
-                    'clicking',
-                    liveKitConnection,
-                  );
                   setVoiceChatModalOpen(true);
                 }}
               >
@@ -438,11 +430,23 @@ export const VZSidebar = ({
             </OverlayTrigger>
           )}
         </div>
-        <div className="files" id="sidebar-view-container">
+        <div
+          className="files"
+          id="sidebar-view-container"
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           {!isSearchOpen ? (
             <div className="sidebar-files">
               {isDragOver ? (
-                <div className="empty">
+                <div className="empty drag-over">
+                  <div className="empty-text">
+                    It looks like you don't have any files
+                    yet! Click the "Create file" button
+                    above to create your first file.
+                  </div>
                   <div className="empty-text">
                     Drop files here!
                   </div>
@@ -469,6 +473,9 @@ export const VZSidebar = ({
                     It looks like you don't have any files
                     yet! Click the "Create file" button
                     above to create your first file.
+                  </div>
+                  <div className="empty-text">
+                    Drop files here!
                   </div>
                 </div>
               )}

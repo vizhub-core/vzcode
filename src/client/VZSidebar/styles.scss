@@ -228,21 +228,41 @@
     flex: 1;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     margin: 10px;
     padding: 20px;
-    border: 1px dashed rgba(255, 255, 255, 0.5); /* White dashed outline */
+    border: 1px dashed rgba(255, 255, 255, 0.5);
     border-radius: 10px;
-
-    /*
-     * This fixes some issues where the drop zone for files
-     * was flickering when dragging files over the sidebar.
-     */
+    min-height: 200px;
+    position: relative;
     pointer-events: none;
 
     .empty-text {
       font-size: 16px;
       font-weight: 500;
+      pointer-events: none;
+      position: absolute;
+      text-align: center;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+
+      &:not(:first-child) {
+        opacity: 0;
+      }
+    }
+
+    &.drag-over {
+      .empty-text {
+        opacity: 0;
+
+        &:last-child {
+          opacity: 1;
+        }
+      }
     }
   }
 

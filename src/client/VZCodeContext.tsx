@@ -34,7 +34,6 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useOpenDirectories } from './useOpenDirectories';
 import { usePrettier } from './usePrettier';
 import { useRunCode } from './useRunCode';
-import { useTypeScript } from './useTypeScript';
 import { useURLSync } from './useURLSync';
 import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
@@ -110,8 +109,6 @@ export type VZCodeContextValue = {
 
   errorMessage: string | null;
 
-  typeScriptWorker: Worker | null;
-
   search: SearchResults;
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
@@ -185,7 +182,6 @@ export const VZCodeProvider = ({
   localPresence,
   docPresence,
   prettierWorker,
-  typeScriptWorker,
   initialUsername,
   children,
   codeError = null,
@@ -204,7 +200,6 @@ export const VZCodeProvider = ({
   localPresence: any;
   docPresence: any;
   prettierWorker: Worker;
-  typeScriptWorker: Worker;
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
@@ -239,16 +234,6 @@ export const VZCodeProvider = ({
   const errorMessage: string | null = prettierError
     ? prettierError
     : codeError;
-
-  // Set up the TypeScript Language Server worker.
-  // This acts as a central "brain" for features powered
-  // by the TypeScript Language Server including:
-  //  * Completions
-  //  * Linting
-  useTypeScript({
-    content,
-    typeScriptWorker,
-  });
 
   // Set up the reducer that manages much of the application state.
   // See https://react.dev/reference/react/useReducer
@@ -472,8 +457,6 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
 
     errorMessage,
-
-    typeScriptWorker,
 
     isCreateFileModalOpen,
     handleOpenCreateFileModal,

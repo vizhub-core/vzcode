@@ -48,8 +48,6 @@ export const RunCodeWidget = ({
   }, [runCodeRef, runPrettierRef]);
 
   const handleSplitEditor = useCallback(() => {
-    console.log('Split Editor');
-    console.log(splitCurrentPane);
     splitCurrentPane();
   }, [splitCurrentPane]);
 
