@@ -422,10 +422,6 @@ export const VZSidebar = ({
                 id="mic-icon"
                 className="icon-button icon-button-dark"
                 onClick={() => {
-                  console.log(
-                    'clicking',
-                    liveKitConnection,
-                  );
                   setVoiceChatModalOpen(true);
                 }}
               >

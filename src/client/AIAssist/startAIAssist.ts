@@ -70,30 +70,6 @@ export const startAIAssist = async ({
         .join('\n\n');
   }
 
-  if (debug) {
-    // console.log('[startAIAssist] sending HTTP request:');
-    // console.log(
-    //   '[startAIAssist]   aiAssistEndpoint:',
-    //   aiAssistEndpoint,
-    // );
-    // console.log(
-    //   '[startAIAssist]   aiAssistOptions:',
-    //   aiAssistOptions,
-    // );
-    console.log(
-      '[startAIAssist]   inputText:\n`' + inputText + '`',
-    );
-    // console.log('[startAIAssist]   fileId:', fileId);
-    // console.log(
-    //   '[startAIAssist]   insertionCursor:',
-    //   insertionCursor,
-    // );
-    // console.log(
-    //   '[startAIAssist]   aiStreamId:',
-    //   aiStreamId,
-    // );
-  }
-
   const response = await fetch(aiAssistEndpoint, {
     method: 'POST',
     headers: {
