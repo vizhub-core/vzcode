@@ -38,8 +38,6 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { typeScriptCompletions } from './typeScriptCompletions';
-import { typeScriptLinter } from './typeScriptLinter';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
@@ -47,14 +45,6 @@ import rainbowBrackets from '../CodeEditor/rainbowBrackets';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 import { copilot } from './Copilot';
-
-// Feature flag to enable TypeScript completions & TypeScript Linter.
-// This is disabled by default because it's buggy and glitchy.
-// It's overly aggressive and shows warnings where it should not.
-// Path forward:
-//  * Remove this entire TypeScript linter implementation
-//  * Use val-town/codemirror-ts: https://github.com/vizhub-core/vzcode/issues/844
-const enableTypeScriptLinter = false;
 
 const DEBUG = false;
 
@@ -132,9 +122,7 @@ export const getOrCreateEditor = ({
   onInteract,
   editorCache,
   usernameRef,
-  typeScriptWorker,
   customInteractRules,
-  allowGlobals,
   enableAutoFollowRef,
   openTab,
   aiCopilotEndpoint,
@@ -167,9 +155,7 @@ export const getOrCreateEditor = ({
   editorCache: EditorCache;
   usernameRef: React.MutableRefObject<Username>;
   aiAssistEndpoint?: string;
-  typeScriptWorker: Worker;
   customInteractRules?: Array<InteractRule>;
-  allowGlobals: boolean;
 
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
@@ -332,44 +318,6 @@ export const getOrCreateEditor = ({
   //     aiAssistOptions,
   //   }),
   // );
-
-  // Add the extension that provides TypeScript completions.
-  // only add this if it's TS-compatible (.js, .jsx, .ts, .tsx)
-  const isTypeScript =
-    fileExtension === 'js' ||
-    fileExtension === 'jsx' ||
-    fileExtension === 'ts' ||
-    fileExtension === 'tsx';
-
-  extensions.push(
-    autocompletion(
-      isTypeScript
-        ? {
-            override: [
-              typeScriptCompletions({
-                typeScriptWorker,
-                fileName: name,
-              }),
-            ],
-          }
-        : undefined,
-    ),
-  );
-
-  if (shareDBDoc && enableTypeScriptLinter) {
-    extensions.push(
-      linter(
-        typeScriptLinter({
-          typeScriptWorker,
-          fileName: name,
-          shareDBDoc,
-          fileId,
-          allowGlobals,
-        }) as unknown as () => Diagnostic[],
-        //Needs the unknown because we are returning a Promise<Diagnostic>
-      ),
-    );
-  }
 
   // Add the extension that provides indentation markers.
   extensions.push(

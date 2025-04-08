@@ -17,7 +17,6 @@ const PaneView = ({
   pane,
   content,
   customInteractRules,
-  allowGlobals,
   enableAIAssist,
   aiAssistEndpoint,
   aiAssistOptions,
@@ -49,7 +48,6 @@ const PaneView = ({
       {isClient && content && pane.activeFileId && (
         <CodeEditor
           customInteractRules={customInteractRules}
-          allowGlobals={allowGlobals}
           aiCopilotEndpoint={aiCopilotEndpoint}
         />
       )}
@@ -86,7 +84,6 @@ export const VZMiddle = ({
   aiAssistClickOverride,
   aiCopilotEndpoint,
   customInteractRules,
-  allowGlobals = false,
 }: {
   enableAIAssist?: boolean;
   aiAssistEndpoint?: string;
@@ -95,7 +92,6 @@ export const VZMiddle = ({
   aiAssistClickOverride?: () => void;
   aiCopilotEndpoint?: string;
   customInteractRules?: Array<InteractRule>;
-  allowGlobals?: boolean;
 }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
@@ -126,7 +122,6 @@ export const VZMiddle = ({
         pane={pane}
         content={content}
         customInteractRules={customInteractRules}
-        allowGlobals={allowGlobals}
         enableAIAssist={enableAIAssist}
         aiAssistEndpoint={aiAssistEndpoint}
         aiAssistOptions={aiAssistOptions}

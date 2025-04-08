@@ -19,7 +19,6 @@ import { VZLeft } from '../VZLeft';
 import { VZMiddle } from '../VZMiddle';
 import { VZResizer } from '../VZResizer';
 import { VZRight } from '../VZRight';
-import TypeScriptWorker from '../useTypeScript/worker?worker';
 import {
   useInitialUsername,
   usePersistUsername,
@@ -29,9 +28,6 @@ import { useShareDB } from './useShareDB';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
-
-// Instantiate the TypeScript worker.
-const typeScriptWorker = new TypeScriptWorker();
 
 // Register our custom JSON1 OT type that supports presence.
 // See https://github.com/vizhub-core/json1-presence
@@ -93,6 +89,14 @@ function App() {
   // so that multiple browser windows are not required.
   const enableRightPanel = true;
 
+  // TODO: enable this when the AI copilot is ready
+  // Currently it's glitchy and frustrating to use.
+  // It appears to be bugs in the upstream CodeMirror copilot code.
+  // Ghost text appears after just moving the cursor, not typing.
+  // It's hard to figure out how to dismiss it.
+  // Clicking on it accepts it but should not.
+  const enableCopilot = false;
+
   return (
     <SplitPaneResizeProvider>
       <VZCodeProvider
@@ -102,7 +106,6 @@ function App() {
         localPresence={localPresence}
         docPresence={docPresence}
         prettierWorker={prettierWorker}
-        typeScriptWorker={typeScriptWorker}
         initialUsername={initialUsername}
         connected={connected}
         pending={pending}
@@ -123,8 +126,9 @@ function App() {
           <div className="app">
             <VZLeft />
             <VZMiddle
-              allowGlobals={true}
-              aiCopilotEndpoint={'/ai-copilot'}
+              aiCopilotEndpoint={
+                enableCopilot ? '/ai-copilot' : null
+              }
             />
             {enableRightPanel ? <VZRight /> : null}
             <VZResizer side="left" />
