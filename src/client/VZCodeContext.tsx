@@ -2,42 +2,41 @@ import {
   createContext,
   useCallback,
   useReducer,
-  useState,
   useRef,
+  useState,
 } from 'react';
 import {
-  Files,
   ItemId,
-  ShareDBDoc,
-  SubmitOperation,
-  Username,
-  VZCodeContent,
-  SearchResults,
-  SearchFileVisibility,
-  TabState,
-  PresenceIndicator,
+  LeafPane,
   Pane,
   PaneId,
-  LeafPane,
+  PresenceIndicator,
+  SearchFileVisibility,
+  SearchResults,
+  ShareDBDoc,
+  SubmitOperation,
+  TabState,
+  Username,
 } from '../types';
-import { usePrettier } from './usePrettier';
-import { useTypeScript } from './useTypeScript';
-import { createInitialState, vzReducer } from './vzReducer';
+import { VizFiles, VizContent } from '@vizhub/viz-types';
 import {
   ThemeLabel,
   defaultTheme,
   useDynamicTheme,
 } from './themes';
 import { useActions } from './useActions';
-import { useOpenDirectories } from './useOpenDirectories';
-import { useFileCRUD } from './useFileCRUD';
 import {
   EditorCache,
   useEditorCache,
 } from './useEditorCache';
-import { useURLSync } from './useURLSync';
+import { useFileCRUD } from './useFileCRUD';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
+import { useOpenDirectories } from './useOpenDirectories';
+import { usePrettier } from './usePrettier';
 import { useRunCode } from './useRunCode';
+import { useTypeScript } from './useTypeScript';
+import { useURLSync } from './useURLSync';
+import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
 
 // This context centralizes all the "smart" logic
@@ -49,17 +48,17 @@ export const VZCodeContext =
 
 // The type of the object provided by this context.
 export type VZCodeContextValue = {
-  content: VZCodeContent | null;
-  shareDBDoc: ShareDBDoc<VZCodeContent> | null;
+  content: VizContent | null;
+  shareDBDoc: ShareDBDoc<VizContent> | null;
   submitOperation: (
-    next: (content: VZCodeContent) => VZCodeContent,
+    next: (content: VizContent) => VizContent,
   ) => void;
   // TODO pull in this type from ShareDB if possible
   localPresence: any;
   // TODO pull in this type from ShareDB if possible
   docPresence: any;
 
-  files: Files | null;
+  files: VizFiles | null;
   createFile: (fileName: string, text?: string) => void;
   renameFile: (fileId: string, fileName: string) => void;
   deleteFile: (fileId: string) => void;
@@ -117,16 +116,14 @@ export type VZCodeContextValue = {
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
-  setSearchResults: (
-    files: ShareDBDoc<VZCodeContent>,
-  ) => void;
+  setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
-    files: ShareDBDoc<VZCodeContent>,
+    files: ShareDBDoc<VizContent>,
     id: string,
     visibility: SearchFileVisibility,
   ) => void;
   setSearchLineVisibility: (
-    files: ShareDBDoc<VZCodeContent>,
+    files: ShareDBDoc<VizContent>,
     id: string,
     line: number,
   ) => void;
@@ -156,6 +153,7 @@ export type VZCodeContextValue = {
   codeEditorRef: React.RefObject<HTMLDivElement>;
 
   connected: boolean;
+  pending: boolean;
 
   hoveredItemId: ItemId | null;
   setHoveredItemId: (itemId: ItemId | null) => void;
@@ -169,6 +167,15 @@ export type VZCodeContextValue = {
 
   sidebarPresenceIndicators: Array<PresenceIndicator>;
   splitCurrentPane: () => void;
+
+  liveKitToken: string;
+  setLiveKitToken: (state: string) => void;
+  liveKitRoomName: string;
+  setLiveKitRoom: (state: string) => void;
+  liveKitConnection: boolean;
+  setLiveKitConnection: (state: boolean) => void;
+  voiceChatModalOpen: boolean;
+  setVoiceChatModalOpen: (state: boolean) => void;
 };
 
 export const VZCodeProvider = ({
@@ -183,9 +190,16 @@ export const VZCodeProvider = ({
   children,
   codeError = null,
   connected,
+  pending,
+  liveKitToken,
+  setLiveKitToken,
+  liveKitRoomName,
+  setLiveKitRoom,
+  liveKitConnection,
+  setLiveKitConnection,
 }: {
-  content: VZCodeContent;
-  shareDBDoc: ShareDBDoc<VZCodeContent>;
+  content: VizContent;
+  shareDBDoc: ShareDBDoc<VizContent>;
   submitOperation: SubmitOperation;
   localPresence: any;
   docPresence: any;
@@ -194,18 +208,17 @@ export const VZCodeProvider = ({
   initialUsername: Username;
   children: React.ReactNode;
   codeError?: string | null;
-  connected: boolean;
+  connected?: boolean;
+  pending?: boolean;
+  liveKitToken?: string | undefined;
+  setLiveKitToken?: (state: string) => void;
+  liveKitRoomName?: string | undefined;
+  setLiveKitRoom?: (state: string) => void;
+  liveKitConnection?: boolean;
+  setLiveKitConnection?: (state: boolean) => void;
 }) => {
   // Auto-run Pretter after local changes.
-  const {
-    prettierError,
-    runPrettierRef,
-  }: {
-    prettierError: string | null;
-    runPrettierRef: React.MutableRefObject<
-      null | (() => void)
-    >;
-  } = usePrettier({
+  const { prettierError, runPrettierRef } = usePrettier({
     shareDBDoc,
     submitOperation,
     prettierWorker,
@@ -369,7 +382,7 @@ export const VZCodeProvider = ({
   );
 
   // Isolate the files object from the document.
-  const files: Files | null = content
+  const files: VizFiles | null = content
     ? content.files
     : null;
 
@@ -392,6 +405,11 @@ export const VZCodeProvider = ({
   // Track the currently hovered file id.
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
+
+  // Livekit Voice Chat Modal
+
+  const [voiceChatModalOpen, setVoiceChatModalOpen] =
+    useState(false);
 
   // The value provided by this context.
   const value: VZCodeContextValue = {
@@ -471,6 +489,7 @@ export const VZCodeProvider = ({
     codeEditorRef,
 
     connected,
+    pending,
 
     hoveredItemId,
     setHoveredItemId,
@@ -480,6 +499,14 @@ export const VZCodeProvider = ({
     updatePresenceIndicator,
     sidebarPresenceIndicators,
     splitCurrentPane,
+    liveKitRoomName,
+    setLiveKitRoom,
+    liveKitToken,
+    setLiveKitToken,
+    liveKitConnection,
+    setLiveKitConnection,
+    voiceChatModalOpen,
+    setVoiceChatModalOpen,
   };
 
   return (

@@ -14,6 +14,7 @@ export const colorPicker = (
   onClick(
     text: string,
     setText: (newText: string) => void,
+    event: MouseEvent,
   ) {
     const startingColor: string = text;
 
@@ -38,54 +39,30 @@ export const colorPicker = (
       if (onInteract) onInteract();
     };
     sel.addEventListener('input', updateHex);
-    sel.click();
+
+    // Position the color input at the mouse cursor
+    sel.style.position = 'absolute';
+    sel.style.left = `${event.clientX}px`;
+    sel.style.top = `${event.clientY}px`;
+
+    // Make it invisible
+    sel.style.opacity = '0';
+    sel.style.height = '0';
+    sel.style.width = '0';
+    sel.style.border = 'none';
+    sel.style.padding = '0';
+    sel.style.margin = '0';
+    document.body.appendChild(sel);
+
+    // Click the input after a delay, so that
+    // it gets the correct position
+    setTimeout(() => {
+      sel.click();
+    }, 10);
+
+    // Remove the input after interaction
+    sel.addEventListener('blur', () => {
+      document.body.removeChild(sel);
+    });
   },
 });
-
-// TODO get this working
-// rgb color picker
-// Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L71
-//TODO: create color picker for hsl colors
-// {
-//   regexp: /rgb\(.*\)/g,
-//   cursor: 'pointer',
-//   onClick: (text, setText, e) => {
-//     const res =
-//       /rgb\((?<r>\d+)\s*,\s*(?<g>\d+)\s*,\s*(?<b>\d+)\)/.exec(
-//         text,
-//       );
-//     const r = Number(res?.groups?.r);
-//     const g = Number(res?.groups?.g);
-//     const b = Number(res?.groups?.b);
-
-//     //sel will open the color picker when sel.click is called.
-//     const sel = document.createElement('input');
-//     sel.type = 'color';
-
-//     if (!isNaN(r + g + b)) sel.value = rgb2Hex(r, g, b);
-
-//     const updateRGB = (e: Event) => {
-//       const el = e.target as HTMLInputElement;
-//       if (onInteract) onInteract();
-
-//       if (el.value) {
-//         const [r, g, b] = hex2RGB(el.value);
-//         setText(`rgb(${r}, ${g}, ${b})`);
-//       }
-//       sel.removeEventListener('change', updateRGB);
-//     };
-
-//     sel.addEventListener('change', updateRGB);
-//     sel.click();
-//   },
-// },
-
-// // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L108
-// const hex2RGB = (hex: string): [number, number, number] => {
-//   const v = parseInt(hex.substring(1), 16);
-//   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
-// };
-
-// // Inspired by https://github.com/replit/codemirror-interact/blob/master/dev/index.ts#L117
-// const rgb2Hex = (r: number, g: number, b: number): string =>
-//   '#' + r.toString(16) + g.toString(16) + b.toString(16);

@@ -1,4 +1,9 @@
-import { useCallback, useContext, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { PlaySVG } from '../Icons';
 import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import { VZCodeContext } from '../VZCodeContext';
@@ -40,13 +45,33 @@ export const RunCodeWidget = ({
 
     // Optional: reset the icon state after animation completes (e.g., 1 second)
     setTimeout(() => setIsRunning(false), 1000);
-  }, []);
+  }, [runCodeRef, runPrettierRef]);
 
   const handleSplitEditor = useCallback(() => {
     console.log('Split Editor');
     console.log(splitCurrentPane);
     splitCurrentPane();
   }, [splitCurrentPane]);
+
+  // Add the keyboard event listener for Ctrl+S and Shift+Enter
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey && event.key === 's') ||
+        (event.shiftKey && event.key === 'Enter')
+      ) {
+        event.preventDefault();
+        handleClick();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleClick]);
 
   return (
     <div>

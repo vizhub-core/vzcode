@@ -1,4 +1,4 @@
-import React, {
+import {
   useCallback,
   useContext,
   useEffect,
@@ -8,16 +8,68 @@ import React, {
 import { Button, Modal, Form } from './bootstrap';
 import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
-import { fonts } from './Fonts/fonts';
 
-const fontSizes = ['16px', '18px', '20px', '24px'];
+const DEBUG = false;
+
+// Font size options for the editor
+const fontSizes = [
+  '10px',
+  '12px',
+  '14px',
+  '16px',
+  '18px',
+  '20px',
+  '24px',
+];
+
+// List of system fonts to be detected for availability
+const systemFonts = [
+  '-apple-system',
+  'BlinkMacSystemFont',
+  'Segoe UI',
+  'Roboto',
+  'Helvetica Neue',
+  'Arial',
+  'sans-serif',
+  'Courier New',
+  'Georgia',
+  'Tahoma',
+  'Verdana',
+  'Times New Roman',
+  'Trebuchet MS',
+  'Comic Sans MS',
+];
+
+// Utility function to detect if a given font is available
+const isFontAvailable = (font: string): boolean => {
+  const testString = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const testSize = '72px';
+
+  const span = document.createElement('span');
+  span.style.fontSize = testSize;
+  span.style.visibility = 'hidden';
+  span.style.position = 'absolute';
+  span.innerHTML = testString;
+  document.body.appendChild(span);
+
+  const defaultFont = 'monospace';
+  span.style.fontFamily = defaultFont;
+  const defaultWidth = span.offsetWidth;
+
+  span.style.fontFamily = `${font}, ${defaultFont}`;
+  const newWidth = span.offsetWidth;
+
+  document.body.removeChild(span);
+
+  return newWidth !== defaultWidth;
+};
 
 export const VZSettings = ({
   enableUsernameField = true,
 }: {
-  // Feature flag to enable/disable username field
   enableUsernameField?: boolean;
 }) => {
+  // Extracting context values for managing settings state
   const {
     isSettingsOpen,
     closeSettings,
@@ -27,38 +79,24 @@ export const VZSettings = ({
     setUsername,
   } = useContext(VZCodeContext);
 
-  const handleThemeChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setTheme(event.target.value as ThemeLabel);
-    },
-    [],
-  );
-
-  // Initialize font and size from localStorage or defaults
-  // const [selectedFont, setSelectedFont] = useState(
-  //   localStorage.getItem('vzcodeSelectedFont') ||
-  //     'Roboto Mono',
-  // );
-  // const [selectedFontSize, setSelectedFontSize] = useState(
-  //   localStorage.getItem('vzcodeSelectedFontSize') ||
-  //     '16px',
-  // );
+  // State variables for managing font and font size
   const [selectedFont, setSelectedFont] =
     useState('Roboto Mono');
   const [selectedFontSize, setSelectedFontSize] =
     useState('16px');
+  const [availableFonts, setAvailableFonts] = useState<
+    string[]
+  >([]);
 
+  // Load saved settings from local storage on initial render
   useEffect(() => {
-    // If we're in the browser,
     if (typeof window !== 'undefined') {
-      const selectedFontFromLocalStorage: string | null =
+      const selectedFontFromLocalStorage =
         window.localStorage.getItem('vzcodeSelectedFont');
-
-      const selectedFontSizeFromLocalStorage:
-        | string
-        | null = window.localStorage.getItem(
-        'vzcodeSelectedFontSize',
-      );
+      const selectedFontSizeFromLocalStorage =
+        window.localStorage.getItem(
+          'vzcodeSelectedFontSize',
+        );
 
       if (selectedFontFromLocalStorage !== null) {
         setSelectedFont(selectedFontFromLocalStorage);
@@ -68,34 +106,42 @@ export const VZSettings = ({
           selectedFontSizeFromLocalStorage,
         );
       }
-    } else {
-      // If we're not in the browser, use the default initial width.
     }
   }, []);
 
-  // Called when the user selects a different font
-  const handleFontChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newFont = event.target.value;
-      localStorage.setItem('vzcodeSelectedFont', newFont);
-      setSelectedFont(newFont);
-    },
-    [],
-  );
+  // Detect available system fonts and update the state
+  useEffect(() => {
+    const detectFonts = () => {
+      const detectedFonts: string[] = [];
+      for (const font of systemFonts) {
+        if (isFontAvailable(font)) {
+          detectedFonts.push(font);
+          if (DEBUG) {
+            console.log(`${font} is available`);
+          }
+        } else if (DEBUG) {
+          console.log(`${font} is not available`);
+        }
+      }
+      setAvailableFonts(detectedFonts);
+    };
 
-  // Called when the user selects a different font size
-  const handleFontSizeChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const newSize = event.target.value;
-      localStorage.setItem(
-        'vzcodeSelectedFontSize',
-        newSize,
-      );
-      setSelectedFontSize(newSize);
-    },
-    [],
-  );
+    detectFonts();
+  }, []);
 
+  // Reset all settings to default values
+  const resetSettings = useCallback(() => {
+    setSelectedFont('Roboto Mono');
+    setSelectedFontSize('16px');
+    setTheme(themes[0].label);
+    if (enableUsernameField) {
+      setUsername('');
+    }
+    localStorage.removeItem('vzcodeSelectedFont');
+    localStorage.removeItem('vzcodeSelectedFontSize');
+  }, [enableUsernameField, setTheme, setUsername]);
+
+  // Update font family in the document's style
   useEffect(() => {
     document.body.style.setProperty(
       '--vzcode-font-family',
@@ -103,6 +149,7 @@ export const VZSettings = ({
     );
   }, [selectedFont]);
 
+  // Update font size in the document's style
   useEffect(() => {
     document.body.style.setProperty(
       '--vzcode-font-size',
@@ -112,11 +159,12 @@ export const VZSettings = ({
 
   const usernameRef = useRef<HTMLInputElement>(null);
 
+  // Handle username input change
   const handleUsernameChange = useCallback(() => {
     setUsername(usernameRef.current?.value || '');
   }, [setUsername]);
 
-  // Function to handle pressing Enter key
+  // Close settings modal on Enter key press
   useEffect(() => {
     if (isSettingsOpen) {
       const handleEnterKey = (event: KeyboardEvent) => {
@@ -168,7 +216,9 @@ export const VZSettings = ({
           <select
             className="form-select"
             value={theme}
-            onChange={handleThemeChange}
+            onChange={(e) =>
+              setTheme(e.target.value as ThemeLabel)
+            }
           >
             {themes.map(({ label }) => (
               <option key={label} value={label}>
@@ -176,37 +226,32 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-          <Form.Text className="text-muted">
-            Select a color theme for the editor
-          </Form.Text>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font</Form.Label>
-
           <select
             className="form-select"
-            onChange={handleFontChange}
+            onChange={(e) =>
+              setSelectedFont(e.target.value)
+            }
             value={selectedFont}
           >
-            {fonts.map((font) => (
+            {availableFonts.map((font) => (
               <option key={font} value={font}>
                 {font}
               </option>
             ))}
           </select>
-
-          <Form.Text className="text-muted">
-            Select font for the editor
-          </Form.Text>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formFork">
           <Form.Label>Font Size</Form.Label>
-
           <select
             className="form-select"
-            onChange={handleFontSizeChange}
+            onChange={(e) =>
+              setSelectedFontSize(e.target.value)
+            }
             value={selectedFontSize}
           >
             {fontSizes.map((size) => (
@@ -215,13 +260,12 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
-
-          <Form.Text className="text-muted">
-            Select a font size for the editor
-          </Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
+        <Button variant="secondary" onClick={resetSettings}>
+          Reset to Default
+        </Button>
         <Button variant="primary" onClick={closeSettings}>
           Done
         </Button>

@@ -1,8 +1,10 @@
-import { VZSettings } from './VZSettings';
+import { enableLiveKit } from './featureFlags';
 import { VZKeyboardShortcutsDoc } from './VZKeyboardShortcutsDoc';
+import { VZSettings } from './VZSettings';
 import { VZSidebar } from './VZSidebar';
-import { CreateFileModal } from './VZSidebar/CreateFileModal';
 import { CreateDirModal } from './VZSidebar/CreateDirModal';
+import { CreateFileModal } from './VZSidebar/CreateFileModal';
+import { VoiceChatModal } from './VZSidebar/VoiceChatModal';
 
 // The middle portion of the VZCode environment, containing:
 // * The sidebar
@@ -20,6 +22,7 @@ export const VZLeft = ({ enableUsernameField = true }) => {
       />
       <CreateFileModal />
       <CreateDirModal />
+      {enableLiveKit && <VoiceChatModal />}
     </div>
   );
 };

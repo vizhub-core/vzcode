@@ -6,8 +6,8 @@ import {
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import { assignUserColor } from '../presenceColor';
+import { VizFileId } from '@vizhub/viz-types';
 import {
-  FileId,
   Presence,
   PresenceId,
   TabState,
@@ -98,7 +98,7 @@ export const json1PresenceDisplay = ({
               // in the current file, then open the tab of the other user.
               if (enableAutoFollowRef.current) {
                 openTab({
-                  fileId: presence.start[1] as FileId,
+                  fileId: presence.start[1] as VizFileId,
                   isTransient: true,
                 });
               }

@@ -5,7 +5,8 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "target": "esnext"
+    "target": "esnext",
+    "module": "esnext"
   },
   "include": ["src/**/*"],
   "//": "TODO - remove this when we have this change: https://github.com/vitest-dev/vitest/issues/3622",

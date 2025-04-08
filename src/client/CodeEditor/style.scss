@@ -48,4 +48,109 @@
   .cm-line {
     font-family: var(--vzcode-font-family);
   }
+
+  .tooltip_hover_circle {
+    color: white;
+    text-align: center;
+    position: fixed;
+    background-color: black;
+    padding: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  .tooltip_hover_circle strong {
+    font-size: 14px;
+  }
+
+  .tooltip_hover_circle div {
+    font-size: 12px;
+  }
+
+  .cm-panel.cm-search {
+    padding: 5px;
+    position: relative;
+    background-color: var(--vh-color-neutral-01);
+    border-radius: 6px;
+    color: var(--vh-color-neutral-04);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  .cm-panels {
+    background-color: #333338;
+    color: var(--vh-color-neutral-04);
+    border: 2px solid var(--vh-color-neutral-02);
+    border-radius: 6px;
+  }
+
+  .cm-textfield {
+    background-color: var(--vh-color-neutral-01);
+    color: #efe7dc;
+    border: 1px solid var(--vh-color-neutral-04);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .cm-button {
+    background-color: var(--vh-color-neutral-01);
+    border: 1px solid #193350;
+    color: var(--vh-color-neutral-04);
+    border: 1px solid var(--vh-color-neutral-04);
+    border-radius: 5px;
+    padding: 6px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .cm-button:hover {
+    background-color: #50c878;
+    color: #ffffff;
+    transform: scale(1.1);
+  }
+
+  .cm-button:active {
+    background-color: #202e46;
+    transform: scale(0.95);
+  }
+
+  .cm-searchMatch {
+    background-color: rgba(255, 255, 0, 0.5);
+    border-radius: 2px;
+  }
+
+  .cm-searchMatch-selected {
+    background-color: rgba(255, 140, 0, 0.5);
+    border: 2px solid #ff8800;
+    border-radius: 2px;
+  }
+  .cm-panel.cm-search [name='close'] {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    background-color: var(--vh-color-neutral-01);
+    color: var(--vh-color-neutral-04);
+    border: none;
+    font: inherit;
+    padding: 4px 8px;
+    margin: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .cm-panel.cm-search [name='close']:hover {
+    background-color: var(--vh-color-caution-01);
+    color: #ffffff;
+  }
+
+  .cm-panel.cm-search [name='close']:active {
+    background-color: var(--vh-color-caution-02);
+    transform: scale(0.95);
+  }
 }

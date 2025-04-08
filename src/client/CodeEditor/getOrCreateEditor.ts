@@ -10,20 +10,21 @@ import { markdown } from '@codemirror/lang-markdown';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { json1Sync } from 'codemirror-ot';
+
 import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 // import { showMinimap } from '@replit/codemirror-minimap';
 import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
 import { Diagnostic, linter } from '@codemirror/lint';
+
 import { json1Presence, textUnicode } from '../../ot';
 import {
-  FileId,
   PaneId,
   ShareDBDoc,
   TabState,
   Username,
-  VZCodeContent,
 } from '../../types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
 import {
@@ -45,10 +46,17 @@ import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from '../CodeEditor/rainbowBrackets';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
+import { copilot } from './Copilot';
 
 // Feature flag to enable TypeScript completions & TypeScript Linter.
-const enableTypeScriptCompletions = true;
-const enableTypeScriptLinter = true;
+// This is disabled by default because it's buggy and glitchy.
+// It's overly aggressive and shows warnings where it should not.
+// Path forward:
+//  * Remove this entire TypeScript linter implementation
+//  * Use val-town/codemirror-ts: https://github.com/vizhub-core/vzcode/issues/844
+const enableTypeScriptLinter = false;
+
+const DEBUG = false;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -74,6 +82,7 @@ const htmlConfig = {
   ],
   nestedAttributes: [],
 };
+
 // Language extensions for CodeMirror.
 // Keys are file extensions.
 // Values are CodeMirror extensions.
@@ -101,6 +110,14 @@ const getAtPath = (obj, path) => {
   return current;
 };
 
+// Extend the EditorCacheValue type to include the compartments and the updateRainbowBrackets method
+interface ExtendedEditorCacheValue
+  extends EditorCacheValue {
+  themeCompartment: Compartment;
+  rainbowBracketsCompartment: Compartment;
+  updateRainbowBrackets: (enabled: boolean) => void;
+}
+
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
 export const getOrCreateEditor = ({
@@ -120,10 +137,12 @@ export const getOrCreateEditor = ({
   allowGlobals,
   enableAutoFollowRef,
   openTab,
+  aiCopilotEndpoint,
+  rainbowBracketsEnabled = true,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
-  fileId: FileId;
+  fileId: VizFileId;
 
   // The ShareDB document that contains the file.
   // Used when the editor is created for:
@@ -135,10 +154,10 @@ export const getOrCreateEditor = ({
   // This can be `undefined` in the case where we are
   // viewing files read-only, in which case multiplayer
   // editing is not enabled.
-  shareDBDoc: ShareDBDoc<VZCodeContent> | undefined;
+  shareDBDoc: ShareDBDoc<VizContent> | undefined;
 
   // The initial content to present.
-  content: VZCodeContent;
+  content: VizContent;
 
   filesPath: string[];
   localPresence: any;
@@ -156,13 +175,17 @@ export const getOrCreateEditor = ({
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
   openTab: (tabState: TabState) => void;
-}): EditorCacheValue => {
+  aiCopilotEndpoint?: string;
+  rainbowBracketsEnabled?: boolean; // New parameter type
+}): ExtendedEditorCacheValue => {
   // Cache hit
 
   const cacheKey = editorCacheKey(fileId, paneId);
 
   if (editorCache.has(cacheKey)) {
-    return editorCache.get(cacheKey);
+    return editorCache.get(
+      cacheKey,
+    ) as ExtendedEditorCacheValue;
   }
 
   // Cache miss
@@ -177,6 +200,9 @@ export const getOrCreateEditor = ({
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
   let themeCompartment = new Compartment();
+
+  // Create a compartment for rainbow brackets so that it can be enabled/disabled dynamically.
+  let rainbowBracketsCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
   // const extensions = [autocompletion(), html(htmlConfig)]
@@ -235,6 +261,13 @@ export const getOrCreateEditor = ({
   // This supports dynamic changing of the theme.
   extensions.push(
     themeCompartment.of(themeOptionsByLabel[theme].value),
+  );
+
+  // Adds compartment for rainbow brackets with initial toggle state.
+  extensions.push(
+    rainbowBracketsCompartment.of(
+      rainbowBracketsEnabled ? rainbowBrackets() : [],
+    ),
   );
 
   // TODO handle dynamic changing of the file extension.
@@ -380,8 +413,16 @@ export const getOrCreateEditor = ({
       }),
     ),
   );
-  // adds rainbow brackets
-  extensions.push(rainbowBrackets());
+
+  // Adds copilot completions
+  DEBUG &&
+    console.log(
+      '[getOrCreateEditor] aiCopilotEndpoint: ',
+      aiCopilotEndpoint,
+    );
+  if (aiCopilotEndpoint) {
+    extensions.push(copilot({ aiCopilotEndpoint }));
+  }
 
   const editor = new EditorView({
     state: EditorState.create({
@@ -390,10 +431,26 @@ export const getOrCreateEditor = ({
     }),
   });
 
-  const editorCacheValue = { editor, themeCompartment };
+  const editorCacheValue: ExtendedEditorCacheValue = {
+    editor,
+    themeCompartment,
+    rainbowBracketsCompartment,
+    updateRainbowBrackets: (enabled) => {
+      editor.dispatch({
+        effects: rainbowBracketsCompartment.reconfigure(
+          enabled ? rainbowBrackets() : [],
+        ),
+      });
+    },
+  };
 
   // Populate the cache.
   editorCache.set(cacheKey, editorCacheValue);
+
+  // Initialize rainbow brackets based on the toggle state
+  editorCacheValue.updateRainbowBrackets(
+    rainbowBracketsEnabled,
+  );
 
   return editorCacheValue;
 };

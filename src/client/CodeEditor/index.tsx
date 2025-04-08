@@ -19,9 +19,11 @@ const filesPath = ['files'];
 export const CodeEditor = ({
   customInteractRules,
   allowGlobals,
+  aiCopilotEndpoint,
 }: {
   customInteractRules?: Array<InteractRule>;
   allowGlobals: boolean;
+  aiCopilotEndpoint?: string;
 }) => {
   const {
     activePane,
@@ -99,7 +101,7 @@ export const CodeEditor = ({
         allowGlobals,
         enableAutoFollowRef,
         openTab,
-        // splitPaneView,
+        aiCopilotEndpoint,
       }),
     [
       activePane,
@@ -112,6 +114,7 @@ export const CodeEditor = ({
       editorCache,
       usernameRef,
       typeScriptWorker,
+      aiCopilotEndpoint,
     ],
   );
 

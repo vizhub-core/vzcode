@@ -1,20 +1,22 @@
 #!/usr/bin/env node
-import './setupEnv.js';
-import http from 'http';
-import express from 'express';
-import ShareDB from 'sharedb';
-import { WebSocketServer } from 'ws';
 import WebSocketJSONStream from '@teamwork/websocket-json-stream';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import open from 'open';
-import ngrok from 'ngrok';
 import bodyParser from 'body-parser';
+import express from 'express';
+import fs from 'fs';
+import http from 'http';
+import ngrok from 'ngrok';
+import open from 'open';
+import path from 'path';
+import ShareDB from 'sharedb';
+import { fileURLToPath } from 'url';
+import { WebSocketServer } from 'ws';
 import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
+import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
+import { createToken } from './livekit.js';
+import './setupEnv.js';
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -102,6 +104,19 @@ app.post(
   bodyParser.json(),
   handleAIAssist(shareDBDoc),
 );
+
+// Handle AI Copilot requests.
+app.post(
+  '/ai-copilot',
+  bodyParser.json(),
+  handleAICopilot(),
+);
+
+// Livekit Token Generator
+app.get('/livekit-token', async (req, res) => {
+  const { room, username } = req.query;
+  res.send(await createToken(room, username));
+});
 
 // The state of the document when files were last auto-saved.
 let previousDocument = initialDocument;

@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { FileId, PaneId } from '../types';
+import { VizFileId } from '@vizhub/viz-types';
+import { PaneId } from '../types';
 import { EditorView } from 'codemirror';
 
 export type EditorCacheValue = {
@@ -11,7 +12,7 @@ export type EditorCacheValue = {
 export type EditorCacheKey = string;
 
 export const editorCacheKey = (
-  fileId: FileId,
+  fileId: VizFileId,
   paneId: PaneId,
 ): EditorCacheKey => fileId + '|' + paneId;
 

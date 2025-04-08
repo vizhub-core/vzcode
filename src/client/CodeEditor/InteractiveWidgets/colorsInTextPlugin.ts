@@ -32,7 +32,8 @@ class ColorWidget extends WidgetType {
 
     parent.setAttribute(
       'style',
-      `width:${size}px;height:${size}px`,
+      `width:${size}px;height:${size}px;position:relative;`,
+      // Position relative for the hovering tool tip to work
     );
     parent.className = 'color-circle-parent';
     const svg = document.createElementNS(
@@ -72,8 +73,42 @@ class ColorWidget extends WidgetType {
     svg.appendChild(colorCircle);
 
     parent.appendChild(svg);
+
+    // Hovering tool tip shortcut for when users hover over color circle
+    const hoveringTooltip = document.createElement('div');
+
+    // Set class for tooltip to use CSS styles
+    hoveringTooltip.className = 'tooltip_hover_circle';
+
+    hoveringTooltip.innerHTML = `<strong>Alt + Click on a hex color</strong><br />
+      <div>Open a color picker to modify the color</div>`;
+
+    parent.appendChild(hoveringTooltip);
+
+    // Timer to prevent constant pop-ups when scrolling through code
+    let hoverTimeout: number;
+
+    // Fade in and fade out effect for when user hovers over the circle
+    // Mouse Event to set y and x of the tool tip pop up to prevent overlap onto circle
+    parent.addEventListener(
+      'mouseenter',
+      (event: MouseEvent) => {
+        hoverTimeout = window.setTimeout(() => {
+          hoveringTooltip.style.top = `${event.clientY - 60}px`;
+          hoveringTooltip.style.left = `${event.clientX}px`;
+          hoveringTooltip.style.opacity = '1';
+        }, 700);
+      },
+    );
+
+    parent.addEventListener('mouseleave', () => {
+      clearTimeout(hoverTimeout);
+      hoveringTooltip.style.opacity = '0';
+    });
+
     return parent;
   }
+
   ignoreEvent() {
     return false;
   }

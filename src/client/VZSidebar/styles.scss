@@ -270,6 +270,10 @@
         background-color: var(--vh-color-success-01);
       }
 
+      &.pending {
+        background-color: var(--vh-color-caution-01);
+      }
+
       &.disconnected {
         background-color: var(--vh-color-warning-01);
       }

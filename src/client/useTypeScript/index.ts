@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { VZCodeContent } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 import { autoPrettierDebounceTimeMS } from '../usePrettier';
 
 // We don't want to send the message _before_ Prettier runs,
@@ -16,7 +16,7 @@ export const useTypeScript = ({
   content,
   typeScriptWorker,
 }: {
-  content: VZCodeContent;
+  content: VizContent;
   typeScriptWorker: Worker;
 }) => {
   // When Content changes, update the TypeScript worker
@@ -26,7 +26,7 @@ export const useTypeScript = ({
   const debounceTimeoutId = useRef<number | null>(null);
 
   const debounceUpdateContent = useCallback(
-    (content: VZCodeContent) => {
+    (content: VizContent) => {
       // Handle the case where the content has not yet been loaded.
       if (content === null) {
         return;

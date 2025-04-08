@@ -1,4 +1,8 @@
-import { File, Files, VZCodeContent } from '../../../types';
+import {
+  VizFile,
+  VizFiles,
+  VizContent,
+} from '@vizhub/viz-types';
 import { getTSFileName } from './getTSFileName';
 import { isTS } from './isTS';
 
@@ -16,12 +20,12 @@ export const handleMessageUpdateContent = async ({
     console.log('update-content message received');
   }
   // Unpack the files
-  const content: VZCodeContent = data.details;
-  const files: Files = content.files;
+  const content: VizContent = data.details;
+  const files: VizFiles = content.files;
 
   // Iterate over the files
   for (const fileId of Object.keys(files)) {
-    const file: File = files[fileId];
+    const file: VizFile = files[fileId];
     const { name, text } = file;
 
     const tsFileName = getTSFileName(name);

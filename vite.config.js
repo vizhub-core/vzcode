@@ -12,7 +12,12 @@ export default defineConfig({
       },
       '/ai-assist': {
         target: 'http://localhost:3030',
-        ws: true,
+      },
+      '/ai-copilot': {
+        target: 'http://localhost:3030',
+      },
+      '/livekit-token': {
+        target: 'http://localhost:3030',
       },
     },
   },

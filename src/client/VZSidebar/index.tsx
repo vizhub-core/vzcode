@@ -4,34 +4,38 @@ import {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import {
-  FileId,
   FileTree,
   FileTreeFile,
   Presence,
   PresenceId,
   PresenceIndicator,
+  FileId, // added so the fileNames memo compiles
 } from '../../types';
-import { Tooltip, OverlayTrigger } from '../bootstrap';
-import { Search } from './Search';
+import { VizFileId } from '@vizhub/viz-types';
+import { OverlayTrigger, Tooltip } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
-import { sortFileTree } from '../sortFileTree';
-import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import {
-  FolderSVG,
-  SearchSVG,
   BugSVG,
+  FileSVG,
+  FolderSVG,
   GearSVG,
   NewSVG,
-  FileSVG,
-  QuestionMarkSVG,
   PinSVG,
+  QuestionMarkSVG,
+  SearchSVG,
 } from '../Icons';
+import { MicSVG } from '../Icons/MicSVG';
+import { sortFileTree } from '../sortFileTree';
+import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
 import { Listing } from './Listing';
-import { useDragAndDrop } from './useDragAndDrop';
+import { Search } from './Search';
 import './styles.scss';
+import { useDragAndDrop } from './useDragAndDrop';
+import { enableLiveKit } from '../featureFlags';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -41,14 +45,12 @@ const enableConnectionStatus = true;
 const collectFilesRecursively = (
   node,
   path = '',
-  files = [],
+  files: string[] = [],
 ) => {
-  const currentPath = path
-    ? `${path}/${node.name}`
-    : node.name;
+  const currentPath = path ? `${path}/${node.name}` : node.name;
 
   if (node.type === 'file') {
-    files.push(currentPath); // Collect the file path
+    files.push(currentPath);
   } else if (node.type === 'directory' && node.children) {
     node.children.forEach((child) =>
       collectFilesRecursively(child, currentPath, files),
@@ -65,20 +67,12 @@ const copyFileList = async (fileNames: string[]) => {
       return;
     }
 
-    console.log('fileNames', fileNames);
-
-    // const allFiles = collectFilesRecursively(fileTree);
     const fileListString = fileNames.join('\n');
-
-    console.log('fileListString', fileListString);
-
     await navigator.clipboard.writeText(fileListString);
     alert('File list copied to clipboard!');
   } catch (error) {
     console.error('Error copying file list:', error);
-    alert(
-      'Failed to copy the file list. Please try again.',
-    );
+    alert('Failed to copy the file list. Please try again.');
   }
 };
 
@@ -86,14 +80,12 @@ export const VZSidebar = ({
   createFileTooltipText = (
     <>
       <strong>New file</strong>
-      {/* TODO verify that Ctrl + Shift + N works - does not work in Linux */}
       <div>(Alt + N or Ctrl + Shift + N)</div>
     </>
   ),
   createDirTooltipText = (
     <div>
       <strong>New Directory</strong>
-      {/* TODO consider Alt+D, as Ctrl + Shift + D does not work in Linux */}
       <div>(Ctrl + Shift + D)</div>
     </div>
   ),
@@ -112,8 +104,6 @@ export const VZSidebar = ({
   reportBugTooltipText = (
     <div>
       <strong>Report Bug</strong>
-      {/* TODO get this keyboard shortcut working? */}
-      {/* <div>(Ctrl + Shift + B)</div> */}
     </div>
   ),
   searchToolTipText = (
@@ -137,20 +127,25 @@ export const VZSidebar = ({
   disableAutoFollowTooltipText = (
     <div>
       <strong>Disable Auto Follow</strong>
-      {/* TODO consider Alt+A, this breaks in Linux */}
       <div>(Ctrl + Shift + A)</div>
+    </div>
+  ),
+  voiceChatToolTipText = (
+    <div>
+      <strong>Open Voice Chat Menu</strong>
     </div>
   ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
   openSettingsTooltipText?: React.ReactNode;
-  reportBugTooltipText?: React.ReactNode;
   openKeyboardShortcuts?: React.ReactNode;
+  reportBugTooltipText?: React.ReactNode;
   searchToolTipText?: React.ReactNode;
   filesToolTipText?: React.ReactNode;
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
+  voiceChatToolTipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -162,46 +157,44 @@ export const VZSidebar = ({
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
+    pending,
     sidebarRef,
     enableAutoFollow,
     toggleAutoFollow,
     docPresence,
     updatePresenceIndicator,
     sidebarPresenceIndicators,
+    liveKitConnection,
+    setLiveKitConnection,
+    setVoiceChatModalOpen,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
   );
-  const handleQuestionMarkClick = useCallback(() => {
-    setIsDocOpen(true);
-  }, []);
-  const handleSettingsClick = useCallback(() => {
-    setIsSettingsOpen(true);
-  }, []);
 
-  const { sidebarWidth } = useContext(
-    SplitPaneResizeContext,
+  const handleQuestionMarkClick = useCallback(
+    () => setIsDocOpen(true),
+    [setIsDocOpen],
+  );
+  const handleSettingsClick = useCallback(
+    () => setIsSettingsOpen(true),
+    [setIsSettingsOpen],
   );
 
-  // On single-click, open the file in a transient tab.
+  const { sidebarWidth } = useContext(SplitPaneResizeContext);
+
+  // Open file helpers
   const handleFileClick = useCallback(
-    (fileId: FileId) => {
-      openTab({ fileId, isTransient: true });
-    },
+    (fileId: VizFileId) => openTab({ fileId, isTransient: true }),
     [openTab],
   );
-
-  // On double-click, open the file in a persistent tab.
   const handleFileDoubleClick = useCallback(
-    (fileId: FileId) => {
-      openTab({ fileId, isTransient: false });
-    },
+    (fileId: VizFileId) => openTab({ fileId, isTransient: false }),
     [openTab],
   );
 
-  // True if files exist.
   const filesExist = !!files;
 
   const {
@@ -212,41 +205,24 @@ export const VZSidebar = ({
     handleDrop,
   } = useDragAndDrop();
 
-  // Track presence of remote users across files
-  // so that they can be displayed in the sidebar.
-  useEffect(() => {
-    docPresence;
-  }, []);
-
-  // Track the presence indicators for display in sidebar
+  /* ---------- Presence ---------- */
   useEffect(() => {
     if (docPresence) {
       const handleReceive = (
         presenceId: PresenceId,
         update: Presence,
       ) => {
-        const presenceIndicator: PresenceIndicator = {
+        updatePresenceIndicator({
           username: update.username,
-          fileId: update.start[1] as FileId,
-        };
-
-        // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
-
-        updatePresenceIndicator(presenceIndicator);
+          fileId: update.start[1] as VizFileId,
+        });
       };
-
       docPresence.on('receive', handleReceive);
-      return () => {
-        docPresence.off('receive', handleReceive);
-      };
+      return () => docPresence.off('receive', handleReceive);
     }
-  }, [docPresence]);
+  }, [docPresence, updatePresenceIndicator]);
 
-  // console.log(sidebarPresenceIndicators);
+  /* ---------- Copy‑files‑list feature ---------- */
   const fileNames: string[] = useMemo(
     () =>
       files
@@ -258,39 +234,51 @@ export const VZSidebar = ({
   );
 
   useEffect(() => {
-    const copyFilesElement = document.querySelector(
-      '.copy-files-list-blurb',
-    );
-    if (copyFilesElement) {
-      copyFilesElement.addEventListener('click', () =>
-        copyFileList(fileNames),
-      );
-    }
-
-    return () => {
-      if (copyFilesElement) {
-        copyFilesElement.removeEventListener('click', () =>
-          copyFileList(fileNames),
-        );
-      }
-    };
+    const handler = () => copyFileList(fileNames);
+    const el = document.querySelector('.copy-files-list-blurb');
+    el?.addEventListener('click', handler);
+    return () => el?.removeEventListener('click', handler);
   }, [fileNames]);
 
+  /* ---------- Connection‑status feature ---------- */
+  const [saved, setSaved] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
+  const previousPendingRef = useRef<boolean>(pending);
+
+  // transition from "connecting…" to connected/disconnected
+  useEffect(() => {
+    if (isConnecting && connected) setIsConnecting(false);
+  }, [connected, isConnecting]);
+
+  // show "Saved." briefly after a successful save
+  useEffect(() => {
+    if (
+      previousPendingRef.current &&
+      !pending &&
+      connected &&
+      !isConnecting
+    ) {
+      setSaved(true);
+      const timer = setTimeout(() => setSaved(false), 1500);
+      return () => clearTimeout(timer);
+    }
+    previousPendingRef.current = pending;
+  }, [pending, connected, isConnecting]);
+
+  /* ---------- Render ---------- */
   return (
     <div
       className="vz-sidebar"
-      style={{ width: sidebarWidth + 'px' }}
+      style={{ width: `${sidebarWidth}px` }}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div
-        className="full-box"
-        ref={sidebarRef}
-        tabIndex={-1}
-      >
+      <div className="full-box" ref={sidebarRef} tabIndex={-1}>
+        {/* ---------- Sidebar buttons ---------- */}
         <div className="sidebar-section-buttons">
+          {/* Files */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -308,6 +296,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
+          {/* Search */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -325,6 +314,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
+          {/* Keyboard shortcuts */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -342,6 +332,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
+          {/* Report bug */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -364,6 +355,7 @@ export const VZSidebar = ({
             </a>
           </OverlayTrigger>
 
+          {/* Settings */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -381,6 +373,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
+          {/* New file */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -398,7 +391,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Directory Rename*/}
+          {/* New directory */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -416,7 +409,7 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {/*Toggle Follow*/}
+          {/* Toggle Auto Follow */}
           <OverlayTrigger
             placement="right"
             overlay={
@@ -430,27 +423,47 @@ export const VZSidebar = ({
             <i
               id="auto-focus-icon"
               className={`icon-button icon-button-dark${
-                enableAutoFollow
-                  ? ' vh-color-success-01'
-                  : ''
+                enableAutoFollow ? ' vh-color-success-01' : ''
               }`}
               onClick={toggleAutoFollow}
             >
               <PinSVG />
             </i>
           </OverlayTrigger>
+
+          {/* Voice Chat */}
+          {enableLiveKit && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="voice-chat">
+                  {voiceChatToolTipText}
+                </Tooltip>
+              }
+            >
+              <i
+                id="mic-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  setVoiceChatModalOpen(true);
+                }}
+              >
+                <MicSVG />
+              </i>
+            </OverlayTrigger>
+          )}
         </div>
+
+        {/* ---------- Sidebar content ---------- */}
         <div className="files" id="sidebar-view-container">
           {!isSearchOpen ? (
             <div className="sidebar-files">
               {isDragOver ? (
                 <div className="empty">
-                  <div className="empty-text">
-                    Drop files here!
-                  </div>
+                  <div className="empty-text">Drop files here!</div>
                 </div>
               ) : filesExist ? (
-                fileTree.children.map((entity) => {
+                fileTree!.children.map((entity) => {
                   const { fileId } = entity as FileTreeFile;
                   const { path } = entity as FileTree;
                   const key = fileId ? fileId : path;
@@ -459,18 +472,15 @@ export const VZSidebar = ({
                       key={key}
                       entity={entity}
                       handleFileClick={handleFileClick}
-                      handleFileDoubleClick={
-                        handleFileDoubleClick
-                      }
+                      handleFileDoubleClick={handleFileDoubleClick}
                     />
                   );
                 })
               ) : (
                 <div className="empty">
                   <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
+                    It looks like you don't have any files yet! Click the
+                    "Create file" button above to create your first file.
                   </div>
                 </div>
               )}
@@ -483,30 +493,31 @@ export const VZSidebar = ({
         </div>
       </div>
 
+      {/* ---------- Copy‑files‑list blurb ---------- */}
+      <div className="copy-files-list-blurb">Copy files list</div>
+
+      {/* ---------- Connection‑status banner ---------- */}
       {enableConnectionStatus && (
         <div className="connection-status">
-          {connected ? 'Connected' : 'Connection Lost'}
+          {isConnecting
+            ? 'Connecting...'
+            : !connected
+              ? 'Connection Lost'
+              : pending
+                ? 'Saving...'
+                : saved
+                  ? 'Saved.'
+                  : 'Connected'}
           <div className="connection">
             <div
               className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
-              }`}
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="copy-files-list-blurb">
-        Copy files list
-      </div>
-
-      {enableConnectionStatus && (
-        <div className="connection-status">
-          {connected ? 'Connected' : 'Connection Lost'}
-          <div className="connection">
-            <div
-              className={`connection-status-indicator ${
-                connected ? 'connected' : 'disconnected'
+                isConnecting
+                  ? 'pending'
+                  : !connected
+                    ? 'disconnected'
+                    : pending
+                      ? 'pending'
+                      : 'connected'
               }`}
             />
           </div>
