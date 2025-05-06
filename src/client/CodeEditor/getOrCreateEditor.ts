@@ -2,6 +2,7 @@ import { EditorView } from 'codemirror';
 import {
   Compartment,
   EditorState,
+  StateField
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { svelte } from '@replit/codemirror-lang-svelte';
@@ -47,6 +48,13 @@ import { javascriptLanguage } from '@codemirror/lang-javascript';
 import { copilot } from './Copilot';
 
 const DEBUG = false;
+
+// Define a StateField to store the file name.
+// This should be defined at the module level if it's to be imported by other modules.
+export const fileNameStateField = StateField.define<string>({
+  create: () => '', // Default initial value
+  update: (value, tr) => value, // Typically set once at creation for a given editor instance
+});
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -196,6 +204,9 @@ export const getOrCreateEditor = ({
   // const extensions = [autocompletion(), html(htmlConfig)]
   const extensions = [];
 
+  // Initialize the fileNameStateField with the actual file name
+  extensions.push(fileNameStateField.init(() => name));
+
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
   // Does not deal with showing others' cursors.
@@ -250,7 +261,7 @@ export const getOrCreateEditor = ({
     extensions.push(lintGutter()); // Show lint icons in the gutter
     extensions.push(linter(esLintSource, {
       // You can configure linter options here, e.g., delay
-      delay: 750, 
+      delay: 750,
     }));
   }
 
