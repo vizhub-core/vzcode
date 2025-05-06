@@ -27,6 +27,9 @@ const config = {
     parserOptions: {
       ecmaVersion: 2022, // Use number instead of enum type
       sourceType: 'module',
+      ecmaFeatures: { // Add this to enable JSX parsing
+        jsx: true,
+      },
     },
   },
   rules: {
@@ -52,8 +55,8 @@ self.onmessage = (event) => {
     return;
   }
 
-  // Only lint .js files
-  if (!fileName || !fileName.endsWith('.js')) {
+  // Only lint .js or .jsx files
+  if (!fileName || !/\.(js|jsx)$/i.test(fileName)) {
     self.postMessage({ diagnostics: [], requestId });
     return;
   }
