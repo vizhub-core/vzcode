@@ -8,6 +8,10 @@ import { AIAssistWidget } from './AIAssist/AIAssistWidget';
 import { VZCodeContext } from './VZCodeContext';
 import { RunCodeWidget } from './RunCodeWidget';
 import { InteractRule } from '@replit/codemirror-interact';
+import { EditorView } from '@codemirror/view';
+import { Diagnostic } from '@codemirror/lint';
+import { VizContent } from '@vizhub/viz-types';
+import { LeafPane } from '../types';
 
 // TODO modify this to handle the SplitPane type
 // Recursive structure?
@@ -23,6 +27,7 @@ const PaneView = ({
   aiAssistTooltipText,
   aiAssistClickOverride,
   aiCopilotEndpoint,
+  esLintSource,
 }) => {
   // This prevents the CodeEditor from rendering
   // during SSR.
@@ -49,6 +54,7 @@ const PaneView = ({
         <CodeEditor
           customInteractRules={customInteractRules}
           aiCopilotEndpoint={aiCopilotEndpoint}
+          esLintSource={esLintSource}
         />
       )}
       {isClient &&
@@ -84,6 +90,7 @@ export const VZMiddle = ({
   aiAssistClickOverride,
   aiCopilotEndpoint,
   customInteractRules,
+  esLintSource,
 }: {
   enableAIAssist?: boolean;
   aiAssistEndpoint?: string;
@@ -92,6 +99,7 @@ export const VZMiddle = ({
   aiAssistClickOverride?: () => void;
   aiCopilotEndpoint?: string;
   customInteractRules?: Array<InteractRule>;
+  esLintSource: (view: EditorView) => Promise<readonly Diagnostic[]>;
 }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,
@@ -128,6 +136,7 @@ export const VZMiddle = ({
         aiAssistTooltipText={aiAssistTooltipText}
         aiAssistClickOverride={aiAssistClickOverride}
         aiCopilotEndpoint={aiCopilotEndpoint}
+        esLintSource={esLintSource}
       />
       <CodeErrorOverlay
         errorMessage={errorMessage}

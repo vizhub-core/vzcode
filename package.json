@@ -110,6 +110,7 @@
     "@codemirror/lang-javascript": "^6.2.3",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-markdown": "^6.3.2",
+    "@codemirror/lint": "^6.8.5",
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.36.5",
@@ -140,6 +141,8 @@
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.7",
+    "eslint": "^9.26.0",
+    "eslint-linter-browserify": "^9.26.0",
     "express": "^5.1.0",
     "ignore": "^7.0.3",
     "json0-ot-diff": "^1.1.2",
@@ -156,6 +159,7 @@
     "sharedb-client-browser": "^5.1.1",
     "uuid": "^11.1.0",
     "vizhub-ui": "^3.23.0",
+    "vzcode": "file:",
     "ws": "^8.18.1"
   },
   "devDependencies": {
@@ -173,6 +177,6 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.39.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.39.0"
+    "@rollup/rollup-win32-x64-msvc": "^4.40.2"
   }
 }

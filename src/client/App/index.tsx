@@ -25,6 +25,7 @@ import {
 } from '../usernameLocalStorage';
 import './style.scss';
 import { useShareDB } from './useShareDB';
+import { useESLint } from '../useESLint';
 
 // Instantiate the Prettier worker.
 const prettierWorker = new PrettierWorker();
@@ -75,6 +76,7 @@ function App() {
     useState(v4()); //default room name will be an arbitrary uuid
   const [liveKitConnection, setLiveKitConnection] =
     useState(false);
+  const { esLintSource } = useESLint();
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
 
@@ -129,6 +131,7 @@ function App() {
               aiCopilotEndpoint={
                 enableCopilot ? '/ai-copilot' : null
               }
+              esLintSource={esLintSource}
             />
             {enableRightPanel ? <VZRight /> : null}
             <VZResizer side="left" />
