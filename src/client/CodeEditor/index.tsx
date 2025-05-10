@@ -14,7 +14,6 @@ import { InteractRule } from '@replit/codemirror-interact';
 import './style.scss';
 import { EditorView } from 'codemirror'; // Import EditorView
 import { Diagnostic } from '@codemirror/lint'; // Import Diagnostic
-import { esLint } from '@codemirror/lang-javascript';
 
 // The path in the ShareDB document where the files live.
 const filesPath = ['files'];
