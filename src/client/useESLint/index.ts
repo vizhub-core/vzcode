@@ -11,41 +11,43 @@ const pendingRequests = new Map();
 
 export const useESLint = () => {
   const [worker] = useState(() => new ESLintWorker());
-  
+
   useEffect(() => {
     const handleMessage = (event) => {
       const { diagnostics, requestId, error } = event.data;
-      
+
       if (error) {
         console.error('[ESLint] Error:', error);
       }
-      
+
       const resolve = pendingRequests.get(requestId);
       if (resolve) {
         resolve(diagnostics);
         pendingRequests.delete(requestId);
       }
     };
-    
+
     worker.addEventListener('message', handleMessage);
-    
+
     return () => {
       worker.removeEventListener('message', handleMessage);
       worker.terminate();
     };
   }, [worker]);
-  
+
   const esLintSource = useCallback(
-    async (view: EditorView): Promise<readonly Diagnostic[]> => {
+    async (
+      view: EditorView,
+    ): Promise<readonly Diagnostic[]> => {
       if (!enableESLint) return [];
 
       // Retrieve the file name from the editor's state
       const fileName = view.state.field(fileNameStateField);
-      
+
       try {
         const code = view.state.doc.toString();
         const requestId = requestCounter++;
-        
+
         return new Promise<Diagnostic[]>((resolve) => {
           pendingRequests.set(requestId, resolve);
           worker.postMessage({ code, requestId, fileName });
@@ -55,8 +57,8 @@ export const useESLint = () => {
         return [];
       }
     },
-    [worker]
+    [worker],
   );
-  
+
   return { esLintSource };
 };

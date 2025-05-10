@@ -4,7 +4,9 @@ import globals from 'globals';
 const linter = new eslint.Linter();
 
 // Helper function to trim keys of an object
-function trimGlobalKeys(obj: Record<string, unknown>): Record<string, unknown> {
+function trimGlobalKeys(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
   if (!obj || typeof obj !== 'object') {
     return obj;
   }
@@ -27,7 +29,8 @@ const config = {
     parserOptions: {
       ecmaVersion: 2022, // Use number instead of enum type
       sourceType: 'module',
-      ecmaFeatures: { // Add this to enable JSX parsing
+      ecmaFeatures: {
+        // Add this to enable JSX parsing
         jsx: true,
       },
     },
@@ -35,12 +38,16 @@ const config = {
   rules: {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-undef': 'error',
-    'semi': 'off',
+    semi: 'off',
   },
 };
 
 // Helper function to convert line/column to character offset
-function getOffset(docLines: string[], line: number, column: number): number {
+function getOffset(
+  docLines: string[],
+  line: number,
+  column: number,
+): number {
   let offset = 0;
   for (let i = 0; i < line - 1; i++) {
     offset += (docLines[i] ? docLines[i].length : 0) + 1; // +1 for newline
@@ -49,9 +56,13 @@ function getOffset(docLines: string[], line: number, column: number): number {
 }
 
 self.onmessage = (event) => {
-  const { code, requestId, fileName} = event.data;
+  const { code, requestId, fileName } = event.data;
   if (typeof code !== 'string') {
-    self.postMessage({ diagnostics: [], requestId, error: 'Invalid code received' });
+    self.postMessage({
+      diagnostics: [],
+      requestId,
+      error: 'Invalid code received',
+    });
     return;
   }
 
@@ -64,25 +75,46 @@ self.onmessage = (event) => {
   try {
     // Use as any to bypass type checking for the config if necessary,
     // but the config should be valid after trimming keys.
-    const messages = linter.verify(code, config as any, { filename: 'file.js' });
+    const messages = linter.verify(code, config as any, {
+      filename: 'file.js',
+    });
     const docLines = code.split('\n');
 
     const diagnostics = messages.map((msg) => {
-      const from = getOffset(docLines, msg.line, msg.column);
+      const from = getOffset(
+        docLines,
+        msg.line,
+        msg.column,
+      );
       // endLine and endColumn may not always exist
-      const to = msg.endLine && msg.endColumn ? getOffset(docLines, msg.endLine, msg.endColumn) : from + (msg.fix?.range[1] - msg.fix?.range[0] || 1);
+      const to =
+        msg.endLine && msg.endColumn
+          ? getOffset(docLines, msg.endLine, msg.endColumn)
+          : from +
+            (msg.fix?.range[1] - msg.fix?.range[0] || 1);
 
       return {
         from,
         to,
-        severity: msg.severity === 2 ? 'error' : (msg.severity === 1 ? 'warning' : 'info'),
+        severity:
+          msg.severity === 2
+            ? 'error'
+            : msg.severity === 1
+              ? 'warning'
+              : 'info',
         message: msg.message,
-        source: msg.ruleId ? `eslint(${msg.ruleId})` : 'eslint',
+        source: msg.ruleId
+          ? `eslint(${msg.ruleId})`
+          : 'eslint',
       };
     });
     self.postMessage({ diagnostics, requestId });
   } catch (e: any) {
     console.error('Error linting in ESLint worker:', e);
-    self.postMessage({ error: e.message, diagnostics: [], requestId });
+    self.postMessage({
+      error: e.message,
+      diagnostics: [],
+      requestId,
+    });
   }
 };

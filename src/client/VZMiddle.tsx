@@ -99,7 +99,9 @@ export const VZMiddle = ({
   aiAssistClickOverride?: () => void;
   aiCopilotEndpoint?: string;
   customInteractRules?: Array<InteractRule>;
-  esLintSource: (view: EditorView) => Promise<readonly Diagnostic[]>;
+  esLintSource: (
+    view: EditorView,
+  ) => Promise<readonly Diagnostic[]>;
 }) => {
   const { codeEditorWidth } = useContext(
     SplitPaneResizeContext,

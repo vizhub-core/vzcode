@@ -22,11 +22,13 @@ const filesPath = ['files'];
 export const CodeEditor = ({
   customInteractRules,
   aiCopilotEndpoint,
-  esLintSource
+  esLintSource,
 }: {
   customInteractRules?: Array<InteractRule>;
   aiCopilotEndpoint?: string;
-  esLintSource: (view: EditorView) => Promise<readonly Diagnostic[]>;
+  esLintSource: (
+    view: EditorView,
+  ) => Promise<readonly Diagnostic[]>;
 }) => {
   const {
     activePane,
