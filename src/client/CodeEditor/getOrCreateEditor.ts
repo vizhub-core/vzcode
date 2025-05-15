@@ -41,16 +41,27 @@ import { ThemeLabel, themeOptionsByLabel } from '../themes';
 import { keymap } from '@codemirror/view';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
-import rainbowBrackets from '../CodeEditor/rainbowBrackets';
+import rainbowBrackets from './rainbowBrackets';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 import { copilot } from './Copilot';
+import { type WorkerShape } from "@valtown/codemirror-ts/src/worker";
+import * as Comlink from "comlink";
+import { tsAutocompleteWorker, tsFacetWorker, tsHoverWorker, tsLinterWorker, tsSyncWorker } from '@valtown/codemirror-ts';
 
 const DEBUG = false;
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
+
+
+
+const innerWorker = new Worker(new URL("./typescriptExtension/worker.ts", import.meta.url), {
+  type: "module",
+});
+const worker = Comlink.wrap<WorkerShape>(innerWorker);
+await worker.initialize();
 
 const htmlConfig = {
   matchClosingTags: true,
@@ -331,6 +342,19 @@ export const getOrCreateEditor = ({
       },
     }),
   );
+
+
+  if (name.endsWith("ts") || name.endsWith("tsx")) {
+    extensions.push(...[
+      tsFacetWorker.of({ worker, path: name }),
+      tsSyncWorker(),
+      tsLinterWorker(),
+      autocompletion({
+        override: [tsAutocompleteWorker()],
+      }),
+      tsHoverWorker(),
+    ]);
+  }
 
   // Show the minimap
   // See https://github.com/replit/codemirror-minimap#usage

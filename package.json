@@ -122,6 +122,7 @@
     "@replit/codemirror-lang-svelte": "^6.0.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@teamwork/websocket-json-stream": "^2.0.0",
+    "@typescript/vfs": "^1.6.1",
     "@uiw/codemirror-theme-abcdef": "^4.23.10",
     "@uiw/codemirror-theme-dracula": "^4.23.10",
     "@uiw/codemirror-theme-eclipse": "^4.23.10",
@@ -131,12 +132,14 @@
     "@uiw/codemirror-theme-okaidia": "^4.23.10",
     "@uiw/codemirror-theme-xcode": "^4.23.10",
     "@uiw/codemirror-themes": "^4.23.10",
+    "@valtown/codemirror-ts": "^2.3.1",
     "@vizhub/viz-types": "^0.1.0",
     "body-parser": "^2.2.0",
     "codemirror": "^6.0.1",
     "codemirror-copilot": "^0.0.7",
     "codemirror-ot": "^4.4.0",
     "color-hash": "^2.0.2",
+    "comlink": "^4.4.2",
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^16.4.7",
@@ -173,6 +176,6 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.39.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.39.0"
+    "@rollup/rollup-win32-x64-msvc": "^4.40.2"
   }
 }
