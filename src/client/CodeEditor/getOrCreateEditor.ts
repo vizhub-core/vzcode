@@ -45,9 +45,15 @@ import rainbowBrackets from './rainbowBrackets';
 import { cssLanguage } from '@codemirror/lang-css';
 import { javascriptLanguage } from '@codemirror/lang-javascript';
 import { copilot } from './Copilot';
-import { type WorkerShape } from "@valtown/codemirror-ts/src/worker";
-import * as Comlink from "comlink";
-import { tsAutocompleteWorker, tsFacetWorker, tsHoverWorker, tsLinterWorker, tsSyncWorker } from '@valtown/codemirror-ts';
+import { type WorkerShape } from '@valtown/codemirror-ts/src/worker';
+import * as Comlink from 'comlink';
+import {
+  tsAutocompleteWorker,
+  tsFacetWorker,
+  tsHoverWorker,
+  tsLinterWorker,
+  tsSyncWorker,
+} from '@valtown/codemirror-ts';
 
 const DEBUG = false;
 
@@ -55,11 +61,15 @@ const DEBUG = false;
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
 
-
-
-const innerWorker = new Worker(new URL("./typescriptExtension/worker.ts", import.meta.url), {
-  type: "module",
-});
+const innerWorker = new Worker(
+  new URL(
+    './typescriptExtension/worker.ts',
+    import.meta.url,
+  ),
+  {
+    type: 'module',
+  },
+);
 const worker = Comlink.wrap<WorkerShape>(innerWorker);
 await worker.initialize();
 
@@ -343,17 +353,18 @@ export const getOrCreateEditor = ({
     }),
   );
 
-
-  if (name.endsWith("ts") || name.endsWith("tsx")) {
-    extensions.push(...[
-      tsFacetWorker.of({ worker, path: name }),
-      tsSyncWorker(),
-      tsLinterWorker(),
-      autocompletion({
-        override: [tsAutocompleteWorker()],
-      }),
-      tsHoverWorker(),
-    ]);
+  if (name.endsWith('ts') || name.endsWith('tsx')) {
+    extensions.push(
+      ...[
+        tsFacetWorker.of({ worker, path: name }),
+        tsSyncWorker(),
+        tsLinterWorker(),
+        autocompletion({
+          override: [tsAutocompleteWorker()],
+        }),
+        tsHoverWorker(),
+      ],
+    );
   }
 
   // Show the minimap
