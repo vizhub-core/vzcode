@@ -1,10 +1,15 @@
 import {
   createDefaultMapFromCDN,
   createSystem,
-  createVirtualTypeScriptEnvironment
+  createVirtualTypeScriptEnvironment,
 } from '@typescript/vfs';
 import ts from 'typescript';
 import * as Comlink from 'comlink';
+
+// When importing this module, typescript says that it "cannot find the module or its corresponding type declarations"
+// However, when this file is used as a web worker, no error occurs.
+// As a result, this error is suppressed to avoid future confusion.
+// @ts-expect-error
 import { createWorker } from '@valtown/codemirror-ts/worker';
 
 Comlink.expose(
