@@ -56,9 +56,7 @@ self.onmessage = (event) => {
   }
 
   try {
-    const messages = linter.verify(code, config as any, {
-      filename: 'file.js',
-    });
+    const messages = linter.verify(code, config as any);
     const docLines = code.split('\n');
 
     const diagnostics = messages.map((msg) => {
