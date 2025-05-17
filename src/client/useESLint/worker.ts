@@ -3,27 +3,11 @@ import globals from 'globals';
 
 const linter = new eslint.Linter();
 
-// Helper function to trim keys of an object
-function trimGlobalKeys(
-  obj: Record<string, unknown>,
-): Record<string, unknown> {
-  if (!obj || typeof obj !== 'object') {
-    return obj;
-  }
-  const newObj: Record<string, unknown> = {};
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      newObj[key.trim()] = obj[key];
-    }
-  }
-  return newObj;
-}
-
 // Define the configuration without explicit types that don't exist
 const config = {
   languageOptions: {
     globals: {
-      ...trimGlobalKeys(globals.browser), // Apply trimming to browser globals
+      ...globals.browser, // Apply trimming to browser globals
       ...globals.es2021, // Assuming es2021 globals are fine, or trim them too if needed
     },
     parserOptions: {
