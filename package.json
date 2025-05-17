@@ -160,7 +160,6 @@
     "sharedb-client-browser": "^5.1.1",
     "uuid": "^11.1.0",
     "vizhub-ui": "^3.23.0",
-    "vzcode": "file:",
     "ws": "^8.18.1"
   },
   "devDependencies": {
