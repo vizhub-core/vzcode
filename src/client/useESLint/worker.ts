@@ -3,15 +3,14 @@ import globals from 'globals';
 
 const linter = new eslint.Linter();
 
-// Define the configuration without explicit types that don't exist
 const config = {
   languageOptions: {
     globals: {
-      ...globals.browser, // Apply trimming to browser globals
-      ...globals.es2021, // Assuming es2021 globals are fine, or trim them too if needed
+      ...globals.browser, 
+      ...globals.es2021,
     },
     parserOptions: {
-      ecmaVersion: 2022, // Use number instead of enum type
+      ecmaVersion: 2022, 
       sourceType: 'module',
       ecmaFeatures: {
         // Add this to enable JSX parsing
@@ -57,8 +56,6 @@ self.onmessage = (event) => {
   }
 
   try {
-    // Use as any to bypass type checking for the config if necessary,
-    // but the config should be valid after trimming keys.
     const messages = linter.verify(code, config as any, {
       filename: 'file.js',
     });
