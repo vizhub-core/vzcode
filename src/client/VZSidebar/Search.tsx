@@ -64,6 +64,7 @@ export const Search = () => {
     setSearchFocusedIndex,
     shareDBDoc,
     editorCache,
+    openTab,
   } = useContext(VZCodeContext);
   const {
     pattern,
@@ -227,6 +228,9 @@ export const Search = () => {
       case 'Enter':
       case ' ':
         const fileId: VizFileId = files[focusedIndex][0];
+
+        openTab({ fileId, isTransient: true });
+
         setActiveFileId(fileId);
 
         if (focusedChildIndex !== null) {
@@ -440,6 +444,13 @@ export const Search = () => {
                                     index,
                                     childIndex,
                                   );
+
+                                  openTab({
+                                    fileId,
+                                    isTransient: true,
+                                  });
+
+                                  setActiveFileId(fileId);
 
                                   const cacheKey =
                                     editorCacheKey(
