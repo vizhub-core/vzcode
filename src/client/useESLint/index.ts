@@ -11,14 +11,17 @@ const pendingRequests = new Map();
 
 export const useESLint = () => {
   const [worker, setWorker] = useState(null);
-  
+
   // Initialize the work in an effect so it does not run during SSR.
   useEffect(() => {
     setWorker(new ESLintWorker());
   }, []);
 
   useEffect(() => {
-    const handleMessage = (event) => {
+    // Wait for the worker to be initialized
+    if (!worker) return;
+
+    const handleMessage = (event: MessageEvent) => {
       const { diagnostics, requestId, error } = event.data;
 
       if (error) {
