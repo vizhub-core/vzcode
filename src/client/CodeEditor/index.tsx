@@ -12,6 +12,8 @@ import { getOrCreateEditor } from './getOrCreateEditor';
 import { VZCodeContext } from '../VZCodeContext';
 import { InteractRule } from '@replit/codemirror-interact';
 import './style.scss';
+import { EditorView } from 'codemirror'; // Import EditorView
+import { Diagnostic } from '@codemirror/lint'; // Import Diagnostic
 
 // The path in the ShareDB document where the files live.
 const filesPath = ['files'];
@@ -19,9 +21,13 @@ const filesPath = ['files'];
 export const CodeEditor = ({
   customInteractRules,
   aiCopilotEndpoint,
+  esLintSource,
 }: {
   customInteractRules?: Array<InteractRule>;
   aiCopilotEndpoint?: string;
+  esLintSource: (
+    view: EditorView,
+  ) => Promise<readonly Diagnostic[]>;
 }) => {
   const {
     activePane,
@@ -97,6 +103,7 @@ export const CodeEditor = ({
         enableAutoFollowRef,
         openTab,
         aiCopilotEndpoint,
+        esLintSource,
       }),
     [
       activePane,
@@ -109,6 +116,7 @@ export const CodeEditor = ({
       editorCache,
       usernameRef,
       aiCopilotEndpoint,
+      esLintSource,
     ],
   );
 

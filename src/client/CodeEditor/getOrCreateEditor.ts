@@ -2,6 +2,7 @@ import { EditorView } from 'codemirror';
 import {
   Compartment,
   EditorState,
+  StateField,
 } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { svelte } from '@replit/codemirror-lang-svelte';
@@ -15,7 +16,11 @@ import { autocompletion } from '@codemirror/autocomplete';
 import { indentationMarkers } from '@replit/codemirror-indentation-markers';
 // import { showMinimap } from '@replit/codemirror-minimap';
 import { vscodeKeymap } from '@replit/codemirror-vscode-keymap';
-import { Diagnostic, linter } from '@codemirror/lint';
+import {
+  Diagnostic,
+  linter,
+  lintGutter,
+} from '@codemirror/lint';
 
 import { json1Presence, textUnicode } from '../../ot';
 import {
@@ -56,6 +61,15 @@ import {
 } from '@valtown/codemirror-ts';
 
 const DEBUG = false;
+
+// Define a StateField to store the file name.
+// This should be defined at the module level if it's to be imported by other modules.
+export const fileNameStateField = StateField.define<string>(
+  {
+    create: () => '', // Default initial value
+    update: (value, tr) => value, // Typically set once at creation for a given editor instance
+  },
+);
 
 // Enables TypeScript +JSX support in CodeMirror.
 const tsx = () =>
@@ -147,6 +161,7 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef,
   openTab,
   aiCopilotEndpoint,
+  esLintSource,
   rainbowBracketsEnabled = true,
 }: {
   // TODO pass this in from the outside
@@ -183,6 +198,9 @@ export const getOrCreateEditor = ({
   enableAutoFollowRef: React.MutableRefObject<boolean>;
   openTab: (tabState: TabState) => void;
   aiCopilotEndpoint?: string;
+  esLintSource: (
+    view: EditorView,
+  ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
 }): ExtendedEditorCacheValue => {
   // Cache hit
@@ -214,6 +232,9 @@ export const getOrCreateEditor = ({
   // The CodeMirror extensions to use.
   // const extensions = [autocompletion(), html(htmlConfig)]
   const extensions = [];
+
+  // Initialize the fileNameStateField with the actual file name
+  extensions.push(fileNameStateField.init(() => name));
 
   // This plugin implements multiplayer editing,
   // real-time synchronozation of changes across clients.
@@ -264,6 +285,16 @@ export const getOrCreateEditor = ({
   // we want to replace with
   // https://github.com/vizhub-core/vzcode/issues/134
   extensions.push(basicSetup);
+
+  if (esLintSource) {
+    extensions.push(lintGutter()); // Show lint icons in the gutter
+    extensions.push(
+      linter(esLintSource, {
+        // You can configure linter options here, e.g., delay
+        delay: 750,
+      }),
+    );
+  }
 
   // This supports dynamic changing of the theme.
   extensions.push(
