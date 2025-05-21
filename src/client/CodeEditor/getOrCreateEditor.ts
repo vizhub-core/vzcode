@@ -75,17 +75,24 @@ export const fileNameStateField = StateField.define<string>(
 const tsx = () =>
   javascript({ jsx: true, typescript: true });
 
-const innerWorker = new Worker(
-  new URL(
-    './typescriptExtension/worker.ts',
-    import.meta.url,
-  ),
-  {
-    type: 'module',
-  },
-);
-const worker = Comlink.wrap<WorkerShape>(innerWorker);
-await worker.initialize();
+// Lazy initialization of worker
+let worker: Comlink.Remote<WorkerShape> | null = null;
+const initializeWorker = async () => {
+  if (worker === null) {
+    const innerWorker = new Worker(
+      new URL(
+        './typescriptExtension/worker.ts',
+        import.meta.url,
+      ),
+      {
+        type: 'module',
+      },
+    );
+    worker = Comlink.wrap<WorkerShape>(innerWorker);
+    await worker.initialize();
+  }
+  return worker;
+};
 
 const htmlConfig = {
   matchClosingTags: true,
@@ -145,7 +152,7 @@ interface ExtendedEditorCacheValue
 
 // Gets or creates an `editorCache` entry for the given file id.
 // Looks in `editorCache` first, and if not found, creates a new editor.
-export const getOrCreateEditor = ({
+export const getOrCreateEditor = async ({
   paneId = 'root',
   fileId,
   shareDBDoc,
@@ -202,7 +209,7 @@ export const getOrCreateEditor = ({
     view: EditorView,
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
-}): ExtendedEditorCacheValue => {
+}): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
   const cacheKey = editorCacheKey(fileId, paneId);
@@ -385,9 +392,12 @@ export const getOrCreateEditor = ({
   );
 
   if (name.endsWith('ts') || name.endsWith('tsx')) {
+    // Initialize worker if needed
+    const tsWorker = await initializeWorker();
+
     extensions.push(
       ...[
-        tsFacetWorker.of({ worker, path: name }),
+        tsFacetWorker.of({ worker: tsWorker, path: name }),
         tsSyncWorker(),
         tsLinterWorker(),
         autocompletion({
