@@ -2,18 +2,18 @@ import {
   useRef,
   useLayoutEffect,
   useCallback,
-  useMemo,
   useContext,
   useEffect,
+  useState,
 } from 'react';
 import { Username } from '../../types';
 import { EditorCacheValue } from '../useEditorCache';
 import { getOrCreateEditor } from './getOrCreateEditor';
 import { VZCodeContext } from '../VZCodeContext';
 import { InteractRule } from '@replit/codemirror-interact';
-import './style.scss';
 import { EditorView } from 'codemirror'; // Import EditorView
 import { Diagnostic } from '@codemirror/lint'; // Import Diagnostic
+import './style.scss';
 
 // The path in the ShareDB document where the files live.
 const filesPath = ['files'];
@@ -84,11 +84,17 @@ export const CodeEditor = ({
     enableAutoFollowRef.current = enableAutoFollow;
   }, [enableAutoFollow]);
 
+  // State to hold the editor cache value
+  const [editorCacheValue, setEditorCacheValue] =
+    useState<EditorCacheValue | null>(null);
+
   // Get the editor corresponding to the active file.
   // Looks in `editorCache` first, and if not found, creates a new editor.
-  const editorCacheValue: EditorCacheValue = useMemo(
-    () =>
-      getOrCreateEditor({
+  useEffect(() => {
+    let isMounted = true;
+
+    const initEditor = async () => {
+      const editor = await getOrCreateEditor({
         fileId: activePane.activeFileId,
         shareDBDoc,
         content,
@@ -104,21 +110,31 @@ export const CodeEditor = ({
         openTab,
         aiCopilotEndpoint,
         esLintSource,
-      }),
-    [
-      activePane,
-      shareDBDoc,
-      filesPath,
-      localPresence,
-      docPresence,
-      theme,
-      onInteract,
-      editorCache,
-      usernameRef,
-      aiCopilotEndpoint,
-      esLintSource,
-    ],
-  );
+      });
+
+      if (isMounted) {
+        setEditorCacheValue(editor);
+      }
+    };
+
+    initEditor();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    activePane,
+    shareDBDoc,
+    filesPath,
+    localPresence,
+    docPresence,
+    theme,
+    onInteract,
+    editorCache,
+    usernameRef,
+    aiCopilotEndpoint,
+    esLintSource,
+  ]);
 
   // Every time the active file switches from one file to another,
   // the editor corresponding to the old file is removed from the DOM,
@@ -127,6 +143,7 @@ export const CodeEditor = ({
     // Guard against cases where page is still loading.
     if (!codeEditorRef.current) return;
     if (!content) return;
+    if (!editorCacheValue) return; // Guard against null editorCacheValue
     // if (openSplitPane) return;
 
     // Add the editor and apply the prior scroll position to the DOM.
@@ -140,17 +157,24 @@ export const CodeEditor = ({
     return () => {
       // Remove the old editor from the DOM and store the current scroll position.
       // This happens every time `activeFileId` changes.
-      editorCacheValue.scrollPosition =
-        editorCacheValue.editor.scrollDOM.scrollTop;
-      codeEditorRef.current.removeChild(
-        editorCacheValue.editor.dom,
-      );
+      if (
+        editorCacheValue &&
+        codeEditorRef.current?.contains(
+          editorCacheValue.editor.dom,
+        )
+      ) {
+        editorCacheValue.scrollPosition =
+          editorCacheValue.editor.scrollDOM.scrollTop;
+        codeEditorRef.current.removeChild(
+          editorCacheValue.editor.dom,
+        );
+      }
     };
   }, [shareDBDoc, editorCacheValue]);
 
   // Focus the editor
   useEffect(() => {
-    if (editorWantsFocus) {
+    if (editorWantsFocus && editorCacheValue) {
       editorCacheValue.editor.focus();
       editorNoLongerWantsFocus();
     }
