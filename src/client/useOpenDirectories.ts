@@ -1,19 +1,19 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 // TODO bring this feature back
 // When a page is opened with an active file,
 // make sure all the directories leading to that file
 // are opened automatically.
-//export const initialOpenDirectories = (activeFile) => {
-//  const openDirectories = {};
-//  if (activeFile) {
-//    const path = activeFile.split('/');
-//    for (let i = 1; i < path.length; i++) {
-//      openDirectories[path.slice(0, i).join('/')] = true;
-//    }
-//  }
-//  return openDirectories;
-//};
+export const initialOpenDirectories = (activeFile: string | null): Set<VZPath> => {                                                     
+  const openDirectories = new Set<VZPath>();                                                                                            
+  if (activeFile) {                                                                                                                     
+    const path = activeFile.split('/');                                                                                                 
+    for (let i = 1; i < path.length; i++) {                                                                                             
+      openDirectories.add(path.slice(0, i).join('/'));                                                                                  
+    }                                                                                                                                   
+  }                                                                                                                                     
+  return openDirectories;                                                                                                               
+};       
 
 type VZPath = string;
 
@@ -28,6 +28,14 @@ export const useOpenDirectories = (): {
   const [openDirectories, setOpenDirectories] = useState<
     Set<VZPath>
   >(new Set());
+
+  // (client-side only) initialize the open directories
+  // based on the open files from the URL params.A
+  useEffect(() => {
+    // TODO figure out how to get `initialActiveFile`
+    // const initialActiveFile = 
+    // setOpenDirectories(initialOpenDirectories(initialActiveFile))
+  }, [])
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: VZPath) => boolean =
