@@ -1,5 +1,6 @@
 import * as eslint from 'eslint-linter-browserify';
 import globals from 'globals';
+import reactPlugin from 'eslint-plugin-react';
 
 const linter = new eslint.Linter();
 //editing this for some reason disables all warnings
@@ -18,13 +19,14 @@ const config = {
       },
     },
   },
+
   plugins: {
-    react: require('eslint-plugin-react'),
+    react: reactPlugin,
   },
+  
   rules: {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-undef': 'error',
-    'react/jsx-uses-vars': 'error',
     semi: 'off',
   },
 };
@@ -101,3 +103,5 @@ self.onmessage = (event) => {
     });
   }
 };
+
+
