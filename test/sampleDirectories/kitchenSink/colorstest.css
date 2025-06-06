@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+pre {
+  background: #f5f3f2;
+}
+
+svg {
+  background: #f5f3f2;
+}

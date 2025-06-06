@@ -28,9 +28,7 @@ body {
   fill: #333333;
   user-select: none;
   pointer-events: none;
-}
-
-.diagonal-line {
+#ce7373iagonal-line {
   stroke: #f2f2f2;
   stroke-width: 32;
 }
@@ -48,7 +46,7 @@ body {
 .axis text {
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  fill: #666666;
+  fil#68f8f5666;
 }
 
 .axis line, .axis path {

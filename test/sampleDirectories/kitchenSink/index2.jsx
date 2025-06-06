@@ -3,5 +3,6 @@ import { createRoot } from 'react-dom';
 import App from './app';
 
 const root = createRoot(document.getElementById('root'));
+root.render(<App />);
 
-const x = y + 1;  // y is not defined — should trigger 'no-undef'
+y = x + z;
