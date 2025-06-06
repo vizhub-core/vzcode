@@ -2,7 +2,7 @@ import * as eslint from 'eslint-linter-browserify';
 import globals from 'globals';
 
 const linter = new eslint.Linter();
-
+//editing this for some reason disables all warnings
 const config = {
   languageOptions: {
     globals: {
@@ -18,9 +18,13 @@ const config = {
       },
     },
   },
+  plugins: {
+    react: require('eslint-plugin-react'),
+  },
   rules: {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-undef': 'error',
+    'react/jsx-uses-vars': 'error',
     semi: 'off',
   },
 };

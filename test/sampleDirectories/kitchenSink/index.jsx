@@ -1,8 +1,7 @@
-import React from 'react';
-// This works well as-is
-// DO NOT change it to import from 'react-dom/client'
 import { createRoot } from 'react-dom';
+// This variable is used, but ESLint thinks it is not used
 import App from './app';
 
 const root = createRoot(document.getElementById('root'));
-root.render(<App />);
+
+const x = y + 1;  // y is not defined — should trigger 'no-undef'
