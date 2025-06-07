@@ -1,6 +1,12 @@
 import * as eslint from 'eslint-linter-browserify';
 import globals from 'globals';
 
+// Feature flag to enable or disable JSX linting
+// It's disabled for now since it doesn't work.
+// See issue:
+// https://github.com/vizhub-core/vzcode/issues/921
+const enableJSXLinting = false;
+
 const linter = new eslint.Linter();
 
 const config = {
@@ -49,8 +55,16 @@ self.onmessage = (event) => {
     return;
   }
 
-  // Only lint .js or .jsx files
-  if (!fileName || !/\.(js|jsx)$/i.test(fileName)) {
+  // Only lint .js files, and .jsx files if enableJSXLinting is true
+  if (!fileName) {
+    self.postMessage({ diagnostics: [], requestId });
+    return;
+  }
+
+  const isJsFile = /\.js$/i.test(fileName);
+  const isJsxFile = /\.jsx$/i.test(fileName);
+
+  if (!isJsFile && (!isJsxFile || !enableJSXLinting)) {
     self.postMessage({ diagnostics: [], requestId });
     return;
   }
