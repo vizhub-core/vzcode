@@ -37,12 +37,19 @@ export const useOpenDirectories = ({activePane, content}:{
   // (client-side only) initialize the open directories
   // based on the open files from the URL params.
   useEffect(() => {
-    if(activePane.type ==="leafPane" && activePane?.activeFileId){
+    if(activePane.type ==="leafPane" && activePane?.activeFileId && content.files[activePane.activeFileId]){
       const activeFileId = activePane.activeFileId
       const fileName = content.files[activeFileId].name
-      setOpenDirectories(initialOpenDirectories(fileName))
+      const dirsToOpen = initialOpenDirectories(fileName)
+      setOpenDirectories((prev) => {
+        const updated = new Set(prev);
+        for (const dir of dirsToOpen) {
+          updated.add(dir);
+        }
+        return updated;
+      });
     }
-  }, [activePane, content]);
+  }, [activePane]);
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: VZPath) => boolean =
