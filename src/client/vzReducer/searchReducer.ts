@@ -123,7 +123,24 @@ export const setSearchFileVisibilityReducer = (
         },
       }
     : state;
-
+    export const setIsSidebarOpenReducer = (
+      state: VZState,
+      action: VZAction,
+    ): VZState =>
+      action.type === 'set_is_sidebar_open'
+        ? { ...state, isSidebarOpen: action.value }
+        : state;
+    
+    /**
+     * Toggles the sidebar open/closed.
+     */
+    export const toggleSidebarOpenReducer = (
+      state: VZState,
+      action: VZAction,
+    ): VZState =>
+      action.type === 'toggle_sidebar_open'
+        ? { ...state, isSidebarOpen: !state.isSidebarOpen }
+        : state;
 export const setSearchLineVisibilityReducer = (
   state: VZState,
   action: VZAction,
