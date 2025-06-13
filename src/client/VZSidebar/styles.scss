@@ -317,4 +317,11 @@
     color: #000000;
     z-index: 1;
   }
+  .vz-sidebar {
+    transition: width 0.2s ease; 
+  }
+  
+  .vz-sidebar.collapsed {
+    overflow: hidden;              
+  }
 }

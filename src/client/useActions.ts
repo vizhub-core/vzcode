@@ -210,6 +210,19 @@ export const useActions = (
     },
     [dispatch],
   );
+    const setIsSidebarOpen = useCallback(
+        (value: boolean) => {
+          dispatch({
+            type: 'set_is_sidebar_open',
+            value,
+          });
+        },
+        [dispatch],
+      );
+    
+    const toggleSidebarOpen = useCallback(() => {
+        dispatch({ type: 'toggle_sidebar_open' });
+      }, [dispatch]);
 
   const splitCurrentPane = useCallback(() => {
     dispatch({
@@ -240,5 +253,7 @@ export const useActions = (
     toggleAutoFollow,
     updatePresenceIndicator,
     splitCurrentPane,
+    setIsSidebarOpen,
+    toggleSidebarOpen,
   };
 };

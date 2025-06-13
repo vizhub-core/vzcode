@@ -10,6 +10,8 @@ import {
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
+import { setIsSidebarOpenReducer } from './setIsSidebarOpenReducer';
+import { toggleSidebarOpen } from './toggleSidebarOpen';
 import { openTabReducer } from './openTabReducer';
 import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import {
@@ -175,6 +177,8 @@ export type VZAction =
       presenceIndicator: PresenceIndicator;
     }
 
+    | { type: 'set_is_sidebar_open';value: boolean;}
+    |{ type: 'toggle_sidebar_open'; }
   // `split_current_pane`
   | { type: 'split_current_pane' };
 
@@ -199,6 +203,8 @@ const reducers = [
   toggleAutoFollowReducer,
   updatePresenceIndicatorReducer,
   splitCurrentPaneReducer,
+  setIsSidebarOpenReducer,
+  toggleSidebarOpen,
 ];
 
 export const vzReducer = (

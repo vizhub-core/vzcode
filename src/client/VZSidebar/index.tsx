@@ -87,6 +87,12 @@ export const VZSidebar = ({
       <div>(Ctrl + Shift + E)</div>
     </div>
   ),
+  OpenfilesToolTipText = (
+    <div>
+      <strong>Files</strong>
+      <div>(Ctrl + Shift + E)</div>
+    </div>
+  ),
   enableAutoFollowTooltipText = (
     <div>
       <strong>Enable Auto Follow</strong>
@@ -113,6 +119,7 @@ export const VZSidebar = ({
   openKeyboardShortcuts?: React.ReactNode;
   searchToolTipText?: React.ReactNode;
   filesToolTipText?: React.ReactNode;
+  OpenfilesToolTipText?: React.ReactNode;
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
   voiceChatToolTipText?: React.ReactNode;
