@@ -2,10 +2,10 @@ import * as eslint from 'eslint-linter-browserify';
 import globals from 'globals';
 import reactPlugin from 'eslint-plugin-react'
 
-
+/* commented out in case we want to revert back to it */
+/*
 const linter = new eslint.Linter();
 
-//editing this for some reason disables all warnings
 const config = {
   languageOptions: {
     globals: {
@@ -22,6 +22,7 @@ const config = {
     },
   },
 
+  // disables all warnings when plugins are present
   plugins: {
     react: reactPlugin,
   },
@@ -56,7 +57,10 @@ function getOffset(
   }
   return offset + column - 1;
 }
+*/       
 
+
+/*
 self.onmessage = (event) => {
   const { code, requestId, fileName } = event.data;
   if (typeof code !== 'string') {
@@ -115,6 +119,71 @@ self.onmessage = (event) => {
       requestId,
     });
   }
+  
 };
+*/
 
+self.onmessage = async (event) => {
+  const { code, requestId, fileName } = event.data;
 
+  if (typeof code !== 'string') {
+    self.postMessage({
+      diagnostics: [],
+      requestId,
+      error: 'Invalid code received',
+    });
+    return;
+  }
+
+  // Only lint .js or .jsx files
+  if (!fileName || !/\.(js|jsx)$/i.test(fileName)) {
+    self.postMessage({ diagnostics: [], requestId });
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/lint", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ code })
+    });
+
+    const messages = await response.json();
+    const docLines = code.split('\n');
+
+    const diagnostics = messages.map((msg) => {
+      const getOffset = (line: number, column: number) => {
+        let offset = 0;
+        for (let i = 0; i < line - 1; i++) {
+          offset += (docLines[i] ? docLines[i].length : 0) + 1;
+        }
+        return offset + column - 1;
+      };
+
+      const from = getOffset(msg.line, msg.column);
+      const to = msg.endLine && msg.endColumn
+        ? getOffset(msg.endLine, msg.endColumn)
+        : from + (msg.endColumn ? msg.endColumn : 1);
+
+      return {
+        from,
+        to,
+        severity: msg.severity === 2 ? 'error' : msg.severity === 1 ? 'warning' : 'info',
+        message: msg.message,
+        source: msg.ruleId ? `eslint(${msg.ruleId})` : 'eslint',
+      };
+    });
+
+    self.postMessage({ diagnostics, requestId });
+
+  } catch (error: any) {
+    console.error('[ESLint Worker] Error:', error);
+    self.postMessage({
+      error: error.message,
+      diagnostics: [],
+      requestId,
+    });
+  }
+};
