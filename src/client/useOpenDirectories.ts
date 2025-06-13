@@ -1,4 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
+import type { Pane } from '../types';
+import { VizContent } from '@vizhub/viz-types';
 
 // TODO bring this feature back
 // When a page is opened with an active file,
@@ -20,7 +22,10 @@ type VZPath = string;
 // Inspired by
 // https://github.com/vizhub-core/vizhub/blob/main/vizhub-v2/packages/neoFrontend/src/pages/VizPage/Body/Editor/FilesSection/useOpenDirectories.js
 // TODO move this into reducer
-export const useOpenDirectories = (): {
+export const useOpenDirectories = ({activePane, content}:{
+  activePane: Pane,
+  content: VizContent
+}): {
   isDirectoryOpen: (path: VZPath) => boolean;
   toggleDirectory: (path: VZPath) => void;
 } => {
@@ -30,12 +35,14 @@ export const useOpenDirectories = (): {
   >(new Set());
 
   // (client-side only) initialize the open directories
-  // based on the open files from the URL params.A
+  // based on the open files from the URL params.
   useEffect(() => {
-    // TODO figure out how to get `initialActiveFile`
-    // const initialActiveFile = 
-    // setOpenDirectories(initialOpenDirectories(initialActiveFile))
-  }, [])
+    if(activePane.type ==="leafPane" && activePane?.activeFileId){
+      const activeFileId = activePane.activeFileId
+      const fileName = content.files[activeFileId].name
+      setOpenDirectories(initialOpenDirectories(fileName))
+    }
+  }, [activePane, content]);
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: VZPath) => boolean =

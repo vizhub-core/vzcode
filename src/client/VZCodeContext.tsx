@@ -260,7 +260,7 @@ export const VZCodeProvider = ({
     sidebarPresenceIndicators,
   } = state;
 
-  const activePane = findPane(pane, activePaneId);
+  const activePane: Pane = findPane(pane, activePaneId);
   if (activePane.type !== 'leafPane') {
     // Should never happen
     throw new Error('Expected leafPane');
@@ -304,7 +304,7 @@ export const VZCodeProvider = ({
   // The set of open directories.
   // TODO move this into reducer/useActions
   const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories();
+    useOpenDirectories({activePane, content});
 
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
