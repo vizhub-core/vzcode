@@ -304,7 +304,7 @@ export const VZCodeProvider = ({
   // The set of open directories.
   // TODO move this into reducer/useActions
   const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories({activePane, content});
+    useOpenDirectories({ activePane, content });
 
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
