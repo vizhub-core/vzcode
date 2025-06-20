@@ -1,5 +1,5 @@
 import express from 'express';
-import ESLint from "eslint";
+import { ESLint } from "eslint";
 import bodyParser from "body-parser";
 import cors from 'cors'; 
 
