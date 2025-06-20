@@ -293,6 +293,62 @@ export const useKeyboardShortcuts = ({
           }
         }
       }
+      /* -----------------------------------------------------------
+   macOS-friendly shortcuts (event.metaKey === ⌘ on Mac)
+   ----------------------------------------------------------- */
+if (event.metaKey) {
+  // ⌘-W   Close current tab
+  if (event.key === 'w') {
+    event.preventDefault();        // stop browser tab close
+    if (activeFileId) closeTabs([activeFileId]);
+    return;
+  }
+
+  // ⌘-N   New file modal
+  if (event.key === 'n') {
+    event.preventDefault();
+    handleOpenCreateFileModal();
+    return;
+  }
+
+  // ⌘-⇧-[   Previous tab    |   ⌘-⇧-]   Next tab
+  if (event.shiftKey && event.key === '[') {
+    event.preventDefault();
+    setActiveFileLeft();
+    return;
+  }
+  if (event.shiftKey && event.key === ']') {
+    event.preventDefault();
+    setActiveFileRight();
+    return;
+  }
+
+  // ⌘-P   Format with Prettier
+  if (event.key === 'p') {
+    event.preventDefault();
+    runPrettierRef.current?.();
+    return;
+  }
+
+  // ⌘-⇧-⏎   Format + Run (mirrors Ctrl-⇧-⏎ on Windows/Linux)
+  if (event.shiftKey && event.key === 'Enter') {
+    event.preventDefault();
+    runPrettierRef.current?.();
+    runCodeRef.current?.();
+    return;
+  }
+
+  // ⌘-1   Focus sidebar   |   ⌘-2   Focus editor
+  if (event.key === '1') {
+    sidebarRef.current?.focus();
+    return;
+  }
+  if (event.key === '2') {
+    codeEditorRef.current?.focus();
+    return;
+  }
+}
+
     };
 
     const resetActiveJumpingElement = (): void => {
