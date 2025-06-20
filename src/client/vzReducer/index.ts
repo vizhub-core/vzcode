@@ -10,8 +10,6 @@ import {
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { ThemeLabel } from '../themes';
 import { closeTabsReducer } from './closeTabsReducer';
-import { setIsSidebarOpenReducer } from './setIsSidebarOpenReducer';
-import { toggleSidebarOpen } from './toggleSidebarOpen';
 import { openTabReducer } from './openTabReducer';
 import { setActiveFileIdReducer } from './setActiveFileIdReducer';
 import {
@@ -30,6 +28,7 @@ import {
   setSearchFileVisibilityReducer,
   setSearchLineVisibilityReducer,
   setSearchFocusedIndexReducer,
+  setIsSidebarOpenReducer,
   toggleSearchFocusedReducer,
 } from './searchReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
@@ -50,6 +49,8 @@ export type VZState = {
 
   // Search pattern and most recent results based on the current pattern
   search: SearchResults;
+
+  isSidebarOpen: boolean;
 
   // True to show the search instead of files
   isSearchOpen: boolean;
@@ -178,7 +179,7 @@ export type VZAction =
     }
 
     | { type: 'set_is_sidebar_open';value: boolean;}
-    |{ type: 'toggle_sidebar_open'; }
+
   // `split_current_pane`
   | { type: 'split_current_pane' };
 
@@ -204,7 +205,6 @@ const reducers = [
   updatePresenceIndicatorReducer,
   splitCurrentPaneReducer,
   setIsSidebarOpenReducer,
-  toggleSidebarOpen,
 ];
 
 export const vzReducer = (

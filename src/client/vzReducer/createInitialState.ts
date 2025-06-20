@@ -31,4 +31,5 @@ export const createInitialState = ({
   username: initialUsername,
   enableAutoFollow: true,
   sidebarPresenceIndicators: [],
+  isSidebarOpen: false,
 });
