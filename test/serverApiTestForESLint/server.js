@@ -32,7 +32,7 @@ app.post("/lint", async (req, res) => {
         semi: "off",
       },
     },
-    useEslintrc: false,
+    //useEslintrc: false,
   });
 
   try {
