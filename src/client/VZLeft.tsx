@@ -17,9 +17,7 @@ export const VZLeft = ({ enableUsernameField = true }) => {
       <VZSettings
         enableUsernameField={enableUsernameField}
       />
-      <VZKeyboardShortcutsDoc
-        enableUsernameField={enableUsernameField}
-      />
+      <VZKeyboardShortcutsDoc />
       <CreateFileModal />
       <CreateDirModal />
       {enableLiveKit && <VoiceChatModal />}
