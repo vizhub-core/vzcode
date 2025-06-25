@@ -79,55 +79,47 @@ export const VZSettings = ({
     setUsername,
   } = useContext(VZCodeContext);
 
-  // State variables for managing font and font size
-  const [selectedFont, setSelectedFont] =
-    useState('Roboto Mono');
-  const [selectedFontSize, setSelectedFontSize] =
-    useState('16px');
-  const [availableFonts, setAvailableFonts] = useState<
-    string[]
-  >([]);
+  // Local state for settings that will only be applied when Done is clicked
+  const [localFont, setLocalFont] = useState('Roboto Mono');
+  const [localFontSize, setLocalFontSize] = useState('16px');
+  const [localTheme, setLocalTheme] = useState(theme);
+  const [localUsername, setLocalUsername] = useState(username);
+  const [availableFonts, setAvailableFonts] = useState<string[]>([]);
 
-  // Load saved settings from local storage on initial render
+  // Initialize local state when modal opens
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const selectedFontFromLocalStorage =
-        window.localStorage.getItem('vzcodeSelectedFont');
-      const selectedFontSizeFromLocalStorage =
-        window.localStorage.getItem(
-          'vzcodeSelectedFontSize',
-        );
-
-      if (selectedFontFromLocalStorage !== null) {
-        setSelectedFont(selectedFontFromLocalStorage);
-      }
-      if (selectedFontSizeFromLocalStorage !== null) {
-        setSelectedFontSize(
-          selectedFontSizeFromLocalStorage,
-        );
-      }
+    if (isSettingsOpen) {
+      // Get current values from localStorage or use defaults
+      const storedFont = localStorage.getItem('vzcodeSelectedFont') || 'Roboto Mono';
+      const storedFontSize = localStorage.getItem('vzcodeSelectedFontSize') || '16px';
+      
+      setLocalFont(storedFont);
+      setLocalFontSize(storedFontSize);
+      setLocalTheme(theme);
+      setLocalUsername(username);
     }
-  }, []);
+  }, [isSettingsOpen, theme, username]);
 
-  // Detect available system fonts and update the state
-  useEffect(() => {
-    const detectFonts = () => {
-      const detectedFonts: string[] = [];
-      for (const font of systemFonts) {
-        if (isFontAvailable(font)) {
-          detectedFonts.push(font);
-          if (DEBUG) {
-            console.log(`${font} is available`);
-          }
-        } else if (DEBUG) {
-          console.log(`${font} is not available`);
-        }
-      }
-      setAvailableFonts(detectedFonts);
-    };
-
-    detectFonts();
-  }, []);
+  // Apply settings when Done button is clicked
+  const applySettings = useCallback(() => {
+    // Apply font
+    document.body.style.setProperty('--vzcode-font-family', localFont);
+    localStorage.setItem('vzcodeSelectedFont', localFont);
+    
+    // Apply font size
+    document.body.style.setProperty('--vzcode-font-size', localFontSize);
+    localStorage.setItem('vzcodeSelectedFontSize', localFontSize);
+    
+    // Apply theme
+    setTheme(localTheme);
+    
+    // Apply username
+    if (enableUsernameField) {
+      setUsername(localUsername);
+    }
+    
+    closeSettings();
+  }, [localFont, localFontSize, localTheme, localUsername, closeSettings, setTheme, setUsername, enableUsernameField]);
 
   // Reset all settings to default values
   const resetSettings = useCallback(() => {
