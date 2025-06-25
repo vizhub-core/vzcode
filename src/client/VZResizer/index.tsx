@@ -73,7 +73,7 @@ export const VZResizer = ({
 
   const onMouseUp = useCallback(() => {
     setIsDragging(false, side);
-    document.body.style.cursor = 'default';
+    document.body.style.cursor = '';
   }, [setIsDragging, side]);
 
   // Is the resizer currently being dragged?
@@ -85,15 +85,24 @@ export const VZResizer = ({
     if (isDragging) {
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('mouseleave', onMouseUp);
       return () => {
         document.removeEventListener(
           'mousemove',
           onMouseMove,
         );
         document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mouseleave', onMouseUp);
       };
     }
   }, [isDragging, onMouseMove, onMouseUp]);
+
+  // Cleanup cursor on component unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = '';
+    };
+  }, []);
 
   const resizerWidth = isDragging
     ? resizerInteractionSurfaceWidthWhileDragging
