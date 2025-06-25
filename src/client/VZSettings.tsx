@@ -163,14 +163,12 @@ export const VZSettings = ({
             <Form.Label>Username</Form.Label>
             <Form.Control
               type="text"
-              ref={usernameRef}
-              onChange={handleUsernameChange}
               placeholder="Enter username"
-              value={username}
+              value={localUsername}
+              onChange={(e) => setLocalUsername(e.target.value)}
             />
             <Form.Text className="text-muted">
-              Enter a username to be displayed on your
-              cursor
+              Enter a username to be displayed on your cursor
             </Form.Text>
           </Form.Group>
         ) : null}
@@ -179,10 +177,8 @@ export const VZSettings = ({
           <Form.Label>Theme</Form.Label>
           <select
             className="form-select"
-            value={theme}
-            onChange={(e) =>
-              setTheme(e.target.value as ThemeLabel)
-            }
+            value={localTheme}
+            onChange={(e) => setLocalTheme(e.target.value as ThemeLabel)}
           >
             {themes.map(({ label }) => (
               <option key={label} value={label}>
@@ -196,10 +192,8 @@ export const VZSettings = ({
           <Form.Label>Font</Form.Label>
           <select
             className="form-select"
-            onChange={(e) =>
-              setSelectedFont(e.target.value)
-            }
-            value={selectedFont}
+            onChange={(e) => setLocalFont(e.target.value)}
+            value={localFont}
           >
             {availableFonts.map((font) => (
               <option key={font} value={font}>
@@ -213,10 +207,8 @@ export const VZSettings = ({
           <Form.Label>Font Size</Form.Label>
           <select
             className="form-select"
-            onChange={(e) =>
-              setSelectedFontSize(e.target.value)
-            }
-            value={selectedFontSize}
+            onChange={(e) => setLocalFontSize(e.target.value)}
+            value={localFontSize}
           >
             {fontSizes.map((size) => (
               <option key={size} value={size}>
@@ -230,7 +222,7 @@ export const VZSettings = ({
         <Button variant="secondary" onClick={resetSettings}>
           Reset to Default
         </Button>
-        <Button variant="primary" onClick={closeSettings}>
+        <Button variant="primary" onClick={applySettings}>
           Done
         </Button>
       </Modal.Footer>
