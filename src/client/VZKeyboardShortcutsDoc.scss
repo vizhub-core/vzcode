@@ -21,7 +21,8 @@
       background-color: rgba(255, 255, 255, 0.04);
     }
   }
- .shortcut-keys {Add commentMore actions
+  
+  .shortcut-keys {Add commentMore actions
     display: flex;
     align-items: center;
     gap: 8px;
@@ -50,4 +51,27 @@
       margin: 0 4px;
     }
   }
-}
+
+  .shortcut-description {Add commentMore actions
+    color: #cbd5e0;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-left: 4px;
+
+    a {
+      color: #63b3ed;
+      text-decoration: none;
+      
+      &:hover {
+        color: #90cdf4;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // Override Bootstrap modal styles for better appearance
+  .modal-content {
+    background-color: #1a202c;
+    border: 1px solid #2d3748;
+    border-radius: 12px;
+  }
