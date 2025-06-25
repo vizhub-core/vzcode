@@ -123,57 +123,29 @@ export const VZSettings = ({
 
   // Reset all settings to default values
   const resetSettings = useCallback(() => {
-    setSelectedFont('Roboto Mono');
-    setSelectedFontSize('16px');
-    setTheme(themes[0].label);
+    setLocalFont('Roboto Mono');
+    setLocalFontSize('16px');
+    setLocalTheme(themes[0].label);
     if (enableUsernameField) {
-      setUsername('');
+      setLocalUsername('');
     }
-    localStorage.removeItem('vzcodeSelectedFont');
-    localStorage.removeItem('vzcodeSelectedFontSize');
-  }, [enableUsernameField, setTheme, setUsername]);
-
-  // Update font family in the document's style
-  useEffect(() => {
-    document.body.style.setProperty(
-      '--vzcode-font-family',
-      selectedFont,
-    );
-  }, [selectedFont]);
-
-  // Update font size in the document's style
-  useEffect(() => {
-    document.body.style.setProperty(
-      '--vzcode-font-size',
-      selectedFontSize,
-    );
-  }, [selectedFontSize]);
-
-  const usernameRef = useRef<HTMLInputElement>(null);
-
-  // Handle username input change
-  const handleUsernameChange = useCallback(() => {
-    setUsername(usernameRef.current?.value || '');
-  }, [setUsername]);
+  }, [enableUsernameField]);
 
   // Close settings modal on Enter key press
   useEffect(() => {
     if (isSettingsOpen) {
       const handleEnterKey = (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
-          closeSettings();
+          applySettings();
         }
       };
 
       window.addEventListener('keydown', handleEnterKey);
       return () => {
-        window.removeEventListener(
-          'keydown',
-          handleEnterKey,
-        );
+        window.removeEventListener('keydown', handleEnterKey);
       };
     }
-  }, [isSettingsOpen, closeSettings]);
+  }, [isSettingsOpen, applySettings]);
 
   return isSettingsOpen ? (
     <Modal
