@@ -293,6 +293,80 @@ export const useKeyboardShortcuts = ({
           }
         }
       }
+
+    
+if (event.metaKey) {
+  if (event.key === 'w') {                    // ⌘-W  Close tab
+    event.preventDefault();
+    if (activeFileId) closeTabs([activeFileId]);
+    return;
+  }
+  if (event.key === 'n') {                    // ⌘-N  New-file modal
+    event.preventDefault();
+    handleOpenCreateFileModal();
+    return;
+  }
+  if (event.shiftKey && event.key === '[') {  // ⌘-⇧-[  Previous tab
+    event.preventDefault();
+    setActiveFileLeft();
+    return;
+  }
+  if (event.shiftKey && event.key === ']') {  // ⌘-⇧-]  Next tab
+    event.preventDefault();
+    setActiveFileRight();
+    return;
+  }
+
+  if (event.key === 's') {                    // ⌘-S  Format + Run
+    event.preventDefault();
+    runPrettierRef.current?.();
+    runCodeRef.current?.();
+    return;
+  }
+  if (event.key === 'p') {                    // ⌘-P  Format only
+    event.preventDefault();
+    runPrettierRef.current?.();
+    return;
+  }
+  if (event.shiftKey && event.key === 'Enter') { // ⌘-⇧-⏎  Format + Run
+    event.preventDefault();
+    runPrettierRef.current?.();
+    runCodeRef.current?.();
+    return;
+  }
+
+  if (event.shiftKey && event.key === 'f') {  // ⌘-⇧-F  Search panel
+    event.preventDefault();
+    document.getElementById(sideBarKeyBoardMap['F'])?.click();
+    toggleSearchFocused();
+    return;
+  }
+  if (event.shiftKey && event.key === 'e') {  // ⌘-⇧-E  File explorer
+    event.preventDefault();
+    document.getElementById(sideBarKeyBoardMap['E'])?.click();
+    return;
+  }
+  if (event.shiftKey && event.key === 'b') {  // ⌘-⇧-B  Bug panel
+    event.preventDefault();
+    document.getElementById(sideBarKeyBoardMap['B'])?.click();
+    return;
+  }
+  if (event.key === ',') {                    // ⌘-,  Settings
+    event.preventDefault();
+    document.getElementById(sideBarKeyBoardMap['S'])?.click();
+    return;
+  }
+
+  if (event.key === '1') {                    // ⌘-1  Focus sidebar
+    sidebarRef.current?.focus();
+    return;
+  }
+  if (event.key === '2') {                    // ⌘-2  Focus editor
+    codeEditorRef.current?.focus();
+    return;
+  }
+}
+
     };
 
     const resetActiveJumpingElement = (): void => {
