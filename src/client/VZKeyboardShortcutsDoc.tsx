@@ -6,15 +6,12 @@ import { VZCodeContext } from './VZCodeContext';
 export const VZKeyboardShortcutsDoc = ({
   enableUsernameField = true,
 }: {
-  // Feature flag to enable/disable username field
   enableUsernameField?: boolean;
 }) => {
   const {
     isDocOpen,
     closeDoc,
-
     setTheme,
-
     setUsername,
   } = useContext(VZCodeContext);
 
@@ -35,6 +32,7 @@ export const VZKeyboardShortcutsDoc = ({
       <Modal.Header closeButton>
         <Modal.Title>Keyboard Shortcuts</Modal.Title>
       </Modal.Header>
+
       <Modal.Body className="pt-1">
         <Form.Group className="mb-3">
           <Form.Text className="text-muted">
@@ -42,8 +40,10 @@ export const VZKeyboardShortcutsDoc = ({
             quick actions
           </Form.Text>
         </Form.Group>
-        <Form.Group>
-          {/* <Form.Label>WINDOWS</Form.Label> */}
+
+        {/* ────────────────── Windows / Linux ────────────────── */}
+        <Form.Group className="mb-4">
+          <Form.Label>WINDOWS / LINUX</Form.Label>
           <ul>
             <li>
               <strong>
@@ -52,68 +52,64 @@ export const VZKeyboardShortcutsDoc = ({
               or{' '}
               <strong>
                 <kbd>Shift↑</kbd> + <kbd>Enter←</kbd>
-              </strong>{' '}
+              </strong>
               <br />
               <span>Run and format code</span>
             </li>
             <li>
               <strong>
-                <kbd>Alt</kbd> + Drag on a number
+                <kbd>Alt</kbd> + Drag&nbsp;number
               </strong>
               <br />
-              <span>
-                Modify the number by dragging left or right
-              </span>
+              <span>Scrub number value left / right</span>
             </li>
             <li>
               <strong>
-                <kbd>Alt</kbd> + Click on a hex color
+                <kbd>Alt</kbd> + Click&nbsp;color
               </strong>
               <br />
-              <span>
-                Open a color picker to modify the color
-              </span>
+              <span>Open inline color-picker</span>
             </li>
+
             <li>
               <strong>
                 <kbd>Alt</kbd> + <kbd>W</kbd>
-              </strong>{' '}
+              </strong>
               <br />
-              <span>Close the current tab</span>
+              <span>Close current tab</span>
             </li>
+
             <li>
               <strong>
                 <kbd>Alt</kbd> + <kbd>N</kbd>
               </strong>{' '}
-              or{' '}
+              |{' '}
               <strong>
-                <kbd>Ctrl</kbd> + <kbd>Shift↑</kbd> +{' '}
-                <kbd>N</kbd>
-              </strong>{' '}
+                <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>N</kbd>
+              </strong>
               <br />
-              <span>Open the create file modal</span>
+              <span>Open “New File” modal</span>
             </li>
+
             <li>
               <strong>
                 <kbd>Alt</kbd> + <kbd>PgUp↑</kbd>
-              </strong>{' '}
+              </strong>
               <br />
-              <span>
-                Change the active tab to the previous one
-              </span>
+              <span>Previous tab</span>
             </li>
+
             <li>
               <strong>
                 <kbd>Alt</kbd> + <kbd>PgDn↓</kbd>
-              </strong>{' '}
+              </strong>
               <br />
-              <span>
-                Change the active tab to the next one
-              </span>
+              <span>Next tab</span>
             </li>
+
             <li>
-              <strong>Most VSCode Shortcuts</strong> <br />
-              See VSCode docs:{' '}
+              <strong>Most VS Code Shortcuts</strong>
+              <br />
               <a
                 href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-windows.pdf"
                 target="_blank"
@@ -122,17 +118,131 @@ export const VZKeyboardShortcutsDoc = ({
               </a>
               ,{' '}
               <a
-                href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf"
-                target="_blank"
-              >
-                MacOS
-              </a>
-              ,{' '}
-              <a
                 href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-linux.pdf"
                 target="_blank"
               >
                 Linux
+              </a>
+            </li>
+          </ul>
+        </Form.Group>
+
+        {/* ────────────────────── macOS ─────────────────────── */}
+        <Form.Group>
+          <Form.Label>MACOS</Form.Label>
+          <ul>
+            {/* Tab / file management */}
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>W</kbd>
+              </strong>
+              <br />
+              <span>Close current tab</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>N</kbd>
+              </strong>
+              <br />
+              <span>Open “New File” modal</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>[</kbd>
+              </strong>
+              <br />
+              <span>Previous tab</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>]</kbd>
+              </strong>
+              <br />
+              <span>Next tab</span>
+            </li>
+
+            {/* Save / run / format */}
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>S</kbd>
+              </strong>
+              <br />
+              <span>Format &amp; run code (save analogue)</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>P</kbd>
+              </strong>
+              <br />
+              <span>Format with Prettier</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>⏎</kbd>
+              </strong>
+              <br />
+              <span>Format &amp; run code</span>
+            </li>
+
+            {/* Side-bar actions */}
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>,</kbd>
+              </strong>
+              <br />
+              <span>Open Settings</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>F</kbd>
+              </strong>
+              <br />
+              <span>Focus Search panel</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
+              </strong>
+              <br />
+              <span>Toggle File Explorer</span>
+            </li>
+
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>B</kbd>
+              </strong>
+              <br />
+              <span>Open Bug / Console panel</span>
+            </li>
+
+            {/* Pane focus */}
+            <li>
+              <strong>
+                <kbd>⌘</kbd> + <kbd>1</kbd>
+              </strong>{' '}
+              |{' '}
+              <strong>
+                <kbd>⌘</kbd> + <kbd>2</kbd>
+              </strong>
+              <br />
+              <span>Focus sidebar / editor</span>
+            </li>
+
+            <li>
+              <strong>VS Code Shortcuts for Mac</strong>
+              <br />
+              <a
+                href="https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf"
+                target="_blank"
+              >
+                Download PDF
               </a>
             </li>
           </ul>
