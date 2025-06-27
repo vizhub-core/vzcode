@@ -26,6 +26,8 @@ import {
   QuestionMarkSVG,
   SearchSVG,
   ExpandSVG,
+  StarSVG,
+  CollapseSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
@@ -36,6 +38,7 @@ import { Search } from './Search';
 import { useDragAndDrop } from './useDragAndDrop';
 import { enableLiveKit } from '../featureFlags';
 import './styles.scss';
+import { FormControl } from 'react-bootstrap';
 
 // TODO turn this UI back on when we are actually detecting
 // the connection status.
@@ -301,6 +304,97 @@ export const VZSidebar = ({
       );
   };
   return (
+    <div className="vz-sidebar-wrapper">
+      <div className="vz-sidebar" style={{ width: sidebarWidth + 'px' }}>
+      </div>
+      <div className="full-box" ref={sidebarRef} tabIndex={-1}>
+        {/* ───────── Toolbar buttons (unchanged) ───────── */}
+        {/* … existing sidebar-section-buttons code block here (omitted for brevity, unchanged) … */}
+
+        {/* ───────── Quick filter + collapse‑all buttons ─── */}
+        <div className="sidebar-quick-tools p-2">
+          <FormControl
+            size="sm"
+            placeholder="Filter (Ctrl/⌘+L)"
+            value={filterTerm}
+            onChange={e => setFilterTerm(e.target.value)}
+          />
+          <i className="icon-button" onClick={() => setCollapsedFolders(new Set())} title="Expand All">
+            <ExpandSVG />
+          </i>
+          <i className="icon-button" onClick={() => {
+            const all = new Set<string>();
+            const dfs = (node: FileTree) => {
+              if (node.children) {
+                all.add(node.path);
+                node.children.forEach(c => dfs(c as FileTree));
+              }
+            };
+            dfs(fileTree);
+            setCollapsedFolders(all);
+          }} title="Collapse All">
+            <CollapseSVG />
+          </i>
+        </div>
+
+        {/* ───────── Files / Search view ────────────────── */}
+        <div className="files" id="sidebar-view-container" onDragEnter={handleDragEnter} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+          {!isSearchOpen ? (
+            <div className="sidebar-files">
+              {filterTerm && !filesExist && <div className="empty">No match.</div>}
+
+              {/* Favorites section */}
+              {favorites.size > 0 && (
+                <div className="favorites-section">
+                  <div className="section-title">FAVORITES</div>
+                  {fileTree && fileTree.children
+                    .filter(entity => favorites.has((entity as FileTreeFile).fileId))
+                    .map(ent => (
+                    <div key={(ent as FileTreeFile).fileId} className="sidebar-file p-1">
+                      <Listing
+                        entity={ent}
+                        handleFileClick={handleFileClick}
+                        handleFileDoubleClick={handleFileDoubleClick}
+                      />
+                      <i className="star-icon starred" onClick={() => {
+                        if ('fileId' in ent) {
+                          toggleFavorite(ent.fileId);
+                        }
+                      }}>
+                        <StarSVG />
+                      </i>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Regular tree */}
+              {isDragOver ? (
+                <div className="empty drag-over">
+                  <div className="empty-text">Drop files here!</div>
+                </div>
+              ) : filesExist ? (
+                fileTree.children
+                  .filter(entity => !favorites.has((entity as FileTreeFile).fileId))
+                  .map(entity => renderEntity(entity))
+              ) : (
+                <div className="empty">
+                  <div className="empty-text">It looks like you don't have any files yet! Click the "Create file" button above to create your first file.</div>
+                  <div className="empty-text">Drop files here!</div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="sidebar-search">
+              <Search />
+            </div>
+          )}
+      </div>
+    </div>
+
+
+
+
     <div
       className="vz-sidebar"
       style={{ width: sidebarWidth + 'px' }}
@@ -567,5 +661,6 @@ export const VZSidebar = ({
         </div>
       )}
     </div>
+    </div>
   );
-};
+}
