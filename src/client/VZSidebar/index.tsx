@@ -25,6 +25,7 @@ import {
   PinSVG,
   QuestionMarkSVG,
   SearchSVG,
+  ExpandSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
@@ -139,6 +140,31 @@ export const VZSidebar = ({
     setVoiceChatModalOpen,
   } = useContext(VZCodeContext);
 
+    const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
+    const [filterTerm, setFilterTerm] = useState('');
+    const FAVORITES_STORAGE_KEY = 'favorites';
+
+    const [favorites, setFavorites] = useState<Set<VizFileId>>(() => {
+      const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    });
+  
+    const toggleFolderCollapse = useCallback((path: string) => {
+      setCollapsedFolders(prev => {
+        const next = new Set(prev);
+        next.has(path) ? next.delete(path) : next.add(path);
+        return next;
+      });
+    }, []);
+  
+    const toggleFavorite = useCallback((fileId: VizFileId) => {
+      setFavorites(prev => {
+        const next = new Set(prev);
+        next.has(fileId) ? next.delete(fileId) : next.add(fileId);
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(next)));
+        return next;
+      });
+    }, []);
   const fileTree = useMemo(
     () => (files ? sortFileTree(getFileTree(files)) : null),
     [files],
@@ -247,7 +273,33 @@ export const VZSidebar = ({
     // Update the ref with the current 'pending' state
     previousPendingRef.current = pending;
   }, [pending, connected, isConnecting]);
-
+  const renderEntity = (entity: FileTree, depth = 0) => {
+      const { path } = entity;
+      const isFolder = Boolean(entity.children);
+  
+      // Collapsed?
+      if (isFolder && collapsedFolders.has(path)) {
+        return (
+          <div key={path} style={{ paddingLeft: depth * 12 }} className="sidebar-folder">
+            <i
+              className="collapse-icon"
+              onClick={() => toggleFolderCollapse(path)}
+            >
+              <ExpandSVG />
+            </i>
+            <span className="folder-name" onClick={() => toggleFolderCollapse(path)}>
+              {entity.name ?? 'root'}
+            </span>
+          </div>
+        );
+      }
+  
+      return (
+        <div key={path} style={{ paddingLeft: depth * 12 }} className="sidebar-file">
+          <span onClick={() => handleFileClick(path)}>{entity.name}</span>
+        </div>
+      );
+  };
   return (
     <div
       className="vz-sidebar"
@@ -258,6 +310,7 @@ export const VZSidebar = ({
         ref={sidebarRef}
         tabIndex={-1}
       >
+        
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
