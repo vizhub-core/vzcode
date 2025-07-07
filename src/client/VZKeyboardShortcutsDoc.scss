@@ -1,4 +1,4 @@
-.vz-keyboard-shortcuts {
+.vz-settings {
   .keyboard-shortcuts-list {
     display: flex;
     flex-direction: column;
@@ -12,13 +12,13 @@
     flex-direction: column;
     gap: 8px;
     padding: 16px;
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: #f8f9fa;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid #e9ecef;
     transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: rgba(255, 255, 255, 0.04);
+      background-color: #e9ecef;
     }
   }
 
@@ -28,24 +28,24 @@
     gap: 8px;
     flex-wrap: wrap;
     font-weight: 600;
-    color: #ffffff;
+    color: #212529;
 
     kbd {
-      background-color: #2d3748;
-      color: #e2e8f0;
-      border: 1px solid #4a5568;
+      background-color: #f8f9fa;
+      color: #495057;
+      border: 1px solid #ced4da;
       border-radius: 4px;
       padding: 4px 8px;
       font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
       font-size: 12px;
       font-weight: 500;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       min-width: 24px;
       text-align: center;
     }
 
     .or-text {
-      color: #a0aec0;
+      color: #6c757d;
       font-size: 14px;
       font-weight: 400;
       margin: 0 4px;
@@ -53,73 +53,19 @@
   }
 
   .shortcut-description {
-    color: #cbd5e0;
+    color: #495057;
     font-size: 14px;
     line-height: 1.5;
     margin-left: 4px;
 
     a {
-      color: #63b3ed;
+      color: #0d6efd;
       text-decoration: none;
-      
+
       &:hover {
-        color: #90cdf4;
+        color: #0a58ca;
         text-decoration: underline;
       }
     }
-  }
-
-  // Override Bootstrap modal styles for better appearance
-  .modal-content {
-    background-color: #1a202c;
-    border: 1px solid #2d3748;
-    border-radius: 12px;
-  }
-
-  .modal-header {
-    border-bottom: 1px solid #2d3748;
-    background-color: #2d3748;
-    border-radius: 12px 12px 0 0;
-
-    .modal-title {
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 18px;
-    }
-
-    .btn-close {
-      filter: invert(1);
-    }
-  }
-
-  .modal-body {
-    background-color: #1a202c;
-    color: #e2e8f0;
-    padding: 24px;
-  }
-
-  .modal-footer {
-    border-top: 1px solid #2d3748;
-    background-color: #2d3748;
-    border-radius: 0 0 12px 12px;
-    padding: 16px 24px;
-
-    .btn-primary {
-      background-color: #3182ce;
-      border-color: #3182ce;
-      padding: 8px 20px;
-      font-weight: 500;
-
-      &:hover {
-        background-color: #2c5aa0;
-        border-color: #2c5aa0;
-      }
-    }
-  }
-
-  .text-muted {
-    color: #a0aec0 !important;
-    font-size: 14px;
-    margin-bottom: 20px;
   }
 }

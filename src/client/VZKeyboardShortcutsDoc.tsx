@@ -11,7 +11,7 @@ export const VZKeyboardShortcutsDoc = () => {
 
   return isDocOpen ? (
     <Modal
-      className="vz-keyboard-shortcuts"
+      className="vz-settings"
       show={isDocOpen}
       onHide={closeDoc}
       animation={false}
