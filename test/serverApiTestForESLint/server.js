@@ -19,6 +19,7 @@ app.post("/lint", async (req, res) => {
   }
 
   const eslint = new ESLint({
+    useEslintrc: false,
     baseConfig: {
       parserOptions: {
         ecmaVersion: 2022,
@@ -32,7 +33,6 @@ app.post("/lint", async (req, res) => {
         semi: "off",
       },
     },
-    //useEslintrc: false,
   });
 
   try {

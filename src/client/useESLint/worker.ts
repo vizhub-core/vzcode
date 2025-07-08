@@ -142,7 +142,7 @@ self.onmessage = async (event) => {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/lint", {
+    const response = await fetch("/lint", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -152,6 +152,11 @@ self.onmessage = async (event) => {
 
     const messages = await response.json();
     const docLines = code.split('\n');
+
+    if(!Array.isArray(messages)){
+      throw new Error(messages?.error || "Unexpected response format");
+    }
+
 
     const diagnostics = messages.map((msg) => {
       const getOffset = (line: number, column: number) => {

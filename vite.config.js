@@ -19,6 +19,11 @@ export default defineConfig({
       '/livekit-token': {
         target: 'http://localhost:3030',
       },
+      //adding for eslint
+      '/lint': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 
