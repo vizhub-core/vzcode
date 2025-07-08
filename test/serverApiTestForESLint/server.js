@@ -10,30 +10,43 @@ const port = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-//Lint endpoint
+let eslint;
+
+eslint = new ESLint({
+  overrideConfigFile: null, 
+  baseConfig: {
+    parserOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      ecmaFeatures: { jsx: true },
+
+    },
+    env: {
+      browser: true,
+      es2021: true,
+    },
+    plugins: ["react"],
+    rules: {
+      "no-unused-vars": ["warn", { varsIgnorePattern: "^_", argsIgnorePattern: "^_" }],
+      "no-undef": "error",
+      semi: "off",
+    },
+  },
+});
+
+
+//errors
+
 app.post("/lint", async (req, res) => {
+  if (!eslint) {
+    return res.status(500).json({ error: "ESLint not initialized" });
+  }
+
   const code = req.body.code;
 
   if (typeof code !== "string") {
     return res.status(400).json({ error: "Invalid code format" });
   }
-
-  const eslint = new ESLint({
-    useEslintrc: false,
-    baseConfig: {
-      parserOptions: {
-        ecmaVersion: 2022,
-        sourceType: "module",
-        ecmaFeatures: { jsx: true },
-      },
-      env: { browser: true, es2021: true },
-      rules: {
-        "no-unused-vars": ["warn", { varsIgnorePattern: "^_", argsIgnorePattern: "^_" }],
-        "no-undef": "error",
-        semi: "off",
-      },
-    },
-  });
 
   try {
     const results = await eslint.lintText(code, { filePath: "file.jsx" });
@@ -44,8 +57,7 @@ app.post("/lint", async (req, res) => {
   }
 });
 
-
-//console
 app.listen(port, () => {
   console.log(`ESLint server running at http://localhost:${port}`);
 });
+
