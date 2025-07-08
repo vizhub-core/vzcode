@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 
 let eslint;
 
+/*
 eslint = new ESLint({
   overrideConfigFile: null, 
   baseConfig: {
@@ -33,7 +34,36 @@ eslint = new ESLint({
     },
   },
 });
+*/
 
+async function createEslintInstance() {
+  const reactPlugin = (await import('eslint-plugin-react')).default;
+
+  eslint = new ESLint({
+    overrideConfigFile: null,  
+    overrideConfig: {
+      languageOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+      env: {
+        browser: true,
+        es2021: true,
+      },
+      plugins: {
+        react: reactPlugin,
+      },
+      rules: {
+        'no-unused-vars': ['warn', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+        'no-undef': 'error',
+        semi: 'off',
+      },
+    },
+  });
+}
+
+await createEslintInstance();
 
 //errors
 
@@ -49,7 +79,7 @@ app.post("/lint", async (req, res) => {
   }
 
   try {
-    const results = await eslint.lintText(code, { filePath: "file.jsx" });
+    const results = await eslint.lintText(code, { filePath: "file.js" });
     res.json(results[0].messages);
   } catch (err) {
     console.error("ESLint Error:", err);
