@@ -4,7 +4,7 @@ import {
   useParticipants,
   useRoomContext,
 } from '@livekit/components-react';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { v4 } from 'uuid';
 import { VZCodeContext } from '../VZCodeContext';
@@ -48,12 +48,14 @@ export function VoiceChatModal() {
         const tokenResponse = await res.text();
         setLiveKitToken(tokenResponse);
         setLiveKitConnection(true);
+        return tokenResponse;
       } catch (error) {
         console.error('Error fetching token:', error);
       }
     };
 
-    fetchToken();
+    // This line was written with LiveKit running in dev mode in mind, probably doesn't work
+    fetchToken().then( liveKitToken => {room.connect("ws://localhost:7880", liveKitToken);} );
   };
 
   const handleClose = () => {
