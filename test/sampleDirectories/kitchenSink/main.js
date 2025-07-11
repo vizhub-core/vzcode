@@ -12,7 +12,7 @@ export const main = (container, { state, setState }) => {
   const data = loadData({ state, setState });
   if (!data) return;
 
-  renderBars(svg, {
+  renderBars(sg, {
     data,
     width,
     height,

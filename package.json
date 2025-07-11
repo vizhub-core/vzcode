@@ -167,6 +167,8 @@
     "ws": "^8.18.2"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitejs/plugin-react": "^4.4.1",

@@ -12,55 +12,12 @@ app.use(bodyParser.json());
 
 let eslint;
 
-/*
-eslint = new ESLint({
-  overrideConfigFile: null, 
-  baseConfig: {
-    parserOptions: {
-      ecmaVersion: 2022,
-      sourceType: "module",
-      ecmaFeatures: { jsx: true },
-
-    },
-    env: {
-      browser: true,
-      es2021: true,
-    },
-    plugins: ["react"],
-    rules: {
-      "no-unused-vars": ["warn", { varsIgnorePattern: "^_", argsIgnorePattern: "^_" }],
-      "no-undef": "error",
-      semi: "off",
-    },
-  },
-});
-*/
-
 
 async function createEslintInstance() {
   const reactPlugin = (await import('eslint-plugin-react')).default;
 
   eslint = new ESLint({
-    overrideConfigFile: null,  
-    overrideConfig: {
-      languageOptions: {
-        ecmaVersion: 2022,
-        sourceType: 'module',
-        ecmaFeatures: { jsx: true },
-      },
-      env: {
-        browser: true,
-        es2021: true,
-      },
-      plugins: {
-        react: reactPlugin,
-      },
-      rules: {
-        'no-unused-vars': ['warn', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
-        'no-undef': 'error',
-        semi: 'off',
-      },
-    },
+    overrideConfigFile: "./eslint.config.js",
   });
 }
 
