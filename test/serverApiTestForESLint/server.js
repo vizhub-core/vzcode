@@ -24,7 +24,6 @@ async function createEslintInstance() {
 await createEslintInstance();
 
 //errors
-
 app.post("/lint", async (req, res) => {
   if (!eslint) {
     return res.status(500).json({ error: "ESLint not initialized" });

@@ -16,6 +16,12 @@ export default [
         },
       },
     },
+    /*
+    environment: {
+      browser: true,
+      es2021: true,
+    },
+    */
     plugins: {
       react: reactPlugin,
     },
@@ -23,6 +29,7 @@ export default [
       "no-unused-vars": ["warn", { varsIgnorePattern: "^_", argsIgnorePattern: "^_" }],
       "no-undef": "error",
       semi: "off",
+      "react/jsx-uses-vars": "error",
     },
   },
 ];
