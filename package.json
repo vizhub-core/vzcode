@@ -122,6 +122,7 @@
     "@replit/codemirror-interact": "^6.3.1",
     "@replit/codemirror-lang-svelte": "^6.0.0",
     "@replit/codemirror-vscode-keymap": "^6.0.2",
+    "@shadcn/ui": "^0.0.4",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.6.1",
     "@uiw/codemirror-theme-abcdef": "^4.23.12",

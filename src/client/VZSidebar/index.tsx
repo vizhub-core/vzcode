@@ -25,9 +25,6 @@ import {
   PinSVG,
   QuestionMarkSVG,
   SearchSVG,
-  ExpandSVG,
-  StarSVG,
-  CollapseSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
@@ -257,7 +254,42 @@ export const VZSidebar = ({
       setIsConnecting(false);
     }
   }, [connected, isConnecting]);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        setIsDocOpen(true);
+      } else if (e.key === "Escape") {
+        setIsDocOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
+  const fileList = useMemo(() => {
+    const list: string[] = [];
+    const walk = (node: any, prefix = "") => {
+      Object.entries(node ?? {}).forEach(([name, child]) => {
+        const path = prefix ? `${prefix}/${name}` : name;
+        if (child && typeof child === "object") walk(child, path);
+        else list.push(path);
+      });
+    };
+    walk(fileTree);
+    return list.sort();
+  }, [fileTree]);
+
+  /* ─── input & filtering ─── */
+  const [query, setQuery] = useState("");
+  const results = useMemo(() => {
+    if (!query) return Array.isArray(files) ? files.slice(0, 30) : [];
+    const q = query.toLowerCase();
+    return FileSystemEntry
+  }, [files, query]);
+
+  if (!open) return null;
+  
   // Handle 'saved' state based on 'pending' transition
   useEffect(() => {
     // Check if 'pending' transitioned from true to false
@@ -288,7 +320,6 @@ export const VZSidebar = ({
               className="collapse-icon"
               onClick={() => toggleFolderCollapse(path)}
             >
-              <ExpandSVG />
             </i>
             <span className="folder-name" onClick={() => toggleFolderCollapse(path)}>
               {entity.name ?? 'root'}
@@ -320,7 +351,6 @@ export const VZSidebar = ({
             onChange={e => setFilterTerm(e.target.value)}
           />
           <i className="icon-button" onClick={() => setCollapsedFolders(new Set())} title="Expand All">
-            <ExpandSVG />
           </i>
           <i className="icon-button" onClick={() => {
             const all = new Set<string>();
@@ -333,7 +363,6 @@ export const VZSidebar = ({
             dfs(fileTree);
             setCollapsedFolders(all);
           }} title="Collapse All">
-            <CollapseSVG />
           </i>
         </div>
 
@@ -361,7 +390,6 @@ export const VZSidebar = ({
                           toggleFavorite(ent.fileId);
                         }
                       }}>
-                        <StarSVG />
                       </i>
                     </div>
                   ))}
