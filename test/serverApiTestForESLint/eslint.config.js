@@ -15,6 +15,11 @@ export default [
             presets: ["@babel/preset-react"],
         },
       },
+      globals: {
+        document: "readonly",
+        window: "readonly",
+        console: "readonly",
+      },
     },
     /*
     environment: {
