@@ -36,6 +36,7 @@ eslint = new ESLint({
 });
 */
 
+
 async function createEslintInstance() {
   const reactPlugin = (await import('eslint-plugin-react')).default;
 
