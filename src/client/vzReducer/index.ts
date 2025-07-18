@@ -30,6 +30,10 @@ import {
   setSearchFocusedIndexReducer,
   toggleSearchFocusedReducer,
 } from './searchReducer';
+import {
+  setIsAIChatOpenReducer,
+  toggleAIChatFocusedReducer,
+} from './aiChatReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
@@ -51,6 +55,12 @@ export type VZState = {
 
   // True to show the search instead of files
   isSearchOpen: boolean;
+
+  // True to show the AI chat instead of files
+  isAIChatOpen: boolean;
+
+  // True if the AI chat input should focus on the next render.
+  aiChatFocused: boolean;
 
   // True to show the settings modal.
   isSettingsOpen: boolean;
@@ -114,6 +124,14 @@ export type VZAction =
   // `set_is_search_open`
   //  * Sets whether the search tab is open.
   | { type: 'set_is_search_open'; value: boolean }
+
+  // `set_is_ai_chat_open`
+  //  * Sets whether the AI chat tab is open.
+  | { type: 'set_is_ai_chat_open'; value: boolean }
+
+  // `toggle_ai_chat_focused`
+  // * Toggles focused variable to trigger AI chat input focus
+  | { type: 'toggle_ai_chat_focused' }
 
   // `set_search`
   //  * Sets the current search pattern
@@ -192,6 +210,8 @@ const reducers = [
   setSearchFocusedIndexReducer,
   toggleSearchFocusedReducer,
   setIsSearchOpenReducer,
+  setIsAIChatOpenReducer,
+  toggleAIChatFocusedReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,

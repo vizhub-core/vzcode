@@ -25,6 +25,8 @@ export const createInitialState = ({
     focusedChildIndex: null,
   },
   isSearchOpen: false,
+  isAIChatOpen: false,
+  aiChatFocused: false,
   isSettingsOpen: false,
   isDocOpen: false,
   editorWantsFocus: false,

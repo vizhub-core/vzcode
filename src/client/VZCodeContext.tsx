@@ -113,6 +113,11 @@ export type VZCodeContextValue = {
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
+
+  isAIChatOpen: boolean;
+  setIsAIChatOpen: (isAIChatOpen: boolean) => void;
+  aiChatFocused: boolean;
+  toggleAIChatFocused: () => void;
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
     files: ShareDBDoc<VizContent>,
@@ -252,6 +257,8 @@ export const VZCodeProvider = ({
     theme,
     search,
     isSearchOpen,
+    isAIChatOpen,
+    aiChatFocused,
     isSettingsOpen,
     isDocOpen,
     editorWantsFocus,
@@ -281,6 +288,8 @@ export const VZCodeProvider = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsAIChatOpen,
+    toggleAIChatFocused,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -436,6 +445,11 @@ export const VZCodeProvider = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+
+    isAIChatOpen,
+    setIsAIChatOpen,
+    aiChatFocused,
+    toggleAIChatFocused,
 
     isSettingsOpen,
     setIsSettingsOpen,
