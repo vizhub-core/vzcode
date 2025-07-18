@@ -117,7 +117,7 @@ app.post(
 app.post(
   '/ai-chat-message',
   bodyParser.json(),
-  handleAIChatMessage(),
+  handleAIChatMessage(shareDBDoc),
 );
 
 // Livekit Token Generator

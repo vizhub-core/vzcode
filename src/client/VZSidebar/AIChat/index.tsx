@@ -11,28 +11,27 @@ import {
   dateToTimestamp,
   timestampToDate,
 } from '@vizhub/viz-utils';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { v4 as uuidv4 } from 'uuid';
 import './styles.scss';
 
-// TODO pass in the content from the ShareDB doc
 export const AIChat = () => {
-  // TODO remove these `useState` calls,
-  // replace it with `content.chats` from the ShareDB doc
-  // see the `VizChats` type from @vizhub/viz-types
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'assistant',
-      content:
-        "Hello! I'm your AI assistant. How can I help you with your code today?",
-      timestamp: dateToTimestamp(new Date()),
-    },
-  ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentChatId] = useState(() => uuidv4());
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
-  const { aiChatFocused } = useContext(VZCodeContext);
+  const { aiChatFocused, shareDBDoc } =
+    useContext(VZCodeContext);
+
+  // Get current chat data from ShareDB
+  const currentChat =
+    shareDBDoc?.data?.chats?.[currentChatId];
+  const messages = currentChat?.messages || [];
+  const aiScratchpad = currentChat?.aiScratchpad;
+  const aiStatus = currentChat?.aiStatus;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
@@ -42,7 +41,7 @@ export const AIChat = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, aiScratchpad]);
 
   useEffect(() => {
     // Focus the input when the AI chat is focused
@@ -52,16 +51,53 @@ export const AIChat = () => {
   }, [aiChatFocused]);
 
   const handleSendMessage = useCallback(async () => {
-    if (!message.trim() || isLoading) return;
+    if (!message.trim() || isLoading || !shareDBDoc) return;
 
     const userMessage = {
-      id: Date.now(),
-      type: 'user',
+      id: `user-${Date.now()}`,
+      role: 'user' as const,
       content: message.trim(),
       timestamp: dateToTimestamp(new Date()),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Add user message to ShareDB
+    const currentMessages =
+      shareDBDoc.data.chats?.[currentChatId]?.messages ||
+      [];
+
+    // Ensure chats structure exists
+    if (!shareDBDoc.data.chats) {
+      shareDBDoc.submitOp([{ p: ['chats'], oi: {} }]);
+    }
+
+    // Ensure current chat exists
+    if (!shareDBDoc.data.chats[currentChatId]) {
+      shareDBDoc.submitOp([
+        {
+          p: ['chats', currentChatId],
+          oi: {
+            id: currentChatId,
+            messages: [],
+            createdAt: dateToTimestamp(new Date()),
+            updatedAt: dateToTimestamp(new Date()),
+          },
+        },
+      ]);
+    }
+
+    // Add user message
+    shareDBDoc.submitOp([
+      {
+        p: [
+          'chats',
+          currentChatId,
+          'messages',
+          currentMessages.length,
+        ],
+        li: userMessage,
+      },
+    ]);
+
     setMessage('');
     setIsLoading(true);
 
@@ -74,6 +110,7 @@ export const AIChat = () => {
         },
         body: JSON.stringify({
           content: userMessage.content,
+          chatId: currentChatId,
         }),
       });
 
@@ -83,23 +120,37 @@ export const AIChat = () => {
         );
       }
 
-      const aiResponse = await response.json();
-      setMessages((prev) => [...prev, aiResponse]);
+      // The backend will handle adding the AI response to ShareDB
+      await response.json();
     } catch (error) {
       console.error('Error getting AI response:', error);
-      // Fallback error message
+      // Add fallback error message to ShareDB
       const errorResponse = {
-        id: Date.now() + 1,
-        type: 'assistant',
+        id: `error-${Date.now()}`,
+        role: 'assistant' as const,
         content:
           'Sorry, I encountered an error while processing your message. Please try again.',
         timestamp: dateToTimestamp(new Date()),
       };
-      setMessages((prev) => [...prev, errorResponse]);
+
+      const updatedMessages =
+        shareDBDoc.data.chats?.[currentChatId]?.messages ||
+        [];
+      shareDBDoc.submitOp([
+        {
+          p: [
+            'chats',
+            currentChatId,
+            'messages',
+            updatedMessages.length,
+          ],
+          li: errorResponse,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading]);
+  }, [message, isLoading, shareDBDoc, currentChatId]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -114,10 +165,12 @@ export const AIChat = () => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`ai-chat-message ${msg.type === 'user' ? 'user' : 'assistant'}`}
+            className={`ai-chat-message ${msg.role === 'user' ? 'user' : 'assistant'}`}
           >
             <div className="ai-chat-message-content">
-              {msg.content}
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {msg.content}
+              </Markdown>
             </div>
             <div className="ai-chat-message-time">
               {timestampToDate(
@@ -129,7 +182,24 @@ export const AIChat = () => {
             </div>
           </div>
         ))}
-        {isLoading && (
+
+        {/* Show streaming content if available */}
+        {aiScratchpad && (
+          <div className="ai-chat-message assistant streaming">
+            <div className="ai-chat-message-content">
+              <Markdown remarkPlugins={[remarkGfm]}>
+                {aiScratchpad}
+              </Markdown>
+            </div>
+            {aiStatus && (
+              <div className="ai-chat-status">
+                {aiStatus}
+              </div>
+            )}
+          </div>
+        )}
+
+        {isLoading && !aiScratchpad && (
           <div className="ai-chat-message assistant">
             <div className="ai-chat-message-content">
               <div className="ai-chat-typing">
@@ -154,7 +224,7 @@ export const AIChat = () => {
             }
             onKeyDown={handleKeyDown}
             ref={inputRef}
-            placeholder="Ask me anything about your code..."
+            placeholder="Describe what you'd like me to change in your code..."
             spellCheck="false"
             disabled={isLoading}
           />
