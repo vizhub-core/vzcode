@@ -25,11 +25,13 @@ import {
   PinSVG,
   QuestionMarkSVG,
   SearchSVG,
+  SparklesSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
+import { AIChat } from './AIChat';
 import { Listing } from './Listing';
 import { Search } from './Search';
 import { useDragAndDrop } from './useDragAndDrop';
@@ -105,6 +107,11 @@ export const VZSidebar = ({
       <strong>Open Voice Chat Menu</strong>
     </div>
   ),
+  aiChatToolTipText = (
+    <div>
+      <strong>AI Chat</strong>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -116,6 +123,7 @@ export const VZSidebar = ({
   enableAutoFollowTooltipText?: React.ReactNode;
   disableAutoFollowTooltipText?: React.ReactNode;
   voiceChatToolTipText?: React.ReactNode;
+  aiChatToolTipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -124,6 +132,8 @@ export const VZSidebar = ({
     setIsDocOpen,
     isSearchOpen,
     setIsSearchOpen,
+    isAIChatOpen,
+    setIsAIChatOpen,
     handleOpenCreateFileModal,
     handleOpenCreateDirModal,
     connected,
@@ -270,7 +280,10 @@ export const VZSidebar = ({
             <i
               id="files-icon"
               className="icon-button icon-button-dark"
-              onClick={() => setIsSearchOpen(false)}
+              onClick={() => {
+                setIsSearchOpen(false);
+                setIsAIChatOpen(false);
+              }}
             >
               <FolderSVG />
             </i>
@@ -287,9 +300,32 @@ export const VZSidebar = ({
             <i
               id="search-icon"
               className="icon-button icon-button-dark"
-              onClick={() => setIsSearchOpen(true)}
+              onClick={() => {
+                setIsSearchOpen(true);
+                setIsAIChatOpen(false);
+              }}
             >
               <SearchSVG />
+            </i>
+          </OverlayTrigger>
+
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="ai-chat-tooltip">
+                {aiChatToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              id="ai-chat-icon"
+              className="icon-button icon-button-dark"
+              onClick={() => {
+                setIsAIChatOpen(true);
+                setIsSearchOpen(false);
+              }}
+            >
+              <SparklesSVG />
             </i>
           </OverlayTrigger>
 
@@ -438,7 +474,15 @@ export const VZSidebar = ({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          {!isSearchOpen ? (
+          {isAIChatOpen ? (
+            <div className="sidebar-ai-chat">
+              <AIChat />
+            </div>
+          ) : isSearchOpen ? (
+            <div className="sidebar-search">
+              <Search />
+            </div>
+          ) : (
             <div className="sidebar-files">
               {isDragOver ? (
                 <div className="empty drag-over">
@@ -479,10 +523,6 @@ export const VZSidebar = ({
                   </div>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="sidebar-search">
-              <Search />
             </div>
           )}
         </div>
