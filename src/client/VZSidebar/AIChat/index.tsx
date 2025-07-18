@@ -13,7 +13,11 @@ import {
 } from '@vizhub/viz-utils';
 import './styles.scss';
 
+// TODO pass in the content from the ShareDB doc
 export const AIChat = () => {
+  // TODO remove these `useState` calls,
+  // replace it with `content.chats` from the ShareDB doc
+  // see the `VizChats` type from @vizhub/viz-types
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
     {
