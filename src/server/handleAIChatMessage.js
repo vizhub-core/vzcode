@@ -40,7 +40,7 @@ export const handleAIChatMessage =
     try {
       // Get existing files from ShareDB doc and convert to FileCollection format
       const vizFiles = shareDBDoc.data.files;
-      const files = vizFilesToFileCollection(vizFiles);
+      const files = vizFiles;
 
       // Ensure chats object exists
       if (!shareDBDoc.data.chats) {
@@ -67,6 +67,30 @@ export const handleAIChatMessage =
         });
         shareDBDoc.submitOp(op);
       }
+
+      // Add user message to chat
+      const userMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        content: content,
+        timestamp: dateToTimestamp(new Date()),
+      };
+
+      const userMessageOp = diff(shareDBDoc.data, {
+        ...shareDBDoc.data,
+        chats: {
+          ...shareDBDoc.data.chats,
+          [chatId]: {
+            ...shareDBDoc.data.chats[chatId],
+            messages: [
+              ...shareDBDoc.data.chats[chatId].messages,
+              userMessage,
+            ],
+            updatedAt: dateToTimestamp(new Date()),
+          },
+        },
+      });
+      shareDBDoc.submitOp(userMessageOp);
 
       // Define LLM function for streaming
       const llmFunction = async (fullPrompt) => {
@@ -141,17 +165,6 @@ export const handleAIChatMessage =
               now - lastUpdateTime >= UPDATE_THROTTLE_MS;
 
             if (shouldUpdate) {
-              const currentExpectedState = {
-                ...shareDBDoc.data,
-                chats: {
-                  ...shareDBDoc.data.chats,
-                  [chatId]: {
-                    ...shareDBDoc.data.chats[chatId],
-                    aiScratchpad: expectedAiScratchpad,
-                  },
-                },
-              };
-
               const newExpectedState = {
                 ...shareDBDoc.data,
                 chats: {
@@ -164,7 +177,7 @@ export const handleAIChatMessage =
               };
 
               const op = diff(
-                currentExpectedState,
+                shareDBDoc.data,
                 newExpectedState,
               );
               shareDBDoc.submitOp(op);
@@ -220,6 +233,17 @@ export const handleAIChatMessage =
       };
 
       // Perform AI edit
+      console.log(
+        '[handleAIChatMessage] calling performAiEdit with:',
+        {
+          prompt: content,
+          files: files,
+          apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY
+            ? '[REDACTED]'
+            : 'undefined',
+        },
+      );
+
       const editResult = await performAiEdit({
         prompt: content,
         files,
@@ -296,23 +320,36 @@ export const handleAIChatMessage =
     } catch (error) {
       console.error('[handleAIChatMessage] error:', error);
 
-      // Clear scratchpad on error
+      // Clear scratchpad and add error message on error
       try {
+        const errorResponse = {
+          id: `error-${Date.now()}`,
+          role: 'assistant',
+          content:
+            'Sorry, I encountered an error while processing your message. Please try again.',
+          timestamp: dateToTimestamp(new Date()),
+        };
+
         const errorOp = diff(shareDBDoc.data, {
           ...shareDBDoc.data,
           chats: {
             ...shareDBDoc.data.chats,
             [chatId]: {
               ...shareDBDoc.data.chats[chatId],
+              messages: [
+                ...shareDBDoc.data.chats[chatId].messages,
+                errorResponse,
+              ],
               aiScratchpad: undefined,
-              aiStatus: 'Error during AI edit',
+              aiStatus: undefined,
+              updatedAt: dateToTimestamp(new Date()),
             },
           },
         });
         shareDBDoc.submitOp(errorOp);
       } catch (opError) {
         console.error(
-          '[handleAIChatMessage] error clearing scratchpad:',
+          '[handleAIChatMessage] error handling error state:',
           opError,
         );
       }

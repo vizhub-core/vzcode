@@ -7,14 +7,10 @@ import {
 } from 'react';
 import { Form, Button } from '../../bootstrap';
 import { VZCodeContext } from '../../VZCodeContext';
-import {
-  dateToTimestamp,
-  timestampToDate,
-} from '@vizhub/viz-utils';
+import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { v4 as uuidv4 } from 'uuid';
-import { diff } from '../../diff';
 import './styles.scss';
 
 export const AIChat = () => {
@@ -24,12 +20,11 @@ export const AIChat = () => {
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
-  const { aiChatFocused, shareDBDoc } =
+  const { aiChatFocused, content } =
     useContext(VZCodeContext);
 
-  // Get current chat data from ShareDB
-  const currentChat =
-    shareDBDoc?.data?.chats?.[currentChatId];
+  // Get current chat data from content
+  const currentChat = content?.chats?.[currentChatId];
   const messages = currentChat?.messages || [];
   const aiScratchpad = currentChat?.aiScratchpad;
   const aiStatus = currentChat?.aiStatus;
@@ -52,67 +47,13 @@ export const AIChat = () => {
   }, [aiChatFocused]);
 
   const handleSendMessage = useCallback(async () => {
-    if (!message.trim() || isLoading || !shareDBDoc) return;
-
-    const userMessage = {
-      id: `user-${Date.now()}`,
-      role: 'user' as const,
-      content: message.trim(),
-      timestamp: dateToTimestamp(new Date()),
-    };
-
-    // Add user message to ShareDB
-    const currentMessages =
-      shareDBDoc.data.chats?.[currentChatId]?.messages ||
-      [];
-
-    // Ensure chats structure exists
-    if (!shareDBDoc.data.chats) {
-      const op = diff(shareDBDoc.data, {
-        ...shareDBDoc.data,
-        chats: {},
-      });
-      shareDBDoc.submitOp(op);
-    }
-
-    // Ensure current chat exists
-    if (!shareDBDoc.data.chats[currentChatId]) {
-      const op = diff(shareDBDoc.data, {
-        ...shareDBDoc.data,
-        chats: {
-          ...shareDBDoc.data.chats,
-          [currentChatId]: {
-            id: currentChatId,
-            messages: [],
-            createdAt: dateToTimestamp(new Date()),
-            updatedAt: dateToTimestamp(new Date()),
-          },
-        },
-      });
-      shareDBDoc.submitOp(op);
-    }
-
-    // Add user message
-    const op = diff(shareDBDoc.data, {
-      ...shareDBDoc.data,
-      chats: {
-        ...shareDBDoc.data.chats,
-        [currentChatId]: {
-          ...shareDBDoc.data.chats[currentChatId],
-          messages: [
-            ...shareDBDoc.data.chats[currentChatId]
-              .messages,
-            userMessage,
-          ],
-        },
-      },
-    });
-    shareDBDoc.submitOp(op);
+    if (!message.trim() || isLoading) return;
 
     setMessage('');
     setIsLoading(true);
 
     // Call backend endpoint for AI response
+    // The server will handle all ShareDB operations including adding the user message
     try {
       const response = await fetch('/ai-chat-message', {
         method: 'POST',
@@ -120,7 +61,7 @@ export const AIChat = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: userMessage.content,
+          content: message.trim(),
           chatId: currentChatId,
         }),
       });
@@ -131,38 +72,15 @@ export const AIChat = () => {
         );
       }
 
-      // The backend will handle adding the AI response to ShareDB
+      // The backend handles all ShareDB operations
       await response.json();
     } catch (error) {
       console.error('Error getting AI response:', error);
-      // Add fallback error message to ShareDB
-      const errorResponse = {
-        id: `error-${Date.now()}`,
-        role: 'assistant' as const,
-        content:
-          'Sorry, I encountered an error while processing your message. Please try again.',
-        timestamp: dateToTimestamp(new Date()),
-      };
-
-      const op = diff(shareDBDoc.data, {
-        ...shareDBDoc.data,
-        chats: {
-          ...shareDBDoc.data.chats,
-          [currentChatId]: {
-            ...shareDBDoc.data.chats[currentChatId],
-            messages: [
-              ...shareDBDoc.data.chats[currentChatId]
-                .messages,
-              errorResponse,
-            ],
-          },
-        },
-      });
-      shareDBDoc.submitOp(op);
+      // Server will handle error messages too
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, shareDBDoc, currentChatId]);
+  }, [message, isLoading, currentChatId]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
