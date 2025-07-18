@@ -59,6 +59,7 @@ import {
   tsLinterWorker,
   tsSyncWorker,
 } from '@valtown/codemirror-ts';
+import { getFileExtension } from '../utils/fileExtension';
 
 const DEBUG = false;
 
@@ -129,6 +130,14 @@ const languageExtensions = {
   css,
   md: markdown,
   svelte,
+};
+
+// Exported utility function to get language extension for a file extension
+export const getLanguageExtension = (
+  fileExtension: string,
+) => {
+  const languageFunc = languageExtensions[fileExtension];
+  return languageFunc ? languageFunc() : undefined;
 };
 
 // Gets a value at a path in an object.
@@ -229,8 +238,7 @@ export const getOrCreateEditor = async ({
   const text = getAtPath(content, textPath);
   const name = getAtPath(content, namePath);
 
-  // TODO refactor into a utility function
-  const fileExtension = name.split('.').pop();
+  const fileExtension = getFileExtension(name);
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
@@ -324,10 +332,6 @@ export const getOrCreateEditor = async ({
   // using a Compartment.
   const languageCompartment = new Compartment();
   // See https://github.com/vizhub-core/vzcode/issues/55
-  const getLanguageExtension = (fileExtension: string) => {
-    const languageFunc = languageExtensions[fileExtension];
-    return languageFunc ? languageFunc() : undefined;
-  };
 
   const languageExtension =
     getLanguageExtension(fileExtension);
