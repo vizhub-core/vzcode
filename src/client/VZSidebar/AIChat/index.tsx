@@ -5,12 +5,13 @@ import {
   useState,
   useCallback,
 } from 'react';
-import { Form, Button } from '../bootstrap';
-import { VZCodeContext } from '../VZCodeContext';
+import { Form, Button } from '../../bootstrap';
+import { VZCodeContext } from '../../VZCodeContext';
 import {
   dateToTimestamp,
   timestampToDate,
 } from '@vizhub/viz-utils';
+import './styles.scss';
 
 export const AIChat = () => {
   const [message, setMessage] = useState('');
