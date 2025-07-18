@@ -1,4 +1,12 @@
-import type { VZState, VZAction } from "./types";
+import type { VZState as BaseVZState, VZAction } from ".";
+
+interface VZState extends BaseVZState {
+  dirtyFileIds: Set<string>;
+}
+
+type ExtendedVZAction = VZAction | 
+  { type: "markFileDirty"; fileId: string } | 
+  { type: "markFileSaved"; fileId: string };
 
 /**
  * Keeps track of which files have unsaved edits ("dirty" flags).
@@ -7,12 +15,12 @@ import type { VZState, VZAction } from "./types";
  *   • `dirtyFileIds: Set<string>` – IDs of files with unsaved changes.
  *
  * Actions added to VZAction union:
- *   • { type: "markFileDirty";  fileId: string }
+  action: ExtendedVZAction // Use the extended action type
  *   • { type: "markFileSaved";  fileId: string }
  */
 export const markFileDirtyReducer = (
   state: VZState,
-  action: VZAction
+  action: ExtendedVZAction 
 ): VZState => {
   switch (action.type) {
     case "markFileDirty": {
