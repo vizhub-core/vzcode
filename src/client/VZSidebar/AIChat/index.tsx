@@ -14,6 +14,7 @@ import {
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { v4 as uuidv4 } from 'uuid';
+import { diff } from '../../diff';
 import './styles.scss';
 
 export const AIChat = () => {
@@ -67,36 +68,46 @@ export const AIChat = () => {
 
     // Ensure chats structure exists
     if (!shareDBDoc.data.chats) {
-      shareDBDoc.submitOp([{ p: ['chats'], oi: {} }]);
+      const op = diff(shareDBDoc.data, {
+        ...shareDBDoc.data,
+        chats: {},
+      });
+      shareDBDoc.submitOp(op);
     }
 
     // Ensure current chat exists
     if (!shareDBDoc.data.chats[currentChatId]) {
-      shareDBDoc.submitOp([
-        {
-          p: ['chats', currentChatId],
-          oi: {
+      const op = diff(shareDBDoc.data, {
+        ...shareDBDoc.data,
+        chats: {
+          ...shareDBDoc.data.chats,
+          [currentChatId]: {
             id: currentChatId,
             messages: [],
             createdAt: dateToTimestamp(new Date()),
             updatedAt: dateToTimestamp(new Date()),
           },
         },
-      ]);
+      });
+      shareDBDoc.submitOp(op);
     }
 
     // Add user message
-    shareDBDoc.submitOp([
-      {
-        p: [
-          'chats',
-          currentChatId,
-          'messages',
-          currentMessages.length,
-        ],
-        li: userMessage,
+    const op = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [currentChatId]: {
+          ...shareDBDoc.data.chats[currentChatId],
+          messages: [
+            ...shareDBDoc.data.chats[currentChatId]
+              .messages,
+            userMessage,
+          ],
+        },
       },
-    ]);
+    });
+    shareDBDoc.submitOp(op);
 
     setMessage('');
     setIsLoading(true);
@@ -133,20 +144,21 @@ export const AIChat = () => {
         timestamp: dateToTimestamp(new Date()),
       };
 
-      const updatedMessages =
-        shareDBDoc.data.chats?.[currentChatId]?.messages ||
-        [];
-      shareDBDoc.submitOp([
-        {
-          p: [
-            'chats',
-            currentChatId,
-            'messages',
-            updatedMessages.length,
-          ],
-          li: errorResponse,
+      const op = diff(shareDBDoc.data, {
+        ...shareDBDoc.data,
+        chats: {
+          ...shareDBDoc.data.chats,
+          [currentChatId]: {
+            ...shareDBDoc.data.chats[currentChatId],
+            messages: [
+              ...shareDBDoc.data.chats[currentChatId]
+                .messages,
+              errorResponse,
+            ],
+          },
         },
-      ]);
+      });
+      shareDBDoc.submitOp(op);
     } finally {
       setIsLoading(false);
     }

@@ -1,8 +1,12 @@
-import { dateToTimestamp } from '@vizhub/viz-utils';
+import {
+  dateToTimestamp,
+  vizFilesToFileCollection,
+  fileCollectionToVizFiles,
+} from '@vizhub/viz-utils';
 import { StreamingMarkdownParser } from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
 import { performAiEdit } from 'editcodewithai';
-import { diff } from '../ot.js';
+import { diff } from '../client/diff.js';
 
 const debug = false;
 
@@ -34,8 +38,9 @@ export const handleAIChatMessage =
     }
 
     try {
-      // Get existing files from ShareDB doc
-      const files = shareDBDoc.data.files;
+      // Get existing files from ShareDB doc and convert to FileCollection format
+      const vizFiles = shareDBDoc.data.files;
+      const files = vizFilesToFileCollection(vizFiles);
 
       // Ensure chats object exists
       if (!shareDBDoc.data.chats) {
@@ -236,10 +241,13 @@ export const handleAIChatMessage =
       });
       shareDBDoc.submitOp(clearOp);
 
-      // Apply AI edits to files
+      // Apply AI edits to files (convert back to VizFiles format)
+      const updatedVizFiles = fileCollectionToVizFiles(
+        editResult.changedFiles,
+      );
       const filesOp = diff(shareDBDoc.data, {
         ...shareDBDoc.data,
-        files: editResult.changedFiles,
+        files: updatedVizFiles,
         isInteracting: true,
       });
       shareDBDoc.submitOp(filesOp);
