@@ -1,8 +1,6 @@
-const debug = false;
+import { dateToTimestamp } from '@vizhub/viz-utils';
 
-// Helper function to convert Date to VizTimestamp
-const dateToTimestamp = (date) =>
-  Math.floor(date.getTime() / 1000);
+const debug = false;
 
 export const handleAIChatMessage =
   () => async (req, res) => {

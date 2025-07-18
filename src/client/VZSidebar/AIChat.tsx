@@ -7,14 +7,10 @@ import {
 } from 'react';
 import { Form, Button } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
-
-// Helper function to convert VizTimestamp to Date
-const timestampToDate = (timestamp) =>
-  new Date(timestamp * 1000);
-
-// Helper function to convert Date to VizTimestamp
-const dateToTimestamp = (date) =>
-  Math.floor(date.getTime() / 1000);
+import {
+  dateToTimestamp,
+  timestampToDate,
+} from '@vizhub/viz-utils';
 
 export const AIChat = () => {
   const [message, setMessage] = useState('');
