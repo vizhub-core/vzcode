@@ -1,0 +1,64 @@
+body {
+  font-family: sans-serif;
+  background-color: #333;
+  color: #eee;
+  margin: 0; /* Reset default margins */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure full viewport height */
+}
+
+header, main, footer {
+  padding: 20px;
+}
+
+header {
+  background-color: #428bca;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin: 0; /* Reset default heading margins */
+}
+
+main {
+  flex: 1; /* Allow main content to take up available space */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+.box {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  border: 2px solid #428bca;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.blue {
+  background-color: #2980b9;
+}
+
+.light-blue {
+  background-color: #3498db;
+}
+
+.dark-blue {
+  background-color: #21618c;
+}
+
+footer {
+    background-color: #428bca;
+    color: white;
+    text-align: center;
+    margin-top: auto; /* This pushes the footer to the bottom */
+}

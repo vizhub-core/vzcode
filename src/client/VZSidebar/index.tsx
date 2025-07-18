@@ -112,7 +112,7 @@ export const VZSidebar = ({
   ),
   aiChatToolTipText = (
     <div>
-      <strong>AI Chat</strong>
+      <strong>AI Chat (beta)</strong>
     </div>
   ),
 }: {
