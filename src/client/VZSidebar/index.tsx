@@ -35,7 +35,10 @@ import { AIChat } from './AIChat';
 import { Listing } from './Listing';
 import { Search } from './Search';
 import { useDragAndDrop } from './useDragAndDrop';
-import { enableLiveKit } from '../featureFlags';
+import {
+  enableLiveKit,
+  enableAIChat,
+} from '../featureFlags';
 import './styles.scss';
 
 // TODO turn this UI back on when we are actually detecting
@@ -309,25 +312,27 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="ai-chat-tooltip">
-                {aiChatToolTipText}
-              </Tooltip>
-            }
-          >
-            <i
-              id="ai-chat-icon"
-              className="icon-button icon-button-dark"
-              onClick={() => {
-                setIsAIChatOpen(true);
-                setIsSearchOpen(false);
-              }}
+          {enableAIChat && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="ai-chat-tooltip">
+                  {aiChatToolTipText}
+                </Tooltip>
+              }
             >
-              <SparklesSVG />
-            </i>
-          </OverlayTrigger>
+              <i
+                id="ai-chat-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  setIsAIChatOpen(true);
+                  setIsSearchOpen(false);
+                }}
+              >
+                <SparklesSVG />
+              </i>
+            </OverlayTrigger>
+          )}
 
           <OverlayTrigger
             placement="right"
