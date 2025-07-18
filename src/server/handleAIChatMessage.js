@@ -197,17 +197,6 @@ export const handleAIChatMessage =
 
         // Submit final update if there's pending content
         if (expectedAiScratchpad !== fullContent) {
-          const currentExpectedState = {
-            ...shareDBDoc.data,
-            chats: {
-              ...shareDBDoc.data.chats,
-              [chatId]: {
-                ...shareDBDoc.data.chats[chatId],
-                aiScratchpad: expectedAiScratchpad,
-              },
-            },
-          };
-
           const newExpectedState = {
             ...shareDBDoc.data,
             chats: {
@@ -220,7 +209,7 @@ export const handleAIChatMessage =
           };
 
           const op = diff(
-            currentExpectedState,
+            shareDBDoc.data,
             newExpectedState,
           );
           shareDBDoc.submitOp(op);
