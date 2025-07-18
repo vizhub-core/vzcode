@@ -334,7 +334,7 @@ export const VZCodeProvider = ({
     closeTabs,
     openTab,
     editorCache,
-    content
+    content,
   });
 
   // State to control the create file modal's visibility
