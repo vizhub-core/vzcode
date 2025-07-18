@@ -150,6 +150,7 @@
     "globals": "^16.2.0",
     "ignore": "^7.0.5",
     "json0-ot-diff": "^1.1.2",
+    "livekit-client": "^2.13.8",
     "livekit-server-sdk": "^2.13.0",
     "ngrok": "^5.0.0-beta.2",
     "npm": "^11.4.1",
@@ -180,6 +181,6 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.42.0",
-    "@rollup/rollup-win32-x64-msvc": "^4.42.0"
+    "@rollup/rollup-win32-x64-msvc": "^4.43.0"
   }
 }

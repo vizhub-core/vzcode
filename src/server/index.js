@@ -16,6 +16,7 @@ import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
+import 'dotenv/config';
 import './setupEnv.js';
 
 // The time in milliseconds by which auto-saving is debounced.
