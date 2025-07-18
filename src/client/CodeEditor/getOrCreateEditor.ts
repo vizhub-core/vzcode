@@ -349,6 +349,11 @@ export const getOrCreateEditor = async ({
     extensions.push(languageCompartment.of([]));
   }
 
+  // Enable line wrapping for Markdown files
+  if (fileExtension === 'md') {
+    extensions.push(EditorView.lineWrapping);
+  }
+
   // Add interactive widgets.
   // Includes the Alt+drag functionality for numbers.
   // Calls `onInteract` when one of those widgets is interacted with.
