@@ -5,6 +5,3 @@ import App from './app';
 const root = createRoot(document.getElementById('root'));
 root.render(<App />);
 
-x = x = u;
-
-y + z;

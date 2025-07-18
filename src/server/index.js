@@ -17,6 +17,9 @@ import { handleAICopilot } from './handleAICopilot.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
+import { ESLint } from "eslint";
+import cors from 'cors'; 
+
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -335,3 +338,4 @@ server.listen(port, async () => {
     open(`http://localhost:${livePort}`);
   }
 });
+
