@@ -8,6 +8,14 @@ import {
 import { Form, Button } from '../bootstrap';
 import { VZCodeContext } from '../VZCodeContext';
 
+// Helper function to convert VizTimestamp to Date
+const timestampToDate = (timestamp) =>
+  new Date(timestamp * 1000);
+
+// Helper function to convert Date to VizTimestamp
+const dateToTimestamp = (date) =>
+  Math.floor(date.getTime() / 1000);
+
 export const AIChat = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
@@ -16,7 +24,7 @@ export const AIChat = () => {
       type: 'assistant',
       content:
         "Hello! I'm your AI assistant. How can I help you with your code today?",
-      timestamp: new Date(),
+      timestamp: dateToTimestamp(new Date()),
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -49,27 +57,47 @@ export const AIChat = () => {
       id: Date.now(),
       type: 'user',
       content: message.trim(),
-      timestamp: new Date(),
+      timestamp: dateToTimestamp(new Date()),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
 
-    // Simulate AI response (replace with actual AI integration later)
-    setTimeout(() => {
-      const aiResponse = {
+    // Call backend endpoint for AI response
+    try {
+      const response = await fetch('/ai-chat-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: userMessage.content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      const aiResponse = await response.json();
+      setMessages((prev) => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      // Fallback error message
+      const errorResponse = {
         id: Date.now() + 1,
         type: 'assistant',
         content:
-          'I understand you\'re asking about: "' +
-          userMessage.content +
-          '". This is a placeholder response. The AI chat feature is still being developed!',
-        timestamp: new Date(),
+          'Sorry, I encountered an error while processing your message. Please try again.',
+        timestamp: dateToTimestamp(new Date()),
       };
-      setMessages((prev) => [...prev, aiResponse]);
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   }, [message, isLoading]);
 
   const handleKeyDown = (event) => {
@@ -91,7 +119,9 @@ export const AIChat = () => {
               {msg.content}
             </div>
             <div className="ai-chat-message-time">
-              {msg.timestamp.toLocaleTimeString([], {
+              {timestampToDate(
+                msg.timestamp,
+              ).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
               })}
