@@ -144,14 +144,17 @@
 }
 
 .ai-chat-status {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-style: italic;
-  color: var(--bs-success);
-  margin-top: 0.5rem;
+  color: var(--vh-color-neutral-03);
+  margin-bottom: 0.5rem;
+  margin-left: 20px;
+  margin-right: 20px;
   padding: 0.25rem 0.5rem;
-  background-color: var(--bs-success-bg-subtle);
+  background-color: var(--vh-color-neutral-02);
   border-radius: 0.25rem;
-  border: 1px solid var(--bs-success-border-subtle);
+  border: 1px solid var(--vh-color-neutral-03);
+  text-align: left;
 }
 
 .ai-chat-typing {

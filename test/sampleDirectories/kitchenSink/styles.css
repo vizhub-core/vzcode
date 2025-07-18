@@ -3,18 +3,18 @@ body {
   background-color: #000;
   color: #eee;
   margin: 0;
-  overflow: hidden; /* Hide scrollbars */
+  overflow: hidden; 
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 header, main, footer {
-  padding: 20px;
+  padding: 1rem; /* Use rems for better responsiveness */
 }
 
 header {
-  background-color: rgba(66, 139, 202, 0.5); /* Semi-transparent header */
+  background-color: rgba(66, 139, 202, 0.5); 
   color: white;
   text-align: center;
 }
@@ -26,8 +26,9 @@ h1 {
 main {
   flex: 1;
   display: flex;
-  justify-content: center; /* Center the starfield */
+  justify-content: center; 
   align-items: center;
+  position: relative; /* Needed for absolute positioning of stars */
 }
 
 footer {
@@ -41,6 +42,13 @@ footer {
   position: absolute;
   background-color: white;
   border-radius: 50%;
-  opacity: 0.8; /* Adjust for brightness */
-  transform: translate(-50%, -50%); /* Center stars */
+  opacity: 0.8; 
+  transform: translate(-50%, -50%); 
+  animation: twinkle 1s infinite; /* Added animation */
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
 }

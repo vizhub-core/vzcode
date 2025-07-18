@@ -12,14 +12,14 @@ export const StreamingMessage = ({
 }: StreamingMessageProps) => {
   return (
     <div className="ai-chat-message assistant streaming">
+      {status && (
+        <div className="ai-chat-status">{status}</div>
+      )}
       <div className="ai-chat-message-content">
         <Markdown remarkPlugins={[remarkGfm]}>
           {content}
         </Markdown>
       </div>
-      {status && (
-        <div className="ai-chat-status">{status}</div>
-      )}
     </div>
   );
 };
