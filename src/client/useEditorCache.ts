@@ -6,6 +6,7 @@ import { EditorView } from 'codemirror';
 export type EditorCacheValue = {
   editor: EditorView;
   themeCompartment: any;
+  languageCompartment?: any;
   scrollPosition?: number;
 };
 
