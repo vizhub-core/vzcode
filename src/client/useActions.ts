@@ -150,6 +150,24 @@ export const useActions = (
     });
   }, [dispatch]);
 
+  // True to show the AI chat instead of files
+  const setIsAIChatOpen = useCallback(
+    (value: boolean) => {
+      dispatch({
+        type: 'set_is_ai_chat_open',
+        value: value,
+      });
+    },
+    [dispatch],
+  );
+
+  // Toggle the focused variable, which should focus the AI chat input
+  const toggleAIChatFocused = useCallback(() => {
+    dispatch({
+      type: 'toggle_ai_chat_focused',
+    });
+  }, [dispatch]);
+
   // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
@@ -231,6 +249,8 @@ export const useActions = (
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsAIChatOpen,
+    toggleAIChatFocused,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
