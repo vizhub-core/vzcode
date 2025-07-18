@@ -148,6 +148,7 @@ export const Item = ({
 
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
+    
   }, []);
 
   return (

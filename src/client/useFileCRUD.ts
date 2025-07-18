@@ -9,6 +9,8 @@ export const useFileCRUD = ({
   submitOperation,
   closeTabs,
   openTab,
+  editorCache,
+  content
 }: {
   submitOperation: (
     operation: (document: VizContent) => VizContent,
@@ -21,6 +23,8 @@ export const useFileCRUD = ({
     fileId: VizFileId;
     isTransient: boolean;
   }) => void;
+  editorCache:any ;// TODO proper type
+  content:any // TODO type
 }) => {
   // Create a new file
   const createFile = useCallback(
@@ -78,6 +82,29 @@ export const useFileCRUD = ({
           },
         },
       }));
+
+      // TODO refactor into a shared module, 
+      // and use from src/client/CodeEditor/getOrCreateEditor.ts
+      const getExtension = (name:string)=> name.split('.').pop();
+
+      const oldName = content.files[fileId].name;
+       const oldExtension = getExtension(oldName)
+     
+      const newExtension = getExtension(newName)
+     
+      const didExtensionChange = newExtension !== oldExtension;
+      if(didExtensionChange){
+        // TODO update the language compartment of the
+        // corresponding CodeMirror editor with the new
+        // language, based on the new extension, only if it changed.
+        // use editorCache to access the instance
+        // See theme changing as a reference
+        // editor.dispatch({
+        //           effects: themeCompartment.reconfigure([
+        //             themeOptionsByLabel[theme].value,
+        //           ]),
+        //         });
+      }
     },
     [submitOperation],
   );

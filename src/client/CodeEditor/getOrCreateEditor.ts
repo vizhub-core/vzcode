@@ -146,6 +146,7 @@ const getAtPath = (obj, path) => {
 interface ExtendedEditorCacheValue
   extends EditorCacheValue {
   themeCompartment: Compartment;
+  languageCompartment: Compartment;
   rainbowBracketsCompartment: Compartment;
   updateRainbowBrackets: (enabled: boolean) => void;
 }
@@ -227,6 +228,8 @@ export const getOrCreateEditor = async ({
   const namePath = [...filesPath, fileId, 'name'];
   const text = getAtPath(content, textPath);
   const name = getAtPath(content, namePath);
+
+  // TODO refactor into a utility function
   const fileExtension = name.split('.').pop();
 
   // Create a compartment for the theme so that it can be changed dynamically.
@@ -458,6 +461,7 @@ export const getOrCreateEditor = async ({
   const editorCacheValue: ExtendedEditorCacheValue = {
     editor,
     themeCompartment,
+    languageCompartment,
     rainbowBracketsCompartment,
     updateRainbowBrackets: (enabled) => {
       editor.dispatch({
