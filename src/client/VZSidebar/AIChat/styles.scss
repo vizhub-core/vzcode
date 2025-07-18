@@ -58,7 +58,6 @@
 
     &.streaming {
       .ai-chat-message-content {
-        border-left: 3px solid var(--bs-success);
         background: var(--vh-color-neutral-02);
         color: white;
         border-radius: 12px 12px 12px 4px;
@@ -204,9 +203,9 @@
 
   textarea {
     flex: 1;
-    background: var(--vh-color-neutral-02);
-    border: 1px solid var(--vh-color-neutral-03);
-    color: white;
+    background: var(--vh-color-neutral-02) !important;
+    border: 1px solid var(--vh-color-neutral-03) !important;
+    color: var(--vh-color-neutral-04) !important;
     border-radius: 8px;
     padding: 8px 10px;
     font-size: 14px;
@@ -215,13 +214,14 @@
     min-height: 36px;
 
     &:focus {
-      outline: none;
-      border-color: var(--vh-color-primary-01);
-      box-shadow: 0 0 0 2px rgba(38, 67, 153, 0.2);
+      outline: none !important;
+      border-color: var(--vh-color-primary-01) !important;
+      box-shadow: 0 0 0 2px rgba(38, 67, 153, 0.2) !important;
+      color: var(--vh-color-neutral-04) !important;
     }
 
     &::placeholder {
-      color: var(--vh-color-neutral-03);
+      color: var(--vh-color-neutral-03) !important;
     }
 
     &:disabled {
@@ -248,52 +248,6 @@
     &:disabled {
       background: var(--vh-color-neutral-03);
       cursor: not-allowed;
-    }
-  }
-}
-
-// Dark theme adjustments
-[data-bs-theme='dark'] {
-  .ai-chat-message {
-    &.assistant {
-      background-color: var(--bs-dark);
-      color: var(--bs-light);
-
-      &.streaming {
-        background-color: var(--bs-success-bg-subtle);
-        color: var(--bs-light);
-      }
-    }
-  }
-
-  .ai-chat-message-content {
-    pre {
-      background-color: var(--bs-secondary-bg);
-    }
-
-    code {
-      background-color: var(--bs-secondary-bg);
-    }
-  }
-
-  .ai-chat-input-group {
-    .form-control {
-      color: var(--bs-light) !important;
-      background-color: var(--bs-dark) !important;
-      border-color: var(--bs-border-color) !important;
-
-      &::placeholder {
-        color: var(--bs-secondary) !important;
-        opacity: 0.7;
-      }
-
-      &:focus {
-        color: var(--bs-light) !important;
-        background-color: var(--bs-dark) !important;
-        border-color: var(--bs-primary) !important;
-        box-shadow: 0 0 0 0.25rem
-          rgba(var(--bs-primary-rgb), 0.25) !important;
-      }
     }
   }
 }

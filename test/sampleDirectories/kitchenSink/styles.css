@@ -1,11 +1,12 @@
 body {
   font-family: sans-serif;
-  background-color: #333;
+  background-color: #000;
   color: #eee;
-  margin: 0; /* Reset default margins */
+  margin: 0;
+  overflow: hidden; /* Hide scrollbars */
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure full viewport height */
+  min-height: 100vh;
 }
 
 header, main, footer {
@@ -13,52 +14,33 @@ header, main, footer {
 }
 
 header {
-  background-color: #428bca;
+  background-color: rgba(66, 139, 202, 0.5); /* Semi-transparent header */
   color: white;
   text-align: center;
 }
 
 h1 {
-  margin: 0; /* Reset default heading margins */
+  margin: 0;
 }
 
 main {
-  flex: 1; /* Allow main content to take up available space */
+  flex: 1;
   display: flex;
-  flex-direction: column;
+  justify-content: center; /* Center the starfield */
   align-items: center;
 }
 
-.boxes {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-
-.box {
-  width: 100px;
-  height: 100px;
-  margin: 10px;
-  border: 2px solid #428bca;
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.blue {
-  background-color: #2980b9;
-}
-
-.light-blue {
-  background-color: #3498db;
-}
-
-.dark-blue {
-  background-color: #21618c;
-}
-
 footer {
-    background-color: #428bca;
-    color: white;
-    text-align: center;
-    margin-top: auto; /* This pushes the footer to the bottom */
+  background-color: rgba(66, 139, 202, 0.5);
+  color: white;
+  text-align: center;
+  margin-top: auto;
+}
+
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8; /* Adjust for brightness */
+  transform: translate(-50%, -50%); /* Center stars */
 }

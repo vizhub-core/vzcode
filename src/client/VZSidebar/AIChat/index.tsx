@@ -1,24 +1,14 @@
-import {
-  useRef,
-  useEffect,
-  useContext,
-  useState,
-  useCallback,
-} from 'react';
-import { Form, Button } from '../../bootstrap';
+import { useContext, useState, useCallback } from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
-import { timestampToDate } from '@vizhub/viz-utils';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { v4 as uuidv4 } from 'uuid';
+import { MessageList } from './MessageList';
+import { ChatInput } from './ChatInput';
 import './styles.scss';
 
 export const AIChat = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentChatId] = useState(() => uuidv4());
-  const inputRef = useRef(null);
-  const messagesEndRef = useRef(null);
 
   const { aiChatFocused, content } =
     useContext(VZCodeContext);
@@ -28,23 +18,6 @@ export const AIChat = () => {
   const messages = currentChat?.messages || [];
   const aiScratchpad = currentChat?.aiScratchpad;
   const aiStatus = currentChat?.aiStatus;
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-    });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, aiScratchpad]);
-
-  useEffect(() => {
-    // Focus the input when the AI chat is focused
-    if (aiChatFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [aiChatFocused]);
 
   const handleSendMessage = useCallback(async () => {
     if (!message.trim() || isLoading) return;
@@ -82,92 +55,21 @@ export const AIChat = () => {
     }
   }, [message, isLoading, currentChatId]);
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
-    }
-  };
-
   return (
     <div className="ai-chat-container">
-      <div className="ai-chat-messages">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`ai-chat-message ${msg.role === 'user' ? 'user' : 'assistant'}`}
-          >
-            <div className="ai-chat-message-content">
-              <Markdown remarkPlugins={[remarkGfm]}>
-                {msg.content}
-              </Markdown>
-            </div>
-            <div className="ai-chat-message-time">
-              {timestampToDate(
-                msg.timestamp,
-              ).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </div>
-          </div>
-        ))}
-
-        {/* Show streaming content if available */}
-        {aiScratchpad && (
-          <div className="ai-chat-message assistant streaming">
-            <div className="ai-chat-message-content">
-              <Markdown remarkPlugins={[remarkGfm]}>
-                {aiScratchpad}
-              </Markdown>
-            </div>
-            {aiStatus && (
-              <div className="ai-chat-status">
-                {aiStatus}
-              </div>
-            )}
-          </div>
-        )}
-
-        {isLoading && !aiScratchpad && (
-          <div className="ai-chat-message assistant">
-            <div className="ai-chat-message-content">
-              <div className="ai-chat-typing">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="ai-chat-input-container">
-        <Form.Group className="ai-chat-input-group">
-          <Form.Control
-            as="textarea"
-            rows={2}
-            value={message}
-            onChange={(event) =>
-              setMessage(event.target.value)
-            }
-            onKeyDown={handleKeyDown}
-            ref={inputRef}
-            placeholder="Describe what you'd like me to change in your code..."
-            spellCheck="false"
-            disabled={isLoading}
-          />
-          <Button
-            variant="primary"
-            onClick={handleSendMessage}
-            disabled={!message.trim() || isLoading}
-            className="ai-chat-send-button"
-          >
-            Send
-          </Button>
-        </Form.Group>
-      </div>
+      <MessageList
+        messages={messages}
+        aiScratchpad={aiScratchpad}
+        aiStatus={aiStatus}
+        isLoading={isLoading}
+      />
+      <ChatInput
+        message={message}
+        setMessage={setMessage}
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
+        focused={aiChatFocused}
+      />
     </div>
   );
 };
