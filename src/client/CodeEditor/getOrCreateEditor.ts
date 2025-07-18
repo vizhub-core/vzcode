@@ -59,6 +59,7 @@ import {
   tsLinterWorker,
   tsSyncWorker,
 } from '@valtown/codemirror-ts';
+import { getFileExtension } from '../utils/fileExtension';
 
 const DEBUG = false;
 
@@ -131,6 +132,14 @@ const languageExtensions = {
   svelte,
 };
 
+// Exported utility function to get language extension for a file extension
+export const getLanguageExtension = (
+  fileExtension: string,
+) => {
+  const languageFunc = languageExtensions[fileExtension];
+  return languageFunc ? languageFunc() : undefined;
+};
+
 // Gets a value at a path in an object.
 // e.g. getAtPath({a: {b: 1}}, ['a', 'b']) === 1
 const getAtPath = (obj, path) => {
@@ -146,6 +155,7 @@ const getAtPath = (obj, path) => {
 interface ExtendedEditorCacheValue
   extends EditorCacheValue {
   themeCompartment: Compartment;
+  languageCompartment: Compartment;
   rainbowBracketsCompartment: Compartment;
   updateRainbowBrackets: (enabled: boolean) => void;
 }
@@ -227,7 +237,8 @@ export const getOrCreateEditor = async ({
   const namePath = [...filesPath, fileId, 'name'];
   const text = getAtPath(content, textPath);
   const name = getAtPath(content, namePath);
-  const fileExtension = name.split('.').pop();
+
+  const fileExtension = getFileExtension(name);
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
@@ -321,10 +332,6 @@ export const getOrCreateEditor = async ({
   // using a Compartment.
   const languageCompartment = new Compartment();
   // See https://github.com/vizhub-core/vzcode/issues/55
-  const getLanguageExtension = (fileExtension: string) => {
-    const languageFunc = languageExtensions[fileExtension];
-    return languageFunc ? languageFunc() : undefined;
-  };
 
   const languageExtension =
     getLanguageExtension(fileExtension);
@@ -344,6 +351,11 @@ export const getOrCreateEditor = async ({
     // otherwise the compartment won't work when
     // a file extension _is_ added later on.
     extensions.push(languageCompartment.of([]));
+  }
+
+  // Enable line wrapping for Markdown files
+  if (fileExtension === 'md') {
+    extensions.push(EditorView.lineWrapping);
   }
 
   // Add interactive widgets.
@@ -458,6 +470,7 @@ export const getOrCreateEditor = async ({
   const editorCacheValue: ExtendedEditorCacheValue = {
     editor,
     themeCompartment,
+    languageCompartment,
     rainbowBracketsCompartment,
     updateRainbowBrackets: (enabled) => {
       editor.dispatch({

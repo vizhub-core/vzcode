@@ -2,6 +2,10 @@ import { useCallback } from 'react';
 import { FileTreePath } from '../types';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { randomId } from '../randomId';
+import { EditorCache } from './useEditorCache';
+import { getFileExtension } from './utils/fileExtension';
+import { getLanguageExtension } from './CodeEditor/getOrCreateEditor';
+import { editorCacheKey } from './useEditorCache';
 
 // CRUD operations for files and directories
 // CRUD = Create, Read, Update, Delete
@@ -9,6 +13,8 @@ export const useFileCRUD = ({
   submitOperation,
   closeTabs,
   openTab,
+  editorCache,
+  content,
 }: {
   submitOperation: (
     operation: (document: VizContent) => VizContent,
@@ -21,6 +27,8 @@ export const useFileCRUD = ({
     fileId: VizFileId;
     isTransient: boolean;
   }) => void;
+  editorCache: EditorCache;
+  content: VizContent;
 }) => {
   // Create a new file
   const createFile = useCallback(
@@ -78,6 +86,45 @@ export const useFileCRUD = ({
           },
         },
       }));
+
+      const oldName = content.files[fileId].name;
+      const oldExtension = getFileExtension(oldName);
+
+      const newExtension = getFileExtension(newName);
+
+      const didExtensionChange =
+        newExtension !== oldExtension;
+      if (didExtensionChange) {
+        // Update the language compartment of the corresponding CodeMirror editor
+        // with the new language, based on the new extension, only if it changed.
+        // Search through all cached editors for this file ID
+        for (const [
+          cacheKey,
+          cachedEditor,
+        ] of editorCache.entries()) {
+          // Check if this cache entry is for the current file
+          if (cacheKey.startsWith(fileId + '|')) {
+            if (
+              cachedEditor &&
+              cachedEditor.languageCompartment
+            ) {
+              const newLanguageExtension =
+                getLanguageExtension(newExtension);
+
+              // Reconfigure the language compartment with the new language extension
+              cachedEditor.editor.dispatch({
+                effects:
+                  cachedEditor.languageCompartment.reconfigure(
+                    newLanguageExtension
+                      ? [newLanguageExtension]
+                      : [],
+                  ),
+              });
+              // Continue to update all instances of this file in different panes
+            }
+          }
+        }
+      }
     },
     [submitOperation],
   );

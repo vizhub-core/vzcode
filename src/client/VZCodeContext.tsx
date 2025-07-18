@@ -113,6 +113,11 @@ export type VZCodeContextValue = {
   isSearchOpen: boolean;
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
+
+  isAIChatOpen: boolean;
+  setIsAIChatOpen: (isAIChatOpen: boolean) => void;
+  aiChatFocused: boolean;
+  toggleAIChatFocused: () => void;
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
     files: ShareDBDoc<VizContent>,
@@ -252,6 +257,8 @@ export const VZCodeProvider = ({
     theme,
     search,
     isSearchOpen,
+    isAIChatOpen,
+    aiChatFocused,
     isSettingsOpen,
     isDocOpen,
     editorWantsFocus,
@@ -260,7 +267,7 @@ export const VZCodeProvider = ({
     sidebarPresenceIndicators,
   } = state;
 
-  const activePane = findPane(pane, activePaneId);
+  const activePane: Pane = findPane(pane, activePaneId);
   if (activePane.type !== 'leafPane') {
     // Should never happen
     throw new Error('Expected leafPane');
@@ -281,6 +288,8 @@ export const VZCodeProvider = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsAIChatOpen,
+    toggleAIChatFocused,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -304,7 +313,7 @@ export const VZCodeProvider = ({
   // The set of open directories.
   // TODO move this into reducer/useActions
   const { isDirectoryOpen, toggleDirectory } =
-    useOpenDirectories();
+    useOpenDirectories({ activePane, content });
 
   // Cache of CodeMirror editors by file id.
   const editorCache: EditorCache = useEditorCache();
@@ -324,6 +333,8 @@ export const VZCodeProvider = ({
     submitOperation,
     closeTabs,
     openTab,
+    editorCache,
+    content,
   });
 
   // State to control the create file modal's visibility
@@ -434,6 +445,11 @@ export const VZCodeProvider = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+
+    isAIChatOpen,
+    setIsAIChatOpen,
+    aiChatFocused,
+    toggleAIChatFocused,
 
     isSettingsOpen,
     setIsSettingsOpen,
