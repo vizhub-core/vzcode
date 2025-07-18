@@ -1,0 +1,69 @@
+import { validateRequest } from './validation.js';
+import {
+  ensureChatsExist,
+  ensureChatExists,
+  addUserMessage,
+  addAIMessage,
+} from './chatOperations.js';
+import { createLLMFunction } from './llmStreaming.js';
+import { performAIEditing } from './aiEditing.js';
+import { handleError } from './errorHandling.js';
+
+const debug = false;
+
+export const handleAIChatMessage =
+  (shareDBDoc) => async (req, res) => {
+    const { content, chatId } = req.body;
+
+    if (debug) {
+      console.log(
+        '[handleAIChatMessage] content:',
+        content,
+        'chatId:',
+        chatId,
+      );
+    }
+
+    // Validate request
+    if (!validateRequest(req, res)) {
+      return;
+    }
+
+    try {
+      // Get existing files from ShareDB doc
+      const files = shareDBDoc.data.files;
+
+      // Ensure chats structure exists
+      ensureChatsExist(shareDBDoc);
+      ensureChatExists(shareDBDoc, chatId);
+
+      // Add user message to chat
+      addUserMessage(shareDBDoc, chatId, content);
+
+      // Create LLM function for streaming
+      const llmFunction = createLLMFunction(
+        shareDBDoc,
+        chatId,
+      );
+
+      // Perform AI editing
+      const editResult = await performAIEditing(
+        shareDBDoc,
+        chatId,
+        content,
+        files,
+        llmFunction,
+      );
+
+      // Add AI response message
+      const aiResponse = addAIMessage(
+        shareDBDoc,
+        chatId,
+        editResult.content,
+      );
+
+      res.status(200).json(aiResponse);
+    } catch (error) {
+      handleError(shareDBDoc, chatId, error, res);
+    }
+  };

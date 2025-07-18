@@ -1,64 +1,54 @@
-html,
 body {
+  font-family: sans-serif;
+  background-color: #000;
+  color: #eee;
   margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-#viz-container,
-#root {
-  width: 100%;
-  height: 100%;
+header, main, footer {
+  padding: 1rem; /* Use rems for better responsiveness */
 }
 
-#viz-container {
-  position: relative;
+header {
+  background-color: rgba(66, 139, 202, 0.5); 
+  color: white;
+  text-align: center;
 }
 
-#viz-container svg {
+h1 {
+  margin: 0;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  position: relative; /* Needed for absolute positioning of stars */
+}
+
+footer {
+  background-color: rgba(66, 139, 202, 0.5);
+  color: white;
+  text-align: center;
+  margin-top: auto;
+}
+
+.star {
   position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  opacity: 0.8; 
+  transform: translate(-50%, -50%); 
+  animation: twinkle 1s infinite; /* Added animation */
 }
 
-.title-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 40px;
-  font-weight: 600;
-  fill: #333333;
-  user-select: none;
-  pointer-events: none;
-}
-
-.diagonal-line {
-  stroke: #f2f2f2;
-  stroke-width: 32;
-}
-
-.bar {
-  transition:
-    fill 0.3s,
-    opacity 0.3s;
-}
-
-.bar:hover {
-  fill: #3d5c57;
-}
-
-.axis text {
-  font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  fill: #666666;
-}
-
-.axis line, .axis path {
-  stroke: #cccccc;
-  stroke-width: 1;
-}
-
-.axis-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  fill: #555555;
+@keyframes twinkle {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
 }
