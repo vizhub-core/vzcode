@@ -221,18 +221,6 @@ export const handleAIChatMessage =
         };
       };
 
-      // Perform AI edit
-      console.log(
-        '[handleAIChatMessage] calling performAiEdit with:',
-        {
-          prompt: content,
-          files: files,
-          apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY
-            ? '[REDACTED]'
-            : 'undefined',
-        },
-      );
-
       const editResult = await performAiEdit({
         prompt: content,
         files,
@@ -255,12 +243,9 @@ export const handleAIChatMessage =
       shareDBDoc.submitOp(clearOp);
 
       // Apply AI edits to files (convert back to VizFiles format)
-      const updatedVizFiles = fileCollectionToVizFiles(
-        editResult.changedFiles,
-      );
       const filesOp = diff(shareDBDoc.data, {
         ...shareDBDoc.data,
-        files: updatedVizFiles,
+        files: editResult.changedFiles,
         isInteracting: true,
       });
       shareDBDoc.submitOp(filesOp);
