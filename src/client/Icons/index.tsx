@@ -1,4 +1,5 @@
 export { SparklesSVG } from './SparklesSVG';
+export { AIChatSVG } from './AIChatSVG';
 export { StopSVG } from './StopSVG';
 export { EditSVG } from './EditSVG';
 export { NewSVG } from './NewSVG';
