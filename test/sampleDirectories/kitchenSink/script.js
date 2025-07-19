@@ -10,6 +10,11 @@ function createStar() {
   star.style.left = `${Math.random() * 100}%`;
   star.style.top = `${Math.random() * 100}%`;
   star.style.animationDuration = `${Math.random() * 10 + 5}s`; 
+
+  // Assign random colors to stars
+  const colors = ['blue', 'pink', 'yellow', 'green'];
+  star.classList.add(colors[Math.floor(Math.random() * colors.length)]);
+
   return star;
 }
 

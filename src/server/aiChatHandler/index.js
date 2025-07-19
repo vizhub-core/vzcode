@@ -12,7 +12,8 @@ import { handleError } from './errorHandling.js';
 const debug = false;
 
 export const handleAIChatMessage =
-  (shareDBDoc) => async (req, res) => {
+  (shareDBDoc, options = {}) =>
+  async (req, res) => {
     const { content, chatId } = req.body;
 
     if (debug) {
@@ -61,6 +62,27 @@ export const handleAIChatMessage =
         chatId,
         editResult.content,
       );
+
+      // Handle credit deduction if callback is provided
+      if (
+        options.onCreditDeduction &&
+        editResult.upstreamCostCents
+      ) {
+        try {
+          await options.onCreditDeduction({
+            upstreamCostCents: editResult.upstreamCostCents,
+            provider: editResult.provider,
+            inputTokens: editResult.inputTokens,
+            outputTokens: editResult.outputTokens,
+          });
+        } catch (creditError) {
+          console.error(
+            'Credit deduction error:',
+            creditError,
+          );
+          // Don't fail the request if credit deduction fails
+        }
+      }
 
       res.status(200).json(aiResponse);
     } catch (error) {
