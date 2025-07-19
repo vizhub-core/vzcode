@@ -14,7 +14,7 @@ header, main, footer {
 }
 
 header {
-  background-color: rgba(66, 139, 202, 0.5); 
+  background-color: #2980B9; /* A nice blue */
   color: white;
   text-align: center;
 }
@@ -32,7 +32,7 @@ main {
 }
 
 footer {
-  background-color: rgba(66, 139, 202, 0.5);
+  background-color: #C0392B; /* A nice red */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -40,12 +40,25 @@ footer {
 
 .star {
   position: absolute;
-  background-color: white;
-  border-radius: 50%;
-  opacity: 0.8; 
   transform: translate(-50%, -50%); 
   animation: twinkle 1s infinite; /* Added animation */
 }
+
+.star.blue {
+  background-color: #3498db; /* A lighter blue */
+}
+
+.star.pink {
+  background-color: #e74c3c; /* A pink */
+}
+.star.yellow {
+    background-color: #f1c40f; /* Yellow*/
+}
+
+.star.green {
+    background-color: #2ecc71; /* Green */
+}
+
 
 @keyframes twinkle {
   0% { opacity: 0.8; }
