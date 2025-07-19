@@ -271,6 +271,13 @@ export const VZSidebar = ({
         ref={sidebarRef}
         tabIndex={-1}
       >
+        {/* AI Chat Section at the top */}
+        {enableAIChat && (
+          <div className="sidebar-ai-chat-top">
+            <AIChat />
+          </div>
+        )}
+
         <div className="sidebar-section-buttons">
           <OverlayTrigger
             placement="right"
