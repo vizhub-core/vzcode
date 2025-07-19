@@ -3,6 +3,7 @@ import { VZCodeContext } from '../../VZCodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
+import { SparklesSVG } from '../../Icons';
 import './styles.scss';
 
 const defaultAIChatEndpoint = '/ai-chat-message';
@@ -70,6 +71,13 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
+      <div className="ai-chat-header">
+        <div className="ai-icon">
+          <SparklesSVG />
+        </div>
+        <span className="ai-title">AI Assistant</span>
+        <div className="ai-status"></div>
+      </div>
       <MessageList
         messages={messages}
         aiScratchpad={aiScratchpad}
