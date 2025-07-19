@@ -23,6 +23,7 @@ import {
   useInitialUsername,
   usePersistUsername,
 } from '../usernameLocalStorage';
+import { LandingPageAIChat } from '../LandingPageAIChat';
 import './style.scss';
 import { useShareDB } from './useShareDB';
 import { useESLint } from '../useESLint';
@@ -143,6 +144,7 @@ function App() {
           </div>
           <PersistUsername />
           <RoomAudioRenderer />
+          <LandingPageAIChat />
         </LiveKitRoom>
       </VZCodeProvider>
     </SplitPaneResizeProvider>
