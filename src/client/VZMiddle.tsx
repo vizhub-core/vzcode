@@ -89,6 +89,8 @@ export const VZMiddle = ({
   aiAssistTooltipText,
   aiAssistClickOverride,
   aiCopilotEndpoint,
+  aiChatEndpoint,
+  aiChatOptions,
   customInteractRules,
   esLintSource,
 }: {
@@ -98,6 +100,8 @@ export const VZMiddle = ({
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
   aiCopilotEndpoint?: string;
+  aiChatEndpoint?: string;
+  aiChatOptions?: { [key: string]: any };
   customInteractRules?: Array<InteractRule>;
   esLintSource: (
     view: EditorView,

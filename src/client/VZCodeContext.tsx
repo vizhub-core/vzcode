@@ -118,6 +118,8 @@ export type VZCodeContextValue = {
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   aiChatFocused: boolean;
   toggleAIChatFocused: () => void;
+  aiChatEndpoint?: string;
+  aiChatOptions?: { [key: string]: any };
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
     files: ShareDBDoc<VizContent>,
@@ -198,6 +200,8 @@ export const VZCodeProvider = ({
   setLiveKitRoom,
   liveKitConnection,
   setLiveKitConnection,
+  aiChatEndpoint,
+  aiChatOptions,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -216,6 +220,8 @@ export const VZCodeProvider = ({
   setLiveKitRoom?: (state: string) => void;
   liveKitConnection?: boolean;
   setLiveKitConnection?: (state: boolean) => void;
+  aiChatEndpoint?: string;
+  aiChatOptions?: { [key: string]: any };
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -450,6 +456,8 @@ export const VZCodeProvider = ({
     setIsAIChatOpen,
     aiChatFocused,
     toggleAIChatFocused,
+    aiChatEndpoint,
+    aiChatOptions,
 
     isSettingsOpen,
     setIsSettingsOpen,

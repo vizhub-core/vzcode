@@ -117,6 +117,8 @@ function App() {
         setLiveKitToken={setLiveKitToken}
         liveKitConnection={liveKitConnection}
         setLiveKitConnection={setLiveKitConnection}
+        aiChatEndpoint="/ai-chat-message"
+        aiChatOptions={{}}
       >
         <LiveKitRoom
           audio={true}
