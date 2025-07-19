@@ -61,11 +61,8 @@ export const Tab = ({
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
-      {tabName}
-      <i
-        className="icon-button icon-button-dark"
-        onClick={handleCloseClick}
-      >
+      <span className="tab-name">{tabName}</span>
+      <i className="icon-button" onClick={handleCloseClick}>
         <CloseSVG />
       </i>
     </div>
