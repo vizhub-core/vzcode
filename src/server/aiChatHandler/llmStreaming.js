@@ -15,7 +15,7 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
-        'gpt-4o-mini',
+        'anthropic/claude-sonnet-4',
       configuration: {
         apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
         baseURL: process.env.VIZHUB_EDIT_WITH_AI_BASE_URL,
