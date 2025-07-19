@@ -1,51 +1,117 @@
 .vz-tab-list {
   display: flex;
-  background-color: #1f2022;
-  // When the tab list becomes too large, a horizontal scroll bar appears.
+  background-color: var(--vz-bg-secondary);
+  border-bottom: 1px solid var(--vz-border-primary);
   overflow-x: auto;
+  min-height: 36px;
+
+  // Custom scrollbar for tab list
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--vz-border-primary);
+    border-radius: 2px;
+  }
 
   .tab {
-    // background: #47546b;
-    color: #fff;
-    font-family: var(--vzcode-font-family);
-    font-weight: 500;
+    color: var(--vz-text-secondary);
+    font-family: var(--vzcode-ui-font-family);
+    font-weight: 400;
+    font-size: 13px;
     align-items: center;
     display: flex;
-    gap: 6px;
-    padding: 4px 4px 4px 14px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    margin-top: 6px;
-    margin-left: 2px;
-    margin-right: 2px;
+    gap: var(--vz-spacing-sm);
+    padding: var(--vz-spacing-sm) var(--vz-spacing-md);
+    border-top-left-radius: var(--vz-radius-md);
+    border-top-right-radius: var(--vz-radius-md);
+    margin-top: 2px;
+    margin-left: 1px;
+    margin-right: 1px;
     cursor: pointer;
-    // Make sure text doesn't wrap within tabs.
     white-space: nowrap;
+    transition: all var(--vz-transition-fast);
+    position: relative;
+    background: var(--vz-tab-inactive);
+    border: 1px solid transparent;
+    border-bottom: none;
+    max-width: 200px;
+    min-width: 120px;
 
     // No left margin for first child
     &:first-child {
       margin-left: 0;
     }
 
-    // on hover
+    // Hover state
     &:hover {
-      // background-color: var(--vh-color-hover-dark);
-      background-color: rgba(255, 255, 255, 0.075);
+      background: var(--vz-tab-hover);
+      color: var(--vz-text-primary);
     }
-  }
 
-  .tab.active {
-    background-color: #202e46;
-  }
+    // Active state
+    &.active {
+      background: var(--vz-tab-active);
+      color: var(--vz-text-primary);
+      border-color: var(--vz-border-primary);
+      border-bottom: 1px solid var(--vz-tab-active);
+      margin-bottom: -1px;
+      z-index: 1;
 
-  .tab.transient {
-    font-style: italic;
-  }
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--vz-interactive-accent);
+      }
+    }
 
-  .icon-button {
-    color: var(--vh-color-neutral-03);
-  }
-  .icon-button:hover {
-    color: var(--vh-color-action-03);
+    // Transient state (preview tabs)
+    &.transient {
+      font-style: italic;
+      color: var(--vz-text-muted);
+    }
+
+    // File name truncation
+    .tab-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    // Close button
+    .icon-button {
+      color: var(--vz-tab-close);
+      opacity: 0;
+      transition: all var(--vz-transition-fast);
+      padding: 2px;
+      border-radius: var(--vz-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+
+      &:hover {
+        color: var(--vz-tab-close-hover);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    }
+
+    // Show close button on hover or when active
+    &:hover .icon-button,
+    &.active .icon-button {
+      opacity: 1;
+    }
   }
 }
