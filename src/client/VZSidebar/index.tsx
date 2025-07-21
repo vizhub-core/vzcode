@@ -6,14 +6,6 @@ import {
   useState,
   useRef,
 } from 'react';
-import {
-  formatMarkdownFiles,
-  parseMarkdownFiles,
-} from 'llm-code-format';
-import {
-  FORMAT_INSTRUCTIONS,
-  mergeFileChanges,
-} from 'editcodewithai';
 import { randomId } from '../../randomId';
 import {
   FileTree,
@@ -44,6 +36,7 @@ import { AIChat } from './AIChat';
 import { Listing } from './Listing';
 import { Search } from './Search';
 import { useDragAndDrop } from './useDragAndDrop';
+import { createAICopyPasteHandlers } from './aiCopyPaste';
 import {
   enableLiveKit,
   enableAIChat,
@@ -167,113 +160,23 @@ export const VZSidebar = ({
     setIsSettingsOpen(true);
   }, []);
 
-  // Copy for AI - formats all files and copies to clipboard
-  const handleCopyForAI = useCallback(async () => {
-    if (!files) return;
+  // State for AI operation feedback
+  const [copyButtonText, setCopyButtonText] =
+    useState('Copy for AI');
+  const [pasteButtonText, setPasteButtonText] =
+    useState('Paste for AI');
 
-    try {
-      // Convert files to the format expected by formatMarkdownFiles
-      const fileEntries = Object.entries(files).map(
-        ([fileId, file]) => [file.name, file.text],
-      );
-      const filesObject = Object.fromEntries(fileEntries);
-
-      // Format files for AI consumption
-      const formattedFiles =
-        formatMarkdownFiles(filesObject) +
-        '\n\n' +
-        FORMAT_INSTRUCTIONS.whole;
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(formattedFiles);
-
-      // Show success feedback
-      setCopyButtonText('Copied!');
-      setTimeout(
-        () => setCopyButtonText('Copy for AI'),
-        2000,
-      );
-    } catch (error) {
-      console.error('Failed to copy files for AI:', error);
-      setCopyButtonText('Error');
-      setTimeout(
-        () => setCopyButtonText('Copy for AI'),
-        2000,
-      );
-    }
-  }, [files]);
-
-  // Paste for AI - parses clipboard content and updates files
-  const handlePasteForAI = useCallback(async () => {
-    if (!submitOperation) return;
-
-    try {
-      // Read from clipboard
-      const clipboardText =
-        await navigator.clipboard.readText();
-
-      // Handle various line endings
-      const normalized = clipboardText.replace(
-        /\r\n?/g,
-        '\n',
-      );
-
-      if (!normalized.trim()) {
-        setPasteButtonText('Empty clipboard');
-        setTimeout(
-          () => setPasteButtonText('Paste for AI'),
-          2000,
-        );
-        return;
-      }
-
-      // Parse the markdown files format
-      const parsed = parseMarkdownFiles(normalized, 'bold');
-
-      console.log('normalized', normalized);
-      console.log('parsed', parsed);
-
-      if (
-        parsed.files &&
-        Object.keys(parsed.files).length > 0
-      ) {
-        // Use mergeFileChanges utility from editcodewithai
-        const mergedFiles = mergeFileChanges(
-          files,
-          parsed.files,
-        );
-
-        // Update files using the submit operation
-        submitOperation((document) => ({
-          ...document,
-          files: mergedFiles,
-        }));
-
-        const fileCount = Object.keys(parsed.files).length;
-        setPasteButtonText('Pasted!');
-        setTimeout(
-          () => setPasteButtonText('Paste for AI'),
-          2000,
-        );
-      } else {
-        setPasteButtonText('No files found');
-        setTimeout(
-          () => setPasteButtonText('Paste for AI'),
-          2000,
-        );
-      }
-    } catch (error) {
-      console.error(
-        'Failed to paste files from AI:',
-        error,
-      );
-      setPasteButtonText('Error');
-      setTimeout(
-        () => setPasteButtonText('Paste for AI'),
-        2000,
-      );
-    }
-  }, [submitOperation]);
+  // Create AI copy/paste handlers
+  const { handleCopyForAI, handlePasteForAI } = useMemo(
+    () =>
+      createAICopyPasteHandlers(
+        files,
+        submitOperation,
+        setCopyButtonText,
+        setPasteButtonText,
+      ),
+    [files, submitOperation],
+  );
 
   const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
@@ -327,12 +230,6 @@ export const VZSidebar = ({
           fileId: update.start[1] as VizFileId,
         };
 
-        // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
-
         updatePresenceIndicator(presenceIndicator);
       };
 
@@ -346,12 +243,6 @@ export const VZSidebar = ({
   const [saved, setSaved] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
   const previousPendingRef = useRef<boolean>(pending);
-
-  // State for AI operation feedback
-  const [copyButtonText, setCopyButtonText] =
-    useState('Copy for AI');
-  const [pasteButtonText, setPasteButtonText] =
-    useState('Paste for AI');
 
   // Handle connection status transitions
   useEffect(() => {
