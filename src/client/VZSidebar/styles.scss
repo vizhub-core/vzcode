@@ -302,28 +302,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     border-top: 1px solid var(--vh-color-neutral-02);
-
-    .ai-feedback {
-      padding: 6px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      text-align: center;
-
-      &.success {
-        background: var(--vh-color-success-01);
-        color: var(--vh-color-success-04);
-        border: 1px solid var(--vh-color-success-03);
-      }
-
-      &.error {
-        background: var(--vh-color-warning-01);
-        color: var(--vh-color-warning-04);
-        border: 1px solid var(--vh-color-warning-03);
-      }
-    }
 
     .ai-button {
       padding: 8px 12px;
@@ -338,7 +318,7 @@
       transition: all 0.2s ease;
 
       &:hover {
-        background: var(--vh-color-neutral-02);
+        background: var(--vh-color-hover-dark);
         border-color: var(--vh-color-neutral-04);
       }
 
@@ -350,7 +330,7 @@
         border-color: var(--vh-color-primary-03);
         
         &:hover {
-          background: var(--vh-color-primary-01);
+          background: var(--vh-color-hover-dark);
           border-color: var(--vh-color-primary-04);
         }
       }
@@ -359,7 +339,7 @@
         border-color: var(--vh-color-success-03);
         
         &:hover {
-          background: var(--vh-color-success-01);
+          background: var(--vh-color-hover-dark);
           border-color: var(--vh-color-success-04);
         }
       }

@@ -185,12 +185,12 @@ export const VZSidebar = ({
       await navigator.clipboard.writeText(formattedFiles);
       
       // Show success feedback
-      setAiFeedback({ message: 'Files copied for AI!', type: 'success' });
-      setTimeout(() => setAiFeedback(null), 3000);
+      setCopyButtonText('Copied!');
+      setTimeout(() => setCopyButtonText('Copy for AI'), 2000);
     } catch (error) {
       console.error('Failed to copy files for AI:', error);
-      setAiFeedback({ message: 'Failed to copy files', type: 'error' });
-      setTimeout(() => setAiFeedback(null), 3000);
+      setCopyButtonText('Error');
+      setTimeout(() => setCopyButtonText('Copy for AI'), 2000);
     }
   }, [files]);
 
@@ -203,8 +203,8 @@ export const VZSidebar = ({
       const clipboardText = await navigator.clipboard.readText();
       
       if (!clipboardText.trim()) {
-        setAiFeedback({ message: 'Clipboard is empty', type: 'error' });
-        setTimeout(() => setAiFeedback(null), 3000);
+        setPasteButtonText('Empty clipboard');
+        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
         return;
       }
       
@@ -246,19 +246,16 @@ export const VZSidebar = ({
         });
         
         const fileCount = Object.keys(parsed.files).length;
-        setAiFeedback({ 
-          message: `${fileCount} file${fileCount !== 1 ? 's' : ''} pasted from AI!`, 
-          type: 'success' 
-        });
-        setTimeout(() => setAiFeedback(null), 3000);
+        setPasteButtonText('Pasted!');
+        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
       } else {
-        setAiFeedback({ message: 'No valid files found in clipboard', type: 'error' });
-        setTimeout(() => setAiFeedback(null), 3000);
+        setPasteButtonText('No files found');
+        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
       }
     } catch (error) {
       console.error('Failed to paste files from AI:', error);
-      setAiFeedback({ message: 'Failed to paste files', type: 'error' });
-      setTimeout(() => setAiFeedback(null), 3000);
+      setPasteButtonText('Error');
+      setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
     }
   }, [submitOperation]);
 
@@ -335,10 +332,8 @@ export const VZSidebar = ({
   const previousPendingRef = useRef<boolean>(pending);
 
   // State for AI operation feedback
-  const [aiFeedback, setAiFeedback] = useState<{
-    message: string;
-    type: 'success' | 'error';
-  } | null>(null);
+  const [copyButtonText, setCopyButtonText] = useState('Copy for AI');
+  const [pasteButtonText, setPasteButtonText] = useState('Paste for AI');
 
   // Handle connection status transitions
   useEffect(() => {
@@ -639,24 +634,19 @@ export const VZSidebar = ({
       </div>
       {!isAIChatOpen && !isSearchOpen && filesExist && (
         <div className="ai-buttons">
-          {aiFeedback && (
-            <div className={`ai-feedback ${aiFeedback.type}`}>
-              {aiFeedback.message}
-            </div>
-          )}
           <button 
             className="ai-button copy-button"
             onClick={handleCopyForAI}
             title="Copy files formatted for AI"
           >
-            Copy for AI
+            {copyButtonText}
           </button>
           <button 
             className="ai-button paste-button"
             onClick={handlePasteForAI}
             title="Paste files from AI"
           >
-            Paste for AI
+            {pasteButtonText}
           </button>
         </div>
       )}
