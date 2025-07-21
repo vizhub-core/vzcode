@@ -6,6 +6,8 @@ import {
   useState,
   useRef,
 } from 'react';
+import { formatMarkdownFiles, parseMarkdownFiles } from 'llm-code-format';
+import { randomId } from '../../randomId';
 import {
   FileTree,
   FileTreeFile,
@@ -150,6 +152,7 @@ export const VZSidebar = ({
     liveKitConnection,
     setLiveKitConnection,
     setVoiceChatModalOpen,
+    submitOperation,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -162,6 +165,102 @@ export const VZSidebar = ({
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
+
+  // Copy for AI - formats all files and copies to clipboard
+  const handleCopyForAI = useCallback(async () => {
+    if (!files) return;
+    
+    try {
+      // Convert files to the format expected by formatMarkdownFiles
+      const fileEntries = Object.entries(files).map(([fileId, file]) => [
+        file.name,
+        file.text
+      ]);
+      const filesObject = Object.fromEntries(fileEntries);
+      
+      // Format files for AI consumption
+      const formattedFiles = formatMarkdownFiles(filesObject);
+      
+      // Copy to clipboard
+      await navigator.clipboard.writeText(formattedFiles);
+      
+      // Show success feedback
+      setAiFeedback({ message: 'Files copied for AI!', type: 'success' });
+      setTimeout(() => setAiFeedback(null), 3000);
+    } catch (error) {
+      console.error('Failed to copy files for AI:', error);
+      setAiFeedback({ message: 'Failed to copy files', type: 'error' });
+      setTimeout(() => setAiFeedback(null), 3000);
+    }
+  }, [files]);
+
+  // Paste for AI - parses clipboard content and updates files
+  const handlePasteForAI = useCallback(async () => {
+    if (!submitOperation) return;
+    
+    try {
+      // Read from clipboard
+      const clipboardText = await navigator.clipboard.readText();
+      
+      if (!clipboardText.trim()) {
+        setAiFeedback({ message: 'Clipboard is empty', type: 'error' });
+        setTimeout(() => setAiFeedback(null), 3000);
+        return;
+      }
+      
+      // Parse the markdown files format
+      const parsed = parseMarkdownFiles(clipboardText, "bold");
+      
+      if (parsed.files && Object.keys(parsed.files).length > 0) {
+        // Update files using the submit operation
+        submitOperation((document) => {
+          const updatedFiles = { ...document.files };
+          
+          // Update existing files or create new ones
+          Object.entries(parsed.files).forEach(([fileName, fileText]) => {
+            // Find existing file with this name
+            const existingFileId = Object.keys(updatedFiles).find(
+              fileId => updatedFiles[fileId].name === fileName
+            );
+            
+            if (existingFileId) {
+              // Update existing file
+              updatedFiles[existingFileId] = {
+                ...updatedFiles[existingFileId],
+                text: fileText
+              };
+            } else {
+              // Create new file
+              const newFileId = randomId();
+              updatedFiles[newFileId] = {
+                name: fileName,
+                text: fileText
+              };
+            }
+          });
+          
+          return {
+            ...document,
+            files: updatedFiles
+          };
+        });
+        
+        const fileCount = Object.keys(parsed.files).length;
+        setAiFeedback({ 
+          message: `${fileCount} file${fileCount !== 1 ? 's' : ''} pasted from AI!`, 
+          type: 'success' 
+        });
+        setTimeout(() => setAiFeedback(null), 3000);
+      } else {
+        setAiFeedback({ message: 'No valid files found in clipboard', type: 'error' });
+        setTimeout(() => setAiFeedback(null), 3000);
+      }
+    } catch (error) {
+      console.error('Failed to paste files from AI:', error);
+      setAiFeedback({ message: 'Failed to paste files', type: 'error' });
+      setTimeout(() => setAiFeedback(null), 3000);
+    }
+  }, [submitOperation]);
 
   const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
@@ -234,6 +333,12 @@ export const VZSidebar = ({
   const [saved, setSaved] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
   const previousPendingRef = useRef<boolean>(pending);
+
+  // State for AI operation feedback
+  const [aiFeedback, setAiFeedback] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   // Handle connection status transitions
   useEffect(() => {
@@ -532,6 +637,29 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
+      {!isAIChatOpen && !isSearchOpen && filesExist && (
+        <div className="ai-buttons">
+          {aiFeedback && (
+            <div className={`ai-feedback ${aiFeedback.type}`}>
+              {aiFeedback.message}
+            </div>
+          )}
+          <button 
+            className="ai-button copy-button"
+            onClick={handleCopyForAI}
+            title="Copy files formatted for AI"
+          >
+            Copy for AI
+          </button>
+          <button 
+            className="ai-button paste-button"
+            onClick={handlePasteForAI}
+            title="Paste files from AI"
+          >
+            Paste for AI
+          </button>
+        </div>
+      )}
       {enableConnectionStatus && (
         <div className="connection-status">
           {isConnecting

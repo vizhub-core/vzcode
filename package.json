@@ -154,6 +154,7 @@
     "json0-ot-diff": "^1.1.2",
     "livekit-server-sdk": "^2.13.1",
     "llm-code-format": "^2.0.1",
+    "ngrok": "^5.0.0-beta.2",
     "npm": "^11.4.2",
     "open": "^10.2.0",
     "prettier-plugin-svelte": "^3.4.0",
