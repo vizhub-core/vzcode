@@ -6,7 +6,6 @@ import {
   useState,
   useRef,
 } from 'react';
-import { randomId } from '../../randomId';
 import {
   FileTree,
   FileTreeFile,
