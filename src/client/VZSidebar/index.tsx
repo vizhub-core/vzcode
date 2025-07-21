@@ -17,6 +17,7 @@ import { VizFileId } from '@vizhub/viz-types';
 import { OverlayTrigger, Tooltip } from '../bootstrap';
 import { getFileTree } from '../getFileTree';
 import {
+  AIChatSVG,
   BugSVG,
   FileSVG,
   FolderSVG,
@@ -329,7 +330,7 @@ export const VZSidebar = ({
                   setIsSearchOpen(false);
                 }}
               >
-                <SparklesSVG />
+                <AIChatSVG />
               </i>
             </OverlayTrigger>
           )}

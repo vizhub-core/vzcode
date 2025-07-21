@@ -1,40 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
 :root {
-  // --vzcode-font-family: ui-monospace, SFMono-Regular,
-  //   'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace !important;
+  // Modern design system variables
+  --vzcode-font-family:
+    'JetBrains Mono', 'Fira Code', 'Source Code Pro',
+    Consolas, monospace !important;
+  --vzcode-font-size: 14px;
+  --vzcode-ui-font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
 
-  --vzcode-font-family: 'Roboto Mono', monospace !important;
-  --vzcode-font-size: 16px;
+  // Modern color system
+  --vz-bg-primary: #1e1e1e;
+  --vz-bg-secondary: #252526;
+  --vz-bg-tertiary: #2d2d30;
+  --vz-bg-elevated: #383838;
+  --vz-bg-overlay: #3c3c3c;
 
-  /* Variable for the background color */
-  --vz-bg-color: rgb(
-    41,
-    44,
-    52
-  ); /* Variable for the background color */
+  --vz-text-primary: #cccccc;
+  --vz-text-secondary: #9d9d9d;
+  --vz-text-muted: #6a6a6a;
+  --vz-text-accent: #569cd6;
+  --vz-text-success: #4ec9b0;
+  --vz-text-warning: #dcdcaa;
+  --vz-text-error: #f44747;
+
+  --vz-border-primary: #3e3e42;
+  --vz-border-secondary: #464647;
+  --vz-border-focus: #007acc;
+  --vz-border-hover: #505050;
+
+  --vz-interactive-primary: #0e639c;
+  --vz-interactive-primary-hover: #1177bb;
+  --vz-interactive-secondary: #3c3c3c;
+  --vz-interactive-secondary-hover: #464647;
+  --vz-interactive-accent: #007acc;
+  --vz-interactive-accent-hover: #1e8ad6;
+
+  --vz-status-connected: #4ec9b0;
+  --vz-status-pending: #dcdcaa;
+  --vz-status-disconnected: #f44747;
+  --vz-status-saved: #4ec9b0;
+
+  --vz-sidebar-bg: #252526;
+  --vz-sidebar-iconbar: #333333;
+  --vz-sidebar-icon: #cccccc;
+  --vz-sidebar-icon-active: #007acc;
+  --vz-sidebar-icon-hover: #ffffff;
+  --vz-sidebar-separator: #3e3e42;
+
+  --vz-tab-active: #1e1e1e;
+  --vz-tab-inactive: #2d2d30;
+  --vz-tab-hover: #383838;
+  --vz-tab-border: #3e3e42;
+  --vz-tab-close: #cccccc;
+  --vz-tab-close-hover: #f44747;
+
+  // Spacing system
+  --vz-spacing-xs: 4px;
+  --vz-spacing-sm: 8px;
+  --vz-spacing-md: 12px;
+  --vz-spacing-lg: 16px;
+  --vz-spacing-xl: 24px;
+  --vz-spacing-2xl: 32px;
+
+  // Border radius
+  --vz-radius-sm: 3px;
+  --vz-radius-md: 6px;
+  --vz-radius-lg: 8px;
+  --vz-radius-xl: 12px;
+
+  // Shadows
+  --vz-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --vz-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --vz-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.5);
+
+  // Transitions
+  --vz-transition-fast: 0.15s ease;
+  --vz-transition-base: 0.2s ease;
+  --vz-transition-slow: 0.3s ease;
+
+  // Legacy compatibility
+  --vz-bg-color: var(--vz-bg-primary);
 }
 
-/* Scrollbar Styles */
+/* Modern Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
 }
 
-// ::-webkit-scrollbar-track {
-//   background: rgb(255, 255, 255, 0.1);
-// }
+::-webkit-scrollbar-track {
+  background: var(--vz-bg-secondary);
+}
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(255, 255, 255, 0.3);
+  background: var(--vz-border-primary);
+  border-radius: var(--vz-radius-sm);
+  border: 2px solid var(--vz-bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--vz-border-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--vz-bg-secondary);
 }
 
 /* Layout Styles */
@@ -46,37 +119,38 @@ body,
 }
 
 .app {
-  background-color: var(--vz-bg-color);
-  // font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-  //   'Noto Sans', Helvetica, Arial, sans-serif,
-  //   'Apple Color Emoji', 'Segoe UI Emoji';
+  background-color: var(--vz-bg-primary);
+  font-family: var(--vzcode-ui-font-family);
   display: flex;
-
-  /* To support Resizer, which is position: absolute */
   position: relative;
 
   .left,
   .middle {
     display: flex;
-
-    /* To suport PrettierErrorOverlay, which is position: absolute */
     position: relative;
   }
 
+  .left {
+    background: var(--vz-sidebar-bg);
+    border-right: 1px solid var(--vz-border-primary);
+  }
+
   .middle {
-    // flex: 1;
     flex-direction: column;
     min-width: 0;
+    background: var(--vz-bg-primary);
   }
 
   .right {
     flex: 1;
-    background-color: white;
+    background-color: var(--vz-bg-primary);
+    border-left: 1px solid var(--vz-border-primary);
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
+      background: white;
     }
   }
 }

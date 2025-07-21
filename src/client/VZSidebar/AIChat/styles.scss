@@ -2,14 +2,14 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 16px;
 }
 
 .ai-chat-messages {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 10px;
-  padding-right: 5px;
+  margin-bottom: 16px;
+  padding: 0 8px 0 0;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -27,19 +27,19 @@
 }
 
 .ai-chat-message {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 
   &.user {
     .ai-chat-message-content {
       background: var(--vh-color-primary-01);
       color: white;
-      margin-left: 20px;
-      border-radius: 12px 12px 4px 12px;
+      margin-left: 24px;
+      border-radius: 16px 16px 4px 16px;
     }
 
     .ai-chat-message-time {
       text-align: right;
-      margin-right: 5px;
+      margin-right: 8px;
     }
   }
 
@@ -47,48 +47,49 @@
     .ai-chat-message-content {
       background: var(--vh-color-neutral-02);
       color: white;
-      margin-right: 20px;
-      border-radius: 12px 12px 12px 4px;
+      margin-right: 24px;
+      border-radius: 16px 16px 16px 4px;
     }
 
     .ai-chat-message-time {
       text-align: left;
-      margin-left: 5px;
+      margin-left: 8px;
     }
 
     &.streaming {
       .ai-chat-message-content {
         background: var(--vh-color-neutral-02);
         color: white;
-        border-radius: 12px 12px 12px 4px;
+        border-radius: 16px 16px 16px 4px;
       }
     }
   }
 }
 
 .ai-chat-message-content {
-  padding: 10px 12px;
+  padding: 12px 16px;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.5;
   word-wrap: break-word;
 
   // Markdown styling for dark backgrounds
   pre {
     background-color: rgba(0, 0, 0, 0.3);
     color: #e6e6e6;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
+    padding: 12px;
+    border-radius: 6px;
     overflow-x: auto;
-    font-size: 0.875rem;
+    font-size: 13px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
   }
 
   code {
     background-color: rgba(0, 0, 0, 0.3);
     color: #e6e6e6;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
@@ -100,8 +101,8 @@
 
   blockquote {
     border-left: 3px solid var(--vh-color-neutral-03);
-    padding-left: 1rem;
-    margin: 0.5rem 0;
+    padding-left: 16px;
+    margin: 12px 0;
     color: var(--vh-color-neutral-03);
     font-style: italic;
   }
@@ -112,18 +113,23 @@
   h4,
   h5,
   h6 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    margin-top: 16px;
+    margin-bottom: 8px;
     color: inherit;
   }
 
   ul,
   ol {
-    padding-left: 1.5rem;
+    padding-left: 20px;
+    margin: 8px 0;
   }
 
   p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   // Ensure good contrast for assistant messages
@@ -140,19 +146,17 @@
 .ai-chat-message-time {
   font-size: 11px;
   color: var(--vh-color-neutral-03);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .ai-chat-status {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-style: italic;
   color: var(--vh-color-neutral-03);
-  margin-bottom: 0.5rem;
-  margin-left: 20px;
-  margin-right: 20px;
-  padding: 0.25rem 0.5rem;
+  margin: 8px 24px 12px 24px;
+  padding: 8px 12px;
   background-color: var(--vh-color-neutral-02);
-  border-radius: 0.25rem;
+  border-radius: 6px;
   border: 1px solid var(--vh-color-neutral-03);
   text-align: left;
 }
@@ -196,12 +200,12 @@
 
 .ai-chat-input-container {
   border-top: 1px solid var(--vh-color-neutral-02);
-  padding-top: 10px;
+  padding-top: 16px;
 }
 
 .ai-chat-input-group {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 0;
 
   textarea {
@@ -210,11 +214,11 @@
     border: 1px solid var(--vh-color-neutral-03) !important;
     color: var(--vh-color-neutral-04) !important;
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 12px 14px;
     font-size: 14px;
     font-family: var(--vzcode-font-family);
     resize: none;
-    min-height: 36px;
+    min-height: 44px;
 
     &:focus {
       outline: none !important;
@@ -238,11 +242,12 @@
     border: none;
     color: white;
     border-radius: 8px;
-    padding: 8px 16px;
+    padding: 12px 20px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    min-height: 44px;
 
     &:hover:not(:disabled) {
       background: var(--vh-color-primary-02);
