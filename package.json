@@ -145,7 +145,7 @@
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
     "dotenv": "^17.2.0",
-    "editcodewithai": "^2.1.0",
+    "editcodewithai": "^2.2.0",
     "eslint": "^9.31.0",
     "eslint-linter-browserify": "^9.31.0",
     "express": "^5.1.0",

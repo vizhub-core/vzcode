@@ -10,7 +10,10 @@ import {
   formatMarkdownFiles,
   parseMarkdownFiles,
 } from 'llm-code-format';
-import { FORMAT_INSTRUCTIONS } from 'editcodewithai';
+import {
+  FORMAT_INSTRUCTIONS,
+  mergeFileChanges,
+} from 'editcodewithai';
 import { randomId } from '../../randomId';
 import {
   FileTree,
@@ -47,9 +50,6 @@ import {
 } from '../featureFlags';
 import './styles.scss';
 
-// TODO turn this UI back on when we are actually detecting
-// the connection status.
-// See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
@@ -152,9 +152,6 @@ export const VZSidebar = ({
     toggleAutoFollow,
     docPresence,
     updatePresenceIndicator,
-    sidebarPresenceIndicators,
-    liveKitConnection,
-    setLiveKitConnection,
     setVoiceChatModalOpen,
     submitOperation,
   } = useContext(VZCodeContext);
@@ -187,9 +184,6 @@ export const VZSidebar = ({
         '\n\n' +
         FORMAT_INSTRUCTIONS.whole;
 
-      console.log(formattedFiles);
-      console.log(FORMAT_INSTRUCTIONS);
-
       // Copy to clipboard
       await navigator.clipboard.writeText(formattedFiles);
 
@@ -218,7 +212,13 @@ export const VZSidebar = ({
       const clipboardText =
         await navigator.clipboard.readText();
 
-      if (!clipboardText.trim()) {
+      // Handle various line endings
+      const normalized = clipboardText.replace(
+        /\r\n?/g,
+        '\n',
+      );
+
+      if (!normalized.trim()) {
         setPasteButtonText('Empty clipboard');
         setTimeout(
           () => setPasteButtonText('Paste for AI'),
@@ -228,52 +228,26 @@ export const VZSidebar = ({
       }
 
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(
-        clipboardText,
-        'bold',
-      );
+      const parsed = parseMarkdownFiles(normalized, 'bold');
+
+      console.log('normalized', normalized);
+      console.log('parsed', parsed);
 
       if (
         parsed.files &&
         Object.keys(parsed.files).length > 0
       ) {
+        // Use mergeFileChanges utility from editcodewithai
+        const mergedFiles = mergeFileChanges(
+          files,
+          parsed.files,
+        );
+
         // Update files using the submit operation
-        submitOperation((document) => {
-          const updatedFiles = { ...document.files };
-
-          // Update existing files or create new ones
-          Object.entries(parsed.files).forEach(
-            ([fileName, fileText]) => {
-              // Find existing file with this name
-              const existingFileId = Object.keys(
-                updatedFiles,
-              ).find(
-                (fileId) =>
-                  updatedFiles[fileId].name === fileName,
-              );
-
-              if (existingFileId) {
-                // Update existing file
-                updatedFiles[existingFileId] = {
-                  ...updatedFiles[existingFileId],
-                  text: fileText,
-                };
-              } else {
-                // Create new file
-                const newFileId = randomId();
-                updatedFiles[newFileId] = {
-                  name: fileName,
-                  text: fileText,
-                };
-              }
-            },
-          );
-
-          return {
-            ...document,
-            files: updatedFiles,
-          };
-        });
+        submitOperation((document) => ({
+          ...document,
+          files: mergedFiles,
+        }));
 
         const fileCount = Object.keys(parsed.files).length;
         setPasteButtonText('Pasted!');
