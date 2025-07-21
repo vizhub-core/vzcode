@@ -6,7 +6,11 @@ import {
   useState,
   useRef,
 } from 'react';
-import { formatMarkdownFiles, parseMarkdownFiles } from 'llm-code-format';
+import {
+  formatMarkdownFiles,
+  parseMarkdownFiles,
+} from 'llm-code-format';
+import { FORMAT_INSTRUCTIONS } from 'editcodewithai';
 import { randomId } from '../../randomId';
 import {
   FileTree,
@@ -169,93 +173,131 @@ export const VZSidebar = ({
   // Copy for AI - formats all files and copies to clipboard
   const handleCopyForAI = useCallback(async () => {
     if (!files) return;
-    
+
     try {
       // Convert files to the format expected by formatMarkdownFiles
-      const fileEntries = Object.entries(files).map(([fileId, file]) => [
-        file.name,
-        file.text
-      ]);
+      const fileEntries = Object.entries(files).map(
+        ([fileId, file]) => [file.name, file.text],
+      );
       const filesObject = Object.fromEntries(fileEntries);
-      
+
       // Format files for AI consumption
-      const formattedFiles = formatMarkdownFiles(filesObject);
-      
+      const formattedFiles =
+        formatMarkdownFiles(filesObject) +
+        '\n\n' +
+        FORMAT_INSTRUCTIONS.whole;
+
+      console.log(formattedFiles);
+      console.log(FORMAT_INSTRUCTIONS);
+
       // Copy to clipboard
       await navigator.clipboard.writeText(formattedFiles);
-      
+
       // Show success feedback
       setCopyButtonText('Copied!');
-      setTimeout(() => setCopyButtonText('Copy for AI'), 2000);
+      setTimeout(
+        () => setCopyButtonText('Copy for AI'),
+        2000,
+      );
     } catch (error) {
       console.error('Failed to copy files for AI:', error);
       setCopyButtonText('Error');
-      setTimeout(() => setCopyButtonText('Copy for AI'), 2000);
+      setTimeout(
+        () => setCopyButtonText('Copy for AI'),
+        2000,
+      );
     }
   }, [files]);
 
   // Paste for AI - parses clipboard content and updates files
   const handlePasteForAI = useCallback(async () => {
     if (!submitOperation) return;
-    
+
     try {
       // Read from clipboard
-      const clipboardText = await navigator.clipboard.readText();
-      
+      const clipboardText =
+        await navigator.clipboard.readText();
+
       if (!clipboardText.trim()) {
         setPasteButtonText('Empty clipboard');
-        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
+        setTimeout(
+          () => setPasteButtonText('Paste for AI'),
+          2000,
+        );
         return;
       }
-      
+
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(clipboardText, "bold");
-      
-      if (parsed.files && Object.keys(parsed.files).length > 0) {
+      const parsed = parseMarkdownFiles(
+        clipboardText,
+        'bold',
+      );
+
+      if (
+        parsed.files &&
+        Object.keys(parsed.files).length > 0
+      ) {
         // Update files using the submit operation
         submitOperation((document) => {
           const updatedFiles = { ...document.files };
-          
+
           // Update existing files or create new ones
-          Object.entries(parsed.files).forEach(([fileName, fileText]) => {
-            // Find existing file with this name
-            const existingFileId = Object.keys(updatedFiles).find(
-              fileId => updatedFiles[fileId].name === fileName
-            );
-            
-            if (existingFileId) {
-              // Update existing file
-              updatedFiles[existingFileId] = {
-                ...updatedFiles[existingFileId],
-                text: fileText
-              };
-            } else {
-              // Create new file
-              const newFileId = randomId();
-              updatedFiles[newFileId] = {
-                name: fileName,
-                text: fileText
-              };
-            }
-          });
-          
+          Object.entries(parsed.files).forEach(
+            ([fileName, fileText]) => {
+              // Find existing file with this name
+              const existingFileId = Object.keys(
+                updatedFiles,
+              ).find(
+                (fileId) =>
+                  updatedFiles[fileId].name === fileName,
+              );
+
+              if (existingFileId) {
+                // Update existing file
+                updatedFiles[existingFileId] = {
+                  ...updatedFiles[existingFileId],
+                  text: fileText,
+                };
+              } else {
+                // Create new file
+                const newFileId = randomId();
+                updatedFiles[newFileId] = {
+                  name: fileName,
+                  text: fileText,
+                };
+              }
+            },
+          );
+
           return {
             ...document,
-            files: updatedFiles
+            files: updatedFiles,
           };
         });
-        
+
         const fileCount = Object.keys(parsed.files).length;
         setPasteButtonText('Pasted!');
-        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
+        setTimeout(
+          () => setPasteButtonText('Paste for AI'),
+          2000,
+        );
       } else {
         setPasteButtonText('No files found');
-        setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
+        setTimeout(
+          () => setPasteButtonText('Paste for AI'),
+          2000,
+        );
       }
     } catch (error) {
-      console.error('Failed to paste files from AI:', error);
+      console.error(
+        'Failed to paste files from AI:',
+        error,
+      );
       setPasteButtonText('Error');
-      setTimeout(() => setPasteButtonText('Paste for AI'), 2000);
+      setTimeout(
+        () => setPasteButtonText('Paste for AI'),
+        2000,
+      );
     }
   }, [submitOperation]);
 
@@ -332,8 +374,10 @@ export const VZSidebar = ({
   const previousPendingRef = useRef<boolean>(pending);
 
   // State for AI operation feedback
-  const [copyButtonText, setCopyButtonText] = useState('Copy for AI');
-  const [pasteButtonText, setPasteButtonText] = useState('Paste for AI');
+  const [copyButtonText, setCopyButtonText] =
+    useState('Copy for AI');
+  const [pasteButtonText, setPasteButtonText] =
+    useState('Paste for AI');
 
   // Handle connection status transitions
   useEffect(() => {
@@ -634,14 +678,14 @@ export const VZSidebar = ({
       </div>
       {!isAIChatOpen && !isSearchOpen && filesExist && (
         <div className="ai-buttons">
-          <button 
+          <button
             className="ai-button copy-button"
             onClick={handleCopyForAI}
             title="Copy files formatted for AI"
           >
             {copyButtonText}
           </button>
-          <button 
+          <button
             className="ai-button paste-button"
             onClick={handlePasteForAI}
             title="Paste files from AI"
