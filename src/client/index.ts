@@ -14,5 +14,6 @@ export {
 } from './SplitPaneResizeContext';
 export { useSubmitOperation } from './useSubmitOperation';
 export { shouldTriggerRun } from './shouldTriggerRun';
+export { mergeFileChanges } from 'editcodewithai';
 
 export * from './Icons';
