@@ -134,6 +134,7 @@
     "@uiw/codemirror-theme-xcode": "^4.23.12",
     "@uiw/codemirror-themes": "^4.23.12",
     "@valtown/codemirror-ts": "^2.3.1",
+    "@vizhub/runtime": "^4.1.0",
     "@vizhub/viz-types": "^0.1.0",
     "body-parser": "^2.2.0",
     "codemirror": "^6.0.1",

@@ -2,7 +2,8 @@
 // TODO test this out, think this through.
 // Purpose: support folks using VZCode as the editor
 // for their Vite-based projects.
-const enableIframe = false;
+
+const enableIframe = true;
 
 export const VZRight = () => {
   return (
