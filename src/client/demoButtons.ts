@@ -1,3 +1,4 @@
+/*
 import { VizHubRuntime } from "@vizhub/runtime";
 import { VizHubRuntimeFixture } from "./fixtures/types";
 
@@ -39,3 +40,4 @@ export const demoButtons = (
     buttonContainer.appendChild(button);
   });
 };
+*/
