@@ -17,5 +17,8 @@ export const VZRight = () => {
   );
 };
 
-
+// Get the iframe from the DOM
+const iframe = document.getElementById(
+  "viz-iframe",
+) as HTMLIFrameElement;
 
