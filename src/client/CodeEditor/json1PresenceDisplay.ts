@@ -6,11 +6,9 @@ import {
 } from '@codemirror/view';
 import { Annotation, RangeSet } from '@codemirror/state';
 import { assignUserColor } from '../presenceColor';
-import { VizFileId } from '@vizhub/viz-types';
 import {
   Presence,
   PresenceId,
-  TabState,
   Username,
 } from '../../types';
 
@@ -28,12 +26,10 @@ export const json1PresenceDisplay = ({
   path,
   docPresence,
   enableAutoFollowRef,
-  openTab,
 }: {
   path: Array<string>;
   docPresence: any;
   enableAutoFollowRef: React.MutableRefObject<boolean>;
-  openTab: (tabState: TabState) => void;
 }) => [
   ViewPlugin.fromClass(
     class {
@@ -90,18 +86,8 @@ export const json1PresenceDisplay = ({
               // Otherwise, delete the presence state.
               delete presenceState[id];
 
-              // If auto-follow is enabled, and the presence is NOT
-              // in the current file, then open the tab of the other user.
-              if (enableAutoFollowRef.current) {
-                DEBUG &&
-                  console.log(
-                    `Auto-opening tab for ${presence.username} in file ${presence.start[1]}`,
-                  );
-                openTab({
-                  fileId: presence.start[1] as VizFileId,
-                  isTransient: true,
-                });
-              }
+              // Note: Auto-follow tab opening is now handled by usePresenceAutoFollow hook
+              // in VZCodeContext, which works independently of CodeMirror extensions
             }
             // Update decorations to reflect new presence state.
             // TODO consider mutating this rather than recomputing it on each change.

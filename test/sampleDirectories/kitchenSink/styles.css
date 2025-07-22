@@ -44,20 +44,28 @@ footer {
   animation: twinkle 1s infinite;
 }
 
+/*Use variables for green shades*/
+:root {
+  --dark-green: #558b2f;
+  --light-green: #82ca9d;
+  --sea-green: #2e8b57;
+  --forest-green: #212c21;
+}
+
 .star.green {
-  background-color: #558b2f; /* Dark Green */
+  background-color: var(--dark-green); 
 }
 
 .star.light-green {
-  background-color: #82ca9d; /* Light Green */
+  background-color: var(--light-green); 
 }
 
 .star.sea-green {
-  background-color: #2e8b57; /* Sea Green */
+  background-color: var(--sea-green); 
 }
 
 .star.forest-green {
-  background-color: #228b22; /* Forest Green */
+  background-color: var(--forest-green); 
 }
 
 

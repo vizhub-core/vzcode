@@ -37,6 +37,7 @@ import { useRunCode } from './useRunCode';
 import { useURLSync } from './useURLSync';
 import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
+import { usePresenceAutoFollow } from './usePresenceAutoFollow';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -407,6 +408,16 @@ export const VZCodeProvider = ({
   // Track the currently hovered file id.
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
+
+  // Handle presence-based auto-following
+  // This hook manages opening tabs when presence is received on files
+  // that are not currently open, independent of CodeMirror extensions
+  usePresenceAutoFollow({
+    docPresence,
+    enableAutoFollow,
+    openTab,
+    activePane,
+  });
 
   // Livekit Voice Chat Modal
 
