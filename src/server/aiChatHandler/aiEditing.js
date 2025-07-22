@@ -13,6 +13,7 @@ export const performAIEditing = async ({
   prompt,
   shareDBDoc,
   llmFunction,
+  runCode,
 }) => {
   const preparedFiles = prepareFilesForPrompt(
     shareDBDoc.data.files,
@@ -38,14 +39,7 @@ export const performAIEditing = async ({
   //   'Done editing with AI.',
   // );
 
-  // Set isInteracting
-  // setIsInteracting(shareDBDoc, true);
-
-  // Wait for propagation
-  await new Promise((resolve) => setTimeout(resolve, 100));
-
-  // Unset isInteracting
-  // setIsInteracting(shareDBDoc, false);
+  runCode();
 
   return {
     content: result.content,

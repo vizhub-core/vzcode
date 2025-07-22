@@ -8,6 +8,7 @@ import {
 import { createLLMFunction } from './llmStreaming.js';
 import { performAIEditing } from './aiEditing.js';
 import { handleError } from './errorHandling.js';
+import { createRunCodeFunction } from '../../runCode.js';
 
 const debug = false;
 
@@ -44,12 +45,16 @@ export const handleAIChatMessage =
         chatId,
       );
 
+      // Create server-side runCode function using shared module
+      const runCode = createRunCodeFunction(shareDBDoc);
+
       // Perform AI editing
       const editResult = await performAIEditing({
         prompt: content,
         shareDBDoc,
         chatId,
         llmFunction,
+        runCode,
       });
 
       // Add AI response message

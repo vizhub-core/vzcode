@@ -17,8 +17,8 @@ function createStar() {
   star.style.top = `${Math.random() * 100}%`;
   star.style.animationDuration = `${Math.random() * (MAX_ANIMATION_DURATION - MIN_ANIMATION_DURATION) + MIN_ANIMATION_DURATION}s`;
 
-  // Assign green shades to stars
-  const colors = ['green', 'light-green', 'sea-green', 'forest-green'];
+  // Assign purple shades to stars
+  const colors = ['purple', 'darkviolet', 'mediumpurple', 'plum'];
   star.classList.add(colors[Math.floor(Math.random() * colors.length)]);
 
   return star;

@@ -14,7 +14,7 @@ header, main, footer {
 }
 
 header {
-  background-color: #38a3a5; /* Green header */
+  background-color: #663399; /* Purple header */
   color: white;
   text-align: center;
 }
@@ -32,7 +32,7 @@ main {
 }
 
 footer {
-  background-color: #38a3a5; /* Green footer */
+  background-color: #663399; /* Purple footer */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -44,28 +44,28 @@ footer {
   animation: twinkle 1s infinite;
 }
 
-/*Use variables for green shades*/
+/*Use variables for purple shades*/
 :root {
-  --dark-green: #558b2f;
-  --light-green: #82ca9d;
-  --sea-green: #2e8b57;
-  --forest-green: #212c21;
+  --dark-purple: #4B0082;
+  --light-purple: #BA55D3;
+  --medium-purple: #9370DB;
+  --plum: #DDA0DD;
 }
 
-.star.green {
-  background-color: var(--dark-green); 
+.star.purple {
+  background-color: var(--dark-purple); 
 }
 
-.star.light-green {
-  background-color: var(--light-green); 
+.star.darkviolet {
+  background-color: var(--dark-purple); 
 }
 
-.star.sea-green {
-  background-color: var(--sea-green); 
+.star.mediumpurple {
+  background-color: var(--medium-purple); 
 }
 
-.star.forest-green {
-  background-color: var(--forest-green); 
+.star.plum {
+  background-color: var(--plum); 
 }
 
 
