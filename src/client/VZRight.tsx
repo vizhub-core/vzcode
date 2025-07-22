@@ -6,7 +6,7 @@ import "./style.css";
 import "@vizhub/runtime";
 
 import BuildWorker from "./buildWorker?worker";
-import { demoButtons } from "./demoButtons";
+//import { demoButtons } from "./demoButtons";
 import { fixtures } from "./fixtures";
 
 const enableIframe = true;
