@@ -2,67 +2,189 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 0;
+  position: relative;
 }
 
 .ai-chat-messages {
   flex: 1;
   overflow-y: auto;
-  margin-bottom: 10px;
-  padding-right: 5px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  padding-right: 8px;
 
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--vh-color-neutral-02);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--vh-color-neutral-04);
-    border-radius: 3px;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    border-radius: 2px;
   }
 }
 
 .ai-chat-message {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  animation: messageSlideIn 0.3s ease-out;
 
   &.user {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
     .ai-chat-message-content {
-      background: var(--vh-color-primary-01);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
       color: white;
-      margin-left: 20px;
-      border-radius: 12px 12px 4px 12px;
+      margin-left: 30px;
+      border-radius: 18px 18px 6px 18px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      position: relative;
+      transform: translateX(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        border-radius: inherit;
+        pointer-events: none;
+      }
+
+      &:hover {
+        transform: translateX(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+      }
     }
 
     .ai-chat-message-time {
       text-align: right;
-      margin-right: 5px;
+      margin-right: 8px;
+      margin-top: 4px;
     }
   }
 
   &.assistant {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
     .ai-chat-message-content {
-      background: var(--vh-color-neutral-02);
-      color: white;
-      margin-right: 20px;
-      border-radius: 12px 12px 12px 4px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.04)
+      );
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      margin-right: 30px;
+      border-radius: 18px 18px 18px 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      position: relative;
+      transform: translateX(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(168, 85, 247, 0.1),
+          transparent
+        );
+        border-radius: inherit;
+        pointer-events: none;
+      }
+
+      &:hover {
+        transform: translateX(2px);
+        box-shadow: 0 6px 20px rgba(168, 85, 247, 0.2);
+        border-color: rgba(168, 85, 247, 0.3);
+      }
     }
 
     .ai-chat-message-time {
       text-align: left;
-      margin-left: 5px;
+      margin-left: 8px;
+      margin-top: 4px;
     }
 
     &.streaming {
       .ai-chat-message-content {
-        background: var(--vh-color-neutral-02);
-        color: white;
-        border-radius: 12px 12px 12px 4px;
+        background: linear-gradient(
+          135deg,
+          rgba(168, 85, 247, 0.15),
+          rgba(168, 85, 247, 0.05)
+        );
+        border-color: rgba(168, 85, 247, 0.3);
+        animation: streamingGlow 2s ease-in-out infinite;
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: -1px;
+          left: -1px;
+          right: -1px;
+          bottom: -1px;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(168, 85, 247, 0.5),
+            transparent
+          );
+          border-radius: inherit;
+          animation: streamingShimmer 2s linear infinite;
+          z-index: -1;
+        }
       }
     }
+  }
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes streamingGlow {
+  0%,
+  100% {
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+  }
+}
+
+@keyframes streamingShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 
