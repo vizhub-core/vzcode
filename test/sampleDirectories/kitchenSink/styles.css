@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-color: #2d2d44; /* Dark purple background */
+  background-color: #222; /* Dark background */
   color: #eee;
   margin: 0;
   overflow: hidden;
@@ -14,7 +14,7 @@ header, main, footer {
 }
 
 header {
-  background-color: #673ab7; /* Purple header */
+  background-color: #38a3a5; /* Green header */
   color: white;
   text-align: center;
 }
@@ -32,7 +32,7 @@ main {
 }
 
 footer {
-  background-color: #673ab7; /* Purple footer */
+  background-color: #38a3a5; /* Green footer */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -44,20 +44,20 @@ footer {
   animation: twinkle 1s infinite;
 }
 
-.star.purple {
-  background-color: #9b59b6; /* Light purple */
+.star.green {
+  background-color: #558b2f; /* Dark Green */
 }
 
-.star.dark-purple {
-  background-color: #4a235a; /* Dark purple */
+.star.light-green {
+  background-color: #82ca9d; /* Light Green */
 }
 
-.star.lavender {
-  background-color: #b39ddb; /* Lavender */
+.star.sea-green {
+  background-color: #2e8b57; /* Sea Green */
 }
 
-.star.violet {
-  background-color: #ee82ee; /* Violet */
+.star.forest-green {
+  background-color: #228b22; /* Forest Green */
 }
 
 

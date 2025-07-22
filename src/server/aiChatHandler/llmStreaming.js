@@ -121,6 +121,37 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
             currentEditingFileId,
             line,
           );
+
+          // Update VizBot presence to show cursor at the end of the file
+          const currentFile =
+            shareDBDoc.data.files[currentEditingFileId];
+          if (currentFile && currentFile.text) {
+            const textLength = currentFile.text.length;
+            const filePresence = {
+              username: 'VizBot',
+              start: [
+                'files',
+                currentEditingFileId,
+                'text',
+                textLength,
+              ],
+              end: [
+                'files',
+                currentEditingFileId,
+                'text',
+                textLength,
+              ],
+            };
+
+            localPresence.submit(filePresence, (error) => {
+              if (error) {
+                console.warn(
+                  'VizBot line presence submission error:',
+                  error,
+                );
+              }
+            });
+          }
         }
       },
       onNonCodeLine: (line) => {
