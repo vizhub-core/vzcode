@@ -4,6 +4,8 @@
 // for their Vite-based projects.
 import "./style.css";
 import "@vizhub/runtime";
+import BuildWorker from "./buildWorker?worker";
+
 
 const enableIframe = true;
 
@@ -22,3 +24,5 @@ const iframe = document.getElementById(
   "viz-iframe",
 ) as HTMLIFrameElement;
 
+// Initialize the worker
+const worker = new BuildWorker();
