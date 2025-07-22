@@ -1,5 +1,6 @@
 import { createSubmitOperation } from './submitOperation.js';
-
+// TODO migrate the server-side code to use TypeScript,
+// and delete this file once the migration is complete (use src/runCode.ts instead).
 /**
  * Creates a runCode function that triggers code execution by flashing `isInteracting` to `true`.
  * This works for both client-side (with submitOperation) and server-side (with ShareDB document).

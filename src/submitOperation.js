@@ -1,5 +1,6 @@
 import { diff } from './client/diff.js';
-
+// TODO migrate the server-side code to use TypeScript,
+// and delete this file once the migration is complete (use src/submitOperation.ts instead).
 /**
  * Creates a submitOperation function that can be used to submit diff-based operations to ShareDB.
  * This is the core logic extracted from useSubmitOperation for reuse across client and server.

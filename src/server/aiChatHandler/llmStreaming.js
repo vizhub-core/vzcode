@@ -18,6 +18,8 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
   return async (fullPrompt) => {
     // Set up presence for VizBot following the same pattern as useShareDB.ts
     const docPresence =
+      // TODO make this work in the VizHub app,
+      // need to use correct collection name and document ID
       shareDBDoc.connection.getDocPresence(
         'documents',
         '1',
@@ -66,6 +68,18 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
     let fullContent = '';
     let generationId = '';
     let currentEditingFileId = null;
+    let currentEditingFileName = null;
+
+    // Function to report file edited
+    // This is called when the AI has finished editing a file
+    // and we want to update the scratchpad with the file name.
+    const reportFileEdited = () => {
+      if (currentEditingFileName) {
+        fullContent += ` * Edited ${currentEditingFileName}\n`;
+        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        currentEditingFileName = null;
+      }
+    };
 
     // Define callbacks for streaming parser
     const callbacks = {
@@ -80,6 +94,9 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
           shareDBDoc,
           fileName,
         );
+
+        reportFileEdited();
+        currentEditingFileName = fileName;
 
         // Clear the file content to start fresh
         // (AI will regenerate the entire file content)
@@ -100,9 +117,6 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
             );
           }
         });
-
-        fullContent += ` * Editing ${fileName}\n`;
-        updateAIScratchpad(shareDBDoc, chatId, fullContent);
 
         // Update AI status
         updateAIStatus(
@@ -155,7 +169,12 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
         }
       },
       onNonCodeLine: (line) => {
-        DEBUG && console.log(`Comment/text: ${line}`);
+        // We want to report a file edited only if the line is not empty,
+        // because sometimes the LLMs leave a newline between the file name
+        // declaration and th
+        if (line.trim() !== '') {
+          reportFileEdited();
+        }
         fullContent += line + '\n';
         updateAIScratchpad(shareDBDoc, chatId, fullContent);
       },
@@ -163,7 +182,6 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
 
     const parser = new StreamingMarkdownParser(callbacks);
 
-    // TODO write the chunks to a JSON file for later testing
     const chunks = [];
 
     // Stream the response
@@ -172,7 +190,6 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
       if (chunk.content) {
         const chunkContent = String(chunk.content);
         chunks.push(chunkContent);
-
         parser.processChunk(chunkContent);
       }
 
@@ -181,12 +198,12 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
       }
     }
     parser.flushRemaining();
-
-    // Submit final update if there's pending content
+    reportFileEdited();
+    updateAIStatus(shareDBDoc, chatId, 'Done editing.');
     updateAIScratchpad(shareDBDoc, chatId, fullContent);
 
     // Clear VizBot presence when done
-    localPresence.submit(null, (error) => {
+    localPresence.destroy((error) => {
       if (error) {
         console.warn(
           'VizBot presence cleanup error:',

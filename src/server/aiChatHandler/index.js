@@ -57,12 +57,12 @@ export const handleAIChatMessage =
         runCode,
       });
 
-      // Add AI response message
-      const aiResponse = addAIMessage(
-        shareDBDoc,
-        chatId,
-        editResult.content,
-      );
+      // // Add AI response message
+      // const aiResponse = addAIMessage(
+      //   shareDBDoc,
+      //   chatId,
+      //   editResult.content,
+      // );
 
       // Handle credit deduction if callback is provided
       if (
@@ -85,7 +85,7 @@ export const handleAIChatMessage =
         }
       }
 
-      res.status(200).json(aiResponse);
+      res.status(200).json('success');
     } catch (error) {
       handleError(shareDBDoc, chatId, error, res);
     }

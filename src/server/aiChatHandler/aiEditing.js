@@ -4,8 +4,6 @@ import {
 } from 'editcodewithai';
 import { formatMarkdownFiles } from 'llm-code-format';
 
-const DEBUG = true;
-
 /**
  * Performs AI editing operations using streaming with incremental OT operations
  */
@@ -26,8 +24,6 @@ export const performAIEditing = async ({
     prompt,
     editFormat: 'whole',
   });
-  DEBUG &&
-    console.log('[performAiEdit] fullPrompt:', fullPrompt);
 
   // Call the LLM function which will handle streaming and incremental file updates
   const result = await llmFunction(fullPrompt);
