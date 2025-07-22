@@ -51,13 +51,6 @@ ShareDB.types.register(json1Presence.type);
 
 const app = express();
 
-// TODO make this configurable
-// See https://github.com/vizhub-core/vzcode/issues/95
-app.post('/saveTime', (req, res) => {
-  //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
-  console.log('autoSaveDebounceTimeMS', req.body);
-});
-
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
   // Enable presence
@@ -82,7 +75,7 @@ wss.on('connection', (ws) => {
   });
 
   // Handle disconnections
-  ws.on('close', (code) => {
+  ws.on('close', () => {
     clientStream.end();
   });
 });
@@ -97,6 +90,23 @@ app.use(express.static(dir));
 // which is a representation of files on disk.
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
+
+// Set up presence for VizBot following the same pattern as useShareDB.ts
+const docPresence = shareDBConnection.getDocPresence(
+  'documents',
+  '1',
+);
+
+// Create local presence for VizBot with a unique ID
+const generateVizBotId = () => {
+  const timestamp = Date.now().toString(36);
+  return `vizbot-${timestamp}`;
+};
+
+const localPresence = docPresence.create(
+  generateVizBotId(),
+);
+
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // Handle AI Assist requests.
@@ -117,7 +127,7 @@ app.post(
 app.post(
   '/ai-chat-message',
   bodyParser.json(),
-  handleAIChatMessage(shareDBDoc),
+  handleAIChatMessage({ shareDBDoc, localPresence }),
 );
 
 // Livekit Token Generator

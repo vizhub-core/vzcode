@@ -14,27 +14,12 @@ const DEBUG = false;
 /**
  * Creates and configures the LLM function for streaming
  */
-export const createLLMFunction = (shareDBDoc, chatId) => {
+export const createLLMFunction = ({
+  shareDBDoc,
+  localPresence,
+  chatId,
+}) => {
   return async (fullPrompt) => {
-    // Set up presence for VizBot following the same pattern as useShareDB.ts
-    const docPresence =
-      // TODO make this work in the VizHub app,
-      // need to use correct collection name and document ID
-      shareDBDoc.connection.getDocPresence(
-        'documents',
-        '1',
-      );
-
-    // Create local presence for VizBot with a unique ID
-    const generateVizBotId = () => {
-      const timestamp = Date.now().toString(36);
-      return `vizbot-${timestamp}`;
-    };
-
-    const localPresence = docPresence.create(
-      generateVizBotId(),
-    );
-
     // Submit initial presence for VizBot
     const vizBotPresence = {
       username: 'VizBot',

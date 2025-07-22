@@ -14,7 +14,7 @@ header, main, footer {
 }
 
 header {
-  background-color: #663399; /* Purple header */
+  background-color: #008080; /* Teal header */
   color: white;
   text-align: center;
 }
@@ -32,7 +32,7 @@ main {
 }
 
 footer {
-  background-color: #663399; /* Purple footer */
+  background-color: #008080; /* Teal footer */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -42,30 +42,7 @@ footer {
   position: absolute;
   transform: translate(-50%, -50%);
   animation: twinkle 1s infinite;
-}
-
-/*Use variables for purple shades*/
-:root {
-  --dark-purple: #4B0082;
-  --light-purple: #BA55D3;
-  --medium-purple: #9370DB;
-  --plum: #DDA0DD;
-}
-
-.star.purple {
-  background-color: var(--dark-purple); 
-}
-
-.star.darkviolet {
-  background-color: var(--dark-purple); 
-}
-
-.star.mediumpurple {
-  background-color: var(--medium-purple); 
-}
-
-.star.plum {
-  background-color: var(--plum); 
+  border-radius: 50%; /* Make stars round */
 }
 
 
