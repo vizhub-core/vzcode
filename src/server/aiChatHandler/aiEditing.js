@@ -1,12 +1,10 @@
-import { performAiEdit } from 'editcodewithai';
 import {
   clearAIScratchpadAndStatus,
-  updateFiles,
   setIsInteracting,
 } from './chatOperations.js';
 
 /**
- * Performs AI editing operations on the files
+ * Performs AI editing operations using streaming with incremental OT operations
  */
 export const performAIEditing = async (
   shareDBDoc,
@@ -15,12 +13,21 @@ export const performAIEditing = async (
   files,
   llmFunction,
 ) => {
-  const editResult = await performAiEdit({
-    prompt: content,
-    files,
-    llmFunction,
-    apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
-  });
+  // Set isInteracting flag
+  setIsInteracting(shareDBDoc, true);
+
+  // Create the prompt for the LLM
+  const filesContext = Object.values(files)
+    .map(
+      (file) =>
+        `**${file.name}**\n\`\`\`\n${file.text}\n\`\`\``,
+    )
+    .join('\n\n');
+
+  const fullPrompt = `${content}\n\nCurrent files:\n${filesContext}`;
+
+  // Call the LLM function which will handle streaming and incremental file updates
+  const result = await llmFunction(fullPrompt);
 
   // Clear the scratchpad and update status
   clearAIScratchpadAndStatus(
@@ -29,14 +36,15 @@ export const performAIEditing = async (
     'Done editing with AI.',
   );
 
-  // Apply AI edits to files
-  updateFiles(shareDBDoc, editResult.changedFiles);
-
   // Wait for propagation
   await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Unset isInteracting
   setIsInteracting(shareDBDoc, false);
 
-  return editResult;
+  return {
+    content: result.content,
+    generationId: result.generationId,
+    // Note: changedFiles is no longer needed since files are updated incrementally
+  };
 };

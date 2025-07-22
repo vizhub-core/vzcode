@@ -3,6 +3,9 @@ import { ChatOpenAI } from '@langchain/openai';
 import {
   updateAIStatus,
   updateAIScratchpad,
+  ensureFileExists,
+  clearFileContent,
+  appendLineToFile,
 } from './chatOperations.js';
 
 const debug = false;
@@ -29,6 +32,7 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
 
     let fullContent = '';
     let generationId = '';
+    let currentEditingFileId = null;
 
     // Track expected state to avoid race conditions
     let expectedAiScratchpad =
@@ -45,6 +49,18 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
           console.log(
             `File changed to: ${fileName} (${format})`,
           );
+
+        // Find existing file or create new one
+        currentEditingFileId = ensureFileExists(
+          shareDBDoc,
+          fileName,
+        );
+
+        // Clear the file content to start fresh
+        // (AI will regenerate the entire file content)
+        clearFileContent(shareDBDoc, currentEditingFileId);
+
+        // Update AI status
         updateAIStatus(
           shareDBDoc,
           chatId,
@@ -53,6 +69,15 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
       },
       onCodeLine: (line) => {
         debug && console.log(`Code line: ${line}`);
+
+        if (currentEditingFileId) {
+          // Apply OT operation for this line immediately
+          appendLineToFile(
+            shareDBDoc,
+            currentEditingFileId,
+            line,
+          );
+        }
       },
       onNonCodeLine: (line) => {
         debug && console.log(`Comment/text: ${line}`);
