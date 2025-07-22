@@ -2,7 +2,8 @@
 // TODO test this out, think this through.
 // Purpose: support folks using VZCode as the editor
 // for their Vite-based projects.
-import '@vizhub/runtime';
+import "./style.css";
+import "@vizhub/runtime";
 
 const enableIframe = true;
 
@@ -15,3 +16,4 @@ export const VZRight = () => {
     </div>
   );
 };
+
