@@ -2,6 +2,7 @@
 // TODO test this out, think this through.
 // Purpose: support folks using VZCode as the editor
 // for their Vite-based projects.
+import '@vizhub/runtime';
 
 const enableIframe = true;
 
