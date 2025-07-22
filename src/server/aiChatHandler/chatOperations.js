@@ -1,7 +1,6 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
 import { diff } from '../../client/diff.js';
 import { randomId } from '../../randomId.js';
-import { textUnicode } from '../../ot.js';
 
 /**
  * Ensures the chats object exists in the ShareDB document
@@ -176,25 +175,35 @@ export const addAIMessage = (
 export const updateFiles = (shareDBDoc, files) => {
   const filesOp = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
-    files: files,
-    isInteracting: true,
+    files,
+    // isInteracting: true,
   });
   shareDBDoc.submitOp(filesOp);
 };
 
-/**
- * Sets isInteracting flag
- */
-export const setIsInteracting = (
-  shareDBDoc,
-  isInteracting,
-) => {
-  const interactingOp = diff(
-    { isInteracting: !isInteracting },
-    { isInteracting: isInteracting },
-  );
-  shareDBDoc.submitOp(interactingOp);
-};
+// /**
+//  * Sets isInteracting flag
+//  */
+// export const setIsInteracting = (
+//   shareDBDoc,
+//   isInteracting,
+// ) => {
+//   // Only generate an operation if the value is actually changing
+//   const currentIsInteracting =
+//     shareDBDoc.data.isInteracting;
+
+//   if (currentIsInteracting === isInteracting) {
+//     return;
+//   }
+
+//   const newState = {
+//     ...shareDBDoc.data,
+//     isInteracting: isInteracting,
+//   };
+
+//   const interactingOp = diff(shareDBDoc.data, newState);
+//   shareDBDoc.submitOp(interactingOp);
+// };
 
 /**
  * Finds a file ID by searching for a matching file name
@@ -220,7 +229,7 @@ export const createNewFile = (shareDBDoc, fileName) => {
   // Generate a new random file ID
   const newFileId = randomId();
 
-  const op = diff(shareDBDoc.data, {
+  const newState = {
     ...shareDBDoc.data,
     files: {
       ...shareDBDoc.data.files,
@@ -229,8 +238,9 @@ export const createNewFile = (shareDBDoc, fileName) => {
         text: '',
       },
     },
-  });
+  };
 
+  const op = diff(shareDBDoc.data, newState);
   shareDBDoc.submitOp(op);
   return newFileId;
 };
@@ -254,9 +264,10 @@ export const ensureFileExists = (shareDBDoc, fileName) => {
  */
 export const clearFileContent = (shareDBDoc, fileId) => {
   const currentFile = shareDBDoc.data.files[fileId];
+
   if (currentFile && currentFile.text) {
     // Clear the file content
-    const op = diff(shareDBDoc.data, {
+    const newState = {
       ...shareDBDoc.data,
       files: {
         ...shareDBDoc.data.files,
@@ -265,7 +276,9 @@ export const clearFileContent = (shareDBDoc, fileId) => {
           text: '',
         },
       },
-    });
+    };
+
+    const op = diff(shareDBDoc.data, newState);
     shareDBDoc.submitOp(op);
   }
 };
@@ -288,14 +301,15 @@ export const appendLineToFile = (
     text: newContent,
   };
 
-  // Generate OT operation using the diff utility
-  const op = diff(shareDBDoc.data, {
+  const newDocState = {
     ...shareDBDoc.data,
     files: {
       ...shareDBDoc.data.files,
       [fileId]: newFileState,
     },
-  });
+  };
 
+  // Generate OT operation using the diff utility
+  const op = diff(shareDBDoc.data, newDocState);
   shareDBDoc.submitOp(op);
 };

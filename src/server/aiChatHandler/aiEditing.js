@@ -1,7 +1,4 @@
-import {
-  clearAIScratchpadAndStatus,
-  setIsInteracting,
-} from './chatOperations.js';
+import { clearAIScratchpadAndStatus } from './chatOperations.js';
 
 /**
  * Performs AI editing operations using streaming with incremental OT operations
@@ -14,7 +11,7 @@ export const performAIEditing = async (
   llmFunction,
 ) => {
   // Set isInteracting flag
-  setIsInteracting(shareDBDoc, true);
+  // setIsInteracting(shareDBDoc, true);
 
   // Create the prompt for the LLM
   const filesContext = Object.values(files)
@@ -40,7 +37,7 @@ export const performAIEditing = async (
   await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Unset isInteracting
-  setIsInteracting(shareDBDoc, false);
+  // setIsInteracting(shareDBDoc, false);
 
   return {
     content: result.content,
