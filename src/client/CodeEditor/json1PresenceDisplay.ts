@@ -14,12 +14,8 @@ import {
   Username,
 } from '../../types';
 
-const debug = false;
+const DEBUG = true;
 
-// export let enableAutoFollow = false;
-// export const toggleAutoFollowButton = () => {
-//   enableAutoFollow = !enableAutoFollow;
-// };
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.
 //
@@ -68,7 +64,7 @@ export const json1PresenceDisplay = ({
         docPresence.on(
           'receive',
           (id: PresenceId, presence: Presence) => {
-            if (debug) {
+            if (DEBUG) {
               console.log(
                 `Received presence for id ${id}`,
                 presence,
@@ -97,6 +93,10 @@ export const json1PresenceDisplay = ({
               // If auto-follow is enabled, and the presence is NOT
               // in the current file, then open the tab of the other user.
               if (enableAutoFollowRef.current) {
+                DEBUG &&
+                  console.log(
+                    `Auto-opening tab for ${presence.username} in file ${presence.start[1]}`,
+                  );
                 openTab({
                   fileId: presence.start[1] as VizFileId,
                   isTransient: true,

@@ -224,6 +224,12 @@ export const VZSidebar = ({
         presenceId: PresenceId,
         update: Presence,
       ) => {
+        // Sometimes this can be null, so we check.
+        // This can happen when the user disconnects.
+        // If this happens, we do not update the presence indicator.
+        // TODO test removal of presence indicator.
+        if (!update) return;
+
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
           fileId: update.start[1] as VizFileId,

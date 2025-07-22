@@ -1,20 +1,20 @@
 body {
   font-family: sans-serif;
-  background-color: #000;
+  background-color: #2d2d44; /* Dark purple background */
   color: #eee;
   margin: 0;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 header, main, footer {
-  padding: 1rem; /* Use rems for better responsiveness */
+  padding: 1rem;
 }
 
 header {
-  background-color: #2980B9; /* A nice blue */
+  background-color: #673ab7; /* Purple header */
   color: white;
   text-align: center;
 }
@@ -26,13 +26,13 @@ h1 {
 main {
   flex: 1;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
-  position: relative; /* Needed for absolute positioning of stars */
+  position: relative;
 }
 
 footer {
-  background-color: #C0392B; /* A nice red */
+  background-color: #673ab7; /* Purple footer */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -40,28 +40,29 @@ footer {
 
 .star {
   position: absolute;
-  transform: translate(-50%, -50%); 
-  animation: twinkle 1s infinite; /* Added animation */
+  transform: translate(-50%, -50%);
+  animation: twinkle 1s infinite;
 }
 
-.star.blue {
-  background-color: #3498db; /* A lighter blue */
+.star.purple {
+  background-color: #9b59b6; /* Light purple */
 }
 
-.star.pink {
-  background-color: #e74c3c; /* A pink */
-}
-.star.yellow {
-    background-color: #f1c40f; /* Yellow*/
+.star.dark-purple {
+  background-color: #4a235a; /* Dark purple */
 }
 
-.star.green {
-    background-color: #2ecc71; /* Green */
+.star.lavender {
+  background-color: #b39ddb; /* Lavender */
+}
+
+.star.violet {
+  background-color: #ee82ee; /* Violet */
 }
 
 
 @keyframes twinkle {
-  0% { opacity: 0.8; }
+  0% { opacity: 0.5; }
   50% { opacity: 1; }
-  100% { opacity: 0.8; }
+  100% { opacity: 0.5; }
 }

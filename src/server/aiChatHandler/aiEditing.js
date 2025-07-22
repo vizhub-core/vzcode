@@ -2,7 +2,6 @@ import {
   assembleFullPrompt,
   prepareFilesForPrompt,
 } from 'editcodewithai';
-import { clearAIScratchpadAndStatus } from './chatOperations.js';
 import { formatMarkdownFiles } from 'llm-code-format';
 
 const DEBUG = true;
@@ -13,7 +12,6 @@ const DEBUG = true;
 export const performAIEditing = async ({
   prompt,
   shareDBDoc,
-  chatId,
   llmFunction,
 }) => {
   const preparedFiles = prepareFilesForPrompt(

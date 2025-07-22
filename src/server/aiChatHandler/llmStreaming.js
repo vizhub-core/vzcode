@@ -16,6 +16,38 @@ const DEBUG = false;
  */
 export const createLLMFunction = (shareDBDoc, chatId) => {
   return async (fullPrompt) => {
+    // Set up presence for VizBot following the same pattern as useShareDB.ts
+    const docPresence =
+      shareDBDoc.connection.getDocPresence(
+        'documents',
+        '1',
+      );
+
+    // Create local presence for VizBot with a unique ID
+    const generateVizBotId = () => {
+      const timestamp = Date.now().toString(36);
+      return `vizbot-${timestamp}`;
+    };
+
+    const localPresence = docPresence.create(
+      generateVizBotId(),
+    );
+
+    // Submit initial presence for VizBot
+    const vizBotPresence = {
+      username: 'VizBot',
+      start: ['files'], // Indicate VizBot is working on files
+      end: ['files'],
+    };
+
+    localPresence.submit(vizBotPresence, (error) => {
+      if (error) {
+        console.warn(
+          'VizBot presence submission error:',
+          error,
+        );
+      }
+    });
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
@@ -52,6 +84,22 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
         // Clear the file content to start fresh
         // (AI will regenerate the entire file content)
         clearFileContent(shareDBDoc, currentEditingFileId);
+
+        // Update VizBot presence to show it's editing this specific file
+        const filePresence = {
+          username: 'VizBot',
+          start: ['files', currentEditingFileId, 'text', 0],
+          end: ['files', currentEditingFileId, 'text', 0],
+        };
+
+        localPresence.submit(filePresence, (error) => {
+          if (error) {
+            console.warn(
+              'VizBot file presence submission error:',
+              error,
+            );
+          }
+        });
 
         fullContent += ` * Editing ${fileName}\n`;
         updateAIScratchpad(shareDBDoc, chatId, fullContent);
@@ -105,6 +153,16 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
 
     // Submit final update if there's pending content
     updateAIScratchpad(shareDBDoc, chatId, fullContent);
+
+    // Clear VizBot presence when done
+    localPresence.submit(null, (error) => {
+      if (error) {
+        console.warn(
+          'VizBot presence cleanup error:',
+          error,
+        );
+      }
+    });
 
     // Write chunks file for debugging
     if (DEBUG) {
