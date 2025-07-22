@@ -1,5 +1,6 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
 import { diff } from '../../client/diff.js';
+import { randomId } from '../../randomId.js';
 
 /**
  * Ensures the chats object exists in the ShareDB document
@@ -108,7 +109,13 @@ export const updateAIScratchpad = (
       },
     },
   });
-  shareDBDoc.submitOp(op);
+
+  // op is `null` if there are no changes
+  // This can happen if the content is the same as before
+  // In that case, we don't need to submit an operation
+  if (op) {
+    shareDBDoc.submitOp(op);
+  }
 };
 
 /**
@@ -174,8 +181,7 @@ export const addAIMessage = (
 export const updateFiles = (shareDBDoc, files) => {
   const filesOp = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
-    files: files,
-    isInteracting: true,
+    files,
   });
   shareDBDoc.submitOp(filesOp);
 };
@@ -187,9 +193,128 @@ export const setIsInteracting = (
   shareDBDoc,
   isInteracting,
 ) => {
-  const interactingOp = diff(
-    { isInteracting: !isInteracting },
-    { isInteracting: isInteracting },
-  );
+  // Only generate an operation if the value is actually changing
+  const currentIsInteracting =
+    shareDBDoc.data.isInteracting;
+
+  if (currentIsInteracting === isInteracting) {
+    return;
+  }
+
+  const newState = {
+    ...shareDBDoc.data,
+    isInteracting: isInteracting,
+  };
+
+  const interactingOp = diff(shareDBDoc.data, newState);
   shareDBDoc.submitOp(interactingOp);
+};
+
+/**
+ * Finds a file ID by searching for a matching file name
+ */
+export const resolveFileId = (fileName, shareDBDoc) => {
+  const files = shareDBDoc.data.files;
+
+  // Search through all files to find matching name
+  for (const [fileId, file] of Object.entries(files)) {
+    if (file.name === fileName) {
+      return fileId;
+    }
+  }
+
+  // If file doesn't exist, return null
+  return null;
+};
+
+/**
+ * Creates a new file with a random ID
+ */
+export const createNewFile = (shareDBDoc, fileName) => {
+  // Generate a new random file ID
+  const newFileId = randomId();
+
+  const newState = {
+    ...shareDBDoc.data,
+    files: {
+      ...shareDBDoc.data.files,
+      [newFileId]: {
+        name: fileName,
+        text: '',
+      },
+    },
+  };
+
+  const op = diff(shareDBDoc.data, newState);
+  shareDBDoc.submitOp(op);
+  return newFileId;
+};
+
+/**
+ * Ensures a file exists, creating it if necessary
+ */
+export const ensureFileExists = (shareDBDoc, fileName) => {
+  let fileId = resolveFileId(fileName, shareDBDoc);
+
+  if (!fileId) {
+    // File doesn't exist, create it
+    fileId = createNewFile(shareDBDoc, fileName);
+  }
+
+  return fileId;
+};
+
+/**
+ * Clears the content of a file
+ */
+export const clearFileContent = (shareDBDoc, fileId) => {
+  const currentFile = shareDBDoc.data.files[fileId];
+
+  if (currentFile && currentFile.text) {
+    // Clear the file content
+    const newState = {
+      ...shareDBDoc.data,
+      files: {
+        ...shareDBDoc.data.files,
+        [fileId]: {
+          ...currentFile,
+          text: '',
+        },
+      },
+    };
+
+    const op = diff(shareDBDoc.data, newState);
+    shareDBDoc.submitOp(op);
+  }
+};
+
+/**
+ * Appends a line to a file using OT operations
+ */
+export const appendLineToFile = (
+  shareDBDoc,
+  fileId,
+  line,
+) => {
+  const currentFile = shareDBDoc.data.files[fileId];
+  const currentContent = currentFile?.text || '';
+  const newContent = currentContent + line + '\n';
+
+  // Create the new file state
+  const newFileState = {
+    ...currentFile,
+    text: newContent,
+  };
+
+  const newDocState = {
+    ...shareDBDoc.data,
+    files: {
+      ...shareDBDoc.data.files,
+      [fileId]: newFileState,
+    },
+  };
+
+  // Generate OT operation using the diff utility
+  const op = diff(shareDBDoc.data, newDocState);
+  shareDBDoc.submitOp(op);
 };

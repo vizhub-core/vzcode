@@ -1,42 +1,44 @@
-import { performAiEdit } from 'editcodewithai';
 import {
-  clearAIScratchpadAndStatus,
-  updateFiles,
-  setIsInteracting,
-} from './chatOperations.js';
+  assembleFullPrompt,
+  prepareFilesForPrompt,
+} from 'editcodewithai';
+import { formatMarkdownFiles } from 'llm-code-format';
 
 /**
- * Performs AI editing operations on the files
+ * Performs AI editing operations using streaming with incremental OT operations
  */
-export const performAIEditing = async (
+export const performAIEditing = async ({
+  prompt,
   shareDBDoc,
-  chatId,
-  content,
-  files,
   llmFunction,
-) => {
-  const editResult = await performAiEdit({
-    prompt: content,
-    files,
-    llmFunction,
-    apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
+  runCode,
+}) => {
+  const preparedFiles = prepareFilesForPrompt(
+    shareDBDoc.data.files,
+  );
+  const filesContext = formatMarkdownFiles(preparedFiles);
+
+  // 2. Assemble the final prompt
+  const fullPrompt = assembleFullPrompt({
+    filesContext,
+    prompt,
+    editFormat: 'whole',
   });
 
+  // Call the LLM function which will handle streaming and incremental file updates
+  const result = await llmFunction(fullPrompt);
+
   // Clear the scratchpad and update status
-  clearAIScratchpadAndStatus(
-    shareDBDoc,
-    chatId,
-    'Done editing with AI.',
-  );
+  // clearAIScratchpadAndStatus(
+  //   shareDBDoc,
+  //   chatId,
+  //   'Done editing with AI.',
+  // );
 
-  // Apply AI edits to files
-  updateFiles(shareDBDoc, editResult.changedFiles);
+  runCode();
 
-  // Wait for propagation
-  await new Promise((resolve) => setTimeout(resolve, 100));
-
-  // Unset isInteracting
-  setIsInteracting(shareDBDoc, false);
-
-  return editResult;
+  return {
+    content: result.content,
+    generationId: result.generationId,
+  };
 };

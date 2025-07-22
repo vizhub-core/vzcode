@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { SubmitOperation } from '../types';
-import { VizContent } from '@vizhub/viz-types';
+import { createRunCodeFunction } from '../runCode';
 
 // Runs the code by flashing `isInteracting` to `true`.
 export const useRunCode = (
@@ -8,21 +8,7 @@ export const useRunCode = (
 ) => {
   const runCodeRef = useRef(null);
   useEffect(() => {
-    const runCode = () => {
-      submitOperation((content: VizContent) => ({
-        ...content,
-        isInteracting: true,
-      }));
-      setTimeout(() => {
-        // This somewhat cryptic logic
-        // deletes the `isInteracting` property
-        // from the document.
-        submitOperation(
-          ({ isInteracting, ...newDocument }) =>
-            newDocument,
-        );
-      }, 0);
-    };
+    const runCode = createRunCodeFunction(submitOperation);
     runCodeRef.current = runCode;
   }, [submitOperation]);
   return runCodeRef;

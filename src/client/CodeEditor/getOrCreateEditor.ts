@@ -176,7 +176,6 @@ export const getOrCreateEditor = async ({
   usernameRef,
   customInteractRules,
   enableAutoFollowRef,
-  openTab,
   aiCopilotEndpoint,
   esLintSource,
   rainbowBracketsEnabled = true,
@@ -213,7 +212,6 @@ export const getOrCreateEditor = async ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
-  openTab: (tabState: TabState) => void;
   aiCopilotEndpoint?: string;
   esLintSource: (
     view: EditorView,
@@ -285,7 +283,6 @@ export const getOrCreateEditor = async ({
           path: textPath,
           docPresence,
           enableAutoFollowRef,
-          openTab,
         }),
       );
     }

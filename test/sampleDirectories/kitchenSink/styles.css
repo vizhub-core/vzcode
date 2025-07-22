@@ -1,20 +1,20 @@
 body {
   font-family: sans-serif;
-  background-color: #000;
+  background-color: #222; /* Dark background */
   color: #eee;
   margin: 0;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 header, main, footer {
-  padding: 1rem; /* Use rems for better responsiveness */
+  padding: 1rem;
 }
 
 header {
-  background-color: #2980B9; /* A nice blue */
+  background-color: #008080; /* Teal header */
   color: white;
   text-align: center;
 }
@@ -26,13 +26,13 @@ h1 {
 main {
   flex: 1;
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
-  position: relative; /* Needed for absolute positioning of stars */
+  position: relative;
 }
 
 footer {
-  background-color: #C0392B; /* A nice red */
+  background-color: #008080; /* Teal footer */
   color: white;
   text-align: center;
   margin-top: auto;
@@ -40,28 +40,14 @@ footer {
 
 .star {
   position: absolute;
-  transform: translate(-50%, -50%); 
-  animation: twinkle 1s infinite; /* Added animation */
-}
-
-.star.blue {
-  background-color: #3498db; /* A lighter blue */
-}
-
-.star.pink {
-  background-color: #e74c3c; /* A pink */
-}
-.star.yellow {
-    background-color: #f1c40f; /* Yellow*/
-}
-
-.star.green {
-    background-color: #2ecc71; /* Green */
+  transform: translate(-50%, -50%);
+  animation: twinkle 1s infinite;
+  border-radius: 50%; /* Make stars round */
 }
 
 
 @keyframes twinkle {
-  0% { opacity: 0.8; }
+  0% { opacity: 0.5; }
   50% { opacity: 1; }
-  100% { opacity: 0.8; }
+  100% { opacity: 0.5; }
 }

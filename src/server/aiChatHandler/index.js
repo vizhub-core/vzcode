@@ -3,20 +3,20 @@ import {
   ensureChatsExist,
   ensureChatExists,
   addUserMessage,
-  addAIMessage,
 } from './chatOperations.js';
 import { createLLMFunction } from './llmStreaming.js';
 import { performAIEditing } from './aiEditing.js';
 import { handleError } from './errorHandling.js';
+import { createRunCodeFunction } from '../../runCode.js';
 
-const debug = false;
+const DEBUG = false;
 
 export const handleAIChatMessage =
-  (shareDBDoc, options = {}) =>
+  ({ shareDBDoc, localPresence, onCreditDeduction }) =>
   async (req, res) => {
     const { content, chatId } = req.body;
 
-    if (debug) {
+    if (DEBUG) {
       console.log(
         '[handleAIChatMessage] content:',
         content,
@@ -31,9 +31,6 @@ export const handleAIChatMessage =
     }
 
     try {
-      // Get existing files from ShareDB doc
-      const files = shareDBDoc.data.files;
-
       // Ensure chats structure exists
       ensureChatsExist(shareDBDoc);
       ensureChatExists(shareDBDoc, chatId);
@@ -42,34 +39,31 @@ export const handleAIChatMessage =
       addUserMessage(shareDBDoc, chatId, content);
 
       // Create LLM function for streaming
-      const llmFunction = createLLMFunction(
+      const llmFunction = createLLMFunction({
         shareDBDoc,
+        localPresence,
         chatId,
-      );
+      });
+
+      // Create server-side runCode function using shared module
+      const runCode = createRunCodeFunction(shareDBDoc);
 
       // Perform AI editing
-      const editResult = await performAIEditing(
+      const editResult = await performAIEditing({
+        prompt: content,
         shareDBDoc,
         chatId,
-        content,
-        files,
         llmFunction,
-      );
-
-      // Add AI response message
-      const aiResponse = addAIMessage(
-        shareDBDoc,
-        chatId,
-        editResult.content,
-      );
+        runCode,
+      });
 
       // Handle credit deduction if callback is provided
       if (
-        options.onCreditDeduction &&
+        onCreditDeduction &&
         editResult.upstreamCostCents
       ) {
         try {
-          await options.onCreditDeduction({
+          await onCreditDeduction({
             upstreamCostCents: editResult.upstreamCostCents,
             provider: editResult.provider,
             inputTokens: editResult.inputTokens,
@@ -84,7 +78,7 @@ export const handleAIChatMessage =
         }
       }
 
-      res.status(200).json(aiResponse);
+      res.status(200).json('success');
     } catch (error) {
       handleError(shareDBDoc, chatId, error, res);
     }

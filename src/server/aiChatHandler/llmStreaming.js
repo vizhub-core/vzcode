@@ -1,17 +1,40 @@
 import { StreamingMarkdownParser } from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
+import fs from 'fs';
 import {
   updateAIStatus,
   updateAIScratchpad,
+  ensureFileExists,
+  clearFileContent,
+  appendLineToFile,
 } from './chatOperations.js';
 
-const debug = false;
+const DEBUG = false;
 
 /**
  * Creates and configures the LLM function for streaming
  */
-export const createLLMFunction = (shareDBDoc, chatId) => {
+export const createLLMFunction = ({
+  shareDBDoc,
+  localPresence,
+  chatId,
+}) => {
   return async (fullPrompt) => {
+    // Submit initial presence for VizBot
+    const vizBotPresence = {
+      username: 'VizBot',
+      start: ['files'], // Indicate VizBot is working on files
+      end: ['files'],
+    };
+
+    localPresence.submit(vizBotPresence, (error) => {
+      if (error) {
+        console.warn(
+          'VizBot presence submission error:',
+          error,
+        );
+      }
+    });
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
@@ -29,22 +52,58 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
 
     let fullContent = '';
     let generationId = '';
+    let currentEditingFileId = null;
+    let currentEditingFileName = null;
 
-    // Track expected state to avoid race conditions
-    let expectedAiScratchpad =
-      shareDBDoc.data.chats[chatId]?.aiScratchpad || '';
-
-    // Throttle updates to avoid "op too long" errors
-    let lastUpdateTime = 0;
-    const UPDATE_THROTTLE_MS = 100;
+    // Function to report file edited
+    // This is called when the AI has finished editing a file
+    // and we want to update the scratchpad with the file name.
+    const reportFileEdited = () => {
+      if (currentEditingFileName) {
+        fullContent += ` * Edited ${currentEditingFileName}\n`;
+        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        currentEditingFileName = null;
+      }
+    };
 
     // Define callbacks for streaming parser
     const callbacks = {
       onFileNameChange: (fileName, format) => {
-        debug &&
+        DEBUG &&
           console.log(
             `File changed to: ${fileName} (${format})`,
           );
+
+        // Find existing file or create new one
+        currentEditingFileId = ensureFileExists(
+          shareDBDoc,
+          fileName,
+        );
+
+        reportFileEdited();
+        currentEditingFileName = fileName;
+
+        // Clear the file content to start fresh
+        // (AI will regenerate the entire file content)
+        clearFileContent(shareDBDoc, currentEditingFileId);
+
+        // Update VizBot presence to show it's editing this specific file
+        const filePresence = {
+          username: 'VizBot',
+          start: ['files', currentEditingFileId, 'text', 0],
+          end: ['files', currentEditingFileId, 'text', 0],
+        };
+
+        localPresence.submit(filePresence, (error) => {
+          if (error) {
+            console.warn(
+              'VizBot file presence submission error:',
+              error,
+            );
+          }
+        });
+
+        // Update AI status
         updateAIStatus(
           shareDBDoc,
           chatId,
@@ -52,37 +111,70 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
         );
       },
       onCodeLine: (line) => {
-        debug && console.log(`Code line: ${line}`);
+        DEBUG && console.log(`Code line: ${line}`);
+
+        if (currentEditingFileId) {
+          // Apply OT operation for this line immediately
+          appendLineToFile(
+            shareDBDoc,
+            currentEditingFileId,
+            line,
+          );
+
+          // Update VizBot presence to show cursor at the end of the file
+          const currentFile =
+            shareDBDoc.data.files[currentEditingFileId];
+          if (currentFile && currentFile.text) {
+            const textLength = currentFile.text.length;
+            const filePresence = {
+              username: 'VizBot',
+              start: [
+                'files',
+                currentEditingFileId,
+                'text',
+                textLength,
+              ],
+              end: [
+                'files',
+                currentEditingFileId,
+                'text',
+                textLength,
+              ],
+            };
+
+            localPresence.submit(filePresence, (error) => {
+              if (error) {
+                console.warn(
+                  'VizBot line presence submission error:',
+                  error,
+                );
+              }
+            });
+          }
+        }
       },
       onNonCodeLine: (line) => {
-        debug && console.log(`Comment/text: ${line}`);
+        // We want to report a file edited only if the line is not empty,
+        // because sometimes the LLMs leave a newline between the file name
+        // declaration and th
+        if (line.trim() !== '') {
+          reportFileEdited();
+        }
+        fullContent += line + '\n';
+        updateAIScratchpad(shareDBDoc, chatId, fullContent);
       },
     };
 
     const parser = new StreamingMarkdownParser(callbacks);
+
+    const chunks = [];
 
     // Stream the response
     const stream = await chatModel.stream(fullPrompt);
     for await (const chunk of stream) {
       if (chunk.content) {
         const chunkContent = String(chunk.content);
-        fullContent += chunkContent;
-
-        // Throttle updates
-        const now = Date.now();
-        const shouldUpdate =
-          now - lastUpdateTime >= UPDATE_THROTTLE_MS;
-
-        if (shouldUpdate) {
-          updateAIScratchpad(
-            shareDBDoc,
-            chatId,
-            fullContent,
-          );
-          expectedAiScratchpad = fullContent;
-          lastUpdateTime = now;
-        }
-
+        chunks.push(chunkContent);
         parser.processChunk(chunkContent);
       }
 
@@ -91,10 +183,30 @@ export const createLLMFunction = (shareDBDoc, chatId) => {
       }
     }
     parser.flushRemaining();
+    reportFileEdited();
+    updateAIStatus(shareDBDoc, chatId, 'Done editing.');
+    updateAIScratchpad(shareDBDoc, chatId, fullContent);
 
-    // Submit final update if there's pending content
-    if (expectedAiScratchpad !== fullContent) {
-      updateAIScratchpad(shareDBDoc, chatId, fullContent);
+    // Clear VizBot presence when done
+    localPresence.destroy((error) => {
+      if (error) {
+        console.warn(
+          'VizBot presence cleanup error:',
+          error,
+        );
+      }
+    });
+
+    // Write chunks file for debugging
+    if (DEBUG) {
+      const chunksFileJSONpath = `./ai-chunks-${chatId}.json`;
+      fs.writeFileSync(
+        chunksFileJSONpath,
+        JSON.stringify(chunks, null, 2),
+      );
+      console.log(
+        `AI chunks written to ${chunksFileJSONpath}`,
+      );
     }
 
     return {

@@ -107,7 +107,6 @@ export const CodeEditor = ({
         usernameRef,
         customInteractRules,
         enableAutoFollowRef,
-        openTab,
         aiCopilotEndpoint,
         esLintSource,
       });
