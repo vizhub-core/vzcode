@@ -378,7 +378,13 @@ export const useKeyboardShortcuts = ({
         return;
       }
 
-      const position: number = editor.posAtDOM(element);
+      let position: number;
+      try {
+        position = editor.posAtDOM(element);
+      } catch (error) {
+        // Element is not within the current editor's document
+        return;
+      }
       const identifier: SyntaxNode = tree.resolveInner(
         position,
         1,
