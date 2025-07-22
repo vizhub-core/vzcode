@@ -4,6 +4,11 @@
 // for their Vite-based projects.
 import "./style.css";
 import "@vizhub/runtime";
+import {
+  createRuntime,
+  createVizContent,
+  VizHubRuntime,
+} from "@vizhub/runtime";
 import BuildWorker from "./buildWorker?worker";
 
 
@@ -26,3 +31,12 @@ const iframe = document.getElementById(
 
 // Initialize the worker
 const worker = new BuildWorker();
+
+// runtime 
+const runtime: VizHubRuntime = createRuntime({
+  iframe,
+  worker,
+
+
+  
+})
