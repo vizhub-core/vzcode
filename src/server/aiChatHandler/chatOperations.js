@@ -109,7 +109,13 @@ export const updateAIScratchpad = (
       },
     },
   });
-  shareDBDoc.submitOp(op);
+
+  // op is `null` if there are no changes
+  // This can happen if the content is the same as before
+  // In that case, we don't need to submit an operation
+  if (op) {
+    shareDBDoc.submitOp(op);
+  }
 };
 
 /**
@@ -176,34 +182,33 @@ export const updateFiles = (shareDBDoc, files) => {
   const filesOp = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
     files,
-    // isInteracting: true,
   });
   shareDBDoc.submitOp(filesOp);
 };
 
-// /**
-//  * Sets isInteracting flag
-//  */
-// export const setIsInteracting = (
-//   shareDBDoc,
-//   isInteracting,
-// ) => {
-//   // Only generate an operation if the value is actually changing
-//   const currentIsInteracting =
-//     shareDBDoc.data.isInteracting;
+/**
+ * Sets isInteracting flag
+ */
+export const setIsInteracting = (
+  shareDBDoc,
+  isInteracting,
+) => {
+  // Only generate an operation if the value is actually changing
+  const currentIsInteracting =
+    shareDBDoc.data.isInteracting;
 
-//   if (currentIsInteracting === isInteracting) {
-//     return;
-//   }
+  if (currentIsInteracting === isInteracting) {
+    return;
+  }
 
-//   const newState = {
-//     ...shareDBDoc.data,
-//     isInteracting: isInteracting,
-//   };
+  const newState = {
+    ...shareDBDoc.data,
+    isInteracting: isInteracting,
+  };
 
-//   const interactingOp = diff(shareDBDoc.data, newState);
-//   shareDBDoc.submitOp(interactingOp);
-// };
+  const interactingOp = diff(shareDBDoc.data, newState);
+  shareDBDoc.submitOp(interactingOp);
+};
 
 /**
  * Finds a file ID by searching for a matching file name

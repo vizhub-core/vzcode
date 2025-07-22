@@ -31,9 +31,6 @@ export const handleAIChatMessage =
     }
 
     try {
-      // Get existing files from ShareDB doc
-      const files = shareDBDoc.data.files;
-
       // Ensure chats structure exists
       ensureChatsExist(shareDBDoc);
       ensureChatExists(shareDBDoc, chatId);
@@ -48,13 +45,12 @@ export const handleAIChatMessage =
       );
 
       // Perform AI editing
-      const editResult = await performAIEditing(
+      const editResult = await performAIEditing({
+        prompt: content,
         shareDBDoc,
         chatId,
-        content,
-        files,
         llmFunction,
-      );
+      });
 
       // Add AI response message
       const aiResponse = addAIMessage(
