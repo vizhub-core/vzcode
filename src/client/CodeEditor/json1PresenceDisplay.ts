@@ -57,6 +57,7 @@ export const json1PresenceDisplay = ({
         //   this.scrollToCursor(view);
         // });
         // Receive remote presence changes.
+        // Receive remote presence changes.
         docPresence.on(
           'receive',
           (id: PresenceId, presence: Presence) => {
@@ -64,37 +65,35 @@ export const json1PresenceDisplay = ({
               console.log(
                 `Received presence for id ${id}`,
                 presence,
-              ); // Debug statement
+              );
             }
 
-            // If presence === null, the user has disconnected / exited
+            // If presence is null, the user has disconnected.
+            // We must remove them from our local state.
             if (!presence) {
               delete presenceState[id];
-              return;
+              // Also remove their cursor position to prevent errors.
+              delete this.cursorPosition[id];
+            } else {
+              // Otherwise, the user is active. Check if the presence
+              // is for the current file.
+              const isPresenceInCurrentFile = pathMatches(
+                path,
+                presence,
+              );
+
+              // If it's the current file, add/update their state.
+              if (isPresenceInCurrentFile) {
+                presenceState[id] = presence;
+              } else {
+                // If it's for another file, remove them from this view's state.
+                delete presenceState[id];
+                delete this.cursorPosition[id];
+              }
             }
-
-            // Check if the presence is for the current file or not.
-            const isPresenceInCurrentFile = pathMatches(
-              path,
-              presence,
-            );
-
-            // If the presence is in the current file, update the presence state.
-            if (isPresenceInCurrentFile) {
-              presenceState[id] = presence;
-            } else if (presence) {
-              // Otherwise, delete the presence state.
-              delete presenceState[id];
-
-              // Note: Auto-follow tab opening is now handled by usePresenceAutoFollow hook
-              // in VZCodeContext, which works independently of CodeMirror extensions
-            }
-            // Update decorations to reflect new presence state.
-            // TODO consider mutating this rather than recomputing it on each change.
 
             const presenceDecorations = [];
 
-            // Object.keys(presenceState).map((id) => {
             for (const id of Object.keys(presenceState)) {
               const presence: Presence = presenceState[id];
               const { start, end } = presence;
@@ -104,7 +103,7 @@ export const json1PresenceDisplay = ({
                 presence.username,
               );
               const { username } = presence;
-              //console.log("File User Color:" + assignUserColor(presence.username));
+
               presenceDecorations.push({
                 from,
                 to: from,
@@ -112,10 +111,6 @@ export const json1PresenceDisplay = ({
                   side: -1,
                   block: false,
                   widget: new PresenceWidget(
-                    // TODO see if we can figure out why
-                    // updateDOM was not being called when passing
-                    // the presence id as the id
-                    // id,
                     '' + Math.random(),
                     userColor,
                     username,
@@ -123,10 +118,7 @@ export const json1PresenceDisplay = ({
                 }),
               });
 
-              // This is `true` when the presence is a cursor,
-              // with no selection.
               if (from !== to) {
-                // This is the case when the presence is a selection.
                 presenceDecorations.push({
                   from,
                   to,
@@ -142,34 +134,26 @@ export const json1PresenceDisplay = ({
                 });
               }
               if (view.state.doc.length >= from) {
-                // Ensure position is valid
-                this.cursorPosition[id] = from; // Store the cursor position, important to run if we cant get the regular scroll to work
-                // console.log(`Stored cursor position for id ${id}: ${from}`); // Debug statement
+                this.cursorPosition[id] = from;
               } else {
-                // console.warn(`Invalid cursor position for id ${id}: ${from}`); // Debug statement
+                // The cursor position is invalid, so remove it.
+                delete this.cursorPosition[id];
               }
             }
 
             this.decorations = Decoration.set(
               presenceDecorations,
-              // Without this argument, we get the following error:
-              // Uncaught Error: Ranges must be added sorted by `from` position and `startSide`
               true,
             );
 
-            // Somehow this triggers re-rendering of the Decorations.
-            // Not sure if this is the correct usage of the API.
-            // Inspired by https://github.com/yjs/y-codemirror.next/blob/main/src/y-remote-selections.js
-            // Set timeout so that the current CodeMirror update finishes
-            // before the next ones that render presence begin.
+            // This dispatch triggers the re-rendering of decorations.
+            // It now correctly runs after a deletion.
             setTimeout(() => {
               view.dispatch({
                 annotations: [presenceAnnotation.of(true)],
               });
             }, 0);
 
-            // Auto-follow all users when their presence is broadcast
-            // by scrolling them into view.
             if (enableAutoFollowRef.current) {
               this.scrollToCursor(view);
             }
