@@ -69,7 +69,10 @@ export const createLLMFunction = ({
 
     // Define callbacks for streaming parser
     const callbacks = {
-      onFileNameChange: (fileName, format) => {
+      onFileNameChange: async (
+        fileName: string,
+        format: string,
+      ) => {
         DEBUG &&
           console.log(
             `File changed to: ${fileName} (${format})`,
@@ -111,7 +114,7 @@ export const createLLMFunction = ({
           'Editing ' + fileName,
         );
       },
-      onCodeLine: (line) => {
+      onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
 
         if (currentEditingFileId) {
@@ -154,7 +157,7 @@ export const createLLMFunction = ({
           }
         }
       },
-      onNonCodeLine: (line) => {
+      onNonCodeLine: async (line: string) => {
         // We want to report a file edited only if the line is not empty,
         // because sometimes the LLMs leave a newline between the file name
         // declaration and th
@@ -176,14 +179,14 @@ export const createLLMFunction = ({
       if (chunk.content) {
         const chunkContent = String(chunk.content);
         chunks.push(chunkContent);
-        parser.processChunk(chunkContent);
+        await parser.processChunk(chunkContent);
       }
 
       if (!generationId && chunk.lc_kwargs?.id) {
         generationId = chunk.lc_kwargs.id;
       }
     }
-    parser.flushRemaining();
+    await parser.flushRemaining();
     reportFileEdited();
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
     updateAIScratchpad(shareDBDoc, chatId, fullContent);
