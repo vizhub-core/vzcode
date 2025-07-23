@@ -166,7 +166,6 @@ export const getOrCreateEditor = async ({
   paneId = 'root',
   fileId,
   shareDBDoc,
-  content,
   filesPath,
   localPresence,
   docPresence,
@@ -194,10 +193,7 @@ export const getOrCreateEditor = async ({
   // This can be `undefined` in the case where we are
   // viewing files read-only, in which case multiplayer
   // editing is not enabled.
-  shareDBDoc: ShareDBDoc<VizContent> | undefined;
-
-  // The initial content to present.
-  content: VizContent;
+  shareDBDoc: ShareDBDoc<VizContent>;
 
   filesPath: string[];
   localPresence: any;
@@ -233,6 +229,7 @@ export const getOrCreateEditor = async ({
   // Compute `text` and `fileExtension` from the ShareDB document.
   const textPath = [...filesPath, fileId, 'text'];
   const namePath = [...filesPath, fileId, 'name'];
+  const content = shareDBDoc.data;
   const text = getAtPath(content, textPath);
   const name = getAtPath(content, namePath);
 

@@ -27,3 +27,4 @@ function createStar() {
 for (let i = 0; i < numStars; i++) {
   starfield.appendChild(createStar());
 }
+
