@@ -4,14 +4,14 @@
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
-  "bin": "src/server/index.js",
+  "bin": "src/server/index.ts",
   "files": [
     "dist/**",
     "src/**"
   ],
   "scripts": {
     "test": "vitest run",
-    "test-interactive": "cd test/sampleDirectories/kitchenSink && node ../../../src/server/index.js",
+    "test-interactive": "cd test/sampleDirectories/kitchenSink && node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' ../../../src/server/index.ts",
     "prettier": "prettier {*.*,**/*.*} --write",
     "typecheck": "tsc --noEmit",
     "dev": "cross-env EDITOR_PORT=5173 concurrently \"npm run test-interactive\" \"vite\"",
@@ -152,6 +152,7 @@
     "json0-ot-diff": "^1.1.2",
     "livekit-server-sdk": "^2.13.1",
     "llm-code-format": "^2.1.0",
+    "ngrok": "^5.0.0-beta.2",
     "npm": "^11.4.2",
     "open": "^10.2.0",
     "prettier-plugin-svelte": "^3.4.0",
@@ -179,6 +180,7 @@
     "npm-check-updates": "^18.0.1",
     "prettier": "^3.6.2",
     "sass": "^1.89.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vite": "^7.0.5",
     "vitest": "^3.2.4"

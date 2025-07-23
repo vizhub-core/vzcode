@@ -213,12 +213,12 @@ export const setIsInteracting = (
 /**
  * Finds a file ID by searching for a matching file name
  */
-export const resolveFileId = (fileName, shareDBDoc) => {
+export const resolveFileId = (fileName: string, shareDBDoc: any) => {
   const files = shareDBDoc.data.files;
 
   // Search through all files to find matching name
   for (const [fileId, file] of Object.entries(files)) {
-    if (file.name === fileName) {
+    if ((file as any).name === fileName) {
       return fileId;
     }
   }

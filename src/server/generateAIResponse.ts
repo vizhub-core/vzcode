@@ -28,7 +28,7 @@ const slowdown = false;
 
 // The options passed into the OpenAI client
 // new OpenAI(openAIOptions)
-const openAIOptions = {};
+const openAIOptions: { apiKey?: string; baseURL?: string } = {};
 
 // Support specifying the API key via an environment variable
 // If VZCODE_AI_API_KEY is not set, note that the OpenAI client
@@ -71,7 +71,7 @@ const opComesFromAIAssist = (ops, source) =>
 
 // Keeps track of the currently ongoing AI streams.
 // There could be many streams at the same time.
-const streams = {};
+export const streams: Record<string, any> = {};
 
 export const generateAIResponse = async ({
   inputText,
