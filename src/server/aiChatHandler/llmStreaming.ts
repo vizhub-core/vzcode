@@ -16,10 +16,11 @@ const DEBUG = false;
  */
 export const createLLMFunction = ({
   shareDBDoc,
-  localPresence,
+  createVizBotLocalPresence,
   chatId,
 }) => {
   return async (fullPrompt) => {
+    const localPresence = createVizBotLocalPresence();
     // Submit initial presence for VizBot
     const vizBotPresence = {
       username: 'VizBot',
@@ -188,7 +189,12 @@ export const createLLMFunction = ({
     updateAIScratchpad(shareDBDoc, chatId, fullContent);
 
     // Clear VizBot presence when done
-    localPresence.destroy((error) => {
+    DEBUG &&
+      console.log(
+        'AI editing done, clearing VizBot presence',
+      );
+    localPresence.submit(null, (error) => {
+      DEBUG && console.log('VizBot presence cleared');
       if (error) {
         console.warn(
           'VizBot presence cleanup error:',

@@ -12,7 +12,7 @@ import {
   Username,
 } from '../../types';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Deals with receiving the broadcasted presence cursor locations
 // from other clients and displaying them.

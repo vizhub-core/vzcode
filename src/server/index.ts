@@ -102,9 +102,8 @@ const generateVizBotId = () => {
   return `vizbot-${timestamp}`;
 };
 
-const localPresence = docPresence.create(
-  generateVizBotId(),
-);
+const createVizBotLocalPresence = () =>
+  docPresence.create(generateVizBotId());
 
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
@@ -126,7 +125,11 @@ app.post(
 app.post(
   '/ai-chat-message',
   bodyParser.json(),
-  handleAIChatMessage({ shareDBDoc, localPresence, onCreditDeduction: undefined }),
+  handleAIChatMessage({
+    shareDBDoc,
+    createVizBotLocalPresence,
+    onCreditDeduction: undefined,
+  }),
 );
 
 // Livekit Token Generator

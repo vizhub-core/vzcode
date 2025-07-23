@@ -28,7 +28,8 @@ const slowdown = false;
 
 // The options passed into the OpenAI client
 // new OpenAI(openAIOptions)
-const openAIOptions: { apiKey?: string; baseURL?: string } = {};
+const openAIOptions: { apiKey?: string; baseURL?: string } =
+  {};
 
 // Support specifying the API key via an environment variable
 // If VZCODE_AI_API_KEY is not set, note that the OpenAI client

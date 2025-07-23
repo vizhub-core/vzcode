@@ -1,4 +1,7 @@
-import { generateAIResponse, streams } from './generateAIResponse.js';
+import {
+  generateAIResponse,
+  streams,
+} from './generateAIResponse.js';
 
 const debug = false;
 
@@ -18,7 +21,7 @@ export const handleAIAssist =
     try {
       // Generate a unique streamId for this request
       const streamId = `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       await generateAIResponse({
         inputText,
         insertionCursor,
