@@ -12,8 +12,8 @@ import { createRunCodeFunction } from '../../runCode.js';
 const DEBUG = false;
 
 export const handleAIChatMessage =
-  ({ shareDBDoc, localPresence, onCreditDeduction }) =>
-  async (req, res) => {
+  ({ shareDBDoc, localPresence, onCreditDeduction }: { shareDBDoc: any; localPresence: any; onCreditDeduction?: any }) =>
+  async (req: any, res: any) => {
     const { content, chatId } = req.body;
 
     if (DEBUG) {
@@ -52,7 +52,6 @@ export const handleAIChatMessage =
       const editResult = await performAIEditing({
         prompt: content,
         shareDBDoc,
-        chatId,
         llmFunction,
         runCode,
       });
@@ -60,14 +59,14 @@ export const handleAIChatMessage =
       // Handle credit deduction if callback is provided
       if (
         onCreditDeduction &&
-        editResult.upstreamCostCents
+        (editResult as any).upstreamCostCents
       ) {
         try {
           await onCreditDeduction({
-            upstreamCostCents: editResult.upstreamCostCents,
-            provider: editResult.provider,
-            inputTokens: editResult.inputTokens,
-            outputTokens: editResult.outputTokens,
+            upstreamCostCents: (editResult as any).upstreamCostCents,
+            provider: (editResult as any).provider,
+            inputTokens: (editResult as any).inputTokens,
+            outputTokens: (editResult as any).outputTokens,
           });
         } catch (creditError) {
           console.error(
