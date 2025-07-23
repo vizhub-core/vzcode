@@ -1,9 +1,8 @@
-import { useContext, useEffect, useRef } from 'react';
-import { VZCodeContext } from './VZCodeContext';
-import { Presence, PresenceId, TabState } from '../types';
+import { useEffect, useRef } from 'react';
+import { Presence, PresenceId } from '../types';
 import { VizFileId } from '@vizhub/viz-types';
 
-const DEBUG = true;
+const DEBUG = false;
 
 /**
  * Custom hook that handles auto-following users by opening tabs when presence

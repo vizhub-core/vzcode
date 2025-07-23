@@ -8,11 +8,21 @@ import { createLLMFunction } from './llmStreaming.js';
 import { performAIEditing } from './aiEditing.js';
 import { handleError } from './errorHandling.js';
 import { createRunCodeFunction } from '../../runCode.js';
+import { ShareDBDoc } from '../../types.js';
+import { VizContent } from '@vizhub/viz-types';
 
 const DEBUG = false;
 
 export const handleAIChatMessage =
-  ({ shareDBDoc, localPresence, onCreditDeduction }: { shareDBDoc: any; localPresence: any; onCreditDeduction?: any }) =>
+  ({
+    shareDBDoc,
+    createVizBotLocalPresence,
+    onCreditDeduction,
+  }: {
+    shareDBDoc: ShareDBDoc<VizContent>;
+    createVizBotLocalPresence: () => any;
+    onCreditDeduction?: any;
+  }) =>
   async (req: any, res: any) => {
     const { content, chatId } = req.body;
 
@@ -41,7 +51,7 @@ export const handleAIChatMessage =
       // Create LLM function for streaming
       const llmFunction = createLLMFunction({
         shareDBDoc,
-        localPresence,
+        createVizBotLocalPresence,
         chatId,
       });
 
@@ -63,7 +73,8 @@ export const handleAIChatMessage =
       ) {
         try {
           await onCreditDeduction({
-            upstreamCostCents: (editResult as any).upstreamCostCents,
+            upstreamCostCents: (editResult as any)
+              .upstreamCostCents,
             provider: (editResult as any).provider,
             inputTokens: (editResult as any).inputTokens,
             outputTokens: (editResult as any).outputTokens,
