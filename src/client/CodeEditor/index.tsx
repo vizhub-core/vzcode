@@ -91,13 +91,13 @@ export const CodeEditor = ({
   // Get the editor corresponding to the active file.
   // Looks in `editorCache` first, and if not found, creates a new editor.
   useEffect(() => {
+    if (!shareDBDoc) return;
     let isMounted = true;
 
     const initEditor = async () => {
       const editor = await getOrCreateEditor({
         fileId: activePane.activeFileId,
         shareDBDoc,
-        content,
         filesPath,
         localPresence,
         docPresence,
