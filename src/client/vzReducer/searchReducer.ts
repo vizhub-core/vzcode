@@ -24,7 +24,7 @@ function searchPattern(
       const matches = [];
 
       for (let j = 0; j < lines.length; j++) {
-        const index = lines[j].indexOf(pattern);
+        const index = lines[j].toLowerCase().indexOf(pattern.toLowerCase());
 
         if (index !== -1) {
           matches.push({
