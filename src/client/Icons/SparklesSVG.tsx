@@ -1,5 +1,11 @@
 // TODO add width and height props
-export const SparklesSVG = ({ w = "32", h = "32" }: { w?: string | number, h?: string | number }) => (
+export const SparklesSVG = ({
+  w = '32',
+  h = '32',
+}: {
+  w?: string | number;
+  h?: string | number;
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={w}

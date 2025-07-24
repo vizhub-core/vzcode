@@ -44,8 +44,16 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { keymap, Decoration, WidgetType, ViewUpdate, ViewPlugin, DecorationSet } from '@codemirror/view';
-import { syntaxTree } from "@codemirror/language"
+import {
+  keymap,
+  Decoration,
+  WidgetType,
+  ViewUpdate,
+  ViewPlugin,
+  DecorationSet,
+} from '@codemirror/view';
+import { Range } from '@codemirror/state';
+import { syntaxTree } from '@codemirror/language';
 import { RegExpCursor } from '@codemirror/search';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
@@ -63,7 +71,7 @@ import {
   tsSyncWorker,
 } from '@valtown/codemirror-ts';
 import { getFileExtension } from '../utils/fileExtension';
-import { SparklesSVG } from '../Icons/SparklesSVG'
+import { SparklesSVG } from '../Icons/SparklesSVG';
 
 const DEBUG = false;
 
@@ -461,61 +469,95 @@ export const getOrCreateEditor = async ({
   // Widget appears after instances of "todo" in code editor, allowing AI to implement todo tasks when clicked
   // TODO make widget only appear in comments(?)
   class ToDoWidget extends WidgetType {
-    constructor() { super() }
-
-    eq(other: ToDoWidget) { return false }
-
-    toDOM() {
-      const wrap = document.createElement("i");
-      wrap.style.display = "inline-flex";  // prevent block expansion
-      wrap.style.alignItems = "center";
-      wrap.style.justifyContent = "center";
-      wrap.className = "icon-button icon-button-dark";
-      const reactContainer = document.createElement("div");
-      wrap.appendChild(reactContainer);
-      const root = createRoot(reactContainer);
-      root.render(<SparklesSVG w={14} h={14}/>);
-      return wrap
+    constructor() {
+      super();
     }
 
-    ignoreEvent() { return false }
+    eq(other: ToDoWidget) {
+      return false;
+    }
+
+    toDOM() {
+      const wrap = document.createElement('i');
+      wrap.style.display = 'inline-flex'; // prevent block expansion
+      wrap.style.alignItems = 'center';
+      wrap.style.justifyContent = 'center';
+      wrap.className = 'icon-button icon-button-dark';
+      const reactContainer = document.createElement('div');
+      wrap.appendChild(reactContainer);
+      const root = createRoot(reactContainer);
+      root.render(<SparklesSVG w={14} h={14} />);
+      return wrap;
+    }
+
+    ignoreEvent() {
+      return false;
+    }
   }
 
   function toDoWidgets(editor: EditorView) {
-    const findToDo = new RegExpCursor(editor.state.doc, 'todo', { ignoreCase: true });
-    let widgets = []
-      while (!findToDo.next().done) {
-        const match = findToDo.value;
-        const deco = Decoration.widget({
-          widget: new ToDoWidget(),
-          side: 1
-        }).range(match.to);
-        widgets.push(deco);
+    const { state } = editor;
+    const tree = syntaxTree(state);
+    const findToDo = new RegExpCursor(state.doc, 'todo', {
+      ignoreCase: true,
+    });
+    const widgets: Range<Decoration>[] = [];
+
+    while (!findToDo.next().done) {
+      const { from, to } = findToDo.value;
+      const node = tree.resolve(from);
+      let inComment = false;
+
+      // Walk up the parents until we hit the root, looking for a comment node
+      for (let cur: any = node; cur; cur = cur.parent) {
+        if (
+          cur.type.is('Comment') || // grammars that group comments
+          cur.type.is('comment') || // generic lowercase group
+          /Comment$/.test(cur.type.name) // fallback for e.g. LineComment
+        ) {
+          inComment = true;
+          break;
+        }
       }
-    return Decoration.set(widgets)
+      if (!inComment) continue; // skip non-comment TODOs
+
+      const deco = Decoration.widget({
+        widget: new ToDoWidget(),
+        side: 1,
+      }).range(to);
+      widgets.push(deco);
+    }
+    return Decoration.set(widgets);
   }
 
-  const checkboxPlugin = ViewPlugin.fromClass(class {
-    decorations: DecorationSet
+  const checkboxPlugin = ViewPlugin.fromClass(
+    class {
+      decorations: DecorationSet;
 
-    constructor(view: EditorView) {
-      this.decorations = toDoWidgets(view)
-    }
-
-    update(update: ViewUpdate) {
-      if (update.docChanged || update.viewportChanged ||
-          syntaxTree(update.startState) != syntaxTree(update.state))
-        this.decorations = toDoWidgets(update.view)
-    }
-  }, {
-    decorations: v => v.decorations,
-
-    eventHandlers: {
-      mousedown: (e, view) => {
-        // TODO handle widget click
+      constructor(view: EditorView) {
+        this.decorations = toDoWidgets(view);
       }
-    }
-  })
+
+      update(update: ViewUpdate) {
+        if (
+          update.docChanged ||
+          update.viewportChanged ||
+          syntaxTree(update.startState) !=
+            syntaxTree(update.state)
+        )
+          this.decorations = toDoWidgets(update.view);
+      }
+    },
+    {
+      decorations: (v) => v.decorations,
+
+      eventHandlers: {
+        mousedown: (e, view) => {
+          // TODO handle widget click
+        },
+      },
+    },
+  );
 
   extensions.push(checkboxPlugin);
 
