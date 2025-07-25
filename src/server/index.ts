@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import http from 'http';
-import ngrok from 'ngrok';
 import open from 'open';
 import path from 'path';
 import ShareDB from 'sharedb';
@@ -14,6 +13,7 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
+import { handleAIChatMessage } from './handleAIChatMessage.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
@@ -50,13 +50,6 @@ ShareDB.types.register(json1Presence.type);
 
 const app = express();
 
-// TODO make this configurable
-// See https://github.com/vizhub-core/vzcode/issues/95
-app.post('/saveTime', (req, res) => {
-  //autoSaveDebounceTimeMS = req.body.autoSaveDebounceTimeMS;
-  console.log('autoSaveDebounceTimeMS', req.body);
-});
-
 // Use ShareDB over WebSocket
 const shareDBBackend = new ShareDB({
   // Enable presence
@@ -81,7 +74,7 @@ wss.on('connection', (ws) => {
   });
 
   // Handle disconnections
-  ws.on('close', (code) => {
+  ws.on('close', () => {
     clientStream.end();
   });
 });
@@ -96,6 +89,22 @@ app.use(express.static(dir));
 // which is a representation of files on disk.
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
+
+// Set up presence for VizBot following the same pattern as useShareDB.ts
+const docPresence = shareDBConnection.getDocPresence(
+  'documents',
+  '1',
+);
+
+// Create local presence for VizBot with a unique ID
+const generateVizBotId = () => {
+  const timestamp = Date.now().toString(36);
+  return `vizbot-${timestamp}`;
+};
+
+const createVizBotLocalPresence = () =>
+  docPresence.create(generateVizBotId());
+
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // Handle AI Assist requests.
@@ -110,6 +119,17 @@ app.post(
   '/ai-copilot',
   bodyParser.json(),
   handleAICopilot(),
+);
+
+// Handle AI Chat Message requests.
+app.post(
+  '/ai-chat-message',
+  bodyParser.json(),
+  handleAIChatMessage({
+    shareDBDoc,
+    createVizBotLocalPresence,
+    onCreditDeduction: undefined,
+  }),
 );
 
 // Livekit Token Generator
@@ -317,21 +337,13 @@ shareDBDoc.subscribe(() => {
 });
 
 server.listen(port, async () => {
-  if (process.env.NGROK_TOKEN) {
-    (async function () {
-      await ngrok.authtoken(process.env.NGROK_TOKEN);
-      const url = await ngrok.connect(port);
-      console.log(`Editor is live at ${url}`);
-      open(url);
-    })();
-  } else {
-    // Sets the port to the one specified in the environment
-    // variable (for development) or the default port.
-    let livePort = process.env.EDITOR_PORT || port;
-    console.log(`EDITOR_PORT: ${process.env.EDITOR_PORT}`);
-    console.log(
-      `Editor is live at http://localhost:${livePort}`,
-    );
-    open(`http://localhost:${livePort}`);
-  }
+  // Note: ngrok support can be added when the package is properly installed
+  // Sets the port to the one specified in the environment
+  // variable (for development) or the default port.
+  let livePort = process.env.EDITOR_PORT || port;
+  console.log(`EDITOR_PORT: ${process.env.EDITOR_PORT}`);
+  console.log(
+    `Editor is live at http://localhost:${livePort}`,
+  );
+  open(`http://localhost:${livePort}`);
 });

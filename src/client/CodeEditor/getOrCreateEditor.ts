@@ -59,6 +59,7 @@ import {
   tsLinterWorker,
   tsSyncWorker,
 } from '@valtown/codemirror-ts';
+import { getFileExtension } from '../utils/fileExtension';
 
 const DEBUG = false;
 
@@ -131,6 +132,14 @@ const languageExtensions = {
   svelte,
 };
 
+// Exported utility function to get language extension for a file extension
+export const getLanguageExtension = (
+  fileExtension: string,
+) => {
+  const languageFunc = languageExtensions[fileExtension];
+  return languageFunc ? languageFunc() : undefined;
+};
+
 // Gets a value at a path in an object.
 // e.g. getAtPath({a: {b: 1}}, ['a', 'b']) === 1
 const getAtPath = (obj, path) => {
@@ -146,6 +155,7 @@ const getAtPath = (obj, path) => {
 interface ExtendedEditorCacheValue
   extends EditorCacheValue {
   themeCompartment: Compartment;
+  languageCompartment: Compartment;
   rainbowBracketsCompartment: Compartment;
   updateRainbowBrackets: (enabled: boolean) => void;
 }
@@ -156,7 +166,6 @@ export const getOrCreateEditor = async ({
   paneId = 'root',
   fileId,
   shareDBDoc,
-  content,
   filesPath,
   localPresence,
   docPresence,
@@ -166,7 +175,6 @@ export const getOrCreateEditor = async ({
   usernameRef,
   customInteractRules,
   enableAutoFollowRef,
-  openTab,
   aiCopilotEndpoint,
   esLintSource,
   rainbowBracketsEnabled = true,
@@ -185,10 +193,7 @@ export const getOrCreateEditor = async ({
   // This can be `undefined` in the case where we are
   // viewing files read-only, in which case multiplayer
   // editing is not enabled.
-  shareDBDoc: ShareDBDoc<VizContent> | undefined;
-
-  // The initial content to present.
-  content: VizContent;
+  shareDBDoc: ShareDBDoc<VizContent>;
 
   filesPath: string[];
   localPresence: any;
@@ -203,7 +208,6 @@ export const getOrCreateEditor = async ({
   // Ref to a boolean that determines whether to
   // enable auto-following the cursors of remote users.
   enableAutoFollowRef: React.MutableRefObject<boolean>;
-  openTab: (tabState: TabState) => void;
   aiCopilotEndpoint?: string;
   esLintSource: (
     view: EditorView,
@@ -225,9 +229,11 @@ export const getOrCreateEditor = async ({
   // Compute `text` and `fileExtension` from the ShareDB document.
   const textPath = [...filesPath, fileId, 'text'];
   const namePath = [...filesPath, fileId, 'name'];
+  const content = shareDBDoc.data;
   const text = getAtPath(content, textPath);
   const name = getAtPath(content, namePath);
-  const fileExtension = name.split('.').pop();
+
+  const fileExtension = getFileExtension(name);
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
@@ -274,7 +280,6 @@ export const getOrCreateEditor = async ({
           path: textPath,
           docPresence,
           enableAutoFollowRef,
-          openTab,
         }),
       );
     }
@@ -321,10 +326,6 @@ export const getOrCreateEditor = async ({
   // using a Compartment.
   const languageCompartment = new Compartment();
   // See https://github.com/vizhub-core/vzcode/issues/55
-  const getLanguageExtension = (fileExtension: string) => {
-    const languageFunc = languageExtensions[fileExtension];
-    return languageFunc ? languageFunc() : undefined;
-  };
 
   const languageExtension =
     getLanguageExtension(fileExtension);
@@ -463,6 +464,7 @@ export const getOrCreateEditor = async ({
   const editorCacheValue: ExtendedEditorCacheValue = {
     editor,
     themeCompartment,
+    languageCompartment,
     rainbowBracketsCompartment,
     updateRainbowBrackets: (enabled) => {
       editor.dispatch({

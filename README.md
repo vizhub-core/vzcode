@@ -108,7 +108,6 @@ You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to 
   For example, as the editor of [Vite D3 Template](https://github.com/curran/vite-d3-template), which showcases the throttled auto-save behavior of VZCode while using the interactive widgets in the context of editing files served by the Vite dev server which supports hot reloading.
 
 - **Hosting with Ngrok**: Allow external collaborators to join your VZCode session.
-
   - **With Ngrok Globally Installed**: (Requires authenticated Ngrok account)
 
     ```bash

@@ -37,6 +37,7 @@ import { useRunCode } from './useRunCode';
 import { useURLSync } from './useURLSync';
 import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
+import { usePresenceAutoFollow } from './usePresenceAutoFollow';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -118,6 +119,8 @@ export type VZCodeContextValue = {
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   aiChatFocused: boolean;
   toggleAIChatFocused: () => void;
+  aiChatEndpoint?: string;
+  aiChatOptions?: { [key: string]: any };
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
     files: ShareDBDoc<VizContent>,
@@ -198,6 +201,8 @@ export const VZCodeProvider = ({
   setLiveKitRoom,
   liveKitConnection,
   setLiveKitConnection,
+  aiChatEndpoint,
+  aiChatOptions,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -216,6 +221,8 @@ export const VZCodeProvider = ({
   setLiveKitRoom?: (state: string) => void;
   liveKitConnection?: boolean;
   setLiveKitConnection?: (state: boolean) => void;
+  aiChatEndpoint?: string;
+  aiChatOptions?: { [key: string]: any };
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -333,6 +340,8 @@ export const VZCodeProvider = ({
     submitOperation,
     closeTabs,
     openTab,
+    editorCache,
+    content,
   });
 
   // State to control the create file modal's visibility
@@ -400,6 +409,16 @@ export const VZCodeProvider = ({
   const [hoveredItemId, setHoveredItemId] =
     useState<ItemId | null>(null);
 
+  // Handle presence-based auto-following
+  // This hook manages opening tabs when presence is received on files
+  // that are not currently open, independent of CodeMirror extensions
+  usePresenceAutoFollow({
+    docPresence,
+    enableAutoFollow,
+    openTab,
+    activePane,
+  });
+
   // Livekit Voice Chat Modal
 
   const [voiceChatModalOpen, setVoiceChatModalOpen] =
@@ -448,6 +467,8 @@ export const VZCodeProvider = ({
     setIsAIChatOpen,
     aiChatFocused,
     toggleAIChatFocused,
+    aiChatEndpoint,
+    aiChatOptions,
 
     isSettingsOpen,
     setIsSettingsOpen,

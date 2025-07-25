@@ -35,15 +35,13 @@ import { AIChat } from './AIChat';
 import { Listing } from './Listing';
 import { Search } from './Search';
 import { useDragAndDrop } from './useDragAndDrop';
+import { createAICopyPasteHandlers } from './aiCopyPaste';
 import {
   enableLiveKit,
   enableAIChat,
 } from '../featureFlags';
 import './styles.scss';
 
-// TODO turn this UI back on when we are actually detecting
-// the connection status.
-// See https://github.com/vizhub-core/vzcode/issues/456
 const enableConnectionStatus = true;
 
 export const VZSidebar = ({
@@ -112,7 +110,7 @@ export const VZSidebar = ({
   ),
   aiChatToolTipText = (
     <div>
-      <strong>AI Chat</strong>
+      <strong>AI Chat (beta)</strong>
     </div>
   ),
 }: {
@@ -146,10 +144,8 @@ export const VZSidebar = ({
     toggleAutoFollow,
     docPresence,
     updatePresenceIndicator,
-    sidebarPresenceIndicators,
-    liveKitConnection,
-    setLiveKitConnection,
     setVoiceChatModalOpen,
+    submitOperation,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -162,6 +158,24 @@ export const VZSidebar = ({
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
+
+  // State for AI operation feedback
+  const [copyButtonText, setCopyButtonText] =
+    useState('Copy for AI');
+  const [pasteButtonText, setPasteButtonText] =
+    useState('Paste for AI');
+
+  // Create AI copy/paste handlers
+  const { handleCopyForAI, handlePasteForAI } = useMemo(
+    () =>
+      createAICopyPasteHandlers(
+        files,
+        submitOperation,
+        setCopyButtonText,
+        setPasteButtonText,
+      ),
+    [files, submitOperation],
+  );
 
   const { sidebarWidth } = useContext(
     SplitPaneResizeContext,
@@ -210,16 +224,16 @@ export const VZSidebar = ({
         presenceId: PresenceId,
         update: Presence,
       ) => {
+        // Sometimes this can be null, so we check.
+        // This can happen when the user disconnects.
+        // If this happens, we do not update the presence indicator.
+        // TODO test removal of presence indicator.
+        if (!update) return;
+
         const presenceIndicator: PresenceIndicator = {
           username: update.username,
           fileId: update.start[1] as VizFileId,
         };
-
-        // console.log('Got presence!');
-        // // console.log({presenceId,update})
-        // console.log(
-        //   JSON.stringify(presenceIndicator, null, 2),
-        // );
 
         updatePresenceIndicator(presenceIndicator);
       };
@@ -532,6 +546,24 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
+      {!isAIChatOpen && !isSearchOpen && filesExist && (
+        <div className="ai-buttons">
+          <button
+            className="ai-button copy-button"
+            onClick={handleCopyForAI}
+            title="Copy files formatted for AI"
+          >
+            {copyButtonText}
+          </button>
+          <button
+            className="ai-button paste-button"
+            onClick={handlePasteForAI}
+            title="Paste files from AI"
+          >
+            {pasteButtonText}
+          </button>
+        </div>
+      )}
       {enableConnectionStatus && (
         <div className="connection-status">
           {isConnecting

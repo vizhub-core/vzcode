@@ -1,9 +1,12 @@
-import { generateAIResponse } from './generateAIResponse.js';
+import {
+  generateAIResponse,
+  streams,
+} from './generateAIResponse.js';
 
 const debug = false;
 
 export const handleAIAssist =
-  (shareDBDoc) => async (req, res) => {
+  (shareDBDoc: any) => async (req: any, res: any) => {
     const { inputText, insertionCursor, fileId } = req.body;
 
     if (debug) {
@@ -16,17 +19,21 @@ export const handleAIAssist =
     }
 
     try {
+      // Generate a unique streamId for this request
+      const streamId = `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
       await generateAIResponse({
         inputText,
         insertionCursor,
         fileId,
+        streamId,
         shareDBDoc,
       });
 
       res
         .status(200)
         .send({ message: 'Operation successful!' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('handleAIAssist error:', error);
       res.status(500).send({
         message: 'Internal Server Error',
@@ -35,7 +42,7 @@ export const handleAIAssist =
     }
   };
 
-export function haltGeneration(streamId) {
+export function haltGeneration(streamId: string) {
   const stream = streams[streamId];
 
   // Stream can be undefined here if the user
