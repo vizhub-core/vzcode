@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback, memo } from 'react';
 import { Message } from './Message';
 import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
@@ -17,7 +17,7 @@ interface MessageListProps {
   isLoading: boolean;
 }
 
-export const MessageList = ({
+const MessageListComponent = ({
   messages,
   aiScratchpad,
   aiStatus,
@@ -25,11 +25,11 @@ export const MessageList = ({
 }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth',
     });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -60,3 +60,5 @@ export const MessageList = ({
     </div>
   );
 };
+
+export const MessageList = memo(MessageListComponent);
