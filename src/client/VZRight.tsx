@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import "./style.css";
-import "@vizhub/runtime";
+import { useEffect } from 'react';
 import {
   createRuntime,
   VizHubRuntime,
-} from "@vizhub/runtime";
-import BuildWorker from "./buildWorker?worker";
+} from '@vizhub/runtime';
+import BuildWorker from './buildWorker?worker';
 
 const enableIframe = true;
 
 export const VZRight = () => {
   useEffect(() => {
     // Get the iframe from the DOM
-    const iframe = document.getElementById("viz-iframe") as HTMLIFrameElement;
-    
+    const iframe = document.getElementById(
+      'viz-iframe',
+    ) as HTMLIFrameElement;
+
     // Initialize the worker
     const worker = new BuildWorker();
 
@@ -23,7 +23,7 @@ export const VZRight = () => {
       worker,
       setBuildErrorMessage: (error) => {
         if (error) {
-          console.error("Build error:", error);
+          console.error('Build error:', error);
         }
       },
     });
@@ -31,12 +31,14 @@ export const VZRight = () => {
     // Run code in the iframe
     runtime.run({
       files: {
-        "index.js": 'console.log("Hello from VizHub runtime!");',
-        "index.html": '<div id="root">Runtime content will appear here</div>'
+        'index.js':
+          'console.log("Hello from VizHub runtime!");',
+        'index.html':
+          '<div id="root">Runtime content will appear here</div>',
       },
       enableHotReloading: true,
       enableSourcemap: true,
-      vizId: "example-viz",
+      vizId: 'example-viz',
     });
 
     // Cleanup on unmount
@@ -49,7 +51,7 @@ export const VZRight = () => {
   return (
     <div className="right">
       {enableIframe ? (
-        <iframe id="viz-iframe" src="/frame.html"></iframe>
+        <iframe id="viz-iframe"></iframe>
       ) : null}
     </div>
   );
