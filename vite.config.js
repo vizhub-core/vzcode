@@ -31,6 +31,11 @@ export default defineConfig({
       'sharedb-client-browser/dist/sharedb-client-umd.cjs',
       'sharedb-client-browser/dist/ot-json1-presence-umd.cjs',
     ],
+    exclude: [
+      // Exclude Rollup v4 from being bundled,
+      // because it messes up the WASM part of the build.
+      '@rollup/browser',
+    ],
   },
 
   // Fix CSS warnings
