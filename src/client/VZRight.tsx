@@ -9,6 +9,11 @@ import { vizFilesToFileCollection } from '@vizhub/viz-utils';
 
 const enableIframe = true;
 
+// Singleton runtime instance
+// TODO use refs, and cleanup on unmount
+let runtime: VizHubRuntime = null;
+let isFirstRun = true;
+
 export const VZRight = () => {
   // Get access to the current files.
   const { content } = useContext(VZCodeContext);
@@ -21,41 +26,45 @@ export const VZRight = () => {
     [content?.files],
   );
 
+  const isInteracting = content?.isInteracting || false;
+
   useEffect(() => {
     if (!files) return;
-    // Get the iframe from the DOM
-    const iframe = document.getElementById(
-      'viz-iframe',
-    ) as HTMLIFrameElement;
 
-    // Initialize the worker
-    const worker = new BuildWorker();
-
-    // Create runtime
-    const runtime: VizHubRuntime = createRuntime({
-      iframe,
-      worker,
-      setBuildErrorMessage: (error) => {
-        if (error) {
-          console.error('Build error:', error);
-        }
-      },
-    });
+    // Initialize the runtime only once
+    if (!runtime) {
+      const worker = new BuildWorker();
+      const iframe = document.getElementById(
+        'viz-iframe',
+      ) as HTMLIFrameElement;
+      runtime = createRuntime({
+        iframe,
+        worker,
+        setBuildErrorMessage: (error) => {
+          if (error) {
+            console.error('Build error:', error);
+          }
+        },
+      });
+    }
 
     // Run code in the iframe
-    runtime.run({
-      files,
-      enableHotReloading: true,
-      enableSourcemap: true,
-      vizId: 'example-viz',
-    });
+    if (isFirstRun || isInteracting) {
+      runtime.run({
+        files,
+        enableHotReloading: true,
+        enableSourcemap: true,
+        vizId: 'example-viz',
+      });
+      isFirstRun = false;
+    }
 
-    // Cleanup on unmount
-    return () => {
-      runtime.cleanup();
-      worker.terminate();
-    };
-  }, [files]);
+    // TODO use refs, and cleanup on unmount
+    // return () => {
+    //   runtime.cleanup();
+    //   worker.terminate();
+    // };
+  }, [files, isInteracting]);
 
   return (
     <div className="right">
