@@ -5,7 +5,7 @@ import {
   createRuntime,
   VizHubRuntime,
 } from "@vizhub/runtime";
-import BuildWorker from "./buildWorker";
+import BuildWorker from "./buildWorker?worker";
 
 const enableIframe = true;
 
@@ -13,7 +13,7 @@ export const VZRight = () => {
   useEffect(() => {
     // Get the iframe from the DOM
     const iframe = document.getElementById("viz-iframe") as HTMLIFrameElement;
-
+    
     // Initialize the worker
     const worker = new BuildWorker();
 
@@ -48,7 +48,7 @@ export const VZRight = () => {
   return (
     <div className="right">
       {enableIframe ? (
-        <iframe id="viz-iframe" src="http://localhost:5173/"></iframe>
+        <iframe id="viz-iframe" src="/frame.html"></iframe>
       ) : null}
     </div>
   );
