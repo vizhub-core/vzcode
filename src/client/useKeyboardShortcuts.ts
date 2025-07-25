@@ -153,27 +153,28 @@ function jumpToDefinition(
   }
 }
 
-// Sidebar keyboard shortcuts in form Ctrl + Shift + <key>
+// Sidebar keyboard shortcuts - using Alt+Shift to avoid Chrome conflicts
 const sideBarKeyBoardMap = {
-  E: 'files-icon',
-  F: 'search-icon',
-  K: 'shortcut-icon',
-  B: 'bug-icon',
-  S: 'settings-icon',
-  N: 'new-file-icon',
-  D: 'new-directory-icon',
-  A: 'auto-focus-icon',
+  E: 'files-icon',        // Alt+Shift+E (was Ctrl+Shift+E)
+  F: 'search-icon',       // Alt+Shift+F (was Ctrl+Shift+F)
+  K: 'shortcut-icon',     // Alt+Shift+K (was Ctrl+Shift+K)
+  I: 'bug-icon',          // Alt+Shift+I (was Ctrl+Shift+B - conflicted with Chrome bookmarks)
+  S: 'settings-icon',     // Alt+Shift+S (was Ctrl+Shift+S)
+  N: 'new-file-icon',     // Alt+Shift+N (was Ctrl+Shift+N)
+  D: 'new-directory-icon', // Alt+Shift+D (was Ctrl+Shift+D)
+  A: 'auto-focus-icon',   // Alt+Shift+A (was Ctrl+Shift+A)
 };
 
 // This module implements the keyboard shortcuts
 // for the VZCode editor.
 // These include:
-// * Alt-w: Close the current tab
-// * Alt-n: Open the create file modal
-// * Alt-PageUp: Change the active tab to the previous one
-// * Alt-PageDown: Change the active tab to the next one
-// * Ctrl-s or Shift-Enter: Run the code and format it with Prettier
-// * Ctrl-Click: Jump to closest definition for a potential identifier
+// * Alt+W: Close the current tab
+// * Alt+N: Open the create file modal
+// * Alt+PageUp: Change the active tab to the previous one
+// * Alt+PageDown: Change the active tab to the next one
+// * F5, Ctrl+Enter, Shift+Enter: Run the code and format it with Prettier
+// * Ctrl+Click: Jump to closest definition for a potential identifier
+// * Alt+Shift+[E,F,K,I,S,N,D,A]: Sidebar shortcuts (avoiding Chrome conflicts)
 export const useKeyboardShortcuts = ({
   closeTabs,
   activeFileId,
@@ -209,6 +210,10 @@ export const useKeyboardShortcuts = ({
     );
 
     const handleKeyPress = (event: KeyboardEvent) => {
+      // Detect platform for proper modifier key handling
+      const isMac = /Mac|iMac|MacBook/i.test(navigator.userAgent);
+      const ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+
       if (shouldTriggerRun(event)) {
         event.preventDefault();
 
@@ -227,20 +232,28 @@ export const useKeyboardShortcuts = ({
         return;
       }
 
-      if (event.ctrlKey && event.shiftKey) {
-        // Handle keyboard shortcuts related to the side bar icons
-        document
-          .getElementById(sideBarKeyBoardMap[event.key])
-          ?.click();
+      // Alt+Shift+Key shortcuts for sidebar (avoiding Chrome conflicts)
+      if (event.altKey && event.shiftKey && !event.ctrlKey && !event.metaKey) {
+        const key = event.key.toUpperCase();
+        const iconId = sideBarKeyBoardMap[key];
 
-        // Ensure the search input is always focused
-        if (event.key === 'F') {
-          toggleSearchFocused();
+        if (iconId) {
+          event.preventDefault();
+          document.getElementById(iconId)?.click();
+
+          // Ensure the search input is always focused when opening search
+          if (key === 'F') {
+            toggleSearchFocused();
+          }
+          return;
         }
-      } else if (event.ctrlKey && event.key === ',') {
-        document
-          .getElementById(sideBarKeyBoardMap['S'])
-          ?.click();
+      }
+
+      // Settings shortcut: Ctrl+, (or Cmd+, on Mac) - standard across editors
+      if (ctrlOrCmd && event.key === ',' && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        document.getElementById(sideBarKeyBoardMap['S'])?.click();
+        return;
       }
 
       if (event.ctrlKey === true) {
@@ -251,46 +264,54 @@ export const useKeyboardShortcuts = ({
         );
       }
 
-      if (event.altKey === true) {
-        // Alt-w: Close the current tab
-        if (event.key === 'w') {
-          // TODO clean this up so we can remove `activeFileId`
-          // as a dependency
-          // TODO closeActiveTab()
+      // Alt+Key shortcuts (without Shift) for tab management and navigation
+      if (event.altKey && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+        // Alt+W: Close the current tab
+        if (event.key.toLowerCase() === 'w') {
+          event.preventDefault();
           if (activeFileId) {
             closeTabs([activeFileId]);
           }
           return;
         }
 
-        // Alt-n: Open the create file modal
-        if (event.key === 'n') {
+        // Alt+N: Open the create file modal
+        if (event.key.toLowerCase() === 'n') {
+          event.preventDefault();
           handleOpenCreateFileModal();
           return;
         }
 
-        // Alt-PageUp: Change the active tab to the previous one
+        // Alt+PageUp: Change the active tab to the previous one
         if (event.key === 'PageUp') {
+          event.preventDefault();
           setActiveFileLeft();
           return;
         }
 
-        // Alt-PageDown: Change the active tab to the next one
+        // Alt+PageDown: Change the active tab to the next one
         if (event.key === 'PageDown') {
+          event.preventDefault();
           setActiveFileRight();
           return;
         }
 
+        // Alt+1: Focus sidebar
         if (event.key === '1') {
+          event.preventDefault();
           if (sidebarRef.current) {
             sidebarRef.current.focus();
           }
+          return;
         }
 
+        // Alt+2: Focus code editor
         if (event.key === '2') {
+          event.preventDefault();
           if (codeEditorRef.current) {
             codeEditorRef.current.focus();
           }
+          return;
         }
       }
     };
