@@ -68,4 +68,66 @@
       }
     }
   }
+
+  .shortcut-section {
+    margin-bottom: 1.5rem;
+    
+    h6 {
+      color: #495057;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+    
+    .shortcut-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e9ecef;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .shortcut-keys {
+        flex: 0 0 auto;
+        margin-right: 1rem;
+        font-weight: 500;
+        
+        kbd {
+          background-color: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 3px;
+          padding: 0.2rem 0.4rem;
+          font-size: 0.8rem;
+          font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+          color: #495057;
+          margin: 0 0.1rem;
+        }
+      }
+      
+      .shortcut-description {
+        flex: 1;
+        color: #6c757d;
+        line-height: 1.4;
+        
+        a {
+          color: #007bff;
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
 }
