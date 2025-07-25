@@ -1,14 +1,28 @@
-import { useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import {
   createRuntime,
   VizHubRuntime,
 } from '@vizhub/runtime';
 import BuildWorker from './buildWorker?worker';
+import { VZCodeContext } from './VZCodeContext';
+import { vizFilesToFileCollection } from '@vizhub/viz-utils';
 
 const enableIframe = true;
 
 export const VZRight = () => {
+  // Get access to the current files.
+  const { content } = useContext(VZCodeContext);
+
+  const files = useMemo(
+    () =>
+      content
+        ? vizFilesToFileCollection(content.files)
+        : null,
+    [content?.files],
+  );
+
   useEffect(() => {
+    if (!files) return;
     // Get the iframe from the DOM
     const iframe = document.getElementById(
       'viz-iframe',
@@ -30,12 +44,7 @@ export const VZRight = () => {
 
     // Run code in the iframe
     runtime.run({
-      files: {
-        'index.js':
-          'console.log("Hello from VizHub runtime!");',
-        'index.html':
-          '<div id="root">Runtime content will appear here</div>',
-      },
+      files,
       enableHotReloading: true,
       enableSourcemap: true,
       vizId: 'example-viz',
@@ -46,7 +55,7 @@ export const VZRight = () => {
       runtime.cleanup();
       worker.terminate();
     };
-  }, []);
+  }, [files]);
 
   return (
     <div className="right">
