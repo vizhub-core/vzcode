@@ -32,6 +32,7 @@ export const VZRight = () => {
     runtime.run({
       files: {
         "index.js": 'console.log("Hello from VizHub runtime!");',
+        "index.html": '<div id="root">Runtime content will appear here</div>'
       },
       enableHotReloading: true,
       enableSourcemap: true,
