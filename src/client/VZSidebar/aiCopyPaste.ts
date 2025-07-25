@@ -17,7 +17,14 @@ export const createAICopyPasteHandlers = (
 ) => {
   // Copy for AI - formats all files and copies to clipboard
   const handleCopyForAI = async () => {
-    if (!files) return;
+    if (!files || Object.keys(files).length === 0) {
+      setCopyButtonText('No files to copy');
+      setTimeout(
+        () => setCopyButtonText('Copy for AI'),
+        2000,
+      );
+      return;
+    }
 
     try {
       const fileCollection =

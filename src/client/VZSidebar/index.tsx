@@ -546,7 +546,7 @@ export const VZSidebar = ({
           )}
         </div>
       </div>
-      {!isAIChatOpen && !isSearchOpen && filesExist && (
+      {!isAIChatOpen && !isSearchOpen && (
         <div className="ai-buttons">
           <button
             className="ai-button copy-button"
