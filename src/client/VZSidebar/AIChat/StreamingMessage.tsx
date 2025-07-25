@@ -25,4 +25,6 @@ const StreamingMessageComponent = ({
   );
 };
 
-export const StreamingMessage = memo(StreamingMessageComponent);
+export const StreamingMessage = memo(
+  StreamingMessageComponent,
+);

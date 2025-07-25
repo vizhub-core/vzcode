@@ -1,4 +1,9 @@
-import { useContext, useState, useCallback, useMemo } from 'react';
+import {
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
@@ -26,11 +31,13 @@ export const AIChat = () => {
   const aiStatus = currentChat?.aiStatus;
 
   // Transform messages to ensure they have required id field - memoized to avoid recreation
-  const messages = useMemo(() => 
-    rawMessages.map((msg, index) => ({
-      ...msg,
-      id: msg.id || `msg-${index}`,
-    })), [rawMessages]
+  const messages = useMemo(
+    () =>
+      rawMessages.map((msg, index) => ({
+        ...msg,
+        id: msg.id || `msg-${index}`,
+      })),
+    [rawMessages],
   );
 
   const handleSendMessage = useCallback(async () => {
@@ -68,7 +75,13 @@ export const AIChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, aiChatEndpoint, aiChatOptions, currentChatId]);
+  }, [
+    message,
+    isLoading,
+    aiChatEndpoint,
+    aiChatOptions,
+    currentChatId,
+  ]);
 
   return (
     <div className="ai-chat-container">

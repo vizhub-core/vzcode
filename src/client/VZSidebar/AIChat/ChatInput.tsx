@@ -1,4 +1,9 @@
-import { useRef, useEffect, useCallback, memo } from 'react';
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+} from 'react';
 import { Form, Button } from '../../bootstrap';
 
 interface ChatInputProps {

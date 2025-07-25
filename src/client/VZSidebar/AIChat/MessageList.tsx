@@ -1,4 +1,9 @@
-import { useRef, useEffect, useCallback, memo } from 'react';
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+} from 'react';
 import { Message } from './Message';
 import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';

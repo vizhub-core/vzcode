@@ -14,4 +14,6 @@ const TypingIndicatorComponent = () => {
   );
 };
 
-export const TypingIndicator = memo(TypingIndicatorComponent);
+export const TypingIndicator = memo(
+  TypingIndicatorComponent,
+);

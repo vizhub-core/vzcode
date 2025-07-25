@@ -19,10 +19,13 @@ const MessageComponent = ({
 }: MessageProps) => {
   // Memoize date formatting to avoid repeated computation
   const formattedTime = useMemo(() => {
-    return timestampToDate(timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return timestampToDate(timestamp).toLocaleTimeString(
+      [],
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
   }, [timestamp]);
 
   // Memoize the className string to avoid recreation
