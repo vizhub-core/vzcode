@@ -120,16 +120,24 @@ describe('Streaming OT Parser', () => {
 
     const callbacks = {
       onFileNameChange: (fileName, format) => {
+        console.log(`DEBUG: onFileNameChange called with fileName: ${fileName}, format: ${format}`);
         currentFileId = ensureFileExists(mockDoc, fileName);
+        console.log(`DEBUG: currentFileId set to: ${currentFileId}`);
         clearFileContent(mockDoc, currentFileId);
+        console.log(`DEBUG: File content cleared for fileId: ${currentFileId}`);
       },
       onCodeLine: (line) => {
+        console.log(`DEBUG: onCodeLine called with line: "${line}"`);
         if (currentFileId) {
           appendLineToFile(mockDoc, currentFileId, line);
           capturedLines.push(line);
+          console.log(`DEBUG: Line appended to fileId: ${currentFileId}, total lines: ${capturedLines.length}`);
+        } else {
+          console.log(`DEBUG: No currentFileId set, skipping line: "${line}"`);
         }
       },
       onNonCodeLine: (line) => {
+        console.log(`DEBUG: onNonCodeLine called with line: "${line}"`);
         // Just capture for testing
       },
     };
@@ -144,13 +152,19 @@ function hello() {
 }
 \`\`\``;
 
+    console.log(`DEBUG: Processing stream content: ${streamContent}`);
     parser.processChunk(streamContent);
     parser.flushRemaining();
+
+    console.log(`DEBUG: Mock document files:`, JSON.stringify(mockDoc.data.files, null, 2));
+    console.log(`DEBUG: Captured lines:`, capturedLines);
 
     // Check that file was created and content was added
     expect(Object.keys(mockDoc.data.files)).toHaveLength(1);
     const fileId = Object.keys(mockDoc.data.files)[0];
     const file = mockDoc.data.files[fileId];
+
+    console.log(`DEBUG: File object:`, file);
 
     expect(file.name).toBe('test.js');
     expect(file.text).toContain('function hello()');
