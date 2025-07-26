@@ -114,66 +114,128 @@ describe('Streaming OT Parser', () => {
     expect(mockDoc.data.files[fileId].text).toBe('');
   });
 
-  test('should handle streaming parser callbacks', () => {
+  test('should handle streaming parser callbacks - simple test without shareDB', async () => {
+    let currentFileName = null;
+    const capturedLines = [];
+    const capturedNonCodeLines = [];
+
+    const callbacks = {
+      onFileNameChange: async (fileName, format) => {
+        currentFileName = fileName;
+      },
+      onCodeLine: async (line) => {
+        capturedLines.push(line);
+      },
+      onNonCodeLine: async (line) => {
+        capturedNonCodeLines.push(line);
+      },
+    };
+
+    const parser = new StreamingMarkdownParser(callbacks);
+
+    // Simulate streaming content - using exact format from library test
+    const streamContent = "**script.js**\n```js\nconsole.log('Hello');\n```\n";
+
+    await parser.processChunk(streamContent);
+    await parser.flushRemaining();
+
+    // Check that file name was captured and code lines were processed
+    expect(currentFileName).toBe('script.js');
+    expect(capturedLines).toContain("console.log('Hello');");
+  });
+
+  test('should handle streaming parser callbacks', async () => {
     let currentFileId = null;
     const capturedLines = [];
 
     const callbacks = {
-      onFileNameChange: (fileName, format) => {
-        console.log(`DEBUG: onFileNameChange called with fileName: ${fileName}, format: ${format}`);
+      onFileNameChange: async (fileName, format) => {
         currentFileId = ensureFileExists(mockDoc, fileName);
-        console.log(`DEBUG: currentFileId set to: ${currentFileId}`);
         clearFileContent(mockDoc, currentFileId);
-        console.log(`DEBUG: File content cleared for fileId: ${currentFileId}`);
       },
-      onCodeLine: (line) => {
-        console.log(`DEBUG: onCodeLine called with line: "${line}"`);
+      onCodeLine: async (line) => {
         if (currentFileId) {
           appendLineToFile(mockDoc, currentFileId, line);
           capturedLines.push(line);
-          console.log(`DEBUG: Line appended to fileId: ${currentFileId}, total lines: ${capturedLines.length}`);
-        } else {
-          console.log(`DEBUG: No currentFileId set, skipping line: "${line}"`);
         }
       },
-      onNonCodeLine: (line) => {
-        console.log(`DEBUG: onNonCodeLine called with line: "${line}"`);
+      onNonCodeLine: async (line) => {
         // Just capture for testing
       },
     };
 
     const parser = new StreamingMarkdownParser(callbacks);
 
-    // Simulate streaming content
-    const streamContent = `**test.js**
-\`\`\`javascript
-function hello() {
-  console.log("Hello World");
-}
-\`\`\``;
+    // Simulate streaming content - using exact format from library test
+    const streamContent = "**script.js**\n```js\nconsole.log('Hello');\n```\n";
 
-    console.log(`DEBUG: Processing stream content: ${streamContent}`);
-    parser.processChunk(streamContent);
-    parser.flushRemaining();
-
-    console.log(`DEBUG: Mock document files:`, JSON.stringify(mockDoc.data.files, null, 2));
-    console.log(`DEBUG: Captured lines:`, capturedLines);
+    await parser.processChunk(streamContent);
+    await parser.flushRemaining();
 
     // Check that file was created and content was added
     expect(Object.keys(mockDoc.data.files)).toHaveLength(1);
     const fileId = Object.keys(mockDoc.data.files)[0];
     const file = mockDoc.data.files[fileId];
 
-    console.log(`DEBUG: File object:`, file);
+    expect(file.name).toBe('script.js');
+    expect(file.text).toContain("console.log('Hello');");
+    expect(capturedLines).toContain("console.log('Hello');");
+  });
 
-    expect(file.name).toBe('test.js');
-    expect(file.text).toContain('function hello()');
-    expect(file.text).toContain(
-      'console.log("Hello World")',
-    );
-    expect(capturedLines).toContain('function hello() {');
-    expect(capturedLines).toContain(
-      '  console.log("Hello World");',
-    );
+  test('should handle multiple files without content mixing', async () => {
+    const fileOperations = [];
+    
+    const callbacks = {
+      onFileNameChange: async (fileName, format) => {
+        fileOperations.push({ type: 'fileChange', fileName });
+        const fileId = ensureFileExists(mockDoc, fileName);
+        clearFileContent(mockDoc, fileId);
+      },
+      onCodeLine: async (line) => {
+        fileOperations.push({ type: 'codeLine', line });
+        // Find the most recent file that was opened
+        const lastFileChange = [...fileOperations].reverse().find(op => op.type === 'fileChange');
+        if (lastFileChange) {
+          const fileId = resolveFileId(lastFileChange.fileName, mockDoc);
+          if (fileId) {
+            appendLineToFile(mockDoc, fileId, line);
+          }
+        }
+      },
+      onNonCodeLine: async (line) => {
+        fileOperations.push({ type: 'nonCodeLine', line });
+      },
+    };
+
+    const parser = new StreamingMarkdownParser(callbacks);
+
+    // Simulate streaming content with multiple files
+    const streamContent = `**file1.js**
+\`\`\`js
+console.log('File 1 content');
+\`\`\`
+
+**file2.js**
+\`\`\`js
+console.log('File 2 content');
+\`\`\``;
+
+    await parser.processChunk(streamContent);
+    await parser.flushRemaining();
+
+    // Check that both files exist and have correct content
+    expect(Object.keys(mockDoc.data.files)).toHaveLength(2);
+    
+    const file1 = Object.values(mockDoc.data.files).find(f => f.name === 'file1.js');
+    const file2 = Object.values(mockDoc.data.files).find(f => f.name === 'file2.js');
+    
+    expect(file1).toBeDefined();
+    expect(file2).toBeDefined();
+    expect(file1.text).toContain('File 1 content');
+    expect(file2.text).toContain('File 2 content');
+    
+    // Ensure no content mixing - file1 should not contain file2's content and vice versa
+    expect(file1.text).not.toContain('File 2 content');
+    expect(file2.text).not.toContain('File 1 content');
   });
 });

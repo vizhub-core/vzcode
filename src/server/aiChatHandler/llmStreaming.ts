@@ -78,13 +78,16 @@ export const createLLMFunction = ({
             `File changed to: ${fileName} (${format})`,
           );
 
+        // Report previous file as edited before switching to new file
+        reportFileEdited();
+
         // Find existing file or create new one
         currentEditingFileId = ensureFileExists(
           shareDBDoc,
           fileName,
         );
 
-        reportFileEdited();
+        // Set current editing file name
         currentEditingFileName = fileName;
 
         // Clear the file content to start fresh
@@ -117,30 +120,35 @@ export const createLLMFunction = ({
       onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
 
-        if (currentEditingFileId) {
+        // Capture current file ID to prevent race conditions
+        // If currentEditingFileId changes during async operations,
+        // we still want to write to the file that was active when this line was processed
+        const targetFileId = currentEditingFileId;
+        
+        if (targetFileId) {
           // Apply OT operation for this line immediately
           appendLineToFile(
             shareDBDoc,
-            currentEditingFileId,
+            targetFileId,
             line,
           );
 
           // Update VizBot presence to show cursor at the end of the file
           const currentFile =
-            shareDBDoc.data.files[currentEditingFileId];
+            shareDBDoc.data.files[targetFileId];
           if (currentFile && currentFile.text) {
             const textLength = currentFile.text.length;
             const filePresence = {
               username: 'VizBot',
               start: [
                 'files',
-                currentEditingFileId,
+                targetFileId,
                 'text',
                 textLength,
               ],
               end: [
                 'files',
-                currentEditingFileId,
+                targetFileId,
                 'text',
                 textLength,
               ],
