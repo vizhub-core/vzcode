@@ -548,13 +548,15 @@ export const VZSidebar = ({
       </div>
       {!isAIChatOpen && !isSearchOpen && (
         <div className="ai-buttons">
-          <button
-            className="ai-button copy-button"
-            onClick={handleCopyForAI}
-            title="Copy files formatted for AI"
-          >
-            {copyButtonText}
-          </button>
+          {filesExist && (
+            <button
+              className="ai-button copy-button"
+              onClick={handleCopyForAI}
+              title="Copy files formatted for AI"
+            >
+              {copyButtonText}
+            </button>
+          )}
           <button
             className="ai-button paste-button"
             onClick={handlePasteForAI}
