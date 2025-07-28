@@ -28,13 +28,6 @@ export const performAIEditing = async ({
   // Call the LLM function which will handle streaming and incremental file updates
   const result = await llmFunction(fullPrompt);
 
-  // Clear the scratchpad and update status
-  // clearAIScratchpadAndStatus(
-  //   shareDBDoc,
-  //   chatId,
-  //   'Done editing with AI.',
-  // );
-
   runCode();
 
   return {

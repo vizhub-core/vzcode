@@ -9,6 +9,13 @@ const MIN_SPEED = 0.5;
 const MAX_SPEED = 5;
 const PERSPECTIVE_FACTOR = 0.005; // Adjust for perspective effect
 
+function getRandomColor() {
+  const r = Math.floor(Math.random() * 256);
+  const g = Math.floor(Math.random() * 256);
+  const b = Math.floor(Math.random() * 256);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 function createStar() {
   const size =
     Math.random() * (MAX_STAR_SIZE - MIN_STAR_SIZE) +
@@ -19,7 +26,7 @@ function createStar() {
   const z = Math.random() * canvas.width; // Add z-coordinate
   const speed =
     Math.random() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED;
-  const color = 'white';
+  const color = getRandomColor();
 
   return { x, y, z, size, speed, color };
 }
@@ -27,7 +34,10 @@ function createStar() {
 const stars = Array.from({ length: numStars }, createStar);
 
 function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw semi-transparent rectangle to create trail effect
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Adjust alpha for trail opacity
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 
   stars.forEach((star) => {
     star.z -= star.speed; // Move star towards the viewer

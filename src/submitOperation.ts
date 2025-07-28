@@ -1,4 +1,4 @@
-import { diff } from './client/diff';
+import { diff } from './ot.js';
 
 /**
  * Creates a submitOperation function that can be used to submit diff-based operations to ShareDB.

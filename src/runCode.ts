@@ -1,31 +1,14 @@
 import { SubmitOperation } from './types';
 import { VizContent } from '@vizhub/viz-types';
-import { createSubmitOperation } from './submitOperation';
 
 /**
  * Creates a runCode function that triggers code execution by flashing `isInteracting` to `true`.
  * This works for both client-side (with submitOperation) and server-side (with ShareDB document).
  */
 export const createRunCodeFunction = (
-  submitOperationOrDoc:
-    | SubmitOperation
-    | { data: any; submitOp: (ops: any) => void },
+  submitOperation: SubmitOperation,
 ) => {
   return () => {
-    let submitOperation: SubmitOperation;
-
-    // Check if this is a client-side submitOperation or server-side ShareDB document
-    if (typeof submitOperationOrDoc === 'function') {
-      // Client-side: already a submitOperation function
-      submitOperation =
-        submitOperationOrDoc as SubmitOperation;
-    } else {
-      // Server-side: create submitOperation from ShareDB document
-      submitOperation = createSubmitOperation(
-        submitOperationOrDoc,
-      );
-    }
-
     // Use the unified submitOperation approach for both client and server
     submitOperation((content: VizContent) => ({
       ...content,
@@ -39,7 +22,7 @@ export const createRunCodeFunction = (
       submitOperation(
         ({ isInteracting, ...newDocument }) => newDocument,
       );
-    }, 0);
+    }, 100);
   };
 };
 
@@ -48,11 +31,9 @@ export const createRunCodeFunction = (
  * This is useful for maintaining compatibility with existing code that expects a ref.
  */
 export const createRunCodeRef = (
-  submitOperationOrDoc:
-    | SubmitOperation
-    | { data: any; submitOp: (ops: any) => void },
+  submitOperation: SubmitOperation,
 ) => {
   return {
-    current: createRunCodeFunction(submitOperationOrDoc),
+    current: createRunCodeFunction(submitOperation),
   };
 };

@@ -1,5 +1,5 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
-import { diff } from '../../client/diff.js';
+import { diff } from '../../ot.js';
 
 /**
  * Handles errors by adding an error message to the chat and clearing AI state

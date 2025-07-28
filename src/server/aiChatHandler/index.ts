@@ -10,6 +10,7 @@ import { handleError } from './errorHandling.js';
 import { createRunCodeFunction } from '../../runCode.js';
 import { ShareDBDoc } from '../../types.js';
 import { VizContent } from '@vizhub/viz-types';
+import { createSubmitOperation } from '../../submitOperation.js';
 
 const DEBUG = false;
 
@@ -32,6 +33,8 @@ export const handleAIChatMessage =
         content,
         'chatId:',
         chatId,
+        'shareDBDoc:',
+        shareDBDoc,
       );
     }
 
@@ -55,8 +58,11 @@ export const handleAIChatMessage =
         chatId,
       });
 
-      // Create server-side runCode function using shared module
-      const runCode = createRunCodeFunction(shareDBDoc);
+      // Create server-side runCode function using shareDBDoc
+      const submitOperation =
+        createSubmitOperation(shareDBDoc);
+      const runCode =
+        createRunCodeFunction(submitOperation);
 
       // Perform AI editing
       const editResult = await performAIEditing({

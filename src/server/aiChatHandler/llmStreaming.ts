@@ -1,4 +1,7 @@
-import { StreamingMarkdownParser } from 'llm-code-format';
+import {
+  parseMarkdownFiles,
+  StreamingMarkdownParser,
+} from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
 import fs from 'fs';
 import {
@@ -7,8 +10,9 @@ import {
   ensureFileExists,
   clearFileContent,
   appendLineToFile,
-  setIsInteracting,
+  updateFiles,
 } from './chatOperations.js';
+import { mergeFileChanges } from 'editcodewithai';
 
 const DEBUG = false;
 
@@ -102,6 +106,7 @@ export const createLLMFunction = ({
       onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
 
+        // If streaming is enabled, we apply the line immediately
         if (currentEditingFileId) {
           // Apply OT operation for this line immediately
           appendLineToFile(
@@ -161,10 +166,20 @@ export const createLLMFunction = ({
     // Stream the response
     const stream = await chatModel.stream(fullPrompt);
     for await (const chunk of stream) {
-      if (chunk.content) {
+      if (chunk && chunk.content) {
         const chunkContent = String(chunk.content);
         chunks.push(chunkContent);
-        await parser.processChunk(chunkContent);
+
+        if (enableStreamingEditing) {
+          await parser.processChunk(chunkContent);
+        } else {
+          fullContent += chunkContent;
+          updateAIScratchpad(
+            shareDBDoc,
+            chatId,
+            fullContent,
+          );
+        }
       }
 
       if (!generationId && chunk.lc_kwargs?.id) {
@@ -191,12 +206,17 @@ export const createLLMFunction = ({
       }
     });
 
-    // Trigger a run
-    setIsInteracting(shareDBDoc, true);
-    await new Promise((resolve) =>
-      setTimeout(resolve, 100),
-    );
-    setIsInteracting(shareDBDoc, false);
+    // If streaming editing is not enabled, we need to
+    // apply all the edits at once
+    if (!enableStreamingEditing) {
+      updateFiles(
+        shareDBDoc,
+        mergeFileChanges(
+          shareDBDoc.data.files,
+          parseMarkdownFiles(fullContent, 'bold').files,
+        ),
+      );
+    }
 
     // Write chunks file for debugging
     if (DEBUG) {

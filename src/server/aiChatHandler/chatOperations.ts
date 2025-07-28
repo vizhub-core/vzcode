@@ -1,7 +1,7 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
-import { diff } from '../../client/diff.js';
 import { randomId } from '../../randomId.js';
 import { ShareDBDoc } from '../../types.js';
+import { diff } from '../../ot.js';
 import {
   VizChatId,
   VizContent,
@@ -194,24 +194,6 @@ export const updateFiles = (
     files,
   });
   shareDBDoc.submitOp(filesOp);
-};
-
-/**
- * Sets isInteracting flag
- */
-export const setIsInteracting = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  isInteracting: boolean,
-) => {
-  // Only generate an operation if the value is actually changing
-  if (shareDBDoc.data.isInteracting !== isInteracting) {
-    shareDBDoc.submitOp(
-      diff(shareDBDoc.data, {
-        ...shareDBDoc.data,
-        isInteracting,
-      }),
-    );
-  }
 };
 
 /**
