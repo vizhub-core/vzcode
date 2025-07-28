@@ -1,4 +1,9 @@
-import { useContext, useEffect, useMemo } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   createRuntime,
   VizHubRuntime,
@@ -9,12 +14,11 @@ import { vizFilesToFileCollection } from '@vizhub/viz-utils';
 
 const enableIframe = true;
 
-// Singleton runtime instance
-// TODO use refs, and cleanup on unmount
-let runtime: VizHubRuntime = null;
-let isFirstRun = true;
-
 export const VZRight = () => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const runtimeRef = useRef<VizHubRuntime | null>(null);
+  const isFirstRunRef = useRef(true);
+
   // Get access to the current files.
   const { content } = useContext(VZCodeContext);
 
@@ -32,13 +36,10 @@ export const VZRight = () => {
     if (!files) return;
 
     // Initialize the runtime only once
-    if (!runtime) {
+    if (!runtimeRef.current && iframeRef.current) {
       const worker = new BuildWorker();
-      const iframe = document.getElementById(
-        'viz-iframe',
-      ) as HTMLIFrameElement;
-      runtime = createRuntime({
-        iframe,
+      runtimeRef.current = createRuntime({
+        iframe: iframeRef.current,
         worker,
         setBuildErrorMessage: (error) => {
           if (error) {
@@ -49,14 +50,14 @@ export const VZRight = () => {
     }
 
     // Run code in the iframe
-    if (isFirstRun || isInteracting) {
-      runtime.run({
+    if (isFirstRunRef.current || isInteracting) {
+      runtimeRef.current?.run({
         files,
         enableHotReloading: true,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
-      isFirstRun = false;
+      isFirstRunRef.current = false;
     }
 
     // TODO use refs, and cleanup on unmount
@@ -69,7 +70,7 @@ export const VZRight = () => {
   return (
     <div className="right">
       {enableIframe ? (
-        <iframe id="viz-iframe"></iframe>
+        <iframe ref={iframeRef}></iframe>
       ) : null}
     </div>
   );

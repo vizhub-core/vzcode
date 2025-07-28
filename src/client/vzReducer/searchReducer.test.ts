@@ -39,13 +39,19 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
       // Should find matches in both files despite different cases
-      expect(Object.keys(newState.search.results)).toHaveLength(2);
-      
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(2);
+
       // Check file1.js results
-      const file1Results = newState.search.results['file1.js'];
+      const file1Results =
+        newState.search.results['file1.js'];
       expect(file1Results).toBeDefined();
       expect(file1Results.matches).toHaveLength(2); // "Hello" and "HELLO"
       expect(file1Results.matches[0].line).toBe(1);
@@ -54,7 +60,8 @@ describe('searchReducer', () => {
       expect(file1Results.matches[1].index).toBe(18); // position of "HELLO"
 
       // Check file2.js results
-      const file2Results = newState.search.results['file2.js'];
+      const file2Results =
+        newState.search.results['file2.js'];
       expect(file2Results).toBeDefined();
       expect(file2Results.matches).toHaveLength(2); // "hello" and "Hello"
       expect(file2Results.matches[0].line).toBe(1);
@@ -84,10 +91,16 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
-      expect(Object.keys(newState.search.results)).toHaveLength(1);
-      const file1Results = newState.search.results['file1.js'];
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(1);
+      const file1Results =
+        newState.search.results['file1.js'];
       expect(file1Results.matches).toHaveLength(1);
       expect(file1Results.matches[0].line).toBe(1);
       expect(file1Results.matches[0].index).toBe(6);
@@ -114,9 +127,14 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
-      expect(Object.keys(newState.search.results)).toHaveLength(0);
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(0);
     });
 
     it('should handle uppercase search pattern', () => {
@@ -140,10 +158,16 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
-      expect(Object.keys(newState.search.results)).toHaveLength(1);
-      const file1Results = newState.search.results['file1.js'];
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(1);
+      const file1Results =
+        newState.search.results['file1.js'];
       expect(file1Results.matches).toHaveLength(2); // Should find both "Hello" and "hello"
     });
 
@@ -168,10 +192,16 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
-      expect(Object.keys(newState.search.results)).toHaveLength(1);
-      const file1Results = newState.search.results['file1.js'];
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(1);
+      const file1Results =
+        newState.search.results['file1.js'];
       expect(file1Results.matches).toHaveLength(3); // Should find all three variations
     });
 
@@ -200,12 +230,21 @@ describe('searchReducer', () => {
         files: createMockShareDBDoc(mockFiles),
       };
 
-      const newState = setSearchResultsReducer(stateWithSearch, action);
+      const newState = setSearchResultsReducer(
+        stateWithSearch,
+        action,
+      );
 
       // Should only find results in file1.js
-      expect(Object.keys(newState.search.results)).toHaveLength(1);
-      expect(newState.search.results['file1.js']).toBeDefined();
-      expect(newState.search.results['file2.js']).toBeUndefined();
+      expect(
+        Object.keys(newState.search.results),
+      ).toHaveLength(1);
+      expect(
+        newState.search.results['file1.js'],
+      ).toBeDefined();
+      expect(
+        newState.search.results['file2.js'],
+      ).toBeUndefined();
     });
   });
 });
