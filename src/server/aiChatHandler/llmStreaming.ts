@@ -6,7 +6,9 @@ import { ChatOpenAI } from '@langchain/openai';
 import fs from 'fs';
 import {
   updateAIStatus,
-  updateAIScratchpad,
+  createAIMessage,
+  updateAIMessageContent,
+  finalizeAIMessage,
   ensureFileExists,
   clearFileContent,
   appendLineToFile,
@@ -61,13 +63,21 @@ export const createLLMFunction = ({
     let currentEditingFileId = null;
     let currentEditingFileName = null;
 
+    // Create initial AI message for streaming
+    const aiMessageId = createAIMessage(shareDBDoc, chatId);
+
     // Function to report file edited
     // This is called when the AI has finished editing a file
-    // and we want to update the scratchpad with the file name.
+    // and we want to update the message content with the file name.
     const reportFileEdited = () => {
       if (currentEditingFileName) {
         fullContent += ` * Edited ${currentEditingFileName}\n`;
-        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          fullContent,
+        );
         currentEditingFileName = null;
       }
     };
@@ -155,7 +165,12 @@ export const createLLMFunction = ({
           reportFileEdited();
         }
         fullContent += line + '\n';
-        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          fullContent,
+        );
       },
     };
 
@@ -174,9 +189,10 @@ export const createLLMFunction = ({
           await parser.processChunk(chunkContent);
         } else {
           fullContent += chunkContent;
-          updateAIScratchpad(
+          updateAIMessageContent(
             shareDBDoc,
             chatId,
+            aiMessageId,
             fullContent,
           );
         }
@@ -189,7 +205,15 @@ export const createLLMFunction = ({
     await parser.flushRemaining();
     reportFileEdited();
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
-    updateAIScratchpad(shareDBDoc, chatId, fullContent);
+    updateAIMessageContent(
+      shareDBDoc,
+      chatId,
+      aiMessageId,
+      fullContent,
+    );
+
+    // Finalize the AI message by clearing temporary fields
+    finalizeAIMessage(shareDBDoc, chatId);
 
     // Clear VizBot presence when done
     DEBUG &&

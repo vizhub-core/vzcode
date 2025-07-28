@@ -27,7 +27,6 @@ export const AIChat = () => {
   // Get current chat data from content
   const currentChat = content?.chats?.[currentChatId];
   const rawMessages = currentChat?.messages || [];
-  const aiScratchpad = currentChat?.aiScratchpad;
   const aiStatus = currentChat?.aiStatus;
 
   // Transform messages to ensure they have required id field - memoized to avoid recreation
@@ -87,7 +86,6 @@ export const AIChat = () => {
     <div className="ai-chat-container">
       <MessageList
         messages={messages}
-        aiScratchpad={aiScratchpad}
         aiStatus={aiStatus}
         isLoading={isLoading}
       />

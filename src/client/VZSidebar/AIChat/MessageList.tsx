@@ -5,7 +5,6 @@ import {
   memo,
 } from 'react';
 import { Message } from './Message';
-import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 
 interface MessageData {
@@ -17,14 +16,12 @@ interface MessageData {
 
 interface MessageListProps {
   messages: MessageData[];
-  aiScratchpad?: string;
   aiStatus?: string;
   isLoading: boolean;
 }
 
 const MessageListComponent = ({
   messages,
-  aiScratchpad,
   aiStatus,
   isLoading,
 }: MessageListProps) => {
@@ -38,7 +35,7 @@ const MessageListComponent = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, aiScratchpad]);
+  }, [messages]);
 
   return (
     <div className="ai-chat-messages">
@@ -52,15 +49,7 @@ const MessageListComponent = ({
         />
       ))}
 
-      {/* Show streaming content if available */}
-      {aiScratchpad && (
-        <StreamingMessage
-          content={aiScratchpad}
-          status={aiStatus}
-        />
-      )}
-
-      {isLoading && !aiScratchpad && <TypingIndicator />}
+      {isLoading && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
