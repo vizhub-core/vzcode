@@ -1,20 +1,11 @@
 body {
-  font-family: sans-serif;
-  background-color: #222; /* Dark background */
-  color: #eee;
+  background-color: #222;
   margin: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
 }
 
 main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
-  width: 100vw; /* Added to make starfield fill the entire width */
-  height: 100vh; /* Added to make starfield fill the entire height */
+  width: 100vw;
+  height: 100vh;
 }

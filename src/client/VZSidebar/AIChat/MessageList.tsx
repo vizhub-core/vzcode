@@ -5,29 +5,18 @@ import {
   memo,
 } from 'react';
 import { Message } from './Message';
-import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
-
-interface MessageData {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
-}
-
-interface MessageListProps {
-  messages: MessageData[];
-  aiScratchpad?: string;
-  aiStatus?: string;
-  isLoading: boolean;
-}
+import { VizChatMessage } from '@vizhub/viz-types';
 
 const MessageListComponent = ({
   messages,
-  aiScratchpad,
   aiStatus,
   isLoading,
-}: MessageListProps) => {
+}: {
+  messages: VizChatMessage[];
+  aiStatus?: string;
+  isLoading: boolean;
+}) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -38,7 +27,17 @@ const MessageListComponent = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, aiScratchpad]);
+  }, [messages]);
+
+  // Check if AI generation has started (last message is from assistant)
+  const lastMessage = messages[messages.length - 1];
+  const aiGenerationStarted =
+    lastMessage?.role === 'assistant' &&
+    lastMessage.content !== '';
+
+  // Show typing indicator only when loading and AI generation hasn't started yet
+  const showTypingIndicator =
+    isLoading && !aiGenerationStarted;
 
   return (
     <div className="ai-chat-messages">
@@ -52,15 +51,7 @@ const MessageListComponent = ({
         />
       ))}
 
-      {/* Show streaming content if available */}
-      {aiScratchpad && (
-        <StreamingMessage
-          content={aiScratchpad}
-          status={aiStatus}
-        />
-      )}
-
-      {isLoading && !aiScratchpad && <TypingIndicator />}
+      {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
