@@ -9,45 +9,12 @@ body {
   min-height: 100vh;
 }
 
-header, main, footer {
-  padding: 1rem;
-}
-
-header {
-  background-color: #008080; /* Teal header */
-  color: white;
-  text-align: center;
-}
-
-h1 {
-  margin: 0;
-}
-
 main {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-}
-
-footer {
-  background-color: #008080; /* Teal footer */
-  color: white;
-  text-align: center;
-  margin-top: auto;
-}
-
-.star {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  animation: twinkle 1s infinite;
-  border-radius: 50%; /* Make stars round */
-}
-
-
-@keyframes twinkle {
-  0% { opacity: 0.5; }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; }
+  width: 100vw; /* Added to make starfield fill the entire width */
+  height: 100vh; /* Added to make starfield fill the entire height */
 }

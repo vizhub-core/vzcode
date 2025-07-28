@@ -19,23 +19,23 @@ export const createLLMFunction = ({
   createVizBotLocalPresence,
   chatId,
 }) => {
-  return async (fullPrompt) => {
+  return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
     // Submit initial presence for VizBot
-    const vizBotPresence = {
-      username: 'VizBot',
-      start: ['files'], // Indicate VizBot is working on files
-      end: ['files'],
-    };
+    // const vizBotPresence = {
+    //   username: 'VizBot',
+    //   start: ['files'], // Indicate VizBot is working on files
+    //   end: ['files'],
+    // };
 
-    localPresence.submit(vizBotPresence, (error) => {
-      if (error) {
-        console.warn(
-          'VizBot presence submission error:',
-          error,
-        );
-      }
-    });
+    // localPresence.submit(vizBotPresence, (error) => {
+    //   if (error) {
+    //     console.warn(
+    //       'VizBot presence submission error:',
+    //       error,
+    //     );
+    //   }
+    // });
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
@@ -87,10 +87,6 @@ export const createLLMFunction = ({
         reportFileEdited();
         currentEditingFileName = fileName;
 
-        // Clear the file content to start fresh
-        // (AI will regenerate the entire file content)
-        clearFileContent(shareDBDoc, currentEditingFileId);
-
         // Update VizBot presence to show it's editing this specific file
         const filePresence = {
           username: 'VizBot',
@@ -106,6 +102,10 @@ export const createLLMFunction = ({
             );
           }
         });
+
+        // Clear the file content to start fresh
+        // (AI will regenerate the entire file content)
+        clearFileContent(shareDBDoc, currentEditingFileId);
 
         // Update AI status
         updateAIStatus(
@@ -205,6 +205,12 @@ export const createLLMFunction = ({
         );
       }
     });
+
+    // Wait for all operations to be submitted
+    // Without this, the presence is not properly cleared
+    await new Promise((resolve) =>
+      setTimeout(resolve, 100),
+    );
 
     // Write chunks file for debugging
     if (DEBUG) {

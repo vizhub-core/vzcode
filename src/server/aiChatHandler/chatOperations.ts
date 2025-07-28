@@ -1,6 +1,8 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
 import { diff } from '../../client/diff.js';
 import { randomId } from '../../randomId.js';
+import { ShareDBDoc } from '../../types.js';
+import { VizContent, VizFileId } from '@vizhub/viz-types';
 
 /**
  * Ensures the chats object exists in the ShareDB document
@@ -295,29 +297,24 @@ export const clearFileContent = (shareDBDoc, fileId) => {
  * Appends a line to a file using OT operations
  */
 export const appendLineToFile = (
-  shareDBDoc,
-  fileId,
-  line,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  fileId: VizFileId,
+  line: string,
 ) => {
   const currentFile = shareDBDoc.data.files[fileId];
   const currentContent = currentFile?.text || '';
   const newContent = currentContent + line + '\n';
 
-  // Create the new file state
-  const newFileState = {
-    ...currentFile,
-    text: newContent,
-  };
-
   const newDocState = {
     ...shareDBDoc.data,
     files: {
       ...shareDBDoc.data.files,
-      [fileId]: newFileState,
+      [fileId]: {
+        ...currentFile,
+        text: newContent,
+      },
     },
   };
 
-  // Generate OT operation using the diff utility
-  const op = diff(shareDBDoc.data, newDocState);
-  shareDBDoc.submitOp(op);
+  shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
 };
