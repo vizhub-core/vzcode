@@ -2,7 +2,12 @@ import { dateToTimestamp } from '@vizhub/viz-utils';
 import { diff } from '../../client/diff.js';
 import { randomId } from '../../randomId.js';
 import { ShareDBDoc } from '../../types.js';
-import { VizContent, VizFileId } from '@vizhub/viz-types';
+import {
+  VizChatId,
+  VizContent,
+  VizFileId,
+  VizFiles,
+} from '@vizhub/viz-types';
 
 /**
  * Ensures the chats object exists in the ShareDB document
@@ -97,9 +102,9 @@ export const updateAIStatus = (
  * Updates AI scratchpad content
  */
 export const updateAIScratchpad = (
-  shareDBDoc,
-  chatId,
-  content,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  content: string,
 ) => {
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
@@ -124,9 +129,9 @@ export const updateAIScratchpad = (
  * Clears AI scratchpad and updates status
  */
 export const clearAIScratchpadAndStatus = (
-  shareDBDoc,
-  chatId,
-  status,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  status: string,
 ) => {
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
@@ -146,9 +151,9 @@ export const clearAIScratchpadAndStatus = (
  * Adds an AI response message to the chat
  */
 export const addAIMessage = (
-  shareDBDoc,
-  chatId,
-  content,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  content?: string,
 ) => {
   const aiResponse = {
     id: Date.now() + 1,
@@ -180,7 +185,10 @@ export const addAIMessage = (
 /**
  * Updates files in the ShareDB document
  */
-export const updateFiles = (shareDBDoc, files) => {
+export const updateFiles = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  files: VizFiles,
+) => {
   const filesOp = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
     files,
@@ -192,24 +200,18 @@ export const updateFiles = (shareDBDoc, files) => {
  * Sets isInteracting flag
  */
 export const setIsInteracting = (
-  shareDBDoc,
-  isInteracting,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  isInteracting: boolean,
 ) => {
   // Only generate an operation if the value is actually changing
-  const currentIsInteracting =
-    shareDBDoc.data.isInteracting;
-
-  if (currentIsInteracting === isInteracting) {
-    return;
+  if (shareDBDoc.data.isInteracting !== isInteracting) {
+    shareDBDoc.submitOp(
+      diff(shareDBDoc.data, {
+        ...shareDBDoc.data,
+        isInteracting,
+      }),
+    );
   }
-
-  const newState = {
-    ...shareDBDoc.data,
-    isInteracting: isInteracting,
-  };
-
-  const interactingOp = diff(shareDBDoc.data, newState);
-  shareDBDoc.submitOp(interactingOp);
 };
 
 /**

@@ -7,9 +7,25 @@ import {
   ensureFileExists,
   clearFileContent,
   appendLineToFile,
+  setIsInteracting,
 } from './chatOperations.js';
 
 const DEBUG = false;
+
+// Feature flag to enable/disable streaming editing.
+// * If `true`, the AI streaming response will be used to
+//   edit files in real-time by submitting ShareDB ops.
+// * If `false`, the updates to code files will be applied
+// only after the AI has finished generating the entire response.
+//
+// Current status: there's a tricky bug with the streaming
+// where the AI edits sometimes don't apply correctly in CodeMirror.
+// It seems that sometimes the op that clears the file content
+// is not applied correctly in the front end, leading to
+// a situation where the AI streaming edits are concatenated into the middle
+// of the file instead of replacing it.
+// See https://github.com/codemirror/codemirror.next/issues/1234
+const enableStreamingEditing = false;
 
 /**
  * Creates and configures the LLM function for streaming
@@ -21,21 +37,6 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
-    // Submit initial presence for VizBot
-    // const vizBotPresence = {
-    //   username: 'VizBot',
-    //   start: ['files'], // Indicate VizBot is working on files
-    //   end: ['files'],
-    // };
-
-    // localPresence.submit(vizBotPresence, (error) => {
-    //   if (error) {
-    //     console.warn(
-    //       'VizBot presence submission error:',
-    //       error,
-    //     );
-    //   }
-    // });
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
@@ -86,22 +87,6 @@ export const createLLMFunction = ({
 
         reportFileEdited();
         currentEditingFileName = fileName;
-
-        // Update VizBot presence to show it's editing this specific file
-        const filePresence = {
-          username: 'VizBot',
-          start: ['files', currentEditingFileId, 'text', 0],
-          end: ['files', currentEditingFileId, 'text', 0],
-        };
-
-        localPresence.submit(filePresence, (error) => {
-          if (error) {
-            console.warn(
-              'VizBot file presence submission error:',
-              error,
-            );
-          }
-        });
 
         // Clear the file content to start fresh
         // (AI will regenerate the entire file content)
@@ -206,11 +191,12 @@ export const createLLMFunction = ({
       }
     });
 
-    // Wait for all operations to be submitted
-    // Without this, the presence is not properly cleared
+    // Trigger a run
+    setIsInteracting(shareDBDoc, true);
     await new Promise((resolve) =>
       setTimeout(resolve, 100),
     );
+    setIsInteracting(shareDBDoc, false);
 
     // Write chunks file for debugging
     if (DEBUG) {

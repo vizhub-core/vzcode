@@ -5,20 +5,23 @@ const starfield = document.getElementById('starfield');
 
 const MIN_STAR_SIZE = 1;
 const MAX_STAR_SIZE = 4;
-const MIN_SPEED = 0.5; // Reduced speed
-const MAX_SPEED = 5; // Reduced speed
+const MIN_SPEED = 0.5;
+const MAX_SPEED = 5;
+const PERSPECTIVE_FACTOR = 0.005; // Adjust for perspective effect
 
 function createStar() {
   const size =
     Math.random() * (MAX_STAR_SIZE - MIN_STAR_SIZE) +
     MIN_STAR_SIZE;
-  const x = Math.random() * canvas.width;
-  const y = -size; // Start stars above the canvas
+  const x = Math.random() * canvas.width - canvas.width / 2;
+  const y =
+    Math.random() * canvas.height - canvas.height / 2;
+  const z = Math.random() * canvas.width; // Add z-coordinate
   const speed =
     Math.random() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED;
-  const color = 'white'; // All stars are white
+  const color = 'white';
 
-  return { x, y, size, speed, color };
+  return { x, y, z, size, speed, color };
 }
 
 const stars = Array.from({ length: numStars }, createStar);
@@ -27,14 +30,45 @@ function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   stars.forEach((star) => {
-    star.y += star.speed;
-    if (star.y > canvas.height + star.size) {
-      star.y = -star.size;
+    star.z -= star.speed; // Move star towards the viewer
+
+    // Perspective projection
+    const perspectiveX =
+      star.x / (1 + star.z * PERSPECTIVE_FACTOR);
+    const perspectiveY =
+      star.y / (1 + star.z * PERSPECTIVE_FACTOR);
+    const perspectiveSize =
+      star.size / (1 + star.z * PERSPECTIVE_FACTOR);
+
+    const screenX = perspectiveX + canvas.width / 2;
+    const screenY = perspectiveY + canvas.height / 2;
+
+    if (
+      perspectiveSize > 0 &&
+      screenX > 0 &&
+      screenX < canvas.width &&
+      screenY > 0 &&
+      screenY < canvas.height
+    ) {
+      ctx.beginPath();
+      ctx.arc(
+        screenX,
+        screenY,
+        perspectiveSize / 2,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fillStyle = star.color;
+      ctx.fill();
     }
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.size / 2, 0, Math.PI * 2);
-    ctx.fillStyle = star.color;
-    ctx.fill();
+
+    if (star.z < -canvas.width) {
+      star.x =
+        Math.random() * canvas.width - canvas.width / 2;
+      star.y =
+        Math.random() * canvas.height - canvas.height / 2;
+      star.z = canvas.width;
+    }
   });
 
   requestAnimationFrame(animate);
@@ -43,9 +77,13 @@ function animate() {
 function resizeCanvas() {
   canvas.width = starfield.offsetWidth;
   canvas.height = starfield.offsetHeight;
-  // Recalculate star positions after resize to fill the entire width
   stars.forEach((star) => {
-    star.x = Math.random() * canvas.width;
+    // Recalculate star positions after resize
+    star.x =
+      Math.random() * canvas.width - canvas.width / 2;
+    star.y =
+      Math.random() * canvas.height - canvas.height / 2;
+    star.z = Math.random() * canvas.width;
   });
 }
 
