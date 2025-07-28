@@ -8,6 +8,9 @@ const MAX_STAR_SIZE = 4;
 const MIN_SPEED = 0.5;
 const MAX_SPEED = 5;
 const PERSPECTIVE_FACTOR = 0.005; // Adjust for perspective effect
+const ROTATION_SPEED = 0.01; // Adjust for rotation speed
+
+let angle = 0;
 
 function getRandomColor() {
   const r = Math.floor(Math.random() * 256);
@@ -35,18 +38,25 @@ const stars = Array.from({ length: numStars }, createStar);
 
 function animate() {
   // Draw semi-transparent rectangle to create trail effect
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Adjust alpha for trail opacity
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'; // Adjust alpha for trail opacity
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  angle += ROTATION_SPEED; // Increment rotation angle
 
   stars.forEach((star) => {
     star.z -= star.speed; // Move star towards the viewer
 
+    // Rotate the star around the center
+    const rotatedX =
+      star.x * Math.cos(angle) - star.y * Math.sin(angle);
+    const rotatedY =
+      star.x * Math.sin(angle) + star.y * Math.cos(angle);
+
     // Perspective projection
     const perspectiveX =
-      star.x / (1 + star.z * PERSPECTIVE_FACTOR);
+      rotatedX / (1 + star.z * PERSPECTIVE_FACTOR);
     const perspectiveY =
-      star.y / (1 + star.z * PERSPECTIVE_FACTOR);
+      rotatedY / (1 + star.z * PERSPECTIVE_FACTOR);
     const perspectiveSize =
       star.size / (1 + star.z * PERSPECTIVE_FACTOR);
 

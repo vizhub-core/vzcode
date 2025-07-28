@@ -6,25 +6,17 @@ import {
 } from 'react';
 import { Message } from './Message';
 import { TypingIndicator } from './TypingIndicator';
-
-interface MessageData {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
-}
-
-interface MessageListProps {
-  messages: MessageData[];
-  aiStatus?: string;
-  isLoading: boolean;
-}
+import { VizChatMessage } from '@vizhub/viz-types';
 
 const MessageListComponent = ({
   messages,
   aiStatus,
   isLoading,
-}: MessageListProps) => {
+}: {
+  messages: VizChatMessage[];
+  aiStatus?: string;
+  isLoading: boolean;
+}) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -36,6 +28,16 @@ const MessageListComponent = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Check if AI generation has started (last message is from assistant)
+  const lastMessage = messages[messages.length - 1];
+  const aiGenerationStarted =
+    lastMessage?.role === 'assistant' &&
+    lastMessage.content !== '';
+
+  // Show typing indicator only when loading and AI generation hasn't started yet
+  const showTypingIndicator =
+    isLoading && !aiGenerationStarted;
 
   return (
     <div className="ai-chat-messages">
@@ -49,7 +51,7 @@ const MessageListComponent = ({
         />
       ))}
 
-      {isLoading && <TypingIndicator />}
+      {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
