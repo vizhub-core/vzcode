@@ -41,6 +41,12 @@ export const json1PresenceDisplay = ({
       //Added variable for cursor position
       cursorPosition = {};
 
+      // Flag to prevent multiple pending updates
+      pendingUpdate = false;
+
+      // Flag to prevent multiple pending scroll updates
+      pendingScrollUpdate = false;
+
       constructor(view: EditorView) {
         // Initialize decorations to empty array so CodeMirror doesn't crash.
         this.decorations = RangeSet.of([]);
@@ -146,13 +152,22 @@ export const json1PresenceDisplay = ({
               true,
             );
 
-            // This dispatch triggers the re-rendering of decorations.
-            // It now correctly runs after a deletion.
-            setTimeout(() => {
-              view.dispatch({
-                annotations: [presenceAnnotation.of(true)],
+            // Safely dispatch decoration updates without causing race conditions
+            // Use requestAnimationFrame to ensure we're not in the middle of an update
+            if (!this.pendingUpdate) {
+              this.pendingUpdate = true;
+              requestAnimationFrame(() => {
+                this.pendingUpdate = false;
+                // Check if view is still valid and not currently updating
+                if (view.state && view.dom.isConnected) {
+                  view.dispatch({
+                    annotations: [
+                      presenceAnnotation.of(true),
+                    ],
+                  });
+                }
               });
-            }, 0);
+            }
 
             if (enableAutoFollowRef.current) {
               this.scrollToCursor(view);
@@ -162,12 +177,25 @@ export const json1PresenceDisplay = ({
       }
       // Method to scroll the view to keep the cursor in view
       scrollToCursor(view) {
-        for (const id in this.cursorPosition) {
-          //getting the cursor position of the other cursor
-          const cursorPos = this.cursorPosition[id];
-          view.dispatch({
-            //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
-            effects: EditorView.scrollIntoView(cursorPos),
+        // Debounce scroll updates to prevent conflicts with typing
+        if (!this.pendingScrollUpdate) {
+          this.pendingScrollUpdate = true;
+          requestAnimationFrame(() => {
+            this.pendingScrollUpdate = false;
+            // Check if view is still valid
+            if (view.state && view.dom.isConnected) {
+              for (const id in this.cursorPosition) {
+                //getting the cursor position of the other cursor
+                const cursorPos = this.cursorPosition[id];
+                view.dispatch({
+                  //if the other person's cursor has jumped off screen, we will follow it by scrolling there directly.
+                  effects:
+                    EditorView.scrollIntoView(cursorPos),
+                });
+                // Only scroll to the first cursor to avoid multiple dispatches
+                break;
+              }
+            }
           });
         }
       }
