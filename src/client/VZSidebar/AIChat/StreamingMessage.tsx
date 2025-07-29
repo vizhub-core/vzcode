@@ -1,12 +1,13 @@
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { memo } from 'react';
 
 interface StreamingMessageProps {
   content: string;
   status?: string;
 }
 
-export const StreamingMessage = ({
+const StreamingMessageComponent = ({
   content,
   status,
 }: StreamingMessageProps) => {
@@ -23,3 +24,7 @@ export const StreamingMessage = ({
     </div>
   );
 };
+
+export const StreamingMessage = memo(
+  StreamingMessageComponent,
+);

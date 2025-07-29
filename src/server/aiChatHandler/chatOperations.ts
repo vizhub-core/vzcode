@@ -1,6 +1,13 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
-import { diff } from '../../client/diff.js';
 import { randomId } from '../../randomId.js';
+import { ShareDBDoc } from '../../types.js';
+import { diff } from '../../ot.js';
+import {
+  VizChatId,
+  VizContent,
+  VizFileId,
+  VizFiles,
+} from '@vizhub/viz-types';
 
 /**
  * Ensures the chats object exists in the ShareDB document
@@ -18,7 +25,10 @@ export const ensureChatsExist = (shareDBDoc) => {
 /**
  * Ensures a specific chat exists in the ShareDB document
  */
-export const ensureChatExists = (shareDBDoc, chatId) => {
+export const ensureChatExists = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+) => {
   if (!shareDBDoc.data.chats[chatId]) {
     const op = diff(shareDBDoc.data, {
       ...shareDBDoc.data,
@@ -40,9 +50,9 @@ export const ensureChatExists = (shareDBDoc, chatId) => {
  * Adds a user message to the chat
  */
 export const addUserMessage = (
-  shareDBDoc,
-  chatId,
-  content,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  content: string,
 ) => {
   const userMessage = {
     id: `user-${Date.now()}`,
@@ -74,9 +84,9 @@ export const addUserMessage = (
  * Updates AI status in the chat
  */
 export const updateAIStatus = (
-  shareDBDoc,
-  chatId,
-  status,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  status: string,
 ) => {
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
@@ -95,9 +105,9 @@ export const updateAIStatus = (
  * Updates AI scratchpad content
  */
 export const updateAIScratchpad = (
-  shareDBDoc,
-  chatId,
-  content,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  content: string,
 ) => {
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
@@ -122,9 +132,9 @@ export const updateAIScratchpad = (
  * Clears AI scratchpad and updates status
  */
 export const clearAIScratchpadAndStatus = (
-  shareDBDoc,
-  chatId,
-  status,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  status: string,
 ) => {
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
@@ -141,12 +151,108 @@ export const clearAIScratchpadAndStatus = (
 };
 
 /**
- * Adds an AI response message to the chat
+ * Creates an initial empty AI message for streaming
+ */
+export const createAIMessage = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+) => {
+  const aiMessage = {
+    id: `assistant-${Date.now()}`,
+    role: 'assistant',
+    content: '',
+    timestamp: dateToTimestamp(new Date()),
+  };
+
+  const messageOp = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        messages: [
+          ...shareDBDoc.data.chats[chatId].messages,
+          aiMessage,
+        ],
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(messageOp);
+
+  return aiMessage.id;
+};
+
+/**
+ * Updates the content of an AI message during streaming
+ */
+export const updateAIMessageContent = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  messageId: string,
+  content: string,
+) => {
+  const chat = shareDBDoc.data.chats[chatId];
+  const messageIndex = chat.messages.findIndex(
+    (msg) => msg.id === messageId,
+  );
+
+  if (messageIndex === -1) {
+    console.warn(
+      `AI message with id ${messageId} not found`,
+    );
+    return;
+  }
+
+  const updatedMessages = [...chat.messages];
+  updatedMessages[messageIndex] = {
+    ...updatedMessages[messageIndex],
+    content,
+  };
+
+  const messageOp = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...chat,
+        messages: updatedMessages,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(messageOp);
+};
+
+/**
+ * Finalizes an AI message by clearing temporary fields
+ */
+export const finalizeAIMessage = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+) => {
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        aiScratchpad: undefined,
+        aiStatus: undefined,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
+ * Adds an AI response message to the chat (legacy function, kept for compatibility)
  */
 export const addAIMessage = (
-  shareDBDoc,
-  chatId,
-  content,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  content?: string,
 ) => {
   const aiResponse = {
     id: Date.now() + 1,
@@ -178,36 +284,15 @@ export const addAIMessage = (
 /**
  * Updates files in the ShareDB document
  */
-export const updateFiles = (shareDBDoc, files) => {
+export const updateFiles = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  files: VizFiles,
+) => {
   const filesOp = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
     files,
   });
   shareDBDoc.submitOp(filesOp);
-};
-
-/**
- * Sets isInteracting flag
- */
-export const setIsInteracting = (
-  shareDBDoc,
-  isInteracting,
-) => {
-  // Only generate an operation if the value is actually changing
-  const currentIsInteracting =
-    shareDBDoc.data.isInteracting;
-
-  if (currentIsInteracting === isInteracting) {
-    return;
-  }
-
-  const newState = {
-    ...shareDBDoc.data,
-    isInteracting: isInteracting,
-  };
-
-  const interactingOp = diff(shareDBDoc.data, newState);
-  shareDBDoc.submitOp(interactingOp);
 };
 
 /**
@@ -233,7 +318,10 @@ export const resolveFileId = (
 /**
  * Creates a new file with a random ID
  */
-export const createNewFile = (shareDBDoc, fileName) => {
+export const createNewFile = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  fileName: string,
+) => {
   // Generate a new random file ID
   const newFileId = randomId();
 
@@ -270,7 +358,10 @@ export const ensureFileExists = (shareDBDoc, fileName) => {
 /**
  * Clears the content of a file
  */
-export const clearFileContent = (shareDBDoc, fileId) => {
+export const clearFileContent = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  fileId: VizFileId,
+) => {
   const currentFile = shareDBDoc.data.files[fileId];
 
   if (currentFile && currentFile.text) {
@@ -295,29 +386,24 @@ export const clearFileContent = (shareDBDoc, fileId) => {
  * Appends a line to a file using OT operations
  */
 export const appendLineToFile = (
-  shareDBDoc,
-  fileId,
-  line,
+  shareDBDoc: ShareDBDoc<VizContent>,
+  fileId: VizFileId,
+  line: string,
 ) => {
   const currentFile = shareDBDoc.data.files[fileId];
   const currentContent = currentFile?.text || '';
   const newContent = currentContent + line + '\n';
 
-  // Create the new file state
-  const newFileState = {
-    ...currentFile,
-    text: newContent,
-  };
-
   const newDocState = {
     ...shareDBDoc.data,
     files: {
       ...shareDBDoc.data.files,
-      [fileId]: newFileState,
+      [fileId]: {
+        ...currentFile,
+        text: newContent,
+      },
     },
   };
 
-  // Generate OT operation using the diff utility
-  const op = diff(shareDBDoc.data, newDocState);
-  shareDBDoc.submitOp(op);
+  shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
 };

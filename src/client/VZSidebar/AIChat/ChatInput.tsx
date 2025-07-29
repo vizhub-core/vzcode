@@ -1,4 +1,9 @@
-import { useRef, useEffect, useCallback } from 'react';
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+} from 'react';
 import { Form, Button } from '../../bootstrap';
 
 interface ChatInputProps {
@@ -9,7 +14,7 @@ interface ChatInputProps {
   focused: boolean;
 }
 
-export const ChatInput = ({
+const ChatInputComponent = ({
   message,
   setMessage,
   onSendMessage,
@@ -35,6 +40,13 @@ export const ChatInput = ({
     [onSendMessage],
   );
 
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setMessage(event.target.value);
+    },
+    [setMessage],
+  );
+
   return (
     <div className="ai-chat-input-container">
       <Form.Group className="ai-chat-input-group">
@@ -42,9 +54,7 @@ export const ChatInput = ({
           as="textarea"
           rows={2}
           value={message}
-          onChange={(event) =>
-            setMessage(event.target.value)
-          }
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           ref={inputRef}
           placeholder="Describe what you'd like me to change in your code..."
@@ -63,3 +73,5 @@ export const ChatInput = ({
     </div>
   );
 };
+
+export const ChatInput = memo(ChatInputComponent);

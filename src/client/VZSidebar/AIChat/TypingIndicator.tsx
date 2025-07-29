@@ -1,4 +1,6 @@
-export const TypingIndicator = () => {
+import { memo } from 'react';
+
+const TypingIndicatorComponent = () => {
   return (
     <div className="ai-chat-message assistant">
       <div className="ai-chat-message-content">
@@ -11,3 +13,7 @@ export const TypingIndicator = () => {
     </div>
   );
 };
+
+export const TypingIndicator = memo(
+  TypingIndicatorComponent,
+);

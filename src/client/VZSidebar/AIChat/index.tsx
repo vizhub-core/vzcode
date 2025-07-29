@@ -1,4 +1,9 @@
-import { useContext, useState, useCallback } from 'react';
+import {
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
@@ -22,14 +27,17 @@ export const AIChat = () => {
   // Get current chat data from content
   const currentChat = content?.chats?.[currentChatId];
   const rawMessages = currentChat?.messages || [];
-  const aiScratchpad = currentChat?.aiScratchpad;
   const aiStatus = currentChat?.aiStatus;
 
-  // Transform messages to ensure they have required id field
-  const messages = rawMessages.map((msg, index) => ({
-    ...msg,
-    id: msg.id || `msg-${index}`,
-  }));
+  // Transform messages to ensure they have required id field - memoized to avoid recreation
+  const messages = useMemo(
+    () =>
+      rawMessages.map((msg, index) => ({
+        ...msg,
+        id: msg.id || `msg-${index}`,
+      })),
+    [rawMessages],
+  );
 
   const handleSendMessage = useCallback(async () => {
     if (!message.trim() || isLoading) return;
@@ -66,13 +74,18 @@ export const AIChat = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [message, isLoading, currentChatId]);
+  }, [
+    message,
+    isLoading,
+    aiChatEndpoint,
+    aiChatOptions,
+    currentChatId,
+  ]);
 
   return (
     <div className="ai-chat-container">
       <MessageList
         messages={messages}
-        aiScratchpad={aiScratchpad}
         aiStatus={aiStatus}
         isLoading={isLoading}
       />

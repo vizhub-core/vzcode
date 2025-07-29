@@ -4,6 +4,10 @@ import {
 } from 'editcodewithai';
 import { formatMarkdownFiles } from 'llm-code-format';
 
+// Dev flag for waiting 1 second before starting the LLM function.
+// Useful for debugging and testing purposes, e.g. checking the typing indicator.
+const delayStart = false;
+
 /**
  * Performs AI editing operations using streaming with incremental OT operations
  */
@@ -25,15 +29,14 @@ export const performAIEditing = async ({
     editFormat: 'whole',
   });
 
+  if (delayStart) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000),
+    );
+  }
+
   // Call the LLM function which will handle streaming and incremental file updates
   const result = await llmFunction(fullPrompt);
-
-  // Clear the scratchpad and update status
-  // clearAIScratchpadAndStatus(
-  //   shareDBDoc,
-  //   chatId,
-  //   'Done editing with AI.',
-  // );
 
   runCode();
 

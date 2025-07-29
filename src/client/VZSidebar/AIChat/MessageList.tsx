@@ -1,39 +1,43 @@
-import { useRef, useEffect } from 'react';
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  memo,
+} from 'react';
 import { Message } from './Message';
-import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
+import { VizChatMessage } from '@vizhub/viz-types';
 
-interface MessageData {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: number;
-}
-
-interface MessageListProps {
-  messages: MessageData[];
-  aiScratchpad?: string;
-  aiStatus?: string;
-  isLoading: boolean;
-}
-
-export const MessageList = ({
+const MessageListComponent = ({
   messages,
-  aiScratchpad,
   aiStatus,
   isLoading,
-}: MessageListProps) => {
+}: {
+  messages: VizChatMessage[];
+  aiStatus?: string;
+  isLoading: boolean;
+}) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth',
     });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, aiScratchpad]);
+  }, [messages]);
+
+  // Check if AI generation has started (last message is from assistant)
+  const lastMessage = messages[messages.length - 1];
+  const aiGenerationStarted =
+    lastMessage?.role === 'assistant' &&
+    lastMessage.content !== '';
+
+  // Show typing indicator only when loading and AI generation hasn't started yet
+  const showTypingIndicator =
+    isLoading && !aiGenerationStarted;
 
   return (
     <div className="ai-chat-messages">
@@ -47,16 +51,10 @@ export const MessageList = ({
         />
       ))}
 
-      {/* Show streaming content if available */}
-      {aiScratchpad && (
-        <StreamingMessage
-          content={aiScratchpad}
-          status={aiStatus}
-        />
-      )}
-
-      {isLoading && !aiScratchpad && <TypingIndicator />}
+      {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );
 };
+
+export const MessageList = memo(MessageListComponent);

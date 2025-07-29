@@ -1,15 +1,37 @@
-import { StreamingMarkdownParser } from 'llm-code-format';
+import {
+  parseMarkdownFiles,
+  StreamingMarkdownParser,
+} from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
 import fs from 'fs';
 import {
   updateAIStatus,
-  updateAIScratchpad,
+  createAIMessage,
+  updateAIMessageContent,
+  finalizeAIMessage,
   ensureFileExists,
   clearFileContent,
   appendLineToFile,
+  updateFiles,
 } from './chatOperations.js';
+import { mergeFileChanges } from 'editcodewithai';
 
 const DEBUG = false;
+
+// Feature flag to enable/disable streaming editing.
+// * If `true`, the AI streaming response will be used to
+//   edit files in real-time by submitting ShareDB ops.
+// * If `false`, the updates to code files will be applied
+// only after the AI has finished generating the entire response.
+//
+// Current status: there's a tricky bug with the streaming
+// where the AI edits sometimes don't apply correctly in CodeMirror.
+// It seems that sometimes the op that clears the file content
+// is not applied correctly in the front end, leading to
+// a situation where the AI streaming edits are concatenated into the middle
+// of the file instead of replacing it.
+// See https://github.com/codemirror/codemirror.next/issues/1234
+const enableStreamingEditing = false;
 
 /**
  * Creates and configures the LLM function for streaming
@@ -19,23 +41,8 @@ export const createLLMFunction = ({
   createVizBotLocalPresence,
   chatId,
 }) => {
-  return async (fullPrompt) => {
+  return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
-    // Submit initial presence for VizBot
-    const vizBotPresence = {
-      username: 'VizBot',
-      start: ['files'], // Indicate VizBot is working on files
-      end: ['files'],
-    };
-
-    localPresence.submit(vizBotPresence, (error) => {
-      if (error) {
-        console.warn(
-          'VizBot presence submission error:',
-          error,
-        );
-      }
-    });
     const chatModel = new ChatOpenAI({
       modelName:
         process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
@@ -56,13 +63,21 @@ export const createLLMFunction = ({
     let currentEditingFileId = null;
     let currentEditingFileName = null;
 
+    // Create initial AI message for streaming
+    const aiMessageId = createAIMessage(shareDBDoc, chatId);
+
     // Function to report file edited
     // This is called when the AI has finished editing a file
-    // and we want to update the scratchpad with the file name.
+    // and we want to update the message content with the file name.
     const reportFileEdited = () => {
       if (currentEditingFileName) {
         fullContent += ` * Edited ${currentEditingFileName}\n`;
-        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          fullContent,
+        );
         currentEditingFileName = null;
       }
     };
@@ -91,22 +106,6 @@ export const createLLMFunction = ({
         // (AI will regenerate the entire file content)
         clearFileContent(shareDBDoc, currentEditingFileId);
 
-        // Update VizBot presence to show it's editing this specific file
-        const filePresence = {
-          username: 'VizBot',
-          start: ['files', currentEditingFileId, 'text', 0],
-          end: ['files', currentEditingFileId, 'text', 0],
-        };
-
-        localPresence.submit(filePresence, (error) => {
-          if (error) {
-            console.warn(
-              'VizBot file presence submission error:',
-              error,
-            );
-          }
-        });
-
         // Update AI status
         updateAIStatus(
           shareDBDoc,
@@ -117,6 +116,7 @@ export const createLLMFunction = ({
       onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
 
+        // If streaming is enabled, we apply the line immediately
         if (currentEditingFileId) {
           // Apply OT operation for this line immediately
           appendLineToFile(
@@ -165,7 +165,12 @@ export const createLLMFunction = ({
           reportFileEdited();
         }
         fullContent += line + '\n';
-        updateAIScratchpad(shareDBDoc, chatId, fullContent);
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          fullContent,
+        );
       },
     };
 
@@ -176,10 +181,21 @@ export const createLLMFunction = ({
     // Stream the response
     const stream = await chatModel.stream(fullPrompt);
     for await (const chunk of stream) {
-      if (chunk.content) {
+      if (chunk && chunk.content) {
         const chunkContent = String(chunk.content);
         chunks.push(chunkContent);
-        await parser.processChunk(chunkContent);
+
+        if (enableStreamingEditing) {
+          await parser.processChunk(chunkContent);
+        } else {
+          fullContent += chunkContent;
+          updateAIMessageContent(
+            shareDBDoc,
+            chatId,
+            aiMessageId,
+            fullContent,
+          );
+        }
       }
 
       if (!generationId && chunk.lc_kwargs?.id) {
@@ -189,7 +205,15 @@ export const createLLMFunction = ({
     await parser.flushRemaining();
     reportFileEdited();
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
-    updateAIScratchpad(shareDBDoc, chatId, fullContent);
+    updateAIMessageContent(
+      shareDBDoc,
+      chatId,
+      aiMessageId,
+      fullContent,
+    );
+
+    // Finalize the AI message by clearing temporary fields
+    finalizeAIMessage(shareDBDoc, chatId);
 
     // Clear VizBot presence when done
     DEBUG &&
@@ -205,6 +229,18 @@ export const createLLMFunction = ({
         );
       }
     });
+
+    // If streaming editing is not enabled, we need to
+    // apply all the edits at once
+    if (!enableStreamingEditing) {
+      updateFiles(
+        shareDBDoc,
+        mergeFileChanges(
+          shareDBDoc.data.files,
+          parseMarkdownFiles(fullContent, 'bold').files,
+        ),
+      );
+    }
 
     // Write chunks file for debugging
     if (DEBUG) {
