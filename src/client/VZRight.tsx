@@ -20,7 +20,7 @@ export const VZRight = () => {
   const isFirstRunRef = useRef(true);
 
   // Get access to the current files.
-  const { content } = useContext(VZCodeContext);
+  const { content, handleRuntimeError, clearRuntimeError } = useContext(VZCodeContext);
 
   const files = useMemo(
     () =>
@@ -46,11 +46,15 @@ export const VZRight = () => {
             console.error('Build error:', error);
           }
         },
+        handleRuntimeError,
       });
     }
 
     // Run code in the iframe
     if (isFirstRunRef.current || isInteracting) {
+      // Clear runtime errors when new code runs
+      clearRuntimeError();
+      
       runtimeRef.current?.run({
         files,
         enableHotReloading: true,

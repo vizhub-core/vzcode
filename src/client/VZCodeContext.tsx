@@ -34,6 +34,7 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import { useOpenDirectories } from './useOpenDirectories';
 import { usePrettier } from './usePrettier';
 import { useRunCode } from './useRunCode';
+import { useRuntimeError } from './useRuntimeError';
 import { useURLSync } from './useURLSync';
 import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
@@ -109,6 +110,10 @@ export type VZCodeContextValue = {
   editorNoLongerWantsFocus: () => void;
 
   errorMessage: string | null;
+
+  // Runtime error handling
+  handleRuntimeError: (formattedErrorMessage: string) => void;
+  clearRuntimeError: () => void;
 
   search: SearchResults;
   isSearchOpen: boolean;
@@ -231,19 +236,26 @@ export const VZCodeProvider = ({
     prettierWorker,
   });
 
+  // Handle runtime errors from the iframe
+  const { runtimeError, handleRuntimeError, clearRuntimeError } = useRuntimeError();
+
   const runCodeRef = useRunCode(submitOperation);
 
   const sidebarRef = useRef(null);
 
   const codeEditorRef = useRef(null);
 
-  // The error message shows either:
+  // The error message shows errors in order of priority:
+  // * `runtimeError` - errors from runtime execution, highest priority
   // * `prettierError` - errors from Prettier, client-side only
   // * `codeError` - errors from an external source, such as
   //   build-time errors or intercepted runtime errors.
-  // Since `prettierError` surfaces syntax errors, it's more likely to be
-  // useful to the user, so we prioritize it.
-  const errorMessage: string | null = prettierError
+  // Runtime errors are prioritized since they indicate immediate execution issues.
+  // Prettier errors are next since they surface syntax errors that are likely
+  // to be useful to the user.
+  const errorMessage: string | null = runtimeError
+    ? runtimeError
+    : prettierError
     ? prettierError
     : codeError;
 
@@ -492,6 +504,9 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
 
     errorMessage,
+
+    handleRuntimeError,
+    clearRuntimeError,
 
     isCreateFileModalOpen,
     handleOpenCreateFileModal,
