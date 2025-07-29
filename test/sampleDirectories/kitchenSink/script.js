@@ -1,2 +1,1 @@
-// This will cause a runtime error
-undefinedFunction();
+console.log('Hello World!');
