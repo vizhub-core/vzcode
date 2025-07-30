@@ -151,6 +151,7 @@
     "express": "^5.1.0",
     "ignore": "^7.0.5",
     "json0-ot-diff": "^1.1.2",
+    "jszip": "^3.10.1",
     "livekit-server-sdk": "^2.13.1",
     "llm-code-format": "^3.0.0",
     "ngrok": "^5.0.0-beta.2",
