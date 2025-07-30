@@ -162,6 +162,25 @@ export const useDragAndDrop = () => {
         return;
       }
 
+      // For SVG files, read as text if they're text-based
+      if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+        const textReader = new FileReader();
+        textReader.onload = (e) => {
+          if (e.target?.result) {
+            DEBUG &&
+              console.log(
+                `[useDragAndDrop] Successfully read SVG file as text: ${file.name}`,
+              );
+            resolve(e.target.result as string);
+          } else {
+            reject(new Error(`Failed to read SVG file ${file.name}`));
+          }
+        };
+        textReader.onerror = () => reject(new Error(`Error reading SVG file ${file.name}`));
+        textReader.readAsText(file);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {

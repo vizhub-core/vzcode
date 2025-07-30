@@ -43,7 +43,12 @@ export const ImageViewer = () => {
   };
 
   const mimeType = getImageMimeType(activeFile.name);
-  const imageSrc = `data:${mimeType};base64,${activeFile.text}`;
+  const extension = activeFile.name.split('.').pop()?.toLowerCase();
+  
+  // For SVG files, the content might already be the SVG text, not base64
+  const imageSrc = extension === 'svg' && !activeFile.text.startsWith('PHN2Zw') // Check if it's not base64-encoded SVG
+    ? `data:${mimeType};utf8,${encodeURIComponent(activeFile.text)}`
+    : `data:${mimeType};base64,${activeFile.text}`;
 
   return (
     <div className="image-viewer">
