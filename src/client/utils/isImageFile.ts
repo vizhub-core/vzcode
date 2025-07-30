@@ -4,5 +4,9 @@
  * @returns true if the file is an image, false otherwise
  */
 export const isImageFile = (fileName: string): boolean => {
-  return fileName.match(/\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i) !== null;
+  return (
+    fileName.match(
+      /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
+    ) !== null
+  );
 };

@@ -144,7 +144,9 @@ export const useDragAndDrop = () => {
     });
   };
 
-  const readImageAsBase64 = (file: File): Promise<string> => {
+  const readImageAsBase64 = (
+    file: File,
+  ): Promise<string> => {
     return new Promise((resolve, reject) => {
       DEBUG &&
         console.log(
@@ -157,13 +159,18 @@ export const useDragAndDrop = () => {
             `[useDragAndDrop] Rejected non-image file: ${file.name}`,
           );
         reject(
-          new Error(`File ${file.name} is not an image file`),
+          new Error(
+            `File ${file.name} is not an image file`,
+          ),
         );
         return;
       }
 
       // For SVG files, read as text if they're text-based
-      if (file.type === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+      if (
+        file.type === 'image/svg+xml' ||
+        file.name.toLowerCase().endsWith('.svg')
+      ) {
         const textReader = new FileReader();
         textReader.onload = (e) => {
           if (e.target?.result) {
@@ -173,10 +180,19 @@ export const useDragAndDrop = () => {
               );
             resolve(e.target.result as string);
           } else {
-            reject(new Error(`Failed to read SVG file ${file.name}`));
+            reject(
+              new Error(
+                `Failed to read SVG file ${file.name}`,
+              ),
+            );
           }
         };
-        textReader.onerror = () => reject(new Error(`Error reading SVG file ${file.name}`));
+        textReader.onerror = () =>
+          reject(
+            new Error(
+              `Error reading SVG file ${file.name}`,
+            ),
+          );
         textReader.readAsText(file);
         return;
       }
@@ -189,7 +205,9 @@ export const useDragAndDrop = () => {
               `[useDragAndDrop] Successfully read image file: ${file.name}`,
             );
           // Return just the base64 part without the data URL prefix
-          const base64 = (e.target.result as string).split(',')[1];
+          const base64 = (e.target.result as string).split(
+            ',',
+          )[1];
           resolve(base64);
         } else {
           DEBUG &&
@@ -197,7 +215,9 @@ export const useDragAndDrop = () => {
               `[useDragAndDrop] Failed to read image file: ${file.name}`,
             );
           reject(
-            new Error(`Failed to read image file ${file.name}`),
+            new Error(
+              `Failed to read image file ${file.name}`,
+            ),
           );
         }
       };
@@ -207,7 +227,9 @@ export const useDragAndDrop = () => {
             `[useDragAndDrop] Error reading image file: ${file.name}`,
           );
         reject(
-          new Error(`Error reading image file ${file.name}`),
+          new Error(
+            `Error reading image file ${file.name}`,
+          ),
         );
       };
       reader.readAsDataURL(file);
@@ -334,10 +356,12 @@ export const useDragAndDrop = () => {
                 );
               try {
                 if (isImageFile(file)) {
-                  const content = await readImageAsBase64(file);
+                  const content =
+                    await readImageAsBase64(file);
                   createFile(file.name, content);
                 } else {
-                  const content = await readFileAsText(file);
+                  const content =
+                    await readFileAsText(file);
                   createFile(file.name, content);
                 }
               } catch (error) {
