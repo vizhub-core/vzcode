@@ -8,7 +8,7 @@ import {
 } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
 import { vizFilesToFileCollection } from '@vizhub/viz-utils';
-import JSZip from 'jszip';
+import * as JSZip from 'jszip';
 
 export const createAICopyPasteHandlers = (
   files: VizFiles,
