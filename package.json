@@ -154,7 +154,6 @@
     "jszip": "^3.10.1",
     "livekit-server-sdk": "^2.13.1",
     "llm-code-format": "^3.0.0",
-    "ngrok": "^5.0.0-beta.2",
     "npm": "^11.5.1",
     "open": "^10.2.0",
     "prettier-plugin-svelte": "^3.4.0",
