@@ -112,7 +112,9 @@ export type VZCodeContextValue = {
   errorMessage: string | null;
 
   // Runtime error handling
-  handleRuntimeError: (formattedErrorMessage: string) => void;
+  handleRuntimeError: (
+    formattedErrorMessage: string,
+  ) => void;
   clearRuntimeError: () => void;
 
   search: SearchResults;
@@ -237,7 +239,11 @@ export const VZCodeProvider = ({
   });
 
   // Handle runtime errors from the iframe
-  const { runtimeError, handleRuntimeError, clearRuntimeError } = useRuntimeError();
+  const {
+    runtimeError,
+    handleRuntimeError,
+    clearRuntimeError,
+  } = useRuntimeError();
 
   const runCodeRef = useRunCode(submitOperation);
 
@@ -256,8 +262,8 @@ export const VZCodeProvider = ({
   const errorMessage: string | null = runtimeError
     ? runtimeError
     : prettierError
-    ? prettierError
-    : codeError;
+      ? prettierError
+      : codeError;
 
   // Set up the reducer that manages much of the application state.
   // See https://react.dev/reference/react/useReducer

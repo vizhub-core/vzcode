@@ -168,7 +168,11 @@ export const VZSidebar = ({
     useState('Export to ZIP');
 
   // Create AI copy/paste handlers
-  const { handleCopyForAI, handlePasteForAI, handleExportToZip } = useMemo(
+  const {
+    handleCopyForAI,
+    handlePasteForAI,
+    handleExportToZip,
+  } = useMemo(
     () =>
       createAICopyPasteHandlers(
         files,
@@ -553,15 +557,6 @@ export const VZSidebar = ({
         <div className="ai-buttons">
           {filesExist && (
             <button
-              className="ai-button copy-button"
-              onClick={handleCopyForAI}
-              title="Copy files formatted for AI"
-            >
-              {copyButtonText}
-            </button>
-          )}
-          {filesExist && (
-            <button
               className="ai-button export-button"
               onClick={handleExportToZip}
               title="Export files to ZIP"
@@ -569,6 +564,16 @@ export const VZSidebar = ({
               {exportButtonText}
             </button>
           )}
+          {filesExist && (
+            <button
+              className="ai-button copy-button"
+              onClick={handleCopyForAI}
+              title="Copy files formatted for AI"
+            >
+              {copyButtonText}
+            </button>
+          )}
+
           <button
             className="ai-button paste-button"
             onClick={handlePasteForAI}

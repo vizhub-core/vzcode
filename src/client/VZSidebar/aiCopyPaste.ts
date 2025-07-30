@@ -8,7 +8,7 @@ import {
 } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
 import { vizFilesToFileCollection } from '@vizhub/viz-utils';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 
 export const createAICopyPasteHandlers = (
   files: VizFiles,
@@ -140,7 +140,7 @@ export const createAICopyPasteHandlers = (
     try {
       // Create the ZIP
       const zip = new JSZip();
-      
+
       // Add each file to the ZIP
       Object.entries(files).forEach(([fileId, file]) => {
         const fileName = file.name || fileId;
@@ -149,11 +149,13 @@ export const createAICopyPasteHandlers = (
       });
 
       // Generate and download
-      const blob = await zip.generateAsync({ type: "blob" });
+      const blob = await zip.generateAsync({
+        type: 'blob',
+      });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "viz-files.zip";
+      a.download = 'viz-files.zip';
       a.click();
       URL.revokeObjectURL(url);
 
@@ -164,7 +166,10 @@ export const createAICopyPasteHandlers = (
         2000,
       );
     } catch (error) {
-      console.error('Failed to export files to ZIP:', error);
+      console.error(
+        'Failed to export files to ZIP:',
+        error,
+      );
       setExportButtonText('Error');
       setTimeout(
         () => setExportButtonText('Export to ZIP'),

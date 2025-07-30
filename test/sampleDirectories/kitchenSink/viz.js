@@ -12,8 +12,6 @@ export const viz = (container) => {
     .attr('height', height)
     .style('background', '#F0FFF4');
 
-  console.log(ff.ds);
-
   const data = [
     { x: 155, y: 382, r: 20, fill: '#D4089D' },
     { x: 340, y: 238, r: 52, fill: '#FF0AAE' },
