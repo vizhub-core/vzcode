@@ -52,21 +52,26 @@ const PaneView = ({
         activeFileId={pane.activeFileId}
         tabList={pane.tabList}
       />
-      {isClient && content && pane.activeFileId && (() => {
-        // Get the active file to determine if it's an image
-        const activeFile = content.files[pane.activeFileId];
-        const shouldShowImageViewer = activeFile && isImageFile(activeFile.name);
-        
-        return shouldShowImageViewer ? (
-          <ImageViewer />
-        ) : (
-          <CodeEditor
-            customInteractRules={customInteractRules}
-            aiCopilotEndpoint={aiCopilotEndpoint}
-            esLintSource={esLintSource}
-          />
-        );
-      })()}
+      {isClient &&
+        content &&
+        pane.activeFileId &&
+        (() => {
+          // Get the active file to determine if it's an image
+          const activeFile =
+            content.files[pane.activeFileId];
+          const shouldShowImageViewer =
+            activeFile && isImageFile(activeFile.name);
+
+          return shouldShowImageViewer ? (
+            <ImageViewer />
+          ) : (
+            <CodeEditor
+              customInteractRules={customInteractRules}
+              aiCopilotEndpoint={aiCopilotEndpoint}
+              esLintSource={esLintSource}
+            />
+          );
+        })()}
       {isClient &&
       enableAIAssist &&
       content &&
