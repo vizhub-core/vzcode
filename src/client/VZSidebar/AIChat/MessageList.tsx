@@ -48,6 +48,7 @@ const MessageListComponent = ({
           role={msg.role}
           content={msg.content}
           timestamp={msg.timestamp}
+          diffData={(msg as any).diffData}
         />
       ))}
 

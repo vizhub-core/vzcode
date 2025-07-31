@@ -1,0 +1,35 @@
+.diff-view {
+  margin: 12px 0;
+  
+  .diff-summary {
+    margin-bottom: 8px;
+    
+    .diff-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--bs-secondary-color);
+      
+      .files-changed {
+        font-weight: 600;
+      }
+      
+      .additions {
+        color: #28a745;
+        font-weight: 600;
+      }
+      
+      .deletions {
+        color: #dc3545;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .diff-files {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
