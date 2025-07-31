@@ -3,6 +3,7 @@ import {
   generateFileDiff,
   generateFilesDiff,
   createFilesSnapshot,
+  generateUnifiedDiff,
 } from '../src/utils/fileDiff';
 import { VizFiles } from '@vizhub/viz-types';
 
@@ -102,6 +103,38 @@ describe('fileDiff', () => {
       
       // Snapshot should remain unchanged
       expect(snapshot['file1'].text).toBe('console.log("Hello");');
+    });
+  });
+
+  describe('generateUnifiedDiff', () => {
+    it('should generate valid unified diff format', () => {
+      const beforeContent = 'console.log("Hello");';
+      const afterContent = '// Welcome\nconsole.log("Hello");';
+      
+      const fileDiff = generateFileDiff('file1', 'index.js', beforeContent, afterContent);
+      const filesDiff = { 'file1': fileDiff };
+      
+      const unifiedDiff = generateUnifiedDiff(filesDiff);
+      
+      expect(unifiedDiff).toContain('diff --git a/index.js b/index.js');
+      expect(unifiedDiff).toContain('--- a/index.js');
+      expect(unifiedDiff).toContain('+++ b/index.js');
+      expect(unifiedDiff).toContain('+// Welcome');
+      expect(unifiedDiff).toContain(' console.log("Hello");');
+    });
+
+    it('should handle empty diff data', () => {
+      const unifiedDiff = generateUnifiedDiff({});
+      expect(unifiedDiff).toBe('');
+    });
+
+    it('should skip files with no changes', () => {
+      const content = 'console.log("Hello");';
+      const fileDiff = generateFileDiff('file1', 'index.js', content, content);
+      const filesDiff = { 'file1': fileDiff };
+      
+      const unifiedDiff = generateUnifiedDiff(filesDiff);
+      expect(unifiedDiff).toBe('');
     });
   });
 });

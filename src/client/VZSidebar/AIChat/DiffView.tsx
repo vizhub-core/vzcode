@@ -1,6 +1,7 @@
 import React from 'react';
-import { FilesDiff } from '../../../utils/fileDiff';
-import { FileDiffView } from './FileDiffView';
+import { FilesDiff, generateUnifiedDiff } from '../../../utils/fileDiff';
+import * as Diff2Html from 'diff2html';
+import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 
 interface DiffViewProps {
@@ -34,6 +35,15 @@ export const DiffView: React.FC<DiffViewProps> = ({
     0,
   );
 
+  // Generate unified diff and convert to HTML using diff2html
+  const unifiedDiff = generateUnifiedDiff(diffData);
+  const diffHtml = Diff2Html.html(unifiedDiff, {
+    drawFileList: false,
+    matching: 'lines',
+    outputFormat: 'line-by-line',
+    colorScheme: 'auto'
+  });
+
   return (
     <div className="diff-view">
       <div className="diff-summary">
@@ -55,14 +65,10 @@ export const DiffView: React.FC<DiffViewProps> = ({
         </div>
       </div>
 
-      <div className="diff-files">
-        {fileDiffs.map((fileDiff) => (
-          <FileDiffView
-            key={fileDiff.fileId}
-            fileDiff={fileDiff}
-          />
-        ))}
-      </div>
+      <div 
+        className="diff-files" 
+        dangerouslySetInnerHTML={{ __html: diffHtml }}
+      />
     </div>
   );
 };

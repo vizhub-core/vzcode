@@ -128,3 +128,61 @@ export function generateFilesDiff(
 export function createFilesSnapshot(files: VizFiles): VizFiles {
   return JSON.parse(JSON.stringify(files));
 }
+
+/**
+ * Convert FilesDiff to unified diff format for diff2html
+ */
+export function generateUnifiedDiff(filesDiff: FilesDiff): string {
+  const diffParts: string[] = [];
+  
+  for (const fileDiff of Object.values(filesDiff)) {
+    if (!fileDiff.hasChanges) continue;
+    
+    // Create unified diff header
+    diffParts.push(`diff --git a/${fileDiff.fileName} b/${fileDiff.fileName}`);
+    diffParts.push(`index 0000000..1111111 100644`);
+    diffParts.push(`--- a/${fileDiff.fileName}`);
+    diffParts.push(`+++ b/${fileDiff.fileName}`);
+    
+    // Group consecutive lines into hunks
+    const hunks: string[] = [];
+    let currentHunk: string[] = [];
+    let hunkOldStart = 1;
+    let hunkNewStart = 1;
+    let hunkOldCount = 0;
+    let hunkNewCount = 0;
+    
+    for (let i = 0; i < fileDiff.lines.length; i++) {
+      const line = fileDiff.lines[i];
+      
+      if (currentHunk.length === 0) {
+        // Start new hunk
+        hunkOldStart = line.lineNumber || 1;
+        hunkNewStart = line.lineNumber || 1;
+      }
+      
+      if (line.type === 'unchanged') {
+        currentHunk.push(` ${line.content}`);
+        hunkOldCount++;
+        hunkNewCount++;
+      } else if (line.type === 'removed') {
+        currentHunk.push(`-${line.content}`);
+        hunkOldCount++;
+      } else if (line.type === 'added') {
+        currentHunk.push(`+${line.content}`);
+        hunkNewCount++;
+      }
+    }
+    
+    // Add hunk header and content if we have any changes
+    if (currentHunk.length > 0) {
+      const hunkHeader = `@@ -${hunkOldStart},${hunkOldCount} +${hunkNewStart},${hunkNewCount} @@`;
+      hunks.push(hunkHeader);
+      hunks.push(...currentHunk);
+    }
+    
+    diffParts.push(...hunks);
+  }
+  
+  return diffParts.join('\n');
+}

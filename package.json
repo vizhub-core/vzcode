@@ -145,6 +145,7 @@
     "comlink": "^4.4.2",
     "d3-array": "^3.2.4",
     "diff-match-patch": "^1.0.5",
+    "diff2html": "^3.4.52",
     "dotenv": "^17.2.1",
     "editcodewithai": "^2.3.0",
     "eslint-linter-browserify": "^9.32.0",
