@@ -3,6 +3,7 @@ import {
   ensureChatsExist,
   ensureChatExists,
   addUserMessage,
+  addDiffToAIMessage,
 } from './chatOperations.js';
 import { createLLMFunction } from './llmStreaming.js';
 import { performAIEditing } from './aiEditing.js';
@@ -71,6 +72,18 @@ export const handleAIChatMessage =
         llmFunction,
         runCode,
       });
+
+      // Add diff data to the AI message if there are changes
+      if (
+        editResult.diffData &&
+        Object.keys(editResult.diffData).length > 0
+      ) {
+        addDiffToAIMessage(
+          shareDBDoc,
+          chatId,
+          editResult.diffData,
+        );
+      }
 
       // Handle credit deduction if callback is provided
       if (

@@ -3,6 +3,7 @@ import {
   prepareFilesForPrompt,
 } from 'editcodewithai';
 import { formatMarkdownFiles } from 'llm-code-format';
+import { createFilesSnapshot, generateFilesDiff } from '../../utils/fileDiff.js';
 
 // Dev flag for waiting 1 second before starting the LLM function.
 // Useful for debugging and testing purposes, e.g. checking the typing indicator.
@@ -17,6 +18,9 @@ export const performAIEditing = async ({
   llmFunction,
   runCode,
 }) => {
+  // 1. Capture the current state of files before editing
+  const beforeFiles = createFilesSnapshot(shareDBDoc.data.files);
+
   const preparedFiles = prepareFilesForPrompt(
     shareDBDoc.data.files,
   );
@@ -40,8 +44,13 @@ export const performAIEditing = async ({
 
   runCode();
 
+  // 3. Capture the state of files after editing and generate diff
+  const afterFiles = createFilesSnapshot(shareDBDoc.data.files);
+  const diffData = generateFilesDiff(beforeFiles, afterFiles);
+
   return {
     content: result.content,
     generationId: result.generationId,
+    diffData,
   };
 };
