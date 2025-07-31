@@ -10,6 +10,11 @@ import createIgnore from 'ignore';
 import { ignoreFilePattern, baseIgnore } from './config.js';
 import { isDirectory } from './isDirectory.js';
 
+// Import the image file utility
+const isImageFile = (fileName) => {
+  return fileName.match(/\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i) !== null;
+};
+
 /**
  * @param {string} fullPath - absolut path of the workspace root
  * @param {string} currentDirectoryPath - path where the ignore file is found, relative to fullPath
@@ -180,13 +185,23 @@ export const computeInitialDocument = ({ fullPath }) => {
 
   files.forEach((file) => {
     const id = randomId();
+    let text = null;
+    
+    if (!isDirectory(file)) {
+      const filePath = path.join(fullPath, file);
+      
+      if (isImageFile(file)) {
+        // Read image files as binary and convert to base64
+        const buffer = fs.readFileSync(filePath);
+        text = buffer.toString('base64');
+      } else {
+        // Read non-image files as UTF-8 text
+        text = fs.readFileSync(filePath, 'utf-8');
+      }
+    }
+    
     initialDocument.files[id] = {
-      text: isDirectory(file)
-        ? null
-        : fs.readFileSync(
-            path.join(fullPath, file),
-            'utf-8',
-          ),
+      text,
       name: file,
     };
   });
