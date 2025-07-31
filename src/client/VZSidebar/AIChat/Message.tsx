@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { useMemo, memo } from 'react';
 import { DiffView } from './DiffView';
 import { FilesDiff } from '../../../utils/fileDiff';
+import { enableDiffView } from '../../featureFlags';
 
 interface MessageProps {
   id: string;
@@ -36,16 +37,18 @@ const MessageComponent = ({
   const messageClassName = useMemo(() => {
     return `ai-chat-message ${role}${isStreaming ? ' streaming' : ''}`;
   }, [role, isStreaming]);
-  
+
   return (
     <div className={messageClassName}>
       <div className="ai-chat-message-content">
         <Markdown remarkPlugins={[remarkGfm]}>
           {content}
         </Markdown>
-        {diffData && Object.keys(diffData).length > 0 && (
-          <DiffView diffData={diffData} />
-        )}
+        {enableDiffView &&
+          diffData &&
+          Object.keys(diffData).length > 0 && (
+            <DiffView diffData={diffData} />
+          )}
       </div>
       <div className="ai-chat-message-time">
         {formattedTime}

@@ -74,8 +74,15 @@ export const handleAIChatMessage =
       });
 
       // Add diff data to the AI message if there are changes
-      if (editResult.diffData && Object.keys(editResult.diffData).length > 0) {
-        addDiffToAIMessage(shareDBDoc, chatId, editResult.diffData);
+      if (
+        editResult.diffData &&
+        Object.keys(editResult.diffData).length > 0
+      ) {
+        addDiffToAIMessage(
+          shareDBDoc,
+          chatId,
+          editResult.diffData,
+        );
       }
 
       // Handle credit deduction if callback is provided

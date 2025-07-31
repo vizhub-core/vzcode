@@ -254,14 +254,22 @@ export const addDiffToAIMessage = (
   chatId: VizChatId,
   diffData: any,
 ) => {
+  console.log('diffData:', diffData);
   const chat = shareDBDoc.data.chats[chatId];
   const messages = [...chat.messages];
-  
+
   // Find the most recent AI message
   const lastAIMessageIndex = messages.length - 1;
-  if (lastAIMessageIndex >= 0 && messages[lastAIMessageIndex].role === 'assistant') {
+  if (
+    lastAIMessageIndex >= 0 &&
+    messages[lastAIMessageIndex].role === 'assistant'
+  ) {
+    const newMessage = {
+      ...messages[lastAIMessageIndex],
+      diffData,
+    };
     // Use type assertion to extend the message with diffData
-    (messages[lastAIMessageIndex] as any).diffData = diffData;
+    (messages[lastAIMessageIndex] as any) = newMessage;
 
     const messageOp = diff(shareDBDoc.data, {
       ...shareDBDoc.data,
@@ -274,6 +282,7 @@ export const addDiffToAIMessage = (
         },
       },
     });
+
     shareDBDoc.submitOp(messageOp);
   }
 };
