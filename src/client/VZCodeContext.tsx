@@ -188,6 +188,8 @@ export type VZCodeContextValue = {
   setLiveKitConnection: (state: boolean) => void;
   voiceChatModalOpen: boolean;
   setVoiceChatModalOpen: (state: boolean) => void;
+  aiChatMessage: string;
+  setAIChatMessage: (message: string) => void;
 };
 
 export const VZCodeProvider = ({
@@ -442,6 +444,8 @@ export const VZCodeProvider = ({
   const [voiceChatModalOpen, setVoiceChatModalOpen] =
     useState(false);
 
+  const [aiChatMessage, setAIChatMessage] = useState('');
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -546,6 +550,9 @@ export const VZCodeProvider = ({
     setLiveKitConnection,
     voiceChatModalOpen,
     setVoiceChatModalOpen,
+
+    aiChatMessage,
+    setAIChatMessage,
   };
 
   return (

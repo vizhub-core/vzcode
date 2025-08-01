@@ -7,16 +7,16 @@ import {
 import { Form, Button } from '../../bootstrap';
 
 interface ChatInputProps {
-  message: string;
-  setMessage: (message: string) => void;
+  aiChatMessage: string;
+  setAIChatMessage: (message: string) => void;
   onSendMessage: () => void;
   isLoading: boolean;
   focused: boolean;
 }
 
 const ChatInputComponent = ({
-  message,
-  setMessage,
+  aiChatMessage,
+  setAIChatMessage,
   onSendMessage,
   isLoading,
   focused,
@@ -42,9 +42,9 @@ const ChatInputComponent = ({
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setMessage(event.target.value);
+      setAIChatMessage(event.target.value);
     },
-    [setMessage],
+    [setAIChatMessage],
   );
 
   return (
@@ -53,7 +53,7 @@ const ChatInputComponent = ({
         <Form.Control
           as="textarea"
           rows={2}
-          value={message}
+          value={aiChatMessage}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           ref={inputRef}
@@ -64,7 +64,7 @@ const ChatInputComponent = ({
         <Button
           variant="primary"
           onClick={onSendMessage}
-          disabled={!message.trim() || isLoading}
+          disabled={!aiChatMessage.trim() || isLoading}
           className="ai-chat-send-button"
         >
           Send

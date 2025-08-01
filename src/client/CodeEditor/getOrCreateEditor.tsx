@@ -1,3 +1,4 @@
+import { createRoot } from 'react-dom/client';
 import { EditorView } from 'codemirror';
 import {
   Compartment,
@@ -43,7 +44,17 @@ import {
   EditorCacheValue,
 } from '../useEditorCache';
 import { ThemeLabel, themeOptionsByLabel } from '../themes';
-import { keymap } from '@codemirror/view';
+import {
+  keymap,
+  Decoration,
+  WidgetType,
+  ViewUpdate,
+  ViewPlugin,
+  DecorationSet,
+} from '@codemirror/view';
+import { Range } from '@codemirror/state';
+import { syntaxTree } from '@codemirror/language';
+import { RegExpCursor } from '@codemirror/search';
 import { basicSetup } from './basicSetup';
 import { InteractRule } from '@replit/codemirror-interact';
 import rainbowBrackets from './rainbowBrackets';
@@ -60,6 +71,9 @@ import {
   tsSyncWorker,
 } from '@valtown/codemirror-ts';
 import { getFileExtension } from '../utils/fileExtension';
+import { SparklesSVG } from '../Icons/SparklesSVG';
+import { VZCodeContext } from '../VZCodeContext';
+import { useContext, useMemo } from 'react';
 
 const DEBUG = false;
 
@@ -178,6 +192,8 @@ export const getOrCreateEditor = async ({
   aiCopilotEndpoint,
   esLintSource,
   rainbowBracketsEnabled = true,
+  setIsAIChatOpen,
+  setAIChatMessage,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -213,6 +229,8 @@ export const getOrCreateEditor = async ({
     view: EditorView,
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
+  setIsAIChatOpen: any; // TODO fix types
+  setAIChatMessage: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
@@ -453,6 +471,116 @@ export const getOrCreateEditor = async ({
   if (aiCopilotEndpoint) {
     extensions.push(copilot({ aiCopilotEndpoint }));
   }
+
+  // const { setIsAIChatOpen } = useContext(VZCodeContext);
+
+  // Widget appears after instances of "todo" in code editor, allowing AI to implement todo tasks when clicked
+  function createToDoPlugin() {
+    // setIsAIChatOpen: (open: boolean) => void,
+    class ToDoWidget extends WidgetType {
+      constructor() {
+        super();
+      }
+
+      eq(other: ToDoWidget) {
+        return false;
+      }
+
+      toDOM() {
+        const wrap = document.createElement('i');
+        wrap.style.display = 'inline-flex'; // prevent block expansion
+        wrap.style.alignItems = 'center';
+        wrap.style.justifyContent = 'center';
+        wrap.className = 'icon-button icon-button-dark';
+        const reactContainer =
+          document.createElement('div');
+        wrap.appendChild(reactContainer);
+
+        const root = createRoot(reactContainer);
+        root.render(
+          <div
+            onClick={() => {
+              console.log(
+                'TODO set the chat prompt to "Implement the TODO"',
+              );
+              setIsAIChatOpen(true);
+              setAIChatMessage('Implement the TODO');
+              // submitAIChatMessage()
+            }}
+          >
+            <SparklesSVG width={14} height={14} />
+          </div>,
+        );
+        return wrap;
+      }
+
+      ignoreEvent() {
+        return false;
+      }
+    }
+
+    function toDoWidgets(editor: EditorView) {
+      const { state } = editor;
+      const tree = syntaxTree(state);
+      const findToDo = new RegExpCursor(state.doc, 'todo', {
+        ignoreCase: true,
+      });
+      const widgets: Range<Decoration>[] = [];
+
+      while (!findToDo.next().done) {
+        const { from, to } = findToDo.value;
+        const node = tree.resolve(from);
+        let inComment = false;
+
+        // Walk up the parents until we hit the root, looking for a comment node
+        for (let cur: any = node; cur; cur = cur.parent) {
+          if (
+            cur.type.is('Comment') || // grammars that group comments
+            cur.type.is('comment') || // generic lowercase group
+            /Comment$/.test(cur.type.name) // fallback for e.g. LineComment
+          ) {
+            inComment = true;
+            break;
+          }
+        }
+        if (!inComment) continue; // skip non-comment TODOs
+
+        const deco = Decoration.widget({
+          widget: new ToDoWidget(),
+          side: 1,
+        }).range(to);
+        widgets.push(deco);
+      }
+      return Decoration.set(widgets);
+    }
+
+    const todoPlugin = ViewPlugin.fromClass(
+      class {
+        decorations: DecorationSet;
+
+        constructor(view: EditorView) {
+          this.decorations = toDoWidgets(view);
+        }
+
+        update(update: ViewUpdate) {
+          if (
+            update.docChanged ||
+            update.viewportChanged ||
+            syntaxTree(update.startState) !==
+              syntaxTree(update.state)
+          )
+            this.decorations = toDoWidgets(update.view);
+        }
+      },
+      {
+        decorations: (v) => v.decorations,
+      },
+    );
+
+    return todoPlugin;
+  }
+
+  extensions.push(createToDoPlugin());
 
   const editor = new EditorView({
     state: EditorState.create({

@@ -10,16 +10,16 @@ export const viz = (container) => {
     .join('svg')
     .attr('width', width)
     .attr('height', height)
-    .style('background', '#F0FFF4');
+    .style('background', '#F0F0FF');
 
   const data = [
-    { x: 155, y: 382, r: 20, fill: '#D4089D' },
-    { x: 340, y: 238, r: 52, fill: '#FF0AAE' },
-    { x: 531, y: 59, r: 20, fill: '#00FF88' },
-    { x: 482, y: 275, r: 147, fill: '#7300FF' },
-    { x: 781, y: 303, r: 61, fill: '#0FFB33' },
-    { x: 668, y: 229, r: 64, fill: '#D400FF' },
-    { x: 316, y: 396, r: 85, fill: '#0FF0FF' },
+    { x: 100, y: 350, r: 20, fill: '#8A2BE2' },
+    { x: 300, y: 200, r: 52, fill: '#9370DB' },
+    { x: 550, y: 50, r: 20, fill: '#BA55D3' },
+    { x: 500, y: 250, r: 147, fill: '#9400D3' },
+    { x: 800, y: 300, r: 61, fill: '#9932CC' },
+    { x: 700, y: 200, r: 64, fill: '#8B008B' },
+    { x: 300, y: 400, r: 85, fill: '#D8BFD8' },
   ];
 
   svg

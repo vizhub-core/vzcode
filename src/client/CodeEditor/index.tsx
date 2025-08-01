@@ -44,6 +44,8 @@ export const CodeEditor = ({
     codeEditorRef,
     enableAutoFollow,
     openTab,
+    setIsAIChatOpen,
+    setAIChatMessage,
   } = useContext(VZCodeContext);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
@@ -109,6 +111,8 @@ export const CodeEditor = ({
         enableAutoFollowRef,
         aiCopilotEndpoint,
         esLintSource,
+        setIsAIChatOpen,
+        setAIChatMessage,
       });
 
       if (isMounted) {
