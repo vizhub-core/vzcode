@@ -26,6 +26,7 @@ import {
   QuestionMarkSVG,
   SearchSVG,
   SparklesSVG,
+  AdjustmentSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
@@ -41,6 +42,7 @@ import {
   enableAIChat,
 } from '../featureFlags';
 import './styles.scss';
+import { VisualEditor } from './VisualEditor';
 
 const enableConnectionStatus = true;
 
@@ -113,6 +115,12 @@ export const VZSidebar = ({
       <strong>AI Chat (beta)</strong>
     </div>
   ),
+
+  visualEditorToolTipText = (
+    <div>
+      <strong>Visual Editor</strong>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -125,6 +133,7 @@ export const VZSidebar = ({
   disableAutoFollowTooltipText?: React.ReactNode;
   voiceChatToolTipText?: React.ReactNode;
   aiChatToolTipText?: React.ReactNode;
+  visualEditorToolTipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -133,6 +142,8 @@ export const VZSidebar = ({
     setIsDocOpen,
     isSearchOpen,
     setIsSearchOpen,
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
     isAIChatOpen,
     setIsAIChatOpen,
     handleOpenCreateFileModal,
@@ -327,6 +338,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(true);
                 setIsAIChatOpen(false);
+                setIsVisualEditorOpen(false);
               }}
             >
               <SearchSVG />
@@ -348,12 +360,34 @@ export const VZSidebar = ({
                 onClick={() => {
                   setIsAIChatOpen(true);
                   setIsSearchOpen(false);
+                  setIsVisualEditorOpen(false);
                 }}
               >
                 <SparklesSVG />
               </i>
             </OverlayTrigger>
           )}
+
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="visual-editor-tooltip">
+                {visualEditorToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              id="visual-editor-icon"
+              className="icon-button icon-button-dark"
+              onClick={() => {
+                setIsVisualEditorOpen(true);
+                setIsAIChatOpen(false);
+                setIsSearchOpen(false);
+              }}
+            >
+              <AdjustmentSVG />
+            </i>
+          </OverlayTrigger>
 
           <OverlayTrigger
             placement="right"
@@ -507,6 +541,10 @@ export const VZSidebar = ({
           ) : isSearchOpen ? (
             <div className="sidebar-search">
               <Search />
+            </div>
+          ) : isVisualEditorOpen ? (
+            <div className="sidebar-visual-editor">
+              <VisualEditor />
             </div>
           ) : (
             <div className="sidebar-files">

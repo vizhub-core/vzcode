@@ -64,6 +64,17 @@ export const useActions = (
     [dispatch],
   );
 
+  // True to show the visual editor
+  const setIsVisualEditorOpen = useCallback(
+    (value: boolean) => {
+      dispatch({
+        type: 'set_is_visual_editor_open',
+        value: value,
+      });
+    },
+    [dispatch]
+  );
+
   // True to show the settings modal.
   const setIsSearchOpen = useCallback(
     (value: boolean) => {
@@ -242,6 +253,7 @@ export const useActions = (
     openTab,
     closeTabs,
     setTheme,
+    setIsVisualEditorOpen,
     setIsSearchOpen,
     setSearch,
     setSearchResults,

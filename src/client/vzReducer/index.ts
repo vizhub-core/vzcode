@@ -56,6 +56,9 @@ export type VZState = {
   // True to show the search instead of files
   isSearchOpen: boolean;
 
+  // True to show the visual editor instead of files
+  isVisualEditorOpen: boolean;
+
   // True to show the AI chat instead of files
   isAIChatOpen: boolean;
 
@@ -128,6 +131,11 @@ export type VZAction =
   // `set_is_ai_chat_open`
   //  * Sets whether the AI chat tab is open.
   | { type: 'set_is_ai_chat_open'; value: boolean }
+
+  // 'set_is_visual_editor_open'
+  // * Sets whether the Visual Editor is open.
+  | { type: 'set_is_visual_editor_open'; value: boolean }
+
 
   // `toggle_ai_chat_focused`
   // * Toggles focused variable to trigger AI chat input focus

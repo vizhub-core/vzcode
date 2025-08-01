@@ -122,6 +122,11 @@ export type VZCodeContextValue = {
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
 
+  isVisualEditorOpen: boolean;
+  setIsVisualEditorOpen: (
+    isVisualEditorOpen: boolean,
+  ) => void;
+
   isAIChatOpen: boolean;
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   aiChatFocused: boolean;
@@ -284,6 +289,7 @@ export const VZCodeProvider = ({
     theme,
     search,
     isSearchOpen,
+    isVisualEditorOpen,
     isAIChatOpen,
     aiChatFocused,
     isSettingsOpen,
@@ -308,6 +314,7 @@ export const VZCodeProvider = ({
     openTab,
     closeTabs,
     setTheme,
+    setIsVisualEditorOpen,
     setIsSearchOpen,
     setSearch,
     setSearchResults,
@@ -474,6 +481,9 @@ export const VZCodeProvider = ({
 
     openTab,
     closeTabs,
+
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
 
     search,
     isSearchOpen,
