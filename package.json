@@ -1,6 +1,6 @@
 {
   "name": "vzcode",
-  "version": "1.43.0",
+  "version": "1.44.0",
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
@@ -124,15 +124,15 @@
     "@replit/codemirror-vscode-keymap": "^6.0.2",
     "@teamwork/websocket-json-stream": "^2.0.0",
     "@typescript/vfs": "^1.6.1",
-    "@uiw/codemirror-theme-abcdef": "^4.24.1",
-    "@uiw/codemirror-theme-dracula": "^4.24.1",
-    "@uiw/codemirror-theme-eclipse": "^4.24.1",
-    "@uiw/codemirror-theme-github": "^4.24.1",
-    "@uiw/codemirror-theme-material": "^4.24.1",
-    "@uiw/codemirror-theme-nord": "^4.24.1",
-    "@uiw/codemirror-theme-okaidia": "^4.24.1",
-    "@uiw/codemirror-theme-xcode": "^4.24.1",
-    "@uiw/codemirror-themes": "^4.24.1",
+    "@uiw/codemirror-theme-abcdef": "^4.24.2",
+    "@uiw/codemirror-theme-dracula": "^4.24.2",
+    "@uiw/codemirror-theme-eclipse": "^4.24.2",
+    "@uiw/codemirror-theme-github": "^4.24.2",
+    "@uiw/codemirror-theme-material": "^4.24.2",
+    "@uiw/codemirror-theme-nord": "^4.24.2",
+    "@uiw/codemirror-theme-okaidia": "^4.24.2",
+    "@uiw/codemirror-theme-xcode": "^4.24.2",
+    "@uiw/codemirror-themes": "^4.24.2",
     "@valtown/codemirror-ts": "^2.3.1",
     "@vizhub/runtime": "^4.2.0",
     "@vizhub/viz-types": "^0.3.0",
@@ -151,9 +151,9 @@
     "express": "^5.1.0",
     "ignore": "^7.0.5",
     "json0-ot-diff": "^1.1.2",
+    "jszip": "^3.10.1",
     "livekit-server-sdk": "^2.13.1",
     "llm-code-format": "^3.0.0",
-    "ngrok": "^5.0.0-beta.2",
     "npm": "^11.5.1",
     "open": "^10.2.0",
     "prettier-plugin-svelte": "^3.4.0",
@@ -187,7 +187,7 @@
     "vitest": "^3.2.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.46.1",
-    "@rollup/rollup-win32-x64-msvc": "^4.46.1"
+    "@rollup/rollup-darwin-arm64": "^4.46.2",
+    "@rollup/rollup-win32-x64-msvc": "^4.46.2"
   }
 }

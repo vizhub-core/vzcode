@@ -335,6 +335,15 @@
         }
       }
 
+      &.export-button {
+        border-color: var(--vh-color-primary-03);
+
+        &:hover {
+          background: var(--vh-color-hover-dark);
+          border-color: var(--vh-color-neutral-04);
+        }
+      }
+
       &.paste-button {
         border-color: var(--vh-color-success-03);
 

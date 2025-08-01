@@ -8,12 +8,14 @@ import {
 } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
 import { vizFilesToFileCollection } from '@vizhub/viz-utils';
+import JSZip from 'jszip';
 
 export const createAICopyPasteHandlers = (
   files: VizFiles,
   submitOperation: any,
   setCopyButtonText: (text: string) => void,
   setPasteButtonText: (text: string) => void,
+  setExportButtonText: (text: string) => void,
 ) => {
   // Copy for AI - formats all files and copies to clipboard
   const handleCopyForAI = async () => {
@@ -79,8 +81,11 @@ export const createAICopyPasteHandlers = (
         return;
       }
 
+      // Preprocess to remove formatting instructions section to avoid creating extra files
+      const preprocessed = normalized.split('## Formatting Instructions')[0].trim();
+
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(normalized, 'bold');
+      const parsed = parseMarkdownFiles(preprocessed, 'bold');
 
       if (
         parsed.files &&
@@ -124,8 +129,61 @@ export const createAICopyPasteHandlers = (
     }
   };
 
+  // Export to ZIP - creates and downloads a ZIP file with all viz files
+  const handleExportToZip = async () => {
+    if (!files || Object.keys(files).length === 0) {
+      setExportButtonText('No files to export');
+      setTimeout(
+        () => setExportButtonText('Export to ZIP'),
+        2000,
+      );
+      return;
+    }
+
+    try {
+      // Create the ZIP
+      const zip = new JSZip();
+
+      // Add each file to the ZIP
+      Object.entries(files).forEach(([fileId, file]) => {
+        const fileName = file.name || fileId;
+        const fileContent = file.text || '';
+        zip.file(fileName, fileContent);
+      });
+
+      // Generate and download
+      const blob = await zip.generateAsync({
+        type: 'blob',
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'viz-files.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Show success feedback
+      setExportButtonText('Exported!');
+      setTimeout(
+        () => setExportButtonText('Export to ZIP'),
+        2000,
+      );
+    } catch (error) {
+      console.error(
+        'Failed to export files to ZIP:',
+        error,
+      );
+      setExportButtonText('Error');
+      setTimeout(
+        () => setExportButtonText('Export to ZIP'),
+        2000,
+      );
+    }
+  };
+
   return {
     handleCopyForAI,
     handlePasteForAI,
+    handleExportToZip,
   };
 };

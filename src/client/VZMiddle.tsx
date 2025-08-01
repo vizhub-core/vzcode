@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { SplitPaneResizeContext } from './SplitPaneResizeContext';
 import { TabList } from './TabList';
 import { CodeEditor } from './CodeEditor';
+import { ImageViewer } from './ImageViewer';
 import { CodeErrorOverlay } from './CodeErrorOverlay';
 import { PresenceNotifications } from './PresenceNotifications';
 import { AIAssistWidget } from './AIAssist/AIAssistWidget';
@@ -12,6 +13,7 @@ import { EditorView } from '@codemirror/view';
 import { Diagnostic } from '@codemirror/lint';
 import { VizContent } from '@vizhub/viz-types';
 import { LeafPane } from '../types';
+import { isImageFile } from './utils/isImageFile';
 
 // TODO modify this to handle the SplitPane type
 // Recursive structure?
@@ -50,13 +52,26 @@ const PaneView = ({
         activeFileId={pane.activeFileId}
         tabList={pane.tabList}
       />
-      {isClient && content && pane.activeFileId && (
-        <CodeEditor
-          customInteractRules={customInteractRules}
-          aiCopilotEndpoint={aiCopilotEndpoint}
-          esLintSource={esLintSource}
-        />
-      )}
+      {isClient &&
+        content &&
+        pane.activeFileId &&
+        (() => {
+          // Get the active file to determine if it's an image
+          const activeFile =
+            content.files[pane.activeFileId];
+          const shouldShowImageViewer =
+            activeFile && isImageFile(activeFile.name);
+
+          return shouldShowImageViewer ? (
+            <ImageViewer />
+          ) : (
+            <CodeEditor
+              customInteractRules={customInteractRules}
+              aiCopilotEndpoint={aiCopilotEndpoint}
+              esLintSource={esLintSource}
+            />
+          );
+        })()}
       {isClient &&
       enableAIAssist &&
       content &&
