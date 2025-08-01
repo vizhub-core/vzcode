@@ -58,7 +58,7 @@ export const VZRight = () => {
 
       runtimeRef.current?.run({
         files,
-        enableHotReloading: true,
+        enableHotReloading: !isFirstRunRef.current,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
