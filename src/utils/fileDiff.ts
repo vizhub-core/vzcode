@@ -39,17 +39,22 @@ export function generateFileDiff(
 
   for (const [operation, text] of diffs) {
     const textLines = text.split('\n');
-    
+
     for (let i = 0; i < textLines.length; i++) {
       const isLastLine = i === textLines.length - 1;
       const content = textLines[i];
-      
+
       // Skip empty lines at the end unless it's the only line
-      if (isLastLine && content === '' && textLines.length > 1) {
+      if (
+        isLastLine &&
+        content === '' &&
+        textLines.length > 1
+      ) {
         continue;
       }
 
-      if (operation === 0) { // EQUAL
+      if (operation === 0) {
+        // EQUAL
         lines.push({
           type: 'unchanged',
           content,
@@ -57,14 +62,16 @@ export function generateFileDiff(
         });
         originalLineNum++;
         newLineNum++;
-      } else if (operation === -1) { // DELETE
+      } else if (operation === -1) {
+        // DELETE
         lines.push({
           type: 'removed',
           content,
           lineNumber: originalLineNum,
         });
         originalLineNum++;
-      } else if (operation === 1) { // INSERT
+      } else if (operation === 1) {
+        // INSERT
         lines.push({
           type: 'added',
           content,
@@ -75,7 +82,9 @@ export function generateFileDiff(
     }
   }
 
-  const hasChanges = lines.some(line => line.type !== 'unchanged');
+  const hasChanges = lines.some(
+    (line) => line.type !== 'unchanged',
+  );
 
   return {
     fileId,
@@ -103,10 +112,11 @@ export function generateFilesDiff(
   for (const fileId of allFileIds) {
     const beforeFile = beforeFiles[fileId];
     const afterFile = afterFiles[fileId];
-    
+
     const beforeContent = beforeFile?.text || '';
     const afterContent = afterFile?.text || '';
-    const fileName = afterFile?.name || beforeFile?.name || fileId;
+    const fileName =
+      afterFile?.name || beforeFile?.name || fileId;
 
     // Only generate diff if there are actual changes
     if (beforeContent !== afterContent) {
@@ -125,6 +135,8 @@ export function generateFilesDiff(
 /**
  * Create a snapshot of current files for diff comparison
  */
-export function createFilesSnapshot(files: VizFiles): VizFiles {
+export function createFilesSnapshot(
+  files: VizFiles,
+): VizFiles {
   return JSON.parse(JSON.stringify(files));
 }

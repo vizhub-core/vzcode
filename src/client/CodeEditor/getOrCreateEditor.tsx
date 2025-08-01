@@ -72,7 +72,7 @@ import {
 } from '@valtown/codemirror-ts';
 import { getFileExtension } from '../utils/fileExtension';
 import { SparklesSVG } from '../Icons/SparklesSVG';
-import { VZCodeContext } from '../VZCodeContext'
+import { VZCodeContext } from '../VZCodeContext';
 import { useContext, useMemo } from 'react';
 
 const DEBUG = false;
@@ -468,10 +468,11 @@ export const getOrCreateEditor = async ({
     extensions.push(copilot({ aiCopilotEndpoint }));
   }
 
-  const { setIsAIChatOpen } = useContext(VZCodeContext);
+  // const { setIsAIChatOpen } = useContext(VZCodeContext);
 
   // Widget appears after instances of "todo" in code editor, allowing AI to implement todo tasks when clicked
-  function createToDoPlugin(setIsAIChatOpen: (open: boolean) => void) {
+  function createToDoPlugin() {
+    // setIsAIChatOpen: (open: boolean) => void,
     class ToDoWidget extends WidgetType {
       constructor() {
         super();
@@ -487,17 +488,26 @@ export const getOrCreateEditor = async ({
         wrap.style.alignItems = 'center';
         wrap.style.justifyContent = 'center';
         wrap.className = 'icon-button icon-button-dark';
-        const reactContainer = document.createElement('div');
+        const reactContainer =
+          document.createElement('div');
         wrap.appendChild(reactContainer);
 
         wrap.addEventListener('mousedown', (e) => {
           e.stopPropagation();
-          setIsAIChatOpen(true);
+          // setIsAIChatOpen(true);
         });
 
         const root = createRoot(reactContainer);
-        root.render(<SparklesSVG width={14} height={14}/>);
-        return wrap
+        root.render(
+          <div
+            onClick={() => {
+              console.log('clicked');
+            }}
+          >
+            <SparklesSVG width={14} height={14} />
+          </div>,
+        );
+        return wrap;
       }
 
       ignoreEvent() {
@@ -562,12 +572,11 @@ export const getOrCreateEditor = async ({
         decorations: (v) => v.decorations,
       },
     );
-    
+
     return todoPlugin;
   }
 
-  const todoPlugin = useMemo(() => createToDoPlugin(setIsAIChatOpen), [setIsAIChatOpen]);
-  extensions.push(todoPlugin);
+  extensions.push(createToDoPlugin());
 
   const editor = new EditorView({
     state: EditorState.create({

@@ -82,10 +82,15 @@ export const createAICopyPasteHandlers = (
       }
 
       // Preprocess to remove formatting instructions section to avoid creating extra files
-      const preprocessed = normalized.split('## Formatting Instructions')[0].trim();
+      const preprocessed = normalized
+        .split('## Formatting Instructions')[0]
+        .trim();
 
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(preprocessed, 'bold');
+      const parsed = parseMarkdownFiles(
+        preprocessed,
+        'bold',
+      );
 
       if (
         parsed.files &&
