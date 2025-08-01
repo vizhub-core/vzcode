@@ -1,6 +1,11 @@
 import { SubmitOperation } from './types';
 import { VizContent } from '@vizhub/viz-types';
 
+// Extend VizContent type to include hardRerun property
+type ExtendedVizContent = VizContent & {
+  hardRerun?: boolean;
+};
+
 /**
  * Creates a runCode function that triggers code execution by flashing `isInteracting` to `true`.
  * This works for both client-side (with submitOperation) and server-side (with ShareDB document).
@@ -8,19 +13,20 @@ import { VizContent } from '@vizhub/viz-types';
 export const createRunCodeFunction = (
   submitOperation: SubmitOperation,
 ) => {
-  return () => {
+  return (hardRerun = false) => {
     // Use the unified submitOperation approach for both client and server
     submitOperation((content: VizContent) => ({
       ...content,
       isInteracting: true,
-    }));
+      ...(hardRerun && { hardRerun: true }),
+    } as ExtendedVizContent));
 
     setTimeout(() => {
       // This somewhat cryptic logic
-      // deletes the `isInteracting` property
+      // deletes the `isInteracting` and `hardRerun` properties
       // from the document.
       submitOperation(
-        ({ isInteracting, ...newDocument }) => newDocument,
+        ({ isInteracting, hardRerun, ...newDocument }: ExtendedVizContent) => newDocument,
       );
     }, 100);
   };
