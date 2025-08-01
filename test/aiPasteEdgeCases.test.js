@@ -23,11 +23,17 @@ Second formatting section
 console.log('should be ignored');
 \`\`\``;
 
-    const preprocessed = content.split('## Formatting Instructions')[0].trim();
+    const preprocessed = content
+      .split('## Formatting Instructions')[0]
+      .trim();
     const parsed = parseMarkdownFiles(preprocessed, 'bold');
-    
-    expect(Object.keys(parsed.files || {})).toEqual(['file1.js']);
-    expect(Object.keys(parsed.files || {})).not.toContain('fileA.js');
+
+    expect(Object.keys(parsed.files || {})).toEqual([
+      'file1.js',
+    ]);
+    expect(Object.keys(parsed.files || {})).not.toContain(
+      'fileA.js',
+    );
   });
 
   test('should handle case-insensitive variations', () => {
@@ -47,12 +53,18 @@ console.log('should NOT be ignored - different case');
 
     // Our current implementation is case-sensitive, which is correct
     // since the FORMAT_INSTRUCTIONS.whole uses exact case
-    const preprocessed = content.split('## Formatting Instructions')[0].trim();
+    const preprocessed = content
+      .split('## Formatting Instructions')[0]
+      .trim();
     const parsed = parseMarkdownFiles(preprocessed, 'bold');
-    
+
     // Should include both files since case doesn't match
-    expect(Object.keys(parsed.files || {})).toContain('file1.js');
-    expect(Object.keys(parsed.files || {})).toContain('fileA.js');
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file1.js',
+    );
+    expect(Object.keys(parsed.files || {})).toContain(
+      'fileA.js',
+    );
   });
 
   test('should handle content with no formatting instructions normally', () => {
@@ -68,11 +80,17 @@ console.log('file1');
 console.log('file2');
 \`\`\``;
 
-    const preprocessed = content.split('## Formatting Instructions')[0].trim();
+    const preprocessed = content
+      .split('## Formatting Instructions')[0]
+      .trim();
     const parsed = parseMarkdownFiles(preprocessed, 'bold');
-    
-    expect(Object.keys(parsed.files || {})).toContain('file1.js');
-    expect(Object.keys(parsed.files || {})).toContain('file2.js');
+
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file1.js',
+    );
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file2.js',
+    );
     expect(Object.keys(parsed.files || {}).length).toBe(2);
   });
 
@@ -85,10 +103,14 @@ console.log('file1');
 
 ## Formatting Instructions`;
 
-    const preprocessed = content.split('## Formatting Instructions')[0].trim();
+    const preprocessed = content
+      .split('## Formatting Instructions')[0]
+      .trim();
     const parsed = parseMarkdownFiles(preprocessed, 'bold');
-    
-    expect(Object.keys(parsed.files || {})).toContain('file1.js');
+
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file1.js',
+    );
     expect(Object.keys(parsed.files || {}).length).toBe(1);
   });
 
@@ -101,9 +123,11 @@ console.log('file1');
 console.log('should be ignored');
 \`\`\``;
 
-    const preprocessed = content.split('## Formatting Instructions')[0].trim();
+    const preprocessed = content
+      .split('## Formatting Instructions')[0]
+      .trim();
     const parsed = parseMarkdownFiles(preprocessed, 'bold');
-    
+
     // Should result in empty content, no files
     expect(Object.keys(parsed.files || {}).length).toBe(0);
   });

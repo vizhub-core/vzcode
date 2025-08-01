@@ -96,8 +96,11 @@
 
     // Fix file header styling
     .d2h-file-header {
-      background-color: var(--d2h-file-header-bg-color) !important;
-      border-bottom: 1px solid var(--d2h-file-header-border-color) !important;
+      background-color: var(
+        --d2h-file-header-bg-color
+      ) !important;
+      border-bottom: 1px solid
+        var(--d2h-file-header-border-color) !important;
       color: var(--d2h-color);
     }
 
