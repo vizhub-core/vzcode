@@ -1,46 +1,41 @@
 import React from 'react';
 import {
-  FilesDiff,
-  generateUnifiedDiff,
+  UnifiedFilesDiff,
+  parseUnifiedDiffStats,
+  combineUnifiedDiffs,
 } from '../../../utils/fileDiff';
 import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 
 interface DiffViewProps {
-  diffData: FilesDiff;
+  diffData: UnifiedFilesDiff;
 }
 
 export const DiffView: React.FC<DiffViewProps> = ({
   diffData,
 }) => {
-  const fileDiffs = Object.values(diffData).filter(
-    (diff) => diff.hasChanges,
+  const unifiedDiffs = Object.values(diffData).filter(
+    (diff) => diff.length > 0,
   );
 
-  if (fileDiffs.length === 0) {
+  if (unifiedDiffs.length === 0) {
     return null;
   }
 
-  const totalAdditions = fileDiffs.reduce(
-    (sum, diff) =>
-      sum +
-      diff.lines.filter((line) => line.type === 'added')
-        .length,
-    0,
-  );
+  // Calculate statistics from all unified diffs
+  let totalAdditions = 0;
+  let totalDeletions = 0;
 
-  const totalDeletions = fileDiffs.reduce(
-    (sum, diff) =>
-      sum +
-      diff.lines.filter((line) => line.type === 'removed')
-        .length,
-    0,
-  );
+  for (const unifiedDiff of unifiedDiffs) {
+    const stats = parseUnifiedDiffStats(unifiedDiff);
+    totalAdditions += stats.additions;
+    totalDeletions += stats.deletions;
+  }
 
-  // Generate unified diff and convert to HTML using diff2html
-  const unifiedDiff = generateUnifiedDiff(diffData);
-  const diffHtml = Diff2Html.html(unifiedDiff, {
+  // Combine all unified diffs and convert to HTML using diff2html
+  const combinedUnifiedDiff = combineUnifiedDiffs(diffData);
+  const diffHtml = Diff2Html.html(combinedUnifiedDiff, {
     drawFileList: false,
     matching: 'words',
     diffStyle: 'word',
@@ -52,8 +47,8 @@ export const DiffView: React.FC<DiffViewProps> = ({
       <div className="diff-summary">
         <div className="diff-stats">
           <span className="files-changed">
-            {fileDiffs.length} file
-            {fileDiffs.length !== 1 ? 's' : ''} changed
+            {unifiedDiffs.length} file
+            {unifiedDiffs.length !== 1 ? 's' : ''} changed
           </span>
           {totalAdditions > 0 && (
             <span className="additions">

@@ -1,53 +1,49 @@
 import { describe, it, expect } from 'vitest';
 import {
-  generateFileDiff,
-  generateFilesDiff,
+  generateFileUnifiedDiff,
+  generateFilesUnifiedDiff,
   createFilesSnapshot,
-  generateUnifiedDiff,
+  parseUnifiedDiffStats,
+  combineUnifiedDiffs,
 } from '../src/utils/fileDiff';
 import { VizFiles } from '@vizhub/viz-types';
 
 describe('fileDiff', () => {
-  describe('generateFileDiff', () => {
-    it('should generate correct diff for file changes', () => {
+  describe('generateFileUnifiedDiff', () => {
+    it('should generate correct unified diff for file changes', () => {
       const beforeContent = 'console.log("Hello, World!");';
       const afterContent =
         '// Welcome to my visualization\nconsole.log("Hello, World!");';
 
-      const diff = generateFileDiff(
+      const diff = generateFileUnifiedDiff(
         'file1',
         'index.js',
         beforeContent,
         afterContent,
       );
 
-      expect(diff.fileId).toBe('file1');
-      expect(diff.fileName).toBe('index.js');
-      expect(diff.hasChanges).toBe(true);
-      expect(diff.lines).toHaveLength(2);
-      expect(diff.lines[0].type).toBe('added');
-      expect(diff.lines[0].content).toBe(
-        '// Welcome to my visualization',
+      expect(diff).toContain('Index: index.js');
+      expect(diff).toContain('--- index.js');
+      expect(diff).toContain('+++ index.js');
+      expect(diff).toContain(
+        '+// Welcome to my visualization',
       );
-      expect(diff.lines[1].type).toBe('unchanged');
-      expect(diff.lines[1].content).toBe(
-        'console.log("Hello, World!");',
+      expect(diff).toContain(
+        ' console.log("Hello, World!");',
       );
     });
 
-    it('should detect no changes when content is identical', () => {
+    it('should return empty string when content is identical', () => {
       const content = 'console.log("Hello, World!");';
 
-      const diff = generateFileDiff(
+      const diff = generateFileUnifiedDiff(
         'file1',
         'index.js',
         content,
         content,
       );
 
-      expect(diff.hasChanges).toBe(false);
-      expect(diff.lines).toHaveLength(1);
-      expect(diff.lines[0].type).toBe('unchanged');
+      expect(diff).toBe('');
     });
 
     it('should handle removals correctly', () => {
@@ -55,25 +51,22 @@ describe('fileDiff', () => {
         '// Old comment\nconsole.log("Hello, World!");';
       const afterContent = 'console.log("Hello, World!");';
 
-      const diff = generateFileDiff(
+      const diff = generateFileUnifiedDiff(
         'file1',
         'index.js',
         beforeContent,
         afterContent,
       );
 
-      expect(diff.hasChanges).toBe(true);
-      expect(diff.lines).toHaveLength(2);
-      expect(diff.lines[0].type).toBe('removed');
-      expect(diff.lines[0].content).toBe('// Old comment');
-      expect(diff.lines[1].type).toBe('unchanged');
-      expect(diff.lines[1].content).toBe(
-        'console.log("Hello, World!");',
+      expect(diff).toContain('Index: index.js');
+      expect(diff).toContain('-// Old comment');
+      expect(diff).toContain(
+        ' console.log("Hello, World!");',
       );
     });
   });
 
-  describe('generateFilesDiff', () => {
+  describe('generateFilesUnifiedDiff', () => {
     it('should generate diffs for multiple files', () => {
       const beforeFiles: VizFiles = {
         file1: {
@@ -97,18 +90,15 @@ describe('fileDiff', () => {
         }, // No change
       };
 
-      const diffs = generateFilesDiff(
+      const diffs = generateFilesUnifiedDiff(
         beforeFiles,
         afterFiles,
       );
 
       // Only file1 should have changes
       expect(Object.keys(diffs)).toEqual(['file1']);
-      expect(diffs['file1'].hasChanges).toBe(true);
-      expect(diffs['file1'].lines[0].type).toBe('added');
-      expect(diffs['file1'].lines[0].content).toBe(
-        '// Updated',
-      );
+      expect(diffs['file1']).toContain('Index: index.js');
+      expect(diffs['file1']).toContain('+// Updated');
     });
 
     it('should handle new files', () => {
@@ -130,16 +120,46 @@ describe('fileDiff', () => {
         },
       };
 
-      const diffs = generateFilesDiff(
+      const diffs = generateFilesUnifiedDiff(
         beforeFiles,
         afterFiles,
       );
 
       expect(Object.keys(diffs)).toEqual(['file2']);
-      expect(diffs['file2'].hasChanges).toBe(true);
-      expect(diffs['file2'].beforeContent).toBe('');
-      expect(diffs['file2'].afterContent).toBe(
-        'console.log("New file");',
+      expect(diffs['file2']).toContain('Index: new.js');
+      expect(diffs['file2']).toContain(
+        '+console.log("New file");',
+      );
+    });
+
+    it('should handle deleted files', () => {
+      const beforeFiles: VizFiles = {
+        file1: {
+          name: 'index.js',
+          text: 'console.log("Hello");',
+        },
+        file2: {
+          name: 'old.js',
+          text: 'console.log("Old file");',
+        },
+      };
+
+      const afterFiles: VizFiles = {
+        file1: {
+          name: 'index.js',
+          text: 'console.log("Hello");',
+        },
+      };
+
+      const diffs = generateFilesUnifiedDiff(
+        beforeFiles,
+        afterFiles,
+      );
+
+      expect(Object.keys(diffs)).toEqual(['file2']);
+      expect(diffs['file2']).toContain('Index: old.js');
+      expect(diffs['file2']).toContain(
+        '-console.log("Old file");',
       );
     });
   });
@@ -165,50 +185,78 @@ describe('fileDiff', () => {
     });
   });
 
-  describe('generateUnifiedDiff', () => {
-    it('should generate valid unified diff format', () => {
-      const beforeContent = 'console.log("Hello");';
-      const afterContent =
-        '// Welcome\nconsole.log("Hello");';
+  describe('parseUnifiedDiffStats', () => {
+    it('should parse additions and deletions correctly', () => {
+      const unifiedDiff = `diff --git a/index.js b/index.js
+index 0000000..1111111 100644
+--- a/index.js
++++ b/index.js
+@@ -1,2 +1,3 @@
++// New comment
+ console.log("Hello");
+-console.log("Old");`;
 
-      const fileDiff = generateFileDiff(
-        'file1',
-        'index.js',
-        beforeContent,
-        afterContent,
-      );
-      const filesDiff = { file1: fileDiff };
+      const stats = parseUnifiedDiffStats(unifiedDiff);
 
-      const unifiedDiff = generateUnifiedDiff(filesDiff);
-
-      expect(unifiedDiff).toContain(
-        'diff --git a/index.js b/index.js',
-      );
-      expect(unifiedDiff).toContain('--- a/index.js');
-      expect(unifiedDiff).toContain('+++ b/index.js');
-      expect(unifiedDiff).toContain('+// Welcome');
-      expect(unifiedDiff).toContain(
-        ' console.log("Hello");',
-      );
+      expect(stats.additions).toBe(1);
+      expect(stats.deletions).toBe(1);
     });
 
-    it('should handle empty diff data', () => {
-      const unifiedDiff = generateUnifiedDiff({});
-      expect(unifiedDiff).toBe('');
+    it('should handle empty diff', () => {
+      const stats = parseUnifiedDiffStats('');
+
+      expect(stats.additions).toBe(0);
+      expect(stats.deletions).toBe(0);
     });
 
-    it('should skip files with no changes', () => {
-      const content = 'console.log("Hello");';
-      const fileDiff = generateFileDiff(
-        'file1',
-        'index.js',
-        content,
-        content,
-      );
-      const filesDiff = { file1: fileDiff };
+    it('should ignore header lines', () => {
+      const unifiedDiff = `diff --git a/index.js b/index.js
+index 0000000..1111111 100644
+--- a/index.js
++++ b/index.js
+@@ -1,1 +1,2 @@
++// Added line
+ console.log("Hello");`;
 
-      const unifiedDiff = generateUnifiedDiff(filesDiff);
-      expect(unifiedDiff).toBe('');
+      const stats = parseUnifiedDiffStats(unifiedDiff);
+
+      expect(stats.additions).toBe(1);
+      expect(stats.deletions).toBe(0);
+    });
+  });
+
+  describe('combineUnifiedDiffs', () => {
+    it('should combine multiple unified diffs', () => {
+      const unifiedDiffs = {
+        file1: `diff --git a/file1.js b/file1.js
+--- a/file1.js
++++ b/file1.js
+@@ -1,1 +1,2 @@
++// Comment
+ console.log("file1");`,
+        file2: `diff --git a/file2.js b/file2.js
+--- a/file2.js
++++ b/file2.js
+@@ -1,1 +1,2 @@
++// Comment
+ console.log("file2");`,
+      };
+
+      const combined = combineUnifiedDiffs(unifiedDiffs);
+
+      expect(combined).toContain(
+        'diff --git a/file1.js b/file1.js',
+      );
+      expect(combined).toContain(
+        'diff --git a/file2.js b/file2.js',
+      );
+      expect(combined).toContain('console.log("file1");');
+      expect(combined).toContain('console.log("file2");');
+    });
+
+    it('should handle empty diffs object', () => {
+      const combined = combineUnifiedDiffs({});
+      expect(combined).toBe('');
     });
   });
 });

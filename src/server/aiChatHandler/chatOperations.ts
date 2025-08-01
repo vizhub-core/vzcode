@@ -254,7 +254,6 @@ export const addDiffToAIMessage = (
   chatId: VizChatId,
   diffData: any,
 ) => {
-  console.log('diffData:', diffData);
   const chat = shareDBDoc.data.chats[chatId];
   const messages = [...chat.messages];
 
