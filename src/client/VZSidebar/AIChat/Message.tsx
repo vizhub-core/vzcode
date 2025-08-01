@@ -3,7 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useMemo, memo } from 'react';
 import { DiffView } from './DiffView';
-import { FilesDiff } from '../../../utils/fileDiff';
+import { UnifiedFilesDiff } from '../../../utils/fileDiff';
 import { enableDiffView } from '../../featureFlags';
 
 interface MessageProps {
@@ -12,7 +12,7 @@ interface MessageProps {
   content: string;
   timestamp: number;
   isStreaming?: boolean;
-  diffData?: FilesDiff;
+  diffData?: UnifiedFilesDiff;
 }
 
 const MessageComponent = ({

@@ -5,7 +5,7 @@ import {
 import { formatMarkdownFiles } from 'llm-code-format';
 import {
   createFilesSnapshot,
-  generateFilesDiff,
+  generateFilesUnifiedDiff,
 } from '../../utils/fileDiff.js';
 
 // Dev flag for waiting 1 second before starting the LLM function.
@@ -53,7 +53,7 @@ export const performAIEditing = async ({
   const afterFiles = createFilesSnapshot(
     shareDBDoc.data.files,
   );
-  const diffData = generateFilesDiff(
+  const diffData = generateFilesUnifiedDiff(
     beforeFiles,
     afterFiles,
   );
