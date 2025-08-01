@@ -158,7 +158,9 @@ export type VZCodeContextValue = {
   runPrettierRef: React.MutableRefObject<
     null | (() => void)
   >;
-  runCodeRef: React.MutableRefObject<null | ((hardRerun?: boolean) => void)>;
+  runCodeRef: React.MutableRefObject<
+    null | ((hardRerun?: boolean) => void)
+  >;
 
   sidebarRef: React.RefObject<HTMLDivElement>;
 

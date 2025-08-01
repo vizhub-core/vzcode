@@ -38,7 +38,8 @@ export const VZRight = () => {
   );
 
   const isInteracting = content?.isInteracting || false;
-  const hardRerun = (content as ExtendedVizContent)?.hardRerun || false;
+  const hardRerun =
+    (content as ExtendedVizContent)?.hardRerun || false;
 
   useEffect(() => {
     if (!files) return;
@@ -65,7 +66,8 @@ export const VZRight = () => {
 
       runtimeRef.current?.run({
         files,
-        enableHotReloading: !isFirstRunRef.current && !hardRerun,
+        enableHotReloading:
+          !isFirstRunRef.current && !hardRerun,
         enableSourcemap: true,
         vizId: 'example-viz',
       });

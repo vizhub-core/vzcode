@@ -15,18 +15,25 @@ export const createRunCodeFunction = (
 ) => {
   return (hardRerun = false) => {
     // Use the unified submitOperation approach for both client and server
-    submitOperation((content: VizContent) => ({
-      ...content,
-      isInteracting: true,
-      ...(hardRerun && { hardRerun: true }),
-    } as ExtendedVizContent));
+    submitOperation(
+      (content: VizContent) =>
+        ({
+          ...content,
+          isInteracting: true,
+          ...(hardRerun && { hardRerun: true }),
+        }) as ExtendedVizContent,
+    );
 
     setTimeout(() => {
       // This somewhat cryptic logic
       // deletes the `isInteracting` and `hardRerun` properties
       // from the document.
       submitOperation(
-        ({ isInteracting, hardRerun, ...newDocument }: ExtendedVizContent) => newDocument,
+        ({
+          isInteracting,
+          hardRerun,
+          ...newDocument
+        }: ExtendedVizContent) => newDocument,
       );
     }, 100);
   };

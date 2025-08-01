@@ -19,7 +19,11 @@ export const RunCodeWidget = ({
     <>
       <strong>Run Code</strong>
       <div>(Shift + Enter or Ctrl + s)</div>
-      <div><small>Hold Shift while clicking for hard re-run</small></div>
+      <div>
+        <small>
+          Hold Shift while clicking for hard re-run
+        </small>
+      </div>
     </>
   ),
 }: {
@@ -29,27 +33,30 @@ export const RunCodeWidget = ({
     useContext(VZCodeContext);
   const [isRunning, setIsRunning] = useState(false);
 
-  const handleClick = useCallback((event?: React.MouseEvent) => {
-    setIsRunning(true); // Set the running state to true
+  const handleClick = useCallback(
+    (event?: React.MouseEvent) => {
+      setIsRunning(true); // Set the running state to true
 
-    // Check if Shift key was held during click
-    const hardRerun = event?.shiftKey || false;
+      // Check if Shift key was held during click
+      const hardRerun = event?.shiftKey || false;
 
-    // Run Prettier
-    const runPrettier = runPrettierRef.current;
-    if (runPrettier !== null) {
-      runPrettier();
-    }
+      // Run Prettier
+      const runPrettier = runPrettierRef.current;
+      if (runPrettier !== null) {
+        runPrettier();
+      }
 
-    // Run the code
-    const runCode = runCodeRef.current;
-    if (runCode !== null) {
-      runCode(hardRerun);
-    }
+      // Run the code
+      const runCode = runCodeRef.current;
+      if (runCode !== null) {
+        runCode(hardRerun);
+      }
 
-    // Optional: reset the icon state after animation completes (e.g., 1 second)
-    setTimeout(() => setIsRunning(false), 1000);
-  }, [runCodeRef, runPrettierRef]);
+      // Optional: reset the icon state after animation completes (e.g., 1 second)
+      setTimeout(() => setIsRunning(false), 1000);
+    },
+    [runCodeRef, runPrettierRef],
+  );
 
   const handleSplitEditor = useCallback(() => {
     splitCurrentPane();
