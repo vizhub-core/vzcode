@@ -20,7 +20,11 @@ import './setupEnv.js';
 
 // Import the image file utility
 const isImageFile = (fileName) => {
-  return fileName.match(/\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i) !== null;
+  return (
+    fileName.match(
+      /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
+    ) !== null
+  );
 };
 
 // The time in milliseconds by which auto-saving is debounced.
@@ -168,7 +172,10 @@ const save = () => {
       if (previous.text !== current.text) {
         if (isImageFile(current.name)) {
           // Write image files as binary from base64
-          const buffer = Buffer.from(current.text, 'base64');
+          const buffer = Buffer.from(
+            current.text,
+            'base64',
+          );
           fs.writeFileSync(current.name, buffer);
         } else {
           // Write non-image files as text
@@ -270,7 +277,10 @@ const save = () => {
       if (!isDirectory(current.name)) {
         if (isImageFile(current.name)) {
           // Write image files as binary from base64
-          const buffer = Buffer.from(current.text, 'base64');
+          const buffer = Buffer.from(
+            current.text,
+            'base64',
+          );
           fs.writeFileSync(current.name, buffer);
         } else {
           // Write non-image files as text

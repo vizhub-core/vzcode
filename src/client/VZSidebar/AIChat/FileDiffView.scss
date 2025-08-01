@@ -67,7 +67,7 @@
       .diff-line {
         display: flex;
         line-height: 1.4;
-        
+
         &.diff-line-added {
           background-color: rgba(40, 167, 69, 0.1);
           color: var(--bs-body-color);
@@ -126,7 +126,7 @@
 }
 
 // Dark theme adjustments
-[data-bs-theme="dark"] {
+[data-bs-theme='dark'] {
   .file-diff-view {
     .diff-line {
       &.diff-line-added {

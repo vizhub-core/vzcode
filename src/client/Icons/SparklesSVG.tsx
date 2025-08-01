@@ -1,8 +1,14 @@
-export const SparklesSVG = () => (
+export const SparklesSVG = ({
+  width = '32',
+  height = '32',
+}: {
+  width?: string | number;
+  height?: string | number;
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="32"
-    height="32"
+    width={width}
+    height={height}
     viewBox="0 0 24 24"
     fill="currentColor"
     stroke="currentColor"
