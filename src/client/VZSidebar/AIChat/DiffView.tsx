@@ -42,9 +42,9 @@ export const DiffView: React.FC<DiffViewProps> = ({
   const unifiedDiff = generateUnifiedDiff(diffData);
   const diffHtml = Diff2Html.html(unifiedDiff, {
     drawFileList: false,
-    matching: 'lines',
+    matching: 'words',
+    diffStyle: 'word',
     outputFormat: 'line-by-line',
-    colorScheme: 'dark',
   });
 
   return (

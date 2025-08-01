@@ -3,4 +3,4 @@ export const enableLiveKit =
 
 export const enableAIChat = true;
 
-export const enableDiffView = false;
+export const enableDiffView = true;
