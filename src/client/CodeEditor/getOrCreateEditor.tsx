@@ -193,6 +193,7 @@ export const getOrCreateEditor = async ({
   esLintSource,
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
+  setAIChatMessage,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -229,6 +230,7 @@ export const getOrCreateEditor = async ({
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
   setIsAIChatOpen: any; // TODO fix types
+  setAIChatMessage: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
@@ -502,6 +504,8 @@ export const getOrCreateEditor = async ({
                 'TODO set the chat prompt to "Implement the TODO"',
               );
               setIsAIChatOpen(true);
+              setAIChatMessage('Implement the TODO');
+              // submitAIChatMessage()
             }}
           >
             <SparklesSVG width={14} height={14} />

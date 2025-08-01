@@ -13,7 +13,9 @@ import './styles.scss';
 const defaultAIChatEndpoint = '/ai-chat-message';
 
 export const AIChat = () => {
-  const [message, setMessage] = useState('');
+  const { aiChatMessage, setAIChatMessage } =
+    useContext(VZCodeContext);
+
   const [isLoading, setIsLoading] = useState(false);
   const [currentChatId] = useState(() => uuidv4());
 
@@ -40,9 +42,9 @@ export const AIChat = () => {
   );
 
   const handleSendMessage = useCallback(async () => {
-    if (!message.trim() || isLoading) return;
+    if (!aiChatMessage.trim() || isLoading) return;
 
-    setMessage('');
+    setAIChatMessage('');
     setIsLoading(true);
 
     // Call backend endpoint for AI response
@@ -55,7 +57,7 @@ export const AIChat = () => {
         },
         body: JSON.stringify({
           ...aiChatOptions,
-          content: message.trim(),
+          content: aiChatMessage.trim(),
           chatId: currentChatId,
         }),
       });
@@ -75,7 +77,7 @@ export const AIChat = () => {
       setIsLoading(false);
     }
   }, [
-    message,
+    aiChatMessage,
     isLoading,
     aiChatEndpoint,
     aiChatOptions,
@@ -90,8 +92,8 @@ export const AIChat = () => {
         isLoading={isLoading}
       />
       <ChatInput
-        message={message}
-        setMessage={setMessage}
+        aiChatMessage={aiChatMessage}
+        setAIChatMessage={setAIChatMessage}
         onSendMessage={handleSendMessage}
         isLoading={isLoading}
         focused={aiChatFocused}
