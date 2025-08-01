@@ -11,6 +11,12 @@ import {
 import BuildWorker from './buildWorker?worker';
 import { VZCodeContext } from './VZCodeContext';
 import { vizFilesToFileCollection } from '@vizhub/viz-utils';
+import { VizContent } from '@vizhub/viz-types';
+
+// Extend VizContent type to include hardRerun property
+type ExtendedVizContent = VizContent & {
+  hardRerun?: boolean;
+};
 
 const enableIframe = true;
 
@@ -32,6 +38,7 @@ export const VZRight = () => {
   );
 
   const isInteracting = content?.isInteracting || false;
+  const hardRerun = (content as ExtendedVizContent)?.hardRerun || false;
 
   useEffect(() => {
     if (!files) return;
@@ -58,7 +65,7 @@ export const VZRight = () => {
 
       runtimeRef.current?.run({
         files,
-        enableHotReloading: !isFirstRunRef.current,
+        enableHotReloading: !isFirstRunRef.current && !hardRerun,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
@@ -70,7 +77,7 @@ export const VZRight = () => {
     //   runtime.cleanup();
     //   worker.terminate();
     // };
-  }, [files, isInteracting]);
+  }, [files, isInteracting, hardRerun]);
 
   return (
     <div className="right">
