@@ -192,6 +192,7 @@ export const getOrCreateEditor = async ({
   aiCopilotEndpoint,
   esLintSource,
   rainbowBracketsEnabled = true,
+  setIsAIChatOpen,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -227,6 +228,7 @@ export const getOrCreateEditor = async ({
     view: EditorView,
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
+  setIsAIChatOpen: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
@@ -492,16 +494,14 @@ export const getOrCreateEditor = async ({
           document.createElement('div');
         wrap.appendChild(reactContainer);
 
-        wrap.addEventListener('mousedown', (e) => {
-          e.stopPropagation();
-          // setIsAIChatOpen(true);
-        });
-
         const root = createRoot(reactContainer);
         root.render(
           <div
             onClick={() => {
-              console.log('clicked');
+              console.log(
+                'TODO set the chat prompt to "Implement the TODO"',
+              );
+              setIsAIChatOpen(true);
             }}
           >
             <SparklesSVG width={14} height={14} />
