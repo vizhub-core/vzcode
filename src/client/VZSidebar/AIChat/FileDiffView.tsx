@@ -47,7 +47,9 @@ export const FileDiffView: React.FC<FileDiffViewProps> = ({ fileDiff }) => {
                   {line.lineNumber || ''}
                 </span>
                 <span className="line-indicator">
-                  {line.type === 'added' ? '+' : line.type === 'removed' ? '-' : ' '}
+                  {line.type === 'added' ? '+' : 
+                   line.type === 'removed' ? '-' : 
+                   line.type === 'ellipsis' ? '' : ' '}
                 </span>
                 <span className="line-content">
                   {line.content}

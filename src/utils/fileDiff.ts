@@ -1,8 +1,8 @@
-import { diff_match_patch } from 'diff-match-patch';
+import { diffLines } from 'diff';
 import { VizFiles, VizFileId } from '@vizhub/viz-types';
 
 export interface FileDiffLine {
-  type: 'added' | 'removed' | 'unchanged';
+  type: 'added' | 'removed' | 'unchanged' | 'ellipsis';
   content: string;
   lineNumber?: number; // Line number in the original or new file
 }
@@ -29,53 +29,106 @@ export function generateFileDiff(
   beforeContent: string,
   afterContent: string,
 ): FileDiff {
-  const dmp = new diff_match_patch();
-  const diffs = dmp.diff_main(beforeContent, afterContent);
-  dmp.diff_cleanupSemantic(diffs);
-
+  const changes = diffLines(beforeContent, afterContent);
+  
+  const CONTEXT = 1; // how many unchanged lines to keep around changes
   const lines: FileDiffLine[] = [];
   let originalLineNum = 1;
   let newLineNum = 1;
 
-  for (const [operation, text] of diffs) {
-    const textLines = text.split('\n');
-    
-    for (let i = 0; i < textLines.length; i++) {
-      const isLastLine = i === textLines.length - 1;
-      const content = textLines[i];
+  // Process each diff part
+  for (const part of changes) {
+    if (part.added || part.removed) {
+      // For additions and removals, add all lines as-is
+      const partLines = part.value.split('\n');
       
-      // Skip empty lines at the end unless it's the only line
-      if (isLastLine && content === '' && textLines.length > 1) {
-        continue;
+      for (let i = 0; i < partLines.length; i++) {
+        const content = partLines[i];
+        const isLastEmptyLine = i === partLines.length - 1 && content === '';
+        
+        // Skip the trailing empty line that split creates
+        if (isLastEmptyLine) {
+          continue;
+        }
+
+        if (part.added) {
+          lines.push({
+            type: 'added',
+            content,
+            lineNumber: newLineNum,
+          });
+          newLineNum++;
+        } else if (part.removed) {
+          lines.push({
+            type: 'removed',
+            content,
+            lineNumber: originalLineNum,
+          });
+          originalLineNum++;
+        }
+      }
+    } else {
+      // For unchanged parts, apply context logic
+      const partLines = part.value.split('\n');
+      
+      // Remove the trailing empty line that split creates
+      if (partLines.length > 0 && partLines[partLines.length - 1] === '') {
+        partLines.pop();
       }
 
-      if (operation === 0) { // EQUAL
-        lines.push({
-          type: 'unchanged',
-          content,
-          lineNumber: originalLineNum,
-        });
-        originalLineNum++;
-        newLineNum++;
-      } else if (operation === -1) { // DELETE
-        lines.push({
-          type: 'removed',
-          content,
-          lineNumber: originalLineNum,
-        });
-        originalLineNum++;
-      } else if (operation === 1) { // INSERT
-        lines.push({
-          type: 'added',
-          content,
-          lineNumber: newLineNum,
-        });
-        newLineNum++;
+      if (partLines.length > CONTEXT * 2) {
+        // Add context at the beginning
+        for (let i = 0; i < CONTEXT; i++) {
+          if (i < partLines.length) {
+            lines.push({
+              type: 'unchanged',
+              content: partLines[i],
+              lineNumber: originalLineNum,
+            });
+            originalLineNum++;
+            newLineNum++;
+          }
+        }
+        
+        // Add ellipsis if there are hidden lines
+        if (partLines.length > CONTEXT * 2) {
+          lines.push({
+            type: 'ellipsis',
+            content: '...',
+          });
+        }
+        
+        // Add context at the end
+        const startIndex = Math.max(CONTEXT, partLines.length - CONTEXT);
+        const skippedLines = startIndex - CONTEXT;
+        originalLineNum += skippedLines;
+        newLineNum += skippedLines;
+        
+        for (let i = startIndex; i < partLines.length; i++) {
+          lines.push({
+            type: 'unchanged',
+            content: partLines[i],
+            lineNumber: originalLineNum,
+          });
+          originalLineNum++;
+          newLineNum++;
+        }
+      } else {
+        // Add all lines if within context limits
+        for (const content of partLines) {
+          lines.push({
+            type: 'unchanged',
+            content,
+            lineNumber: originalLineNum,
+          });
+          originalLineNum++;
+          newLineNum++;
+        }
       }
     }
   }
 
-  const hasChanges = lines.some(line => line.type !== 'unchanged');
+  const hasChanges = lines.some(line => line.type === 'added' || line.type === 'removed');
 
   return {
     fileId,

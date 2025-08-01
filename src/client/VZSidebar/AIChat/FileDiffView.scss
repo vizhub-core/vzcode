@@ -83,6 +83,13 @@
           color: var(--bs-secondary-color);
         }
 
+        &.diff-line-ellipsis {
+          background-color: var(--bs-secondary-bg);
+          color: var(--bs-secondary-color);
+          font-style: italic;
+          text-align: center;
+        }
+
         .line-number {
           display: inline-block;
           width: 40px;
