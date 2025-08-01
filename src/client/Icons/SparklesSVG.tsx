@@ -1,4 +1,3 @@
-// TODO add width and height props
 export const SparklesSVG = ({
   width = '32',
   height = '32',
