@@ -32,5 +32,90 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+
+    // Fix diff2html styling issues for dark theme and layout
+    .d2h-wrapper {
+      // Override diff2html variables for dark theme
+      --d2h-bg-color: rgb(41, 44, 52);
+      --d2h-color: #e6edf3;
+      --d2h-border-color: #30363d;
+      --d2h-dim-color: #6e7681;
+      --d2h-file-header-bg-color: #161b22;
+      --d2h-file-header-border-color: #30363d;
+      --d2h-line-border-color: #21262d;
+      --d2h-ins-bg-color: rgba(46, 160, 67, 0.15);
+      --d2h-ins-border-color: rgba(46, 160, 67, 0.4);
+      --d2h-ins-highlight-bg-color: rgba(46, 160, 67, 0.4);
+      --d2h-ins-label-color: #3fb950;
+      --d2h-del-bg-color: rgba(248, 81, 73, 0.1);
+      --d2h-del-border-color: rgba(248, 81, 73, 0.4);
+      --d2h-del-highlight-bg-color: rgba(248, 81, 73, 0.4);
+      --d2h-del-label-color: #f85149;
+
+      background-color: var(--d2h-bg-color);
+      color: var(--d2h-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    // Fix layout issues with line numbers
+    .d2h-diff-table {
+      position: relative;
+      background-color: var(--d2h-bg-color);
+    }
+
+    .d2h-code-linenumber {
+      position: relative !important;
+      float: none !important;
+      display: table-cell !important;
+      width: auto !important;
+      background-color: var(--d2h-bg-color) !important;
+      border-color: var(--d2h-line-border-color) !important;
+      color: var(--d2h-dim-color) !important;
+    }
+
+    .d2h-code-side-linenumber {
+      position: relative !important;
+      float: none !important;
+      display: table-cell !important;
+      width: auto !important;
+      background-color: var(--d2h-bg-color) !important;
+      border-color: var(--d2h-line-border-color) !important;
+      color: var(--d2h-dim-color) !important;
+    }
+
+    // Ensure proper table layout
+    .d2h-diff-tbody tr {
+      display: table-row;
+    }
+
+    .d2h-diff-tbody td {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    // Fix file header styling
+    .d2h-file-header {
+      background-color: var(--d2h-file-header-bg-color) !important;
+      border-bottom: 1px solid var(--d2h-file-header-border-color) !important;
+      color: var(--d2h-color);
+    }
+
+    // Ensure proper line styling
+    .d2h-del {
+      background-color: var(--d2h-del-bg-color) !important;
+      border-color: var(--d2h-del-border-color) !important;
+    }
+
+    .d2h-ins {
+      background-color: var(--d2h-ins-bg-color) !important;
+      border-color: var(--d2h-ins-border-color) !important;
+    }
+
+    // Fix wrapper border
+    .d2h-file-wrapper {
+      border: 1px solid var(--d2h-border-color) !important;
+      background-color: var(--d2h-bg-color);
+    }
   }
 }

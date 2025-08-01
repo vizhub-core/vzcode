@@ -41,7 +41,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
     drawFileList: false,
     matching: 'lines',
     outputFormat: 'line-by-line',
-    colorScheme: 'auto'
+    colorScheme: 'dark'
   });
 
   return (
