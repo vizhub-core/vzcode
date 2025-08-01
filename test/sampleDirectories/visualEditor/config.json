@@ -22,7 +22,7 @@
   "dataUrl": "iris.csv",
   "visualEditorWidgets": [
     {
-      "type": "slider",
+      "type": "number",
       "label": "Point Radius",
       "property": "pointRadius",
       "min": 1,

@@ -42,6 +42,7 @@ import {
   enableAIChat,
 } from '../featureFlags';
 import './styles.scss';
+import { VisualEditor } from './VisualEditor';
 
 const enableConnectionStatus = true;
 
@@ -533,6 +534,10 @@ export const VZSidebar = ({
           ) : isSearchOpen ? (
             <div className="sidebar-search">
               <Search />
+            </div>
+          ) : isVisualEditorOpen ? (
+            <div className="sidebar-visual-editor">
+              <VisualEditor />
             </div>
           ) : (
             <div className="sidebar-files">
