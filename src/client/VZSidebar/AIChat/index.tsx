@@ -24,6 +24,8 @@ export const AIChat = () => {
     content,
     aiChatEndpoint = defaultAIChatEndpoint,
     aiChatOptions = {},
+    aiChatMode,
+    setAIChatMode,
   } = useContext(VZCodeContext);
 
   // Get current chat data from content
@@ -62,6 +64,7 @@ export const AIChat = () => {
           ...aiChatOptions,
           content: aiChatMessage.trim(),
           chatId: currentChatId,
+          mode: aiChatMode,
         }),
       });
 
@@ -129,6 +132,8 @@ export const AIChat = () => {
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
           focused={aiChatFocused}
+          aiChatMode={aiChatMode}
+          setAIChatMode={setAIChatMode}
         />
       </div>
     </div>

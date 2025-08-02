@@ -27,6 +27,7 @@ export const createInitialState = ({
   isSearchOpen: false,
   isAIChatOpen: false,
   aiChatFocused: false,
+  aiChatMode: 'edit',
   isSettingsOpen: false,
   isDocOpen: false,
   editorWantsFocus: false,

@@ -168,6 +168,17 @@ export const useActions = (
     });
   }, [dispatch]);
 
+  // Set the AI chat mode (ask or edit)
+  const setAIChatMode = useCallback(
+    (mode: 'ask' | 'edit') => {
+      dispatch({
+        type: 'set_ai_chat_mode',
+        mode,
+      });
+    },
+    [dispatch],
+  );
+
   // True to show the settings modal.
   const setIsSettingsOpen = useCallback(
     (value: boolean) => {
@@ -251,6 +262,7 @@ export const useActions = (
     toggleSearchFocused,
     setIsAIChatOpen,
     toggleAIChatFocused,
+    setAIChatMode,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,

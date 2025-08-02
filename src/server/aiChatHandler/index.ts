@@ -6,7 +6,7 @@ import {
   addDiffToAIMessage,
 } from './chatOperations.js';
 import { createLLMFunction } from './llmStreaming.js';
-import { performAIEditing } from './aiEditing.js';
+import { performAIEditing, performAIChat } from './aiEditing.js';
 import { handleError } from './errorHandling.js';
 import { createRunCodeFunction } from '../../runCode.js';
 import { ShareDBDoc } from '../../types.js';
@@ -26,7 +26,7 @@ export const handleAIChatMessage =
     onCreditDeduction?: any;
   }) =>
   async (req: any, res: any) => {
-    const { content, chatId } = req.body;
+    const { content, chatId, mode = 'edit' } = req.body;
 
     if (DEBUG) {
       console.log(
@@ -65,13 +65,19 @@ export const handleAIChatMessage =
       const runCode =
         createRunCodeFunction(submitOperation);
 
-      // Perform AI editing
-      const editResult = await performAIEditing({
-        prompt: content,
-        shareDBDoc,
-        llmFunction,
-        runCode,
-      });
+      // Perform AI editing or chat based on mode
+      const editResult = mode === 'ask' 
+        ? await performAIChat({
+            prompt: content,
+            shareDBDoc,
+            llmFunction,
+          })
+        : await performAIEditing({
+            prompt: content,
+            shareDBDoc,
+            llmFunction,
+            runCode,
+          });
 
       // Add diff data to the AI message if there are changes
       if (

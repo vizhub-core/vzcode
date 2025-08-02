@@ -29,3 +29,16 @@ export const toggleAIChatFocusedReducer = (
   }
   return state;
 };
+
+export const setAIChatModeReducer = (
+  state: VZState,
+  action: VZAction,
+): VZState => {
+  if (action.type === 'set_ai_chat_mode') {
+    return {
+      ...state,
+      aiChatMode: action.mode,
+    };
+  }
+  return state;
+};

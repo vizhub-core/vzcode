@@ -281,6 +281,54 @@
   padding-top: 10px;
 }
 
+.ai-chat-mode-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .btn-group {
+    justify-content: center;
+  }
+
+  .btn-group .btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border: 1px solid var(--vh-color-neutral-03);
+    background: var(--vh-color-neutral-02);
+    color: var(--vh-color-neutral-04);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--vh-color-neutral-03);
+      border-color: var(--vh-color-neutral-04);
+    }
+
+    &.btn-primary {
+      background: var(--vh-color-primary-01);
+      border-color: var(--vh-color-primary-01);
+      color: white;
+
+      &:hover {
+        background: var(--vh-color-primary-02);
+        border-color: var(--vh-color-primary-02);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .ai-chat-mode-description {
+    font-size: 11px;
+    color: var(--vh-color-neutral-03);
+    text-align: center;
+    font-style: italic;
+  }
+}
+
 .ai-chat-input-group {
   display: flex;
   flex-direction: column;
