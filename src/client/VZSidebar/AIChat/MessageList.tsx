@@ -25,24 +25,30 @@ const MessageListComponent = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [isUserScrolled, setIsUserScrolled] = useState(false);
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
-  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const [isUserScrolled, setIsUserScrolled] =
+    useState(false);
+  const [autoScrollEnabled, setAutoScrollEnabled] =
+    useState(true);
+  const scrollTimeoutRef =
+    useRef<ReturnType<typeof setTimeout>>();
 
   // Check if the user is scrolled to the bottom
   const isScrolledToBottom = useCallback(() => {
     const container = messagesContainerRef.current;
     if (!container) return true;
-    
+
     const threshold = 50; // Allow 50px tolerance for "at bottom"
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    return scrollHeight - scrollTop - clientHeight < threshold;
+    const { scrollTop, scrollHeight, clientHeight } =
+      container;
+    return (
+      scrollHeight - scrollTop - clientHeight < threshold
+    );
   }, []);
 
   // Smooth scroll to bottom with linear transition
   const scrollToBottom = useCallback(() => {
     if (!autoScrollEnabled) return;
-    
+
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'end',
@@ -55,7 +61,7 @@ const MessageListComponent = ({
     if (!container) return;
 
     const isAtBottom = isScrolledToBottom();
-    
+
     // Clear any existing timeout
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
@@ -66,7 +72,7 @@ const MessageListComponent = ({
       setIsUserScrolled(true);
       setAutoScrollEnabled(false);
     }
-    
+
     // If user scrolled back to bottom, re-enable auto-scroll after a brief delay
     if (isAtBottom && isUserScrolled) {
       scrollTimeoutRef.current = setTimeout(() => {
@@ -83,7 +89,7 @@ const MessageListComponent = ({
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
-      
+
       scrollTimeoutRef.current = setTimeout(() => {
         scrollToBottom();
       }, 100); // 100ms debounce
@@ -94,7 +100,12 @@ const MessageListComponent = ({
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [messages, autoScrollEnabled, isUserScrolled, scrollToBottom]);
+  }, [
+    messages,
+    autoScrollEnabled,
+    isUserScrolled,
+    scrollToBottom,
+  ]);
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -121,7 +132,7 @@ const MessageListComponent = ({
   );
 
   return (
-    <div 
+    <div
       className="ai-chat-messages"
       ref={messagesContainerRef}
       onScroll={handleScroll}
