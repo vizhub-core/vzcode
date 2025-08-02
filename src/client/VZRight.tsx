@@ -15,6 +15,8 @@ import { VizContent } from '@vizhub/viz-types';
 
 // Extend VizContent type to include hardRerun property
 type ExtendedVizContent = VizContent & {
+  // TODO remove this, use the runId property from VizContent instead.
+  // If `VizContent.runId` changes, it will trigger a hard rerun.
   hardRerun?: boolean;
 };
 
@@ -66,8 +68,10 @@ export const VZRight = () => {
 
       runtimeRef.current?.run({
         files,
-        enableHotReloading:
-          !isFirstRunRef.current && !hardRerun,
+        // TODO set enableHotReloading to true when `isInteracting` is true
+        // TODO set enableHotReloading to false when `isInteracting` is false and runId changed.
+        enableHotReloading: false,
+        // !isFirstRunRef.current && !hardRerun,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
