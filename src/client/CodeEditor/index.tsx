@@ -64,20 +64,16 @@ export const CodeEditor = ({
       clearTimeout(interactTimeoutRef.current);
     }
 
-    // Set `isInteracting: undefined` after a delay.
+    // Set `isInteracting: undefined` after a delay,
+    // so that when the runId changes in the future,
+    // it will trigger a hard re-run, not a hot reload.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
 
-      // Generate a new runId to trigger a run with hot reloading
-      // when interactive widgets are used
-      const newRunId = generateRunId();
-
       // This logic deletes the `isInteracting` property from the document
-      // and sets a new runId to trigger a run
       submitOperation(
         ({ isInteracting, ...newDocument }) => ({
           ...newDocument,
-          runId: newRunId,
         }),
       );
     }, 800);
