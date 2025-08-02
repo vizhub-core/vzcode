@@ -93,14 +93,6 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
-      <div className="ai-chat-header">
-        <img
-          src="/vizhub.svg"
-          alt="VizBot Logo"
-          className="ai-chat-logo"
-        />
-        <h2 className="ai-chat-title">VizBot</h2>
-      </div>
       <div
         style={{
           padding: '10px',
@@ -119,23 +111,46 @@ export const AIChat = () => {
               How can I help you?
             </div>
             <div className="ai-chat-empty-examples">
-              <h4>Try edit requests like these:</h4>
-              <ul>
-                <li>"Change the circles to squares"</li>
-                <li>
-                  "Add a button that toggles the animation"
-                </li>
-                <li>
-                  "Fix the CSS so the layout is responsive"
-                </li>
-                <li>
-                  "Refactor this function to use
-                  async/await"
-                </li>
-              </ul>
+              {aiChatMode === 'ask' ? (
+                <>
+                  <h4>Try asking questions like:</h4>
+                  <ul>
+                    <li>"Explain how this works"</li>
+                    <li>
+                      "How could I change it so that the
+                      circles are bigger?"
+                    </li>
+                    <li>"What does this function do?"</li>
+                    <li>
+                      "How can I make this more accessible?"
+                    </li>
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <h4>Try edit requests like these:</h4>
+                  <ul>
+                    <li>"Change the circles to squares"</li>
+                    <li>
+                      "Add a button that toggles the
+                      animation"
+                    </li>
+                    <li>
+                      "Fix the CSS so the layout is
+                      responsive"
+                    </li>
+                    <li>
+                      "Refactor this function to use
+                      async/await"
+                    </li>
+                  </ul>
+                </>
+              )}
             </div>
             <div className="ai-chat-empty-text">
-              Type your edit request below to get started!
+              {aiChatMode === 'ask'
+                ? 'Type your question below to get started!'
+                : 'Type your edit request below to get started!'}
             </div>
           </div>
         ) : (
