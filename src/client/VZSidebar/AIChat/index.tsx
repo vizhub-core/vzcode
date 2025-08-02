@@ -30,7 +30,7 @@ export const AIChat = () => {
   const currentChat = content?.chats?.[currentChatId];
   const rawMessages = currentChat?.messages || [];
   const aiStatus = currentChat?.aiStatus;
-
+  
   // Transform messages to ensure they have required id field - memoized to avoid recreation
   const messages = useMemo(
     () =>
@@ -40,6 +40,9 @@ export const AIChat = () => {
       })),
     [rawMessages],
   );
+  
+  // Check if this is the first time opening the chat (no messages)
+  const isEmptyState = rawMessages.length === 0;
 
   const handleSendMessage = useCallback(async () => {
     if (!aiChatMessage.trim() || isLoading) return;
@@ -86,18 +89,47 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
-      <MessageList
-        messages={messages}
-        aiStatus={aiStatus}
-        isLoading={isLoading}
-      />
-      <ChatInput
-        aiChatMessage={aiChatMessage}
-        setAIChatMessage={setAIChatMessage}
-        onSendMessage={handleSendMessage}
-        isLoading={isLoading}
-        focused={aiChatFocused}
-      />
+      <div className="ai-chat-header">
+        <img src="/vizhub.svg" alt="VizBot Logo" className="ai-chat-logo" />
+        <h2 className="ai-chat-title">VizBot Assistant</h2>
+      </div>
+      <div style={{ padding: '10px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {isEmptyState ? (
+          <div className="ai-chat-empty">
+            <div className="ai-chat-empty-icon">✨</div>
+            <h3 className="ai-chat-empty-title">Welcome to VizBot AI Assistant</h3>
+            <div className="ai-chat-empty-text">
+              VizBot can help you with coding tasks, answer questions about your visualization project, 
+              and provide guidance on data visualization techniques.
+            </div>
+            <div className="ai-chat-empty-examples">
+              <h4>Try asking about:</h4>
+              <ul>
+                <li>"How do I create a bar chart with D3.js?"</li>
+                <li>"Help me debug my SVG that's not displaying correctly"</li>
+                <li>"Suggest ways to improve my visualization's accessibility"</li>
+                <li>"What's the best way to handle large datasets in the browser?"</li>
+              </ul>
+            </div>
+            <div className="ai-chat-empty-text">
+              Type your question below to get started!
+            </div>
+          </div>
+        ) : (
+          <MessageList
+            messages={messages}
+            aiStatus={aiStatus}
+            isLoading={isLoading}
+          />
+        )}
+        <ChatInput
+          aiChatMessage={aiChatMessage}
+          setAIChatMessage={setAIChatMessage}
+          onSendMessage={handleSendMessage}
+          isLoading={isLoading}
+          focused={aiChatFocused}
+        />
+      </div>
     </div>
   );
 };

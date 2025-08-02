@@ -110,7 +110,8 @@ export const VZSidebar = ({
   ),
   aiChatToolTipText = (
     <div>
-      <strong>AI Chat (beta)</strong>
+      <strong>VizBot - AI Code Editor</strong>
+      <div>Ask for incremental code changes like "Make it blue themed" or "Change the circles to squares"</div>
     </div>
   ),
 }: {
@@ -184,7 +185,7 @@ export const VZSidebar = ({
     [files, submitOperation],
   );
 
-  const { sidebarWidth } = useContext(
+  const { sidebarWidth, setSidebarView } = useContext(
     SplitPaneResizeContext,
   );
 
@@ -282,6 +283,11 @@ export const VZSidebar = ({
     previousPendingRef.current = pending;
   }, [pending, connected, isConnecting]);
 
+  // Automatically adjust sidebar width when view changes
+  useEffect(() => {
+    setSidebarView(isAIChatOpen);
+  }, [isAIChatOpen, setSidebarView]);
+
   return (
     <div
       className="vz-sidebar"
@@ -307,6 +313,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(false);
                 setIsAIChatOpen(false);
+                setSidebarView(false); // Switch to files view
               }}
             >
               <FolderSVG />
@@ -327,6 +334,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(true);
                 setIsAIChatOpen(false);
+                setSidebarView(false); // Switch to files view (search uses same width as files)
               }}
             >
               <SearchSVG />
@@ -348,6 +356,7 @@ export const VZSidebar = ({
                 onClick={() => {
                   setIsAIChatOpen(true);
                   setIsSearchOpen(false);
+                  setSidebarView(true); // Switch to AI chat view
                 }}
               >
                 <SparklesSVG />
