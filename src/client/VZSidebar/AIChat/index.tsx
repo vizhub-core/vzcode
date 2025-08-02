@@ -98,7 +98,7 @@ export const AIChat = () => {
           alt="VizBot Logo"
           className="ai-chat-logo"
         />
-        <h2 className="ai-chat-title">AI Chat</h2>
+        <h2 className="ai-chat-title">VizBot</h2>
       </div>
       <div
         style={{
@@ -112,12 +112,10 @@ export const AIChat = () => {
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-icon">✨</div>
             <h3 className="ai-chat-empty-title">
-              Welcome to AI Chat
+              Hi, I'm VizBot!
             </h3>
             <div className="ai-chat-empty-text">
-              AI Chat can help you edit your code, implement
-              new features, fix bugs, and answer questions
-              about your project.
+              How can I help you?
             </div>
             <div className="ai-chat-empty-examples">
               <h4>Try edit requests like these:</h4>
