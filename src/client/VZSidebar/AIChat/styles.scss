@@ -66,27 +66,6 @@
   }
 }
 
-.ai-chat-header {
-  background: var(--vh-color-neutral-02);
-  padding: 12px 15px;
-  border-bottom: 1px solid var(--vh-color-neutral-03);
-  display: flex;
-  align-items: center;
-
-  .ai-chat-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--vh-color-neutral-04);
-  }
-
-  .ai-chat-logo {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-  }
-}
-
 .ai-chat-messages {
   flex: 1;
   overflow-y: auto;

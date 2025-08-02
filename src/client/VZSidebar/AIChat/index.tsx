@@ -93,14 +93,6 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
-      <div className="ai-chat-header">
-        <img
-          src="/vizhub.svg"
-          alt="VizBot Logo"
-          className="ai-chat-logo"
-        />
-        <h2 className="ai-chat-title">VizBot</h2>
-      </div>
       <div
         style={{
           padding: '10px',
