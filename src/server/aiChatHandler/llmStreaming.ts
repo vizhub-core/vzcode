@@ -4,6 +4,7 @@ import {
 } from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
 import fs from 'fs';
+import { generateRunId } from '@vizhub/viz-utils';
 import {
   updateAIStatus,
   createAIMessage,
@@ -241,6 +242,19 @@ export const createLLMFunction = ({
         ),
       );
     }
+
+    // Generate a new runId to trigger a run when AI finishes editing
+    // This will trigger a re-run without hot reloading
+    const newRunId = generateRunId();
+    shareDBDoc.submitOp([
+      { p: ['runId'], od: shareDBDoc.data.runId, oi: newRunId }
+    ], (error) => {
+      if (error) {
+        console.warn('Error setting runId after AI editing:', error);
+      } else {
+        DEBUG && console.log('Set new runId after AI editing:', newRunId);
+      }
+    });
 
     // Write chunks file for debugging
     if (DEBUG) {

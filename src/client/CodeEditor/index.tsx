@@ -13,6 +13,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { InteractRule } from '@replit/codemirror-interact';
 import { EditorView } from 'codemirror'; // Import EditorView
 import { Diagnostic } from '@codemirror/lint'; // Import Diagnostic
+import { generateRunId } from '@vizhub/viz-utils';
 import './style.scss';
 
 // The path in the ShareDB document where the files live.
@@ -67,9 +68,17 @@ export const CodeEditor = ({
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
 
-      // This logic deletes the `isInteracting` property from the document.
+      // Generate a new runId to trigger a run with hot reloading
+      // when interactive widgets are used
+      const newRunId = generateRunId();
+
+      // This logic deletes the `isInteracting` property from the document
+      // and sets a new runId to trigger a run
       submitOperation(
-        ({ isInteracting, ...newDocument }) => newDocument,
+        ({ isInteracting, ...newDocument }) => ({
+          ...newDocument,
+          runId: newRunId,
+        }),
       );
     }, 800);
   }, [submitOperation]);
