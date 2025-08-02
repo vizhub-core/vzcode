@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { Message } from './Message';
 import { TypingIndicator } from './TypingIndicator';
+import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { VizChatMessage } from '@vizhub/viz-types';
 
 const MessageListComponent = ({
@@ -13,11 +14,13 @@ const MessageListComponent = ({
   aiStatus,
   isLoading,
   chatId, // Add chatId prop
+  aiScratchpad, // Add aiScratchpad prop
 }: {
   messages: VizChatMessage[];
   aiStatus?: string;
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
+  aiScratchpad?: string; // Add aiScratchpad to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -40,6 +43,11 @@ const MessageListComponent = ({
   // Show typing indicator only when loading and AI generation hasn't started yet
   const showTypingIndicator =
     isLoading && !aiGenerationStarted;
+
+  // Show thinking scratchpad when AI is thinking (has scratchpad content)
+  const showThinkingScratchpad = Boolean(
+    aiScratchpad && aiScratchpad.trim(),
+  );
 
   return (
     <div className="ai-chat-messages">
@@ -71,6 +79,13 @@ const MessageListComponent = ({
           />
         );
       })}
+
+      {showThinkingScratchpad && (
+        <ThinkingScratchpad
+          content={aiScratchpad || ''}
+          isVisible={showThinkingScratchpad}
+        />
+      )}
 
       {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />

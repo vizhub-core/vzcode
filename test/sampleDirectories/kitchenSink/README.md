@@ -1,13 +1,14 @@
-# 3D Rotating Starfield
+# 3D Rotating Starfield (Dark Mode)
 
-An interactive 3D starfield animation built with HTML5 Canvas and vanilla JavaScript. Features a rotating perspective view with colorful stars moving through 3D space.
+An interactive 3D starfield animation built with HTML5 Canvas and vanilla JavaScript. Features a rotating perspective view with colorful stars moving through 3D space in a dark cosmic environment.
 
 ## Features
 
+- **Dark Mode**: Features a deep space background with vibrant stars
 - **3D Perspective**: Stars move through 3D space with realistic depth perception
 - **Rotation Effect**: The entire starfield slowly rotates around the center
-- **Colorful Stars**: Each star has a randomly generated color
-- **Trail Effects**: Stars leave subtle trails as they move
+- **Colorful Stars**: Each star has a vibrant hue generated using HSL colors
+- **Glow Effects**: Stars have luminous glow effects for an ethereal appearance
 - **Responsive Design**: Automatically adjusts to window size changes
 - **Smooth Animation**: Uses `requestAnimationFrame` for optimal performance
 
@@ -25,16 +26,20 @@ Simply open `index.html` in a web browser. The animation starts automatically an
 
 ## Customization
 
-You can adjust various parameters in `script.js`:
+You can adjust various parameters in `constants.js`:
 
-- `numStars`: Number of stars (default: 2000)
+- `NUM_STARS`: Number of stars (default: 2000)
 - `MIN_STAR_SIZE` / `MAX_STAR_SIZE`: Star size range
 - `MIN_SPEED` / `MAX_SPEED`: Star movement speed range
 - `PERSPECTIVE_FACTOR`: Controls depth effect intensity
 - `ROTATION_SPEED`: How fast the starfield rotates
+- `BG_COLOR`: Background color (dark space theme)
 
 ## Files
 
 - `index.html`: Main HTML structure
-- `script.js`: Animation logic and 3D calculations
+- `index.js`: Animation controller
+- `renderer.js`: Canvas rendering logic
+- `star.js`: Star generation and properties
+- `constants.js`: Configuration parameters
 - `styles.css`: Basic styling for full-screen display

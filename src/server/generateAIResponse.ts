@@ -150,6 +150,10 @@ export const generateAIResponse = async ({
     // model: 'gpt-3.5-turbo',
     model: 'gpt-4o',
     messages,
+    reasoning: {
+      effort: 'medium',
+      exclude: false,
+    } as any, // Type assertion for OpenRouter-specific reasoning parameter
     stream: true,
   });
 
