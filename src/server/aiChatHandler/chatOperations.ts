@@ -460,7 +460,9 @@ export const undoAIEdit = (
   beforeFiles: VizFiles,
 ) => {
   const chat = shareDBDoc.data.chats[chatId];
-  const messages = chat.messages.filter(msg => msg.id !== messageId);
+  const messages = chat.messages.filter(
+    (msg) => msg.id !== messageId,
+  );
 
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,

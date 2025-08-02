@@ -34,7 +34,12 @@ export const DiffView: React.FC<DiffViewProps> = ({
   }
 
   const handleUndo = async () => {
-    if (!messageId || !chatId || !beforeFiles || isUndoing) {
+    if (
+      !messageId ||
+      !chatId ||
+      !beforeFiles ||
+      isUndoing
+    ) {
       return;
     }
 
@@ -52,7 +57,9 @@ export const DiffView: React.FC<DiffViewProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `HTTP error! status: ${response.status}`,
+        );
       }
 
       // The server will handle the ShareDB operations to undo the changes

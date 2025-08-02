@@ -98,7 +98,9 @@ const splitPaneReducer = (
     case 'setSidebarView':
       return {
         ...state,
-        sidebarWidth: action.isAIChatOpen ? aiChatViewWidth : filesViewWidth,
+        sidebarWidth: action.isAIChatOpen
+          ? aiChatViewWidth
+          : filesViewWidth,
       };
     default:
       return state;

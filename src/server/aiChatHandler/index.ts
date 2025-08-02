@@ -6,7 +6,10 @@ import {
   addDiffToAIMessage,
 } from './chatOperations.js';
 import { createLLMFunction } from './llmStreaming.js';
-import { performAIEditing, performAIChat } from './aiEditing.js';
+import {
+  performAIEditing,
+  performAIChat,
+} from './aiEditing.js';
 import { handleError } from './errorHandling.js';
 import { createRunCodeFunction } from '../../runCode.js';
 import { ShareDBDoc } from '../../types.js';
@@ -66,18 +69,19 @@ export const handleAIChatMessage =
         createRunCodeFunction(submitOperation);
 
       // Perform AI editing or chat based on mode
-      const editResult = mode === 'ask' 
-        ? await performAIChat({
-            prompt: content,
-            shareDBDoc,
-            llmFunction,
-          })
-        : await performAIEditing({
-            prompt: content,
-            shareDBDoc,
-            llmFunction,
-            runCode,
-          });
+      const editResult =
+        mode === 'ask'
+          ? await performAIChat({
+              prompt: content,
+              shareDBDoc,
+              llmFunction,
+            })
+          : await performAIEditing({
+              prompt: content,
+              shareDBDoc,
+              llmFunction,
+              runCode,
+            });
 
       // Add diff data to the AI message if there are changes
       if (
