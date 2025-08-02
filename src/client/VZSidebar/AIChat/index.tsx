@@ -120,19 +120,32 @@ export const AIChat = () => {
             </div>
             <div className="ai-chat-empty-examples">
               <h4>Try edit requests like these:</h4>
-              <ul>
-                <li>"Change the circles to squares"</li>
-                <li>
+              <div className="ai-chat-suggested-prompts">
+                <button
+                  className="ai-chat-suggested-prompt"
+                  onClick={() => setAIChatMessage("Change the circles to squares")}
+                >
+                  "Change the circles to squares"
+                </button>
+                <button
+                  className="ai-chat-suggested-prompt"
+                  onClick={() => setAIChatMessage("Add a button that toggles the animation")}
+                >
                   "Add a button that toggles the animation"
-                </li>
-                <li>
+                </button>
+                <button
+                  className="ai-chat-suggested-prompt"
+                  onClick={() => setAIChatMessage("Fix the CSS so the layout is responsive")}
+                >
                   "Fix the CSS so the layout is responsive"
-                </li>
-                <li>
-                  "Refactor this function to use
-                  async/await"
-                </li>
-              </ul>
+                </button>
+                <button
+                  className="ai-chat-suggested-prompt"
+                  onClick={() => setAIChatMessage("Refactor this function to use async/await")}
+                >
+                  "Refactor this function to use async/await"
+                </button>
+              </div>
             </div>
             <div className="ai-chat-empty-text">
               Type your edit request below to get started!

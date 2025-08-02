@@ -48,18 +48,34 @@
       margin-bottom: 10px;
     }
 
-    ul {
-      padding-left: 20px;
+    .ai-chat-suggested-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       margin: 0;
 
-      li {
+      .ai-chat-suggested-prompt {
+        background: var(--vh-color-neutral-03);
+        border: 1px solid var(--vh-color-neutral-04);
+        border-radius: 6px;
+        padding: 8px 12px;
         font-size: 13px;
         color: var(--vh-color-neutral-04);
-        margin-bottom: 8px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
         line-height: 1.4;
 
-        &:last-child {
-          margin-bottom: 0;
+        &:hover {
+          background: var(--vh-color-neutral-04);
+          color: var(--vh-color-neutral-01);
+          border-color: var(--vh-color-primary-01);
+        }
+
+        &:active {
+          background: var(--vh-color-primary-01);
+          color: white;
+          border-color: var(--vh-color-primary-01);
         }
       }
     }
