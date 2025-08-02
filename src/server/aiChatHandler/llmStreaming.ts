@@ -3,6 +3,7 @@ import {
   StreamingMarkdownParser,
 } from 'llm-code-format';
 import { ChatOpenAI } from '@langchain/openai';
+import OpenAI from 'openai';
 import fs from 'fs';
 import {
   updateAIStatus,
@@ -13,6 +14,7 @@ import {
   clearFileContent,
   appendLineToFile,
   updateFiles,
+  updateAIScratchpad,
 } from './chatOperations.js';
 import { mergeFileChanges } from 'editcodewithai';
 
@@ -34,7 +36,7 @@ const DEBUG = false;
 const enableStreamingEditing = false;
 
 /**
- * Creates and configures the LLM function for streaming
+ * Creates and configures the LLM function for streaming with reasoning tokens
  */
 export const createLLMFunction = ({
   shareDBDoc,
@@ -43,19 +45,15 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
-    const chatModel = new ChatOpenAI({
-      modelName:
-        process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
-        'anthropic/claude-sonnet-4',
-      configuration: {
-        apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
-        baseURL: process.env.VIZHUB_EDIT_WITH_AI_BASE_URL,
-        defaultHeaders: {
-          'HTTP-Referer': 'https://vizhub.com',
-          'X-Title': 'VizHub',
-        },
+    
+    // Create OpenRouter client for reasoning token support
+    const openRouterClient = new OpenAI({
+      apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
+      baseURL: process.env.VIZHUB_EDIT_WITH_AI_BASE_URL || 'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://vizhub.com',
+        'X-Title': 'VizHub',
       },
-      streaming: true,
     });
 
     let fullContent = '';
@@ -177,12 +175,46 @@ export const createLLMFunction = ({
     const parser = new StreamingMarkdownParser(callbacks);
 
     const chunks = [];
+    let reasoningContent = '';
 
-    // Stream the response
-    const stream = await chatModel.stream(fullPrompt);
+    // Stream the response with reasoning tokens
+    const modelName = process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME || 'anthropic/claude-3.5-sonnet';
+    const stream = await (openRouterClient.chat.completions.create as any)({
+      model: modelName,
+      messages: [{ role: 'user', content: fullPrompt }],
+      max_tokens: 8192,
+      reasoning: { 
+        effort: 'medium',
+        exclude: false
+      },
+      usage: { include: true },
+      stream: true,
+    });
+
+    let reasoningStarted = false;
+    let contentStarted = false;
+
     for await (const chunk of stream) {
-      if (chunk && chunk.content) {
-        const chunkContent = String(chunk.content);
+      const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
+      
+      if (delta?.reasoning) {
+        // Handle reasoning tokens (thinking)
+        if (!reasoningStarted) {
+          reasoningStarted = true;
+          updateAIStatus(shareDBDoc, chatId, 'Thinking...');
+        }
+        reasoningContent += delta.reasoning;
+        updateAIScratchpad(shareDBDoc, chatId, reasoningContent);
+      } else if (delta?.content) {
+        // Handle regular content tokens
+        if (reasoningStarted && !contentStarted) {
+          // Clear reasoning when content starts
+          contentStarted = true;
+          updateAIScratchpad(shareDBDoc, chatId, '');
+          updateAIStatus(shareDBDoc, chatId, 'Generating response...');
+        }
+        
+        const chunkContent = delta.content;
         chunks.push(chunkContent);
 
         if (enableStreamingEditing) {
@@ -196,14 +228,20 @@ export const createLLMFunction = ({
             fullContent,
           );
         }
+      } else if (chunk.usage) {
+        // Handle usage information
+        DEBUG && console.log('Usage:', chunk.usage);
       }
 
-      if (!generationId && chunk.lc_kwargs?.id) {
-        generationId = chunk.lc_kwargs.id;
+      if (!generationId && chunk.id) {
+        generationId = chunk.id;
       }
     }
     await parser.flushRemaining();
     reportFileEdited();
+    
+    // Final cleanup - clear scratchpad and set final status
+    updateAIScratchpad(shareDBDoc, chatId, '');
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
     updateAIMessageContent(
       shareDBDoc,

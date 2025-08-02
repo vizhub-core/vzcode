@@ -32,6 +32,7 @@ export const AIChat = () => {
   const currentChat = content?.chats?.[currentChatId];
   const rawMessages = currentChat?.messages || [];
   const aiStatus = currentChat?.aiStatus;
+  const aiScratchpad = currentChat?.aiScratchpad;
 
   // Transform messages to ensure they have required id field - memoized to avoid recreation
   const messages = useMemo(
@@ -150,6 +151,7 @@ export const AIChat = () => {
             aiStatus={aiStatus}
             isLoading={isLoading}
             chatId={currentChatId}
+            aiScratchpad={aiScratchpad}
           />
         )}
         <ChatInput
