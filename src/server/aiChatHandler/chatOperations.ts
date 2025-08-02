@@ -1,4 +1,7 @@
-import { dateToTimestamp } from '@vizhub/viz-utils';
+import {
+  dateToTimestamp,
+  generateRunId,
+} from '@vizhub/viz-utils';
 import { randomId } from '../../randomId.js';
 import { ShareDBDoc } from '../../types.js';
 import { diff } from '../../ot.js';
@@ -475,6 +478,8 @@ export const undoAIEdit = (
         updatedAt: dateToTimestamp(new Date()),
       },
     },
+    // Trigger a re-run
+    runId: generateRunId(),
   });
 
   shareDBDoc.submitOp(op);

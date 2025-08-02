@@ -26,6 +26,9 @@ export const VZRight = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const runtimeRef = useRef<VizHubRuntime | null>(null);
   const isFirstRunRef = useRef(true);
+  const lastRunIdRef = useRef<string | undefined>(
+    undefined,
+  );
 
   // Get access to the current files.
   const { content, handleRuntimeError, clearRuntimeError } =
@@ -40,8 +43,15 @@ export const VZRight = () => {
   );
 
   const isInteracting = content?.isInteracting || false;
+  const runId = content?.runId;
   const hardRerun =
     (content as ExtendedVizContent)?.hardRerun || false;
+
+  // Check if runId has changed
+  const runIdChanged = runId !== lastRunIdRef.current;
+  if (runIdChanged) {
+    lastRunIdRef.current = runId;
+  }
 
   useEffect(() => {
     if (!files) return;
@@ -61,17 +71,22 @@ export const VZRight = () => {
       });
     }
 
-    // Run code in the iframe
-    if (isFirstRunRef.current || isInteracting) {
+    // Run code in the iframe when:
+    // 1. First run
+    // 2. User is interacting with widgets
+    // 3. runId changed (indicating AI finished or other trigger)
+    if (
+      isFirstRunRef.current ||
+      isInteracting ||
+      runIdChanged
+    ) {
       // Clear runtime errors when new code runs
       clearRuntimeError();
 
       runtimeRef.current?.run({
         files,
-        // TODO set enableHotReloading to true when `isInteracting` is true
-        // TODO set enableHotReloading to false when `isInteracting` is false and runId changed.
-        enableHotReloading: false,
-        // !isFirstRunRef.current && !hardRerun,
+        // Enable hot reloading when interacting, disable when runId changed without interaction
+        enableHotReloading: isInteracting,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
@@ -83,7 +98,7 @@ export const VZRight = () => {
     //   runtime.cleanup();
     //   worker.terminate();
     // };
-  }, [files, isInteracting, hardRerun]);
+  }, [files, isInteracting, runIdChanged, hardRerun]);
 
   return (
     <div className="right">
