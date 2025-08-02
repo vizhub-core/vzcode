@@ -272,6 +272,61 @@
   }
 }
 
+.ai-chat-error {
+  margin: 10px 0;
+  padding: 0;
+  border-radius: 8px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+
+  .ai-chat-error-content {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 10px;
+
+    .ai-chat-error-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .ai-chat-error-message {
+      flex: 1;
+      font-size: 14px;
+      color: #dc3545;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .ai-chat-error-dismiss {
+      background: none;
+      border: none;
+      color: #dc3545;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+      flex-shrink: 0;
+
+      &:hover {
+        background: rgba(220, 53, 69, 0.1);
+      }
+
+      &:focus {
+        outline: 2px solid rgba(220, 53, 69, 0.3);
+        outline-offset: 1px;
+      }
+    }
+  }
+}
+
 .ai-chat-input-container {
   border-top: 1px solid var(--vh-color-neutral-02);
   padding-top: 10px;

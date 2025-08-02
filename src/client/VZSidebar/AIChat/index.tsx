@@ -10,7 +10,7 @@ import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import './styles.scss';
 
-const defaultAIChatEndpoint = '/ai-chat-message';
+const defaultAIChatEndpoint = '/api/ai-chat/';
 
 export const AIChat = () => {
   const { aiChatMessage, setAIChatMessage } =
@@ -18,6 +18,9 @@ export const AIChat = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentChatId] = useState(() => uuidv4());
+  const [errorMessage, setErrorMessage] = useState<
+    string | null
+  >(null);
 
   const {
     aiChatFocused,
@@ -52,6 +55,7 @@ export const AIChat = () => {
 
     setAIChatMessage('');
     setIsLoading(true);
+    setErrorMessage(null); // Clear any previous errors
 
     // Call backend endpoint for AI response
     // The server will handle all ShareDB operations including adding the user message
@@ -63,6 +67,7 @@ export const AIChat = () => {
         },
         body: JSON.stringify({
           ...aiChatOptions,
+          vizId: aiChatOptions.vizId,
           content: aiChatMessage.trim(),
           chatId: currentChatId,
           mode: aiChatMode,
@@ -75,11 +80,24 @@ export const AIChat = () => {
         );
       }
 
-      // The backend handles all ShareDB operations
-      await response.json();
+      // Parse the response to check for errors
+      const responseData = await response.json();
+
+      // Check if the response contains a VizHub error
+      if (
+        responseData.outcome === 'failure' &&
+        responseData.error
+      ) {
+        setErrorMessage(responseData.error.message);
+        return;
+      }
+
+      // The backend handles all ShareDB operations for successful responses
     } catch (error) {
       console.error('Error getting AI response:', error);
-      // Server will handle error messages too
+      setErrorMessage(
+        'Failed to send message. Please try again.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -223,6 +241,23 @@ export const AIChat = () => {
             chatId={currentChatId}
             aiScratchpad={aiScratchpad}
           />
+        )}
+        {errorMessage && (
+          <div className="ai-chat-error">
+            <div className="ai-chat-error-content">
+              <span className="ai-chat-error-icon">⚠️</span>
+              <span className="ai-chat-error-message">
+                {errorMessage}
+              </span>
+              <button
+                className="ai-chat-error-dismiss"
+                onClick={() => setErrorMessage(null)}
+                aria-label="Dismiss error"
+              >
+                ×
+              </button>
+            </div>
+          </div>
         )}
         <ChatInput
           aiChatMessage={aiChatMessage}
