@@ -12,10 +12,12 @@ const MessageListComponent = ({
   messages,
   aiStatus,
   isLoading,
+  chatId, // Add chatId prop
 }: {
   messages: VizChatMessage[];
   aiStatus?: string;
   isLoading: boolean;
+  chatId?: string; // Add chatId to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -41,16 +43,33 @@ const MessageListComponent = ({
 
   return (
     <div className="ai-chat-messages">
-      {messages.map((msg) => (
-        <Message
-          key={msg.id}
-          id={msg.id}
-          role={msg.role}
-          content={msg.content}
-          timestamp={msg.timestamp}
-          diffData={(msg as any).diffData}
-        />
-      ))}
+      {messages.map((msg, index) => {
+        // Only the most recent assistant message with diffData can be undone
+        const isLastAssistantMessage = 
+          msg.role === 'assistant' && 
+          index === messages.length - 1 &&
+          !isLoading; // Can't undo while AI is still generating
+        
+        const canUndo = 
+          isLastAssistantMessage && 
+          (msg as any).diffData && 
+          (msg as any).beforeFiles &&
+          Object.keys((msg as any).diffData || {}).length > 0;
+
+        return (
+          <Message
+            key={msg.id}
+            id={msg.id}
+            role={msg.role}
+            content={msg.content}
+            timestamp={msg.timestamp}
+            diffData={(msg as any).diffData}
+            beforeFiles={(msg as any).beforeFiles}
+            chatId={chatId}
+            canUndo={canUndo}
+          />
+        );
+      })}
 
       {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />

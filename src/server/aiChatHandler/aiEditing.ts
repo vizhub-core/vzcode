@@ -62,5 +62,6 @@ export const performAIEditing = async ({
     content: result.content,
     generationId: result.generationId,
     diffData,
+    beforeFiles, // Store the snapshot for undo functionality
   };
 };

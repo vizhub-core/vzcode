@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   UnifiedFilesDiff,
   parseUnifiedDiffStats,
@@ -10,11 +10,21 @@ import './DiffView.scss';
 
 interface DiffViewProps {
   diffData: UnifiedFilesDiff;
+  messageId?: string;
+  chatId?: string;
+  beforeFiles?: any;
+  canUndo?: boolean;
 }
 
 export const DiffView: React.FC<DiffViewProps> = ({
   diffData,
+  messageId,
+  chatId,
+  beforeFiles,
+  canUndo = false,
 }) => {
+  const [isUndoing, setIsUndoing] = useState(false);
+
   const unifiedDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
   );
@@ -22,6 +32,38 @@ export const DiffView: React.FC<DiffViewProps> = ({
   if (unifiedDiffs.length === 0) {
     return null;
   }
+
+  const handleUndo = async () => {
+    if (!messageId || !chatId || !beforeFiles || isUndoing) {
+      return;
+    }
+
+    setIsUndoing(true);
+    try {
+      const response = await fetch('/ai-chat-undo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chatId,
+          messageId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // The server will handle the ShareDB operations to undo the changes
+      // The UI will update automatically via ShareDB
+    } catch (error) {
+      console.error('Error undoing AI edit:', error);
+      // TODO: Show user-friendly error message
+    } finally {
+      setIsUndoing(false);
+    }
+  };
 
   // Calculate statistics from all unified diffs
   let totalAdditions = 0;
@@ -61,6 +103,16 @@ export const DiffView: React.FC<DiffViewProps> = ({
             </span>
           )}
         </div>
+        {canUndo && beforeFiles && (
+          <button
+            className="undo-button"
+            onClick={handleUndo}
+            disabled={isUndoing}
+            title="Undo this AI edit"
+          >
+            {isUndoing ? 'Undoing...' : 'Undo'}
+          </button>
+        )}
       </div>
 
       <div

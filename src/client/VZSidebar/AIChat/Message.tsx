@@ -13,14 +13,21 @@ interface MessageProps {
   timestamp: number;
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
+  beforeFiles?: any;
+  chatId?: string;
+  canUndo?: boolean;
 }
 
 const MessageComponent = ({
+  id,
   role,
   content,
   timestamp,
   isStreaming,
   diffData,
+  beforeFiles,
+  chatId,
+  canUndo,
 }: MessageProps) => {
   // Memoize date formatting to avoid repeated computation
   const formattedTime = useMemo(() => {
@@ -47,7 +54,13 @@ const MessageComponent = ({
         {enableDiffView &&
           diffData &&
           Object.keys(diffData).length > 0 && (
-            <DiffView diffData={diffData} />
+            <DiffView 
+              diffData={diffData} 
+              messageId={id}
+              chatId={chatId}
+              beforeFiles={beforeFiles}
+              canUndo={canUndo}
+            />
           )}
       </div>
       <div className="ai-chat-message-time">
