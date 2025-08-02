@@ -92,6 +92,7 @@
   overflow-y: auto;
   margin-bottom: 10px;
   padding-right: 5px;
+  scroll-behavior: smooth;
 
   &::-webkit-scrollbar {
     width: 6px;
