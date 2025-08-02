@@ -22,6 +22,9 @@ export default defineConfig({
       '/ai-chat-message': {
         target: 'http://localhost:3030',
       },
+      '/ai-chat-undo': {
+        target: 'http://localhost:3030',
+      },
     },
   },
 

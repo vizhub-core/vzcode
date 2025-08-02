@@ -82,6 +82,7 @@ export const handleAIChatMessage =
           shareDBDoc,
           chatId,
           editResult.diffData,
+          editResult.beforeFiles, // Pass the beforeFiles snapshot for undo
         );
       }
 

@@ -120,6 +120,7 @@ export const AIChat = () => {
             messages={messages}
             aiStatus={aiStatus}
             isLoading={isLoading}
+            chatId={currentChatId}
           />
         )}
         <ChatInput
