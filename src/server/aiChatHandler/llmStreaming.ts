@@ -16,6 +16,9 @@ import {
   updateFiles,
 } from './chatOperations.js';
 import { mergeFileChanges } from 'editcodewithai';
+import { diff } from '../../ot.js';
+import { VizChatId, VizContent } from '@vizhub/viz-types';
+import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
 
@@ -41,6 +44,10 @@ export const createLLMFunction = ({
   shareDBDoc,
   createVizBotLocalPresence,
   chatId,
+}: {
+  shareDBDoc: ShareDBDoc<VizContent>;
+  createVizBotLocalPresence: () => any;
+  chatId: VizChatId;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
@@ -246,13 +253,22 @@ export const createLLMFunction = ({
     // Generate a new runId to trigger a run when AI finishes editing
     // This will trigger a re-run without hot reloading
     const newRunId = generateRunId();
-    shareDBDoc.submitOp([
-      { p: ['runId'], od: shareDBDoc.data.runId, oi: newRunId }
-    ], (error) => {
+    const runIdOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      runId: newRunId,
+    });
+    shareDBDoc.submitOp(runIdOp, (error) => {
       if (error) {
-        console.warn('Error setting runId after AI editing:', error);
+        console.warn(
+          'Error setting runId after AI editing:',
+          error,
+        );
       } else {
-        DEBUG && console.log('Set new runId after AI editing:', newRunId);
+        DEBUG &&
+          console.log(
+            'Set new runId after AI editing:',
+            newRunId,
+          );
       }
     });
 

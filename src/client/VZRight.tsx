@@ -26,7 +26,9 @@ export const VZRight = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const runtimeRef = useRef<VizHubRuntime | null>(null);
   const isFirstRunRef = useRef(true);
-  const lastRunIdRef = useRef<string | undefined>(undefined);
+  const lastRunIdRef = useRef<string | undefined>(
+    undefined,
+  );
 
   // Get access to the current files.
   const { content, handleRuntimeError, clearRuntimeError } =
@@ -73,7 +75,11 @@ export const VZRight = () => {
     // 1. First run
     // 2. User is interacting with widgets
     // 3. runId changed (indicating AI finished or other trigger)
-    if (isFirstRunRef.current || isInteracting || runIdChanged) {
+    if (
+      isFirstRunRef.current ||
+      isInteracting ||
+      runIdChanged
+    ) {
       // Clear runtime errors when new code runs
       clearRuntimeError();
 

@@ -6,7 +6,7 @@ const starfield = document.getElementById('starfield');
 const MIN_STAR_SIZE = 1;
 const MAX_STAR_SIZE = 4;
 const MIN_SPEED = 0.5;
-const MAX_SPEED = 5;
+const MAX_SPEED = 29;
 const PERSPECTIVE_FACTOR = 0.005; // Adjust for perspective effect
 const ROTATION_SPEED = 0.01; // Adjust for rotation speed
 

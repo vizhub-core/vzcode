@@ -13,7 +13,6 @@ import { VZCodeContext } from '../VZCodeContext';
 import { InteractRule } from '@replit/codemirror-interact';
 import { EditorView } from 'codemirror'; // Import EditorView
 import { Diagnostic } from '@codemirror/lint'; // Import Diagnostic
-import { generateRunId } from '@vizhub/viz-utils';
 import './style.scss';
 
 // The path in the ShareDB document where the files live.
@@ -44,7 +43,6 @@ export const CodeEditor = ({
     theme,
     codeEditorRef,
     enableAutoFollow,
-    openTab,
     setIsAIChatOpen,
     setAIChatMessage,
   } = useContext(VZCodeContext);
