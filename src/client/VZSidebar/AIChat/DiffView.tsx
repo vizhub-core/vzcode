@@ -110,7 +110,14 @@ export const DiffView: React.FC<DiffViewProps> = ({
             </span>
           )}
         </div>
-        {canUndo && beforeFiles && (
+      </div>
+
+      <div
+        className="diff-files"
+        dangerouslySetInnerHTML={{ __html: diffHtml }}
+      />
+      {canUndo && beforeFiles && (
+        <div className="undo-button-container">
           <button
             className="undo-button"
             onClick={handleUndo}
@@ -119,13 +126,8 @@ export const DiffView: React.FC<DiffViewProps> = ({
           >
             {isUndoing ? 'Undoing...' : 'Undo'}
           </button>
-        )}
-      </div>
-
-      <div
-        className="diff-files"
-        dangerouslySetInnerHTML={{ __html: diffHtml }}
-      />
+        </div>
+      )}
     </div>
   );
 };

@@ -117,8 +117,8 @@ const ChatInputComponent = ({
         />
         {aiChatMessage && (
           <div className="ai-chat-input-info">
-            <span className="ai-chat-char-count">
-              {aiChatMessage.length} characters
+            <span className="ai-chat-hint">
+              Shift+Enter for new line
             </span>
             <span className="ai-chat-hint">
               Press Enter to send
