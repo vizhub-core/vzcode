@@ -34,14 +34,16 @@ export function renderFrame(ctx, canvas, stars, angle) {
     const screenY = perspectiveY + canvas.height / 2;
 
     if (perspectiveSize > 0 && screenX > 0 && screenX < canvas.width && screenY > 0 && screenY < canvas.height) {
-      // Enhanced glow effect for larger stars
+      // Enhanced glow effect scaled by star size
+      const glowMultiplier = 1 + star.size / 10;
+      
       ctx.beginPath();
-      ctx.arc(screenX, screenY, perspectiveSize * 1.5, 0, Math.PI * 2);
+      ctx.arc(screenX, screenY, perspectiveSize * 2 * glowMultiplier, 0, Math.PI * 2);
       ctx.fillStyle = star.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
       ctx.fill();
       
       ctx.beginPath();
-      ctx.arc(screenX, screenY, perspectiveSize, 0, Math.PI * 2);
+      ctx.arc(screenX, screenY, perspectiveSize * glowMultiplier, 0, Math.PI * 2);
       ctx.fillStyle = star.color.replace(')', ', 0.5)').replace('rgb', 'rgba');
       ctx.fill();
       

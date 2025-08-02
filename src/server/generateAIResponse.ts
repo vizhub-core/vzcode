@@ -152,7 +152,7 @@ export const generateAIResponse = async ({
     messages,
     reasoning: {
       effort: 'medium',
-      exclude: false
+      exclude: false,
     } as any, // Type assertion for OpenRouter-specific reasoning parameter
     stream: true,
   });

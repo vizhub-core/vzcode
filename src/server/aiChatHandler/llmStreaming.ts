@@ -45,11 +45,13 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
-    
+
     // Create OpenRouter client for reasoning token support
     const openRouterClient = new OpenAI({
       apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
-      baseURL: process.env.VIZHUB_EDIT_WITH_AI_BASE_URL || 'https://openrouter.ai/api/v1',
+      baseURL:
+        process.env.VIZHUB_EDIT_WITH_AI_BASE_URL ||
+        'https://openrouter.ai/api/v1',
       defaultHeaders: {
         'HTTP-Referer': 'https://vizhub.com',
         'X-Title': 'VizHub',
@@ -178,14 +180,18 @@ export const createLLMFunction = ({
     let reasoningContent = '';
 
     // Stream the response with reasoning tokens
-    const modelName = process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME || 'anthropic/claude-3.5-sonnet';
-    const stream = await (openRouterClient.chat.completions.create as any)({
+    const modelName =
+      process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
+      'anthropic/claude-3.5-sonnet';
+    const stream = await (
+      openRouterClient.chat.completions.create as any
+    )({
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
       max_tokens: 8192,
-      reasoning: { 
+      reasoning: {
         effort: 'medium',
-        exclude: false
+        exclude: false,
       },
       usage: { include: true },
       stream: true,
@@ -196,7 +202,7 @@ export const createLLMFunction = ({
 
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
-      
+
       if (delta?.reasoning) {
         // Handle reasoning tokens (thinking)
         if (!reasoningStarted) {
@@ -204,16 +210,24 @@ export const createLLMFunction = ({
           updateAIStatus(shareDBDoc, chatId, 'Thinking...');
         }
         reasoningContent += delta.reasoning;
-        updateAIScratchpad(shareDBDoc, chatId, reasoningContent);
+        updateAIScratchpad(
+          shareDBDoc,
+          chatId,
+          reasoningContent,
+        );
       } else if (delta?.content) {
         // Handle regular content tokens
         if (reasoningStarted && !contentStarted) {
           // Clear reasoning when content starts
           contentStarted = true;
           updateAIScratchpad(shareDBDoc, chatId, '');
-          updateAIStatus(shareDBDoc, chatId, 'Generating response...');
+          updateAIStatus(
+            shareDBDoc,
+            chatId,
+            'Generating response...',
+          );
         }
-        
+
         const chunkContent = delta.content;
         chunks.push(chunkContent);
 
@@ -239,7 +253,7 @@ export const createLLMFunction = ({
     }
     await parser.flushRemaining();
     reportFileEdited();
-    
+
     // Final cleanup - clear scratchpad and set final status
     updateAIScratchpad(shareDBDoc, chatId, '');
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');

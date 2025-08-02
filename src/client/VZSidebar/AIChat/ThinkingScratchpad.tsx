@@ -19,7 +19,9 @@ const ThinkingScratchpadComponent = ({
     <div className="thinking-scratchpad">
       <div className="thinking-scratchpad-header">
         <span className="thinking-scratchpad-icon">🧠</span>
-        <span className="thinking-scratchpad-title">VizBot is thinking...</span>
+        <span className="thinking-scratchpad-title">
+          VizBot is thinking...
+        </span>
       </div>
       <div className="thinking-scratchpad-content">
         <Markdown remarkPlugins={[remarkGfm]}>
@@ -30,4 +32,6 @@ const ThinkingScratchpadComponent = ({
   );
 };
 
-export const ThinkingScratchpad = memo(ThinkingScratchpadComponent);
+export const ThinkingScratchpad = memo(
+  ThinkingScratchpadComponent,
+);

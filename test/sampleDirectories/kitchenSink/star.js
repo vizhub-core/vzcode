@@ -1,7 +1,18 @@
 import { CONFIG } from './constants.js';
 
 export function createStar(canvas) {
-  const size = Math.random() * (CONFIG.MAX_STAR_SIZE - CONFIG.MIN_STAR_SIZE) + CONFIG.MIN_STAR_SIZE;
+  // Weighted random size based on distribution
+  const random = Math.random();
+  let size;
+  
+  if (random < CONFIG.SIZE_DISTRIBUTION[0]) {
+    size = Math.random() * 2 + CONFIG.MIN_STAR_SIZE; // small stars
+  } else if (random < CONFIG.SIZE_DISTRIBUTION[0] + CONFIG.SIZE_DISTRIBUTION[1]) {
+    size = Math.random() * 3 + 3; // medium stars
+  } else {
+    size = Math.random() * 5 + 6; // large stars
+  }
+
   const x = Math.random() * canvas.width - canvas.width / 2;
   const y = Math.random() * canvas.height - canvas.height / 2;
   const z = Math.random() * canvas.width;
@@ -12,9 +23,8 @@ export function createStar(canvas) {
 }
 
 function getRandomColor() {
-  // Generate more saturated colors for better visibility on light background
-  const r = Math.floor(Math.random() * 156) + 150;
-  const g = Math.floor(Math.random() * 156) + 150;
-  const b = Math.floor(Math.random() * 156) + 150;
-  return `rgb(${r}, ${g}, ${b})`;
+  // Generate vibrant colors with larger stars being brighter
+  const hue = Math.floor(Math.random() * 360);
+  const lightness = 70 + Math.random() * 20; // Brighter stars
+  return `hsl(${hue}, 100%, ${lightness}%)`;
 }

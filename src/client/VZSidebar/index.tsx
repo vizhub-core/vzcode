@@ -111,10 +111,6 @@ export const VZSidebar = ({
   aiChatToolTipText = (
     <div>
       <strong>VizBot - AI Code Editor</strong>
-      <div>
-        Ask for incremental code changes like "Make it blue
-        themed" or "Change the circles to squares"
-      </div>
     </div>
   ),
 }: {

@@ -45,7 +45,9 @@ const MessageListComponent = ({
     isLoading && !aiGenerationStarted;
 
   // Show thinking scratchpad when AI is thinking (has scratchpad content)
-  const showThinkingScratchpad = Boolean(aiScratchpad && aiScratchpad.trim());
+  const showThinkingScratchpad = Boolean(
+    aiScratchpad && aiScratchpad.trim(),
+  );
 
   return (
     <div className="ai-chat-messages">
