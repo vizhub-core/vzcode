@@ -93,14 +93,6 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
-      <div className="ai-chat-header">
-        <img
-          src="/vizhub.svg"
-          alt="VizBot Logo"
-          className="ai-chat-logo"
-        />
-        <h2 className="ai-chat-title">VizBot</h2>
-      </div>
       <div
         style={{
           padding: '10px',
@@ -119,36 +111,72 @@ export const AIChat = () => {
               How can I help you?
             </div>
             <div className="ai-chat-empty-examples">
-              <h4>Try edit requests like these:</h4>
-              <div className="ai-chat-suggested-prompts">
-                <button
-                  className="ai-chat-suggested-prompt"
-                  onClick={() => setAIChatMessage("Change the circles to squares")}
-                >
-                  "Change the circles to squares"
-                </button>
-                <button
-                  className="ai-chat-suggested-prompt"
-                  onClick={() => setAIChatMessage("Add a button that toggles the animation")}
-                >
-                  "Add a button that toggles the animation"
-                </button>
-                <button
-                  className="ai-chat-suggested-prompt"
-                  onClick={() => setAIChatMessage("Fix the CSS so the layout is responsive")}
-                >
-                  "Fix the CSS so the layout is responsive"
-                </button>
-                <button
-                  className="ai-chat-suggested-prompt"
-                  onClick={() => setAIChatMessage("Refactor this function to use async/await")}
-                >
-                  "Refactor this function to use async/await"
-                </button>
-              </div>
+              {aiChatMode === 'ask' ? (
+                <>
+                  <h4>Try asking questions like:</h4>
+                  <div className="ai-chat-suggested-prompts">
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("Explain how this works")}
+                    >
+                      "Explain how this works"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("How could I change it so that the circles are bigger?")}
+                    >
+                      "How could I change it so that the circles are bigger?"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("What does this function do?")}
+                    >
+                      "What does this function do?"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("How can I make this more accessible?")}
+                    >
+                      "How can I make this more accessible?"
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h4>Try edit requests like these:</h4>
+                  <div className="ai-chat-suggested-prompts">
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("Change the circles to squares")}
+                    >
+                      "Change the circles to squares"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("Add a button that toggles the animation")}
+                    >
+                      "Add a button that toggles the animation"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("Fix the CSS so the layout is responsive")}
+                    >
+                      "Fix the CSS so the layout is responsive"
+                    </button>
+                    <button
+                      className="ai-chat-suggested-prompt"
+                      onClick={() => setAIChatMessage("Refactor this function to use async/await")}
+                    >
+                      "Refactor this function to use async/await"
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
             <div className="ai-chat-empty-text">
-              Type your edit request below to get started!
+              {aiChatMode === 'ask'
+                ? 'Type your question below to get started!'
+                : 'Type your edit request below to get started!'}
             </div>
           </div>
         ) : (
