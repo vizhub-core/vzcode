@@ -57,15 +57,26 @@ const ChatInputComponent = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           ref={inputRef}
-          placeholder="Describe what you'd like me to change in your code..."
+          placeholder="Ask me anything about your code..."
           spellCheck="false"
           disabled={isLoading}
+          aria-label="Chat message input"
         />
+        {aiChatMessage && (
+          <div className="ai-chat-input-info">
+            <span className="ai-chat-char-count">
+              {aiChatMessage.length} characters
+            </span>
+            <span className="ai-chat-hint">Press Enter to send</span>
+          </div>
+        )}
         <Button
           variant="primary"
           onClick={onSendMessage}
           disabled={!aiChatMessage.trim() || isLoading}
           className="ai-chat-send-button"
+          aria-label="Send message"
+          title="Send message (Enter)"
         >
           Send
         </Button>

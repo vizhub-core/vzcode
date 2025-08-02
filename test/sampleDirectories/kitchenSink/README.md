@@ -1,47 +1,40 @@
-# Creating Circles with D3
+# 3D Rotating Starfield
 
-This project demonstrates how to create colorful circles
-using D3.js with modern ES6 modules and HTML import maps.
-Creating circles with D3! To use code like this in various
-frameworks or vanilla HTML, see
-[d3-rosetta](https://github.com/curran/d3-rosetta).
+An interactive 3D starfield animation built with HTML5 Canvas and vanilla JavaScript. Features a rotating perspective view with colorful stars moving through 3D space.
 
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/4DEx2M0auMc?si=L7JAtcLJQ6ieIt8c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+## Features
 
-[Full Playlist: Constructing Visualizations](https://www.youtube.com/playlist?list=PL9yYRbwpkykthTFJl9vYr_C0FCjRIn_7G)
+- **3D Perspective**: Stars move through 3D space with realistic depth perception
+- **Rotation Effect**: The entire starfield slowly rotates around the center
+- **Colorful Stars**: Each star has a randomly generated color
+- **Trail Effects**: Stars leave subtle trails as they move
+- **Responsive Design**: Automatically adjusts to window size changes
+- **Smooth Animation**: Uses `requestAnimationFrame` for optimal performance
 
-## What We'll Build
+## How it Works
 
-We will create an SVG element containing multiple colorful
-circles with varying sizes and positions. The visualization
-demonstrates key D3 concepts including data binding, the
-General Update Pattern, method chaining, and dynamic
-styling. Each circle is positioned using data-driven
-coordinates and styled with vibrant colors and transparency
-effects.
+- 2000 stars are generated with random positions, colors, sizes, and speeds
+- Each star exists in 3D space (x, y, z coordinates)
+- Stars rotate around the center using trigonometric functions
+- Perspective projection creates the illusion of depth
+- Stars that move off-screen are recycled to the back of the scene
 
-## Project Structure
+## Usage
 
-### Files Overview
+Simply open `index.html` in a web browser. The animation starts automatically and fills the entire viewport.
 
-- **index.html** - The main HTML file that sets up the page
-  structure, import maps, and basic styling
-- **index.js** - The entry point that selects the container
-  element and initializes the visualization
-- **viz.js** - Contains the main visualization logic using
-  D3's data binding and SVG rendering
-- **README.md** - This documentation file explaining the
-  project and D3 concepts
+## Customization
 
-## Understanding Import Maps
+You can adjust various parameters in `script.js`:
 
-This project leverages modern **HTML Import Maps** to load
-D3.js directly from a CDN without requiring a complex build
-process or bundler. Import maps provide a clean way to
-specify module dependencies in the browser.
+- `numStars`: Number of stars (default: 2000)
+- `MIN_STAR_SIZE` / `MAX_STAR_SIZE`: Star size range
+- `MIN_SPEED` / `MAX_SPEED`: Star movement speed range
+- `PERSPECTIVE_FACTOR`: Controls depth effect intensity
+- `ROTATION_SPEED`: How fast the starfield rotates
 
-### What are Import Maps?
+## Files
 
-Import maps are a web standard that allows you to control
-how module specifiers are resolved when importing ES6
-modules. Instead of writing:
+- `index.html`: Main HTML structure
+- `script.js`: Animation logic and 3D calculations
+- `styles.css`: Basic styling for full-screen display
