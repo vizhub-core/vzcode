@@ -86,9 +86,9 @@ export const DiffView: React.FC<DiffViewProps> = ({
   const combinedUnifiedDiff = combineUnifiedDiffs(diffData);
   const diffHtml = Diff2Html.html(combinedUnifiedDiff, {
     drawFileList: false,
-    matching: 'words',
+    matching: 'none',
     diffStyle: 'word',
-    outputFormat: 'line-by-line',
+    outputFormat: 'side-by-side',
   });
 
   return (
