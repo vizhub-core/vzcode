@@ -126,6 +126,8 @@ export type VZCodeContextValue = {
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   aiChatFocused: boolean;
   toggleAIChatFocused: () => void;
+  aiChatMode: 'ask' | 'edit';
+  setAIChatMode: (mode: 'ask' | 'edit') => void;
   aiChatEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
@@ -319,6 +321,7 @@ export const VZCodeProvider = ({
     toggleSearchFocused,
     setIsAIChatOpen,
     toggleAIChatFocused,
+    setAIChatMode,
     setIsSettingsOpen,
     setIsDocOpen,
     closeSettings,
@@ -491,6 +494,8 @@ export const VZCodeProvider = ({
     setIsAIChatOpen,
     aiChatFocused,
     toggleAIChatFocused,
+    aiChatMode: state.aiChatMode,
+    setAIChatMode,
     aiChatEndpoint,
     aiChatOptions,
 

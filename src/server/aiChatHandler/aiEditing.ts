@@ -13,6 +13,42 @@ import {
 const delayStart = false;
 
 /**
+ * Performs AI chat without editing - just generates a response
+ */
+export const performAIChat = async ({
+  prompt,
+  shareDBDoc,
+  llmFunction,
+}) => {
+  const preparedFiles = prepareFilesForPrompt(
+    shareDBDoc.data.files,
+  );
+  const filesContext = formatMarkdownFiles(preparedFiles);
+
+  // 2. Assemble the final prompt for Q&A mode
+  const fullPrompt = assembleFullPrompt({
+    filesContext,
+    prompt,
+    editFormat: 'whole',
+  });
+
+  if (delayStart) {
+    await new Promise((resolve) =>
+      setTimeout(resolve, 1000),
+    );
+  }
+
+  // Call the LLM function which will handle streaming but won't edit files
+  const result = await llmFunction(fullPrompt);
+
+  return {
+    content: result.content,
+    generationId: result.generationId,
+    diffData: {}, // No file changes in ask mode
+  };
+};
+
+/**
  * Performs AI editing operations using streaming with incremental OT operations
  */
 export const performAIEditing = async ({
