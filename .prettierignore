@@ -5,5 +5,11 @@
 *.txt
 *.env*
 *.ico
+*.png
+*.icns
+*.rs
+*.toml
+*.lock
+package-lock.json
 dist
 test/sampleDirectories

@@ -4,7 +4,12 @@ import {
   useCallback,
   memo,
 } from 'react';
-import { Form, Button, ButtonGroup, ToggleButton } from '../../bootstrap';
+import {
+  Form,
+  Button,
+  ButtonGroup,
+  ToggleButton,
+} from '../../bootstrap';
 
 interface ChatInputProps {
   aiChatMessage: string;
@@ -53,12 +58,19 @@ const ChatInputComponent = ({
 
   return (
     <div className="ai-chat-input-container">
-      <div className="ai-chat-mode-toggle" style={{ marginBottom: '8px' }}>
+      <div
+        className="ai-chat-mode-toggle"
+        style={{ marginBottom: '8px' }}
+      >
         <ButtonGroup size="sm">
           <ToggleButton
             id="ai-chat-mode-ask"
             type="radio"
-            variant={aiChatMode === 'ask' ? 'primary' : 'outline-primary'}
+            variant={
+              aiChatMode === 'ask'
+                ? 'primary'
+                : 'outline-primary'
+            }
             name="ai-chat-mode"
             value="ask"
             checked={aiChatMode === 'ask'}
@@ -70,7 +82,11 @@ const ChatInputComponent = ({
           <ToggleButton
             id="ai-chat-mode-edit"
             type="radio"
-            variant={aiChatMode === 'edit' ? 'primary' : 'outline-primary'}
+            variant={
+              aiChatMode === 'edit'
+                ? 'primary'
+                : 'outline-primary'
+            }
             name="ai-chat-mode"
             value="edit"
             checked={aiChatMode === 'edit'}
@@ -81,10 +97,9 @@ const ChatInputComponent = ({
           </ToggleButton>
         </ButtonGroup>
         <div className="ai-chat-mode-description">
-          {aiChatMode === 'ask' 
-            ? 'Ask questions without editing files' 
-            : 'Get answers and code edits'
-          }
+          {aiChatMode === 'ask'
+            ? 'Ask questions without editing files'
+            : 'Get answers and code edits'}
         </div>
       </div>
       <Form.Group className="ai-chat-input-group">
@@ -105,7 +120,9 @@ const ChatInputComponent = ({
             <span className="ai-chat-char-count">
               {aiChatMessage.length} characters
             </span>
-            <span className="ai-chat-hint">Press Enter to send</span>
+            <span className="ai-chat-hint">
+              Press Enter to send
+            </span>
           </div>
         )}
         <Button

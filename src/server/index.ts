@@ -150,26 +150,45 @@ app.post(
     const { chatId, messageId } = req.body;
 
     if (!chatId || !messageId) {
-      return res.status(400).json({ error: 'Missing chatId or messageId' });
+      return res
+        .status(400)
+        .json({ error: 'Missing chatId or messageId' });
     }
 
     try {
       const chat = shareDBDoc.data.chats?.[chatId];
       if (!chat) {
-        return res.status(404).json({ error: 'Chat not found' });
+        return res
+          .status(404)
+          .json({ error: 'Chat not found' });
       }
 
-      const message = chat.messages.find(msg => msg.id === messageId);
-      if (!message || message.role !== 'assistant' || !message.beforeFiles) {
-        return res.status(400).json({ error: 'Invalid message for undo' });
+      const message = chat.messages.find(
+        (msg) => msg.id === messageId,
+      );
+      if (
+        !message ||
+        message.role !== 'assistant' ||
+        !message.beforeFiles
+      ) {
+        return res
+          .status(400)
+          .json({ error: 'Invalid message for undo' });
       }
 
-      undoAIEdit(shareDBDoc, chatId, messageId, message.beforeFiles);
-      
+      undoAIEdit(
+        shareDBDoc,
+        chatId,
+        messageId,
+        message.beforeFiles,
+      );
+
       res.status(200).json({ success: true });
     } catch (error) {
       console.error('Error undoing AI edit:', error);
-      res.status(500).json({ error: 'Failed to undo edit' });
+      res
+        .status(500)
+        .json({ error: 'Failed to undo edit' });
     }
   },
 );

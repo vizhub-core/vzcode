@@ -45,16 +45,17 @@ const MessageListComponent = ({
     <div className="ai-chat-messages">
       {messages.map((msg, index) => {
         // Only the most recent assistant message with diffData can be undone
-        const isLastAssistantMessage = 
-          msg.role === 'assistant' && 
+        const isLastAssistantMessage =
+          msg.role === 'assistant' &&
           index === messages.length - 1 &&
           !isLoading; // Can't undo while AI is still generating
-        
-        const canUndo = 
-          isLastAssistantMessage && 
-          (msg as any).diffData && 
+
+        const canUndo =
+          isLastAssistantMessage &&
+          (msg as any).diffData &&
           (msg as any).beforeFiles &&
-          Object.keys((msg as any).diffData || {}).length > 0;
+          Object.keys((msg as any).diffData || {}).length >
+            0;
 
         return (
           <Message
