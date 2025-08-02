@@ -1,7 +1,5 @@
-import { shouldTriggerRun } from '../shouldTriggerRun';
-import { JSONOp } from '../../ot';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
-import { ShareDBDoc } from '../../types';
+import { JSONOp, ShareDBDoc } from '../../types';
 import { useEffect, useRef, useState } from 'react';
 
 // The time in milliseconds by which auto-saving is debounced.

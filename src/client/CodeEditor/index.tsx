@@ -43,7 +43,6 @@ export const CodeEditor = ({
     theme,
     codeEditorRef,
     enableAutoFollow,
-    openTab,
     setIsAIChatOpen,
     setAIChatMessage,
   } = useContext(VZCodeContext);
@@ -63,13 +62,17 @@ export const CodeEditor = ({
       clearTimeout(interactTimeoutRef.current);
     }
 
-    // Set `isInteracting: undefined` after a delay.
+    // Set `isInteracting: undefined` after a delay,
+    // so that when the runId changes in the future,
+    // it will trigger a hard re-run, not a hot reload.
     interactTimeoutRef.current = setTimeout(() => {
       interactTimeoutRef.current = null;
 
-      // This logic deletes the `isInteracting` property from the document.
+      // This logic deletes the `isInteracting` property from the document
       submitOperation(
-        ({ isInteracting, ...newDocument }) => newDocument,
+        ({ isInteracting, ...newDocument }) => ({
+          ...newDocument,
+        }),
       );
     }, 800);
   }, [submitOperation]);

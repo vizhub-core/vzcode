@@ -5,6 +5,7 @@ import {
 import { ChatOpenAI } from '@langchain/openai';
 import OpenAI from 'openai';
 import fs from 'fs';
+import { generateRunId } from '@vizhub/viz-utils';
 import {
   updateAIStatus,
   createAIMessage,
@@ -17,6 +18,9 @@ import {
   updateAIScratchpad,
 } from './chatOperations.js';
 import { mergeFileChanges } from 'editcodewithai';
+import { diff } from '../../ot.js';
+import { VizChatId, VizContent } from '@vizhub/viz-types';
+import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
 
@@ -42,6 +46,10 @@ export const createLLMFunction = ({
   shareDBDoc,
   createVizBotLocalPresence,
   chatId,
+}: {
+  shareDBDoc: ShareDBDoc<VizContent>;
+  createVizBotLocalPresence: () => any;
+  chatId: VizChatId;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = createVizBotLocalPresence();
@@ -293,6 +301,28 @@ export const createLLMFunction = ({
         ),
       );
     }
+
+    // Generate a new runId to trigger a run when AI finishes editing
+    // This will trigger a re-run without hot reloading
+    const newRunId = generateRunId();
+    const runIdOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      runId: newRunId,
+    });
+    shareDBDoc.submitOp(runIdOp, (error) => {
+      if (error) {
+        console.warn(
+          'Error setting runId after AI editing:',
+          error,
+        );
+      } else {
+        DEBUG &&
+          console.log(
+            'Set new runId after AI editing:',
+            newRunId,
+          );
+      }
+    });
 
     // Write chunks file for debugging
     if (DEBUG) {

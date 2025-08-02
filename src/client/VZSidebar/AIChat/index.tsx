@@ -99,7 +99,7 @@ export const AIChat = () => {
           alt="VizBot Logo"
           className="ai-chat-logo"
         />
-        <h2 className="ai-chat-title">VizBot Assistant</h2>
+        <h2 className="ai-chat-title">VizBot</h2>
       </div>
       <div
         style={{
@@ -113,36 +113,29 @@ export const AIChat = () => {
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-icon">✨</div>
             <h3 className="ai-chat-empty-title">
-              Welcome to VizBot AI Assistant
+              Hi, I'm VizBot!
             </h3>
             <div className="ai-chat-empty-text">
-              VizBot can help you with coding tasks, answer
-              questions about your visualization project,
-              and provide guidance on data visualization
-              techniques.
+              How can I help you?
             </div>
             <div className="ai-chat-empty-examples">
-              <h4>Try asking about:</h4>
+              <h4>Try edit requests like these:</h4>
               <ul>
+                <li>"Change the circles to squares"</li>
                 <li>
-                  "How do I create a bar chart with D3.js?"
+                  "Add a button that toggles the animation"
                 </li>
                 <li>
-                  "Help me debug my SVG that's not
-                  displaying correctly"
+                  "Fix the CSS so the layout is responsive"
                 </li>
                 <li>
-                  "Suggest ways to improve my
-                  visualization's accessibility"
-                </li>
-                <li>
-                  "What's the best way to handle large
-                  datasets in the browser?"
+                  "Refactor this function to use
+                  async/await"
                 </li>
               </ul>
             </div>
             <div className="ai-chat-empty-text">
-              Type your question below to get started!
+              Type your edit request below to get started!
             </div>
           </div>
         ) : (

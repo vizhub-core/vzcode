@@ -110,15 +110,19 @@ const ChatInputComponent = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           ref={inputRef}
-          placeholder="Ask me anything about your code..."
+          placeholder={
+            aiChatMode === 'edit'
+              ? 'Ask me to make code changes...'
+              : 'Ask me anything about your code...'
+          }
           spellCheck="false"
           disabled={isLoading}
           aria-label="Chat message input"
         />
         {aiChatMessage && (
           <div className="ai-chat-input-info">
-            <span className="ai-chat-char-count">
-              {aiChatMessage.length} characters
+            <span className="ai-chat-hint">
+              Shift+Enter for new line
             </span>
             <span className="ai-chat-hint">
               Press Enter to send

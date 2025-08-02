@@ -7,8 +7,12 @@ import {
   mergeFileChanges,
 } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
-import { vizFilesToFileCollection } from '@vizhub/viz-utils';
+import {
+  generateRunId,
+  vizFilesToFileCollection,
+} from '@vizhub/viz-utils';
 import JSZip from 'jszip';
+import { generate } from '@langchain/core/dist/utils/fast-json-patch';
 
 export const createAICopyPasteHandlers = (
   files: VizFiles,
@@ -106,6 +110,7 @@ export const createAICopyPasteHandlers = (
         submitOperation((document) => ({
           ...document,
           files: mergedFiles,
+          runId: generateRunId(),
         }));
 
         const fileCount = Object.keys(parsed.files).length;

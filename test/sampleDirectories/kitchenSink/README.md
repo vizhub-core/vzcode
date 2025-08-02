@@ -14,7 +14,7 @@ An interactive 3D starfield animation built with HTML5 Canvas and vanilla JavaSc
 
 ## How it Works
 
-- 1000 stars are generated with random positions, colors, sizes, and speeds
+- 2000 stars are generated with random positions, colors, sizes, and speeds
 - Each star exists in 3D space (x, y, z coordinates)
 - Stars rotate around the center using trigonometric functions
 - Perspective projection creates the illusion of depth
@@ -28,7 +28,7 @@ Simply open `index.html` in a web browser. The animation starts automatically an
 
 You can adjust various parameters in `constants.js`:
 
-- `NUM_STARS`: Number of stars (default: 1000)
+- `NUM_STARS`: Number of stars (default: 2000)
 - `MIN_STAR_SIZE` / `MAX_STAR_SIZE`: Star size range
 - `MIN_SPEED` / `MAX_SPEED`: Star movement speed range
 - `PERSPECTIVE_FACTOR`: Controls depth effect intensity
