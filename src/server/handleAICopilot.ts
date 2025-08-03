@@ -40,6 +40,9 @@ export const handleAICopilot = () => {
         apiKey: VZCODE_AI_COPILOT_API_KEY,
         baseURL: VZCODE_AI_COPILOT_BASE_URL,
       },
+      additionalParameters: {
+        provider: { sort: 'throughput' },
+      },
       streaming: false,
     };
     debug && console.log('chatModel options:', options);
