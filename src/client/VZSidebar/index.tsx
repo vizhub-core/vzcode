@@ -298,6 +298,29 @@ export const VZSidebar = ({
         tabIndex={-1}
       >
         <div className="sidebar-section-buttons">
+          {enableAIChat && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="ai-chat-tooltip">
+                  {aiChatToolTipText}
+                </Tooltip>
+              }
+            >
+              <i
+                id="ai-chat-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  setIsAIChatOpen(true);
+                  setIsSearchOpen(false);
+                  setSidebarView(true); // Switch to AI chat view
+                }}
+              >
+                <SparklesSVG />
+              </i>
+            </OverlayTrigger>
+          )}
+
           <OverlayTrigger
             placement="right"
             overlay={
@@ -339,29 +362,6 @@ export const VZSidebar = ({
               <SearchSVG />
             </i>
           </OverlayTrigger>
-
-          {enableAIChat && (
-            <OverlayTrigger
-              placement="right"
-              overlay={
-                <Tooltip id="ai-chat-tooltip">
-                  {aiChatToolTipText}
-                </Tooltip>
-              }
-            >
-              <i
-                id="ai-chat-icon"
-                className="icon-button icon-button-dark"
-                onClick={() => {
-                  setIsAIChatOpen(true);
-                  setIsSearchOpen(false);
-                  setSidebarView(true); // Switch to AI chat view
-                }}
-              >
-                <SparklesSVG />
-              </i>
-            </OverlayTrigger>
-          )}
 
           <OverlayTrigger
             placement="right"
