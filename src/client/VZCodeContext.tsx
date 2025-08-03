@@ -129,6 +129,7 @@ export type VZCodeContextValue = {
   aiChatMode: 'ask' | 'edit';
   setAIChatMode: (mode: 'ask' | 'edit') => void;
   aiChatEndpoint?: string;
+  aiChatUndoEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
@@ -215,6 +216,7 @@ export const VZCodeProvider = ({
   liveKitConnection,
   setLiveKitConnection,
   aiChatEndpoint,
+  aiChatUndoEndpoint,
   aiChatOptions,
 }: {
   content: VizContent;
@@ -235,6 +237,7 @@ export const VZCodeProvider = ({
   liveKitConnection?: boolean;
   setLiveKitConnection?: (state: boolean) => void;
   aiChatEndpoint?: string;
+  aiChatUndoEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
 }) => {
   // Auto-run Pretter after local changes.
@@ -497,6 +500,7 @@ export const VZCodeProvider = ({
     aiChatMode: state.aiChatMode,
     setAIChatMode,
     aiChatEndpoint,
+    aiChatUndoEndpoint,
     aiChatOptions,
 
     isSettingsOpen,

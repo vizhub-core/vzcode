@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   UnifiedFilesDiff,
   parseUnifiedDiffStats,
@@ -6,6 +6,7 @@ import {
 } from '../../../utils/fileDiff';
 import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
+import { VZCodeContext } from '../../VZCodeContext';
 import './DiffView.scss';
 
 interface DiffViewProps {
@@ -24,6 +25,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
   canUndo = false,
 }) => {
   const [isUndoing, setIsUndoing] = useState(false);
+  const { aiChatUndoEndpoint } = useContext(VZCodeContext);
 
   const unifiedDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
@@ -38,14 +40,15 @@ export const DiffView: React.FC<DiffViewProps> = ({
       !messageId ||
       !chatId ||
       !beforeFiles ||
-      isUndoing
+      isUndoing ||
+      !aiChatUndoEndpoint
     ) {
       return;
     }
 
     setIsUndoing(true);
     try {
-      const response = await fetch('/ai-chat-undo', {
+      const response = await fetch(aiChatUndoEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
