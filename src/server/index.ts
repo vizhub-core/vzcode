@@ -14,7 +14,7 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { handleAIChatMessage } from './handleAIChatMessage.js';
-import { undoAIEdit } from './aiChatHandler/chatOperations.js';
+import { handleAIChatUndo } from './handleAIChatUndo.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
@@ -146,51 +146,9 @@ app.post(
 app.post(
   '/ai-chat-undo',
   bodyParser.json(),
-  async (req, res) => {
-    const { chatId, messageId } = req.body;
-
-    if (!chatId || !messageId) {
-      return res
-        .status(400)
-        .json({ error: 'Missing chatId or messageId' });
-    }
-
-    try {
-      const chat = shareDBDoc.data.chats?.[chatId];
-      if (!chat) {
-        return res
-          .status(404)
-          .json({ error: 'Chat not found' });
-      }
-
-      const message = chat.messages.find(
-        (msg) => msg.id === messageId,
-      );
-      if (
-        !message ||
-        message.role !== 'assistant' ||
-        !message.beforeFiles
-      ) {
-        return res
-          .status(400)
-          .json({ error: 'Invalid message for undo' });
-      }
-
-      undoAIEdit(
-        shareDBDoc,
-        chatId,
-        messageId,
-        message.beforeFiles,
-      );
-
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error('Error undoing AI edit:', error);
-      res
-        .status(500)
-        .json({ error: 'Failed to undo edit' });
-    }
-  },
+  handleAIChatUndo({
+    shareDBDoc,
+  }),
 );
 
 // Livekit Token Generator
