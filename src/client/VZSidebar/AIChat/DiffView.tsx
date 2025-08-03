@@ -25,7 +25,8 @@ export const DiffView: React.FC<DiffViewProps> = ({
   canUndo = false,
 }) => {
   const [isUndoing, setIsUndoing] = useState(false);
-  const { aiChatUndoEndpoint } = useContext(VZCodeContext);
+  const { aiChatUndoEndpoint, aiChatOptions = {} } =
+    useContext(VZCodeContext);
 
   const unifiedDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
@@ -54,6 +55,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          vizId: aiChatOptions.vizId,
           chatId,
           messageId,
         }),
