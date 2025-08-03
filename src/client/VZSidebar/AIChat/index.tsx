@@ -52,7 +52,7 @@ export const AIChat = () => {
 
   const handleSendMessage = useCallback(async (messageToSend?: string) => {
     const messageContent = messageToSend || aiChatMessage;
-    if (!messageContent.trim() || isLoading) return;
+    if (!messageContent || typeof messageContent !== 'string' || !messageContent.trim() || isLoading) return;
 
     setAIChatMessage('');
     setIsLoading(true);
