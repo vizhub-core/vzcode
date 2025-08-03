@@ -48,4 +48,26 @@
   .icon-button:hover {
     color: var(--vh-color-action-03);
   }
+
+  .vz-split-pane-button {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin: 6px 4px 0 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.075);
+    }
+    
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
 }

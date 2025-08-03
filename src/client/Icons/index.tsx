@@ -21,3 +21,4 @@ export { HtmlSVG } from './HtmlSVG';
 export { CssSVG } from './CssSVG';
 export { JsonSVG } from './JsonSVG';
 export { MarkdownSVG } from './MarkdownSVG';
+export { SplitEditorSVG } from './SplitEditorSVG';

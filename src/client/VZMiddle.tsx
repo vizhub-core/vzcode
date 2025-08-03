@@ -12,14 +12,12 @@ import { InteractRule } from '@replit/codemirror-interact';
 import { EditorView } from '@codemirror/view';
 import { Diagnostic } from '@codemirror/lint';
 import { VizContent } from '@vizhub/viz-types';
-import { LeafPane } from '../types';
+import { LeafPane, Pane } from '../types';
 import { isImageFile } from './utils/isImageFile';
+import './SplitPane.scss';
 
-// TODO modify this to handle the SplitPane type
-// Recursive structure?
-// SplitPaneView
-// LeafPaneView
-const PaneView = ({
+// LeafPaneView component - renders a single pane with tabs and editor
+const LeafPaneView = ({
   pane,
   content,
   customInteractRules,
@@ -30,6 +28,17 @@ const PaneView = ({
   aiAssistClickOverride,
   aiCopilotEndpoint,
   esLintSource,
+}: {
+  pane: LeafPane;
+  content: VizContent | null;
+  customInteractRules?: Array<InteractRule>;
+  enableAIAssist?: boolean;
+  aiAssistEndpoint?: string;
+  aiAssistOptions?: { [key: string]: string };
+  aiAssistTooltipText?: string;
+  aiAssistClickOverride?: () => void;
+  aiCopilotEndpoint?: string;
+  esLintSource: (view: EditorView) => Promise<readonly Diagnostic[]>;
 }) => {
   // This prevents the CodeEditor from rendering
   // during SSR.
@@ -38,14 +47,6 @@ const PaneView = ({
     setIsClient(true);
   }, []);
 
-  // TODO something like
-  // return pane.type === 'leafPane' ? (
-  //   <LeafPaneView />
-  // ) : (
-  //   <SplitPaneView />
-  // );
-
-  // This should go in LeafPaneView
   return (
     <>
       <TabList
@@ -91,6 +92,117 @@ const PaneView = ({
   );
 };
 
+// SplitPaneView component - renders split panes with a resizer
+const SplitPaneView = ({
+  pane,
+  content,
+  customInteractRules,
+  enableAIAssist,
+  aiAssistEndpoint,
+  aiAssistOptions,
+  aiAssistTooltipText,
+  aiAssistClickOverride,
+  aiCopilotEndpoint,
+  esLintSource,
+}: {
+  pane: Pane;
+  content: VizContent | null;
+  customInteractRules?: Array<InteractRule>;
+  enableAIAssist?: boolean;
+  aiAssistEndpoint?: string;
+  aiAssistOptions?: { [key: string]: string };
+  aiAssistTooltipText?: string;
+  aiAssistClickOverride?: () => void;
+  aiCopilotEndpoint?: string;
+  esLintSource: (view: EditorView) => Promise<readonly Diagnostic[]>;
+}) => {
+  if (pane.type !== 'splitPane') {
+    throw new Error('Expected splitPane');
+  }
+
+  const isHorizontal = pane.orientation === 'horizontal';
+  const isVertical = pane.orientation === 'vertical';
+
+  return (
+    <div 
+      className={`split-pane-container ${isHorizontal ? 'horizontal' : 'vertical'}`}
+    >
+      {pane.children.map((childPane, index) => (
+        <div key={childPane.id}>
+          <div className="split-pane-child">
+            <PaneView
+              pane={childPane}
+              content={content}
+              customInteractRules={customInteractRules}
+              enableAIAssist={enableAIAssist}
+              aiAssistEndpoint={aiAssistEndpoint}
+              aiAssistOptions={aiAssistOptions}
+              aiAssistTooltipText={aiAssistTooltipText}
+              aiAssistClickOverride={aiAssistClickOverride}
+              aiCopilotEndpoint={aiCopilotEndpoint}
+              esLintSource={esLintSource}
+            />
+          </div>
+          {/* Add a simple resizer between panes (except for the last one) */}
+          {index < pane.children.length - 1 && (
+            <div 
+              className={`split-pane-resizer ${isHorizontal ? 'horizontal' : 'vertical'}`}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// Main PaneView component - decides whether to render a leaf or split pane
+const PaneView = ({
+  pane,
+  content,
+  customInteractRules,
+  enableAIAssist,
+  aiAssistEndpoint,
+  aiAssistOptions,
+  aiAssistTooltipText,
+  aiAssistClickOverride,
+  aiCopilotEndpoint,
+  esLintSource,
+}) => {
+  if (pane.type === 'leafPane') {
+    return (
+      <LeafPaneView
+        pane={pane}
+        content={content}
+        customInteractRules={customInteractRules}
+        enableAIAssist={enableAIAssist}
+        aiAssistEndpoint={aiAssistEndpoint}
+        aiAssistOptions={aiAssistOptions}
+        aiAssistTooltipText={aiAssistTooltipText}
+        aiAssistClickOverride={aiAssistClickOverride}
+        aiCopilotEndpoint={aiCopilotEndpoint}
+        esLintSource={esLintSource}
+      />
+    );
+  } else if (pane.type === 'splitPane') {
+    return (
+      <SplitPaneView
+        pane={pane}
+        content={content}
+        customInteractRules={customInteractRules}
+        enableAIAssist={enableAIAssist}
+        aiAssistEndpoint={aiAssistEndpoint}
+        aiAssistOptions={aiAssistOptions}
+        aiAssistTooltipText={aiAssistTooltipText}
+        aiAssistClickOverride={aiAssistClickOverride}
+        aiCopilotEndpoint={aiCopilotEndpoint}
+        esLintSource={esLintSource}
+      />
+    );
+  } else {
+    throw new Error(`Unknown pane type: ${pane.type}`);
+  }
+};
+
 // The middle portion of the VZCode environment, containing:
 // * The list of tabs at the top
 // * The code editor itself
@@ -131,16 +243,20 @@ export const VZMiddle = ({
     localPresence,
     docPresence,
     pane,
-    activePane,
     errorMessage,
   } = useContext(VZCodeContext);
 
-  if (activePane.type !== 'leafPane') {
-    throw new Error('Expected leafPane');
-  }
-  // True if the editor panes should be shown.
-  const shouldShowEditorPanes: boolean =
-    activePane.activeFileId !== null;
+  // Check if we should show editor panes - true if there's at least one active file in any leaf pane
+  const hasActiveFileInAnyPane = (currentPane: Pane): boolean => {
+    if (currentPane.type === 'leafPane') {
+      return currentPane.activeFileId !== null;
+    } else if (currentPane.type === 'splitPane') {
+      return currentPane.children.some(child => hasActiveFileInAnyPane(child));
+    }
+    return false;
+  };
+
+  const shouldShowEditorPanes: boolean = hasActiveFileInAnyPane(pane);
 
   return shouldShowEditorPanes ? (
     <div
