@@ -50,8 +50,9 @@ export const AIChat = () => {
   // Check if this is the first time opening the chat (no messages)
   const isEmptyState = rawMessages.length === 0;
 
-  const handleSendMessage = useCallback(async () => {
-    if (!aiChatMessage.trim() || isLoading) return;
+  const handleSendMessage = useCallback(async (messageToSend?: string) => {
+    const messageContent = messageToSend || aiChatMessage;
+    if (!messageContent.trim() || isLoading) return;
 
     setAIChatMessage('');
     setIsLoading(true);
@@ -68,7 +69,7 @@ export const AIChat = () => {
         body: JSON.stringify({
           ...aiChatOptions,
           vizId: aiChatOptions.vizId,
-          content: aiChatMessage.trim(),
+          content: messageContent.trim(),
           chatId: currentChatId,
           mode: aiChatMode,
         }),
@@ -107,6 +108,7 @@ export const AIChat = () => {
     aiChatEndpoint,
     aiChatOptions,
     currentChatId,
+    aiChatMode,
   ]);
 
   return (
@@ -136,9 +138,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
-                          'Explain how this works',
-                        )
+                        handleSendMessage('Explain how this works')
                       }
                     >
                       "Explain how this works"
@@ -146,7 +146,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
+                        handleSendMessage(
                           'How could I change it so that the circles are bigger?',
                         )
                       }
@@ -157,9 +157,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
-                          'What does this function do?',
-                        )
+                        handleSendMessage('What does this function do?')
                       }
                     >
                       "What does this function do?"
@@ -167,9 +165,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
-                          'How can I make this more accessible?',
-                        )
+                        handleSendMessage('How can I make this more accessible?')
                       }
                     >
                       "How can I make this more accessible?"
@@ -183,9 +179,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
-                          'Change the circles to squares',
-                        )
+                        handleSendMessage('Change the circles to squares')
                       }
                     >
                       "Change the circles to squares"
@@ -193,7 +187,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
+                        handleSendMessage(
                           'Add a button that toggles the animation',
                         )
                       }
@@ -204,7 +198,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
+                        handleSendMessage(
                           'Fix the CSS so the layout is responsive',
                         )
                       }
@@ -215,7 +209,7 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        setAIChatMessage(
+                        handleSendMessage(
                           'Refactor this function to use async/await',
                         )
                       }
