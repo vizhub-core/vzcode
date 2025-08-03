@@ -20,7 +20,7 @@ export type SplitPaneResizeContextValue = {
 
 // Default widths for different sidebar views
 const filesViewWidth = 300;
-const aiChatViewWidth = 600;
+const aiChatViewWidth = 800;
 const initialCodeEditorWidthDefault = 800;
 
 const initialValue: SplitPaneResizeContextValue = {

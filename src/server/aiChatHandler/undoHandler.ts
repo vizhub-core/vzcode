@@ -1,10 +1,34 @@
-import { validateRequest } from './validation.js';
 import { undoAIEdit } from './chatOperations.js';
 import { handleError } from './errorHandling.js';
 import { ShareDBDoc } from '../../types.js';
 import { VizContent } from '@vizhub/viz-types';
 
 const DEBUG = false;
+
+/**
+ * Validates incoming request data for AI chat undo
+ */
+const validateUndoRequest = (req, res) => {
+  const { chatId, messageId } = req.body;
+
+  if (!chatId || typeof chatId !== 'string') {
+    res.status(400).json({
+      error:
+        'Invalid request: chatId is required and must be a string',
+    });
+    return false;
+  }
+
+  if (!messageId || typeof messageId !== 'string') {
+    res.status(400).json({
+      error:
+        'Invalid request: messageId is required and must be a string',
+    });
+    return false;
+  }
+
+  return true;
+};
 
 export const handleAIChatUndo =
   ({
@@ -27,15 +51,7 @@ export const handleAIChatUndo =
     }
 
     // Validate request
-    if (!validateRequest(req, res)) {
-      return;
-    }
-
-    // Validate required parameters
-    if (!chatId || !messageId) {
-      res.status(400).json({
-        error: 'Missing chatId or messageId',
-      });
+    if (!validateUndoRequest(req, res)) {
       return;
     }
 
