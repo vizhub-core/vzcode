@@ -118,6 +118,7 @@ function App() {
         liveKitConnection={liveKitConnection}
         setLiveKitConnection={setLiveKitConnection}
         aiChatEndpoint="/ai-chat-message"
+        aiChatUndoEndpoint="/ai-chat-undo"
         aiChatOptions={{}}
       >
         <LiveKitRoom
