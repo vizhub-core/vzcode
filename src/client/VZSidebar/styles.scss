@@ -382,4 +382,61 @@
     color: #000000;
     z-index: 1;
   }
+
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .sidebar-section-buttons {
+      gap: 8px;
+      padding: 8px;
+
+      /* Increase touch target size for mobile */
+      button,
+      a {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
+    .file-or-directory {
+      min-height: 44px; /* Minimum touch target size */
+      padding: 8px 12px 8px 16px;
+      margin: 2px 8px;
+    }
+
+    .settings {
+      min-height: 44px;
+      padding: 12px 0;
+      margin: 8px 12px;
+    }
+
+    .sidebar-section-hint {
+      font-size: 14px;
+      margin-left: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .sidebar-section-buttons {
+      gap: 4px;
+      padding: 4px;
+    }
+
+    .file-or-directory {
+      min-height: 40px;
+      padding: 6px 10px 6px 14px;
+      font-size: 14px;
+    }
+
+    .sidebar-section-hint {
+      font-size: 13px;
+    }
+  }
 }

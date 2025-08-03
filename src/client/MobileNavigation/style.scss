@@ -1,0 +1,67 @@
+.mobile-navigation {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--vh-color-neutral-01);
+  border-top: 2px solid var(--vh-color-neutral-02);
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    min-height: 44px; /* Minimum touch target size */
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--vh-color-neutral-04);
+    font-family: var(--vzcode-font-family);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.075);
+    }
+
+    &.active {
+      background: var(--vh-color-primary-01);
+      color: white;
+    }
+
+    &:focus {
+      outline: 2px solid var(--vh-color-primary-01);
+      outline-offset: 2px;
+    }
+
+    .mobile-nav-icon {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+
+    .mobile-nav-label {
+      font-weight: 500;
+      line-height: 1.2;
+    }
+  }
+}
+
+/* Adjust app padding to account for mobile navigation */
+@media (max-width: 768px) {
+  .app {
+    padding-bottom: 70px; /* Space for mobile navigation */
+  }
+}

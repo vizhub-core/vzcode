@@ -10,6 +10,11 @@
 
   // Useful for debugging:
   // background-color: #ffd0007c;
+
+  /* Hide resizers on mobile to prevent accidental touches */
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .vz-resizer:hover {

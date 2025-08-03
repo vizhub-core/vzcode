@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import ShareDBClient from 'sharedb-client-browser/dist/sharedb-client-umd.cjs';
 import { json1Presence } from '../../ot';
 import { Username } from '../../types';
@@ -19,6 +19,10 @@ import { VZLeft } from '../VZLeft';
 import { VZMiddle } from '../VZMiddle';
 import { VZResizer } from '../VZResizer';
 import { VZRight } from '../VZRight';
+import {
+  MobileNavigation,
+  MobileView,
+} from '../MobileNavigation';
 import {
   useInitialUsername,
   usePersistUsername,
@@ -77,6 +81,12 @@ function App() {
   const [liveKitConnection, setLiveKitConnection] =
     useState(false);
   const { esLintSource } = useESLint();
+
+  // Mobile navigation state
+  const [currentMobileView, setCurrentMobileView] =
+    useState<MobileView>('files');
+  const [isMobile, setIsMobile] = useState(false);
+
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
 
@@ -98,6 +108,40 @@ function App() {
   // It's hard to figure out how to dismiss it.
   // Clicking on it accepts it but should not.
   const enableCopilot = false;
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+
+      // Only auto-switch to preview when first loading with files and starting at files view
+      if (
+        mobile &&
+        content?.files &&
+        Object.keys(content.files).length > 0 &&
+        currentMobileView === 'files'
+      ) {
+        // Don't auto-switch, let user control the view
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Check if there's an open file for mobile navigation
+  const hasOpenFile =
+    content?.files && Object.keys(content.files).length > 0;
+
+  // Generate CSS class for mobile view state
+  const appClassName = isMobile
+    ? `app mobile-view-${currentMobileView}`
+    : 'app';
 
   return (
     <SplitPaneResizeProvider>
@@ -128,7 +172,7 @@ function App() {
           connect={liveKitConnection}
           style={{ height: '100%' }}
         >
-          <div className="app">
+          <div className={appClassName}>
             <VZLeft />
             <VZMiddle
               aiCopilotEndpoint={
@@ -142,6 +186,11 @@ function App() {
               <VZResizer side="right" />
             ) : null}
           </div>
+          <MobileNavigation
+            currentView={currentMobileView}
+            onViewChange={setCurrentMobileView}
+            hasOpenFile={hasOpenFile}
+          />
           <PersistUsername />
           <RoomAudioRenderer />
         </LiveKitRoom>
