@@ -1,0 +1,44 @@
+.split-pane-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  &.horizontal {
+    flex-direction: row;
+  }
+
+  &.vertical {
+    flex-direction: column;
+  }
+
+  .split-pane-child {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.split-pane-resizer {
+  background-color: #1f2022;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+
+  &.horizontal {
+    width: 4px;
+    height: 100%;
+    cursor: col-resize;
+  }
+
+  &.vertical {
+    height: 4px;
+    width: 100%;
+    cursor: row-resize;
+  }
+
+  &:hover {
+    background-color: #007acc;
+  }
+}
