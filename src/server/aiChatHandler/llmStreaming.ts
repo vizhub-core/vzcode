@@ -155,14 +155,19 @@ export const createLLMFunction = ({
               ],
             };
 
-            localPresence.submit(filePresence, (error) => {
-              if (error) {
-                console.warn(
-                  'AI Editor line presence submission error:',
-                  error,
-                );
-              }
-            });
+            if (localPresence) {
+              localPresence.submit(
+                filePresence,
+                (error) => {
+                  if (error) {
+                    console.warn(
+                      'AI Editor line presence submission error:',
+                      error,
+                    );
+                  }
+                },
+              );
+            }
           }
         }
       },
@@ -283,15 +288,17 @@ export const createLLMFunction = ({
       console.log(
         'AI editing done, clearing AI Editor presence',
       );
-    localPresence.submit(null, (error) => {
-      DEBUG && console.log('AI Editor presence cleared');
-      if (error) {
-        console.warn(
-          'AI Editor presence cleanup error:',
-          error,
-        );
-      }
-    });
+    if (localPresence) {
+      localPresence.submit(null, (error) => {
+        DEBUG && console.log('AI Editor presence cleared');
+        if (error) {
+          console.warn(
+            'AI Editor presence cleanup error:',
+            error,
+          );
+        }
+      });
+    }
 
     // If streaming editing is not enabled, we need to
     // apply all the edits at once
