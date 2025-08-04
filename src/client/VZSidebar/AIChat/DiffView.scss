@@ -31,32 +31,6 @@
     }
   }
 
-  .undo-button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-  }
-
-  .undo-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover:not(:disabled) {
-      background-color: #c82333;
-    }
-
-    &:disabled {
-      background-color: #6c757d;
-      cursor: not-allowed;
-    }
-  }
-
   .diff-files {
     display: flex;
     flex-direction: column;
