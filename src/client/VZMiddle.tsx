@@ -103,7 +103,6 @@ export const VZMiddle = ({
   aiAssistOptions,
   aiAssistTooltipText,
   aiAssistClickOverride,
-  aiCopilotEndpoint,
   aiChatEndpoint,
   aiChatOptions,
   customInteractRules,
@@ -114,7 +113,6 @@ export const VZMiddle = ({
   aiAssistOptions?: { [key: string]: string };
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
-  aiCopilotEndpoint?: string;
   aiChatEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
   customInteractRules?: Array<InteractRule>;
@@ -133,6 +131,7 @@ export const VZMiddle = ({
     pane,
     activePane,
     errorMessage,
+    enableAIGhostCompletions,
   } = useContext(VZCodeContext);
 
   if (activePane.type !== 'leafPane') {
@@ -156,7 +155,7 @@ export const VZMiddle = ({
         aiAssistOptions={aiAssistOptions}
         aiAssistTooltipText={aiAssistTooltipText}
         aiAssistClickOverride={aiAssistClickOverride}
-        aiCopilotEndpoint={aiCopilotEndpoint}
+        aiCopilotEndpoint={enableAIGhostCompletions ? '/ai-copilot' : undefined}
         esLintSource={esLintSource}
       />
       <CodeErrorOverlay

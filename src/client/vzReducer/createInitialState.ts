@@ -5,9 +5,11 @@ import { ThemeLabel } from '../themes';
 export const createInitialState = ({
   defaultTheme,
   initialUsername = 'Anonymous',
+  initialEnableAIGhostCompletions = false,
 }: {
   defaultTheme: ThemeLabel;
   initialUsername?: Username;
+  initialEnableAIGhostCompletions?: boolean;
 }): VZState => ({
   pane: {
     id: 'root',
@@ -33,5 +35,6 @@ export const createInitialState = ({
   editorWantsFocus: false,
   username: initialUsername,
   enableAutoFollow: true,
+  enableAIGhostCompletions: initialEnableAIGhostCompletions,
   sidebarPresenceIndicators: [],
 });

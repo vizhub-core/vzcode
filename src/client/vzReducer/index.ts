@@ -36,6 +36,7 @@ import {
   setAIChatModeReducer,
 } from './aiChatReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
+import { toggleAIGhostCompletionsReducer } from './toggleAIGhostCompletionsReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
 export { createInitialState } from './createInitialState';
@@ -81,6 +82,9 @@ export type VZState = {
   // This is a feature that automatically scrolls the editor to the
   // currently active remote user's cursor position.
   enableAutoFollow: boolean;
+
+  // True if AI ghost completions are enabled.
+  enableAIGhostCompletions: boolean;
 
   // The list of remote users and which file they have open,
   // for presence display in the sidebar.
@@ -194,6 +198,10 @@ export type VZAction =
   //  * Toggles the auto-follow feature.
   | { type: 'toggle_auto_follow' }
 
+  // `toggle_ai_ghost_completions`
+  //  * Toggles the AI ghost completions feature.
+  | { type: 'toggle_ai_ghost_completions' }
+
   // `update_presence_indicator
   //  * Updates a single presence indicator
   | {
@@ -226,6 +234,7 @@ const reducers = [
   editorNoLongerWantsFocusReducer,
   setUsernameReducer,
   toggleAutoFollowReducer,
+  toggleAIGhostCompletionsReducer,
   updatePresenceIndicatorReducer,
   splitCurrentPaneReducer,
 ];
