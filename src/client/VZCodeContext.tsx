@@ -178,6 +178,9 @@ export type VZCodeContextValue = {
   enableAutoFollow: boolean;
   toggleAutoFollow: () => void;
 
+  enableAIGhostCompletions: boolean;
+  toggleAIGhostCompletions: () => void;
+
   updatePresenceIndicator: (
     presenceIndicator: PresenceIndicator,
   ) => void;
@@ -217,6 +220,7 @@ export const VZCodeProvider = ({
   docPresence,
   prettierWorker,
   initialUsername,
+  initialEnableAIGhostCompletions = false,
   children,
   codeError = null,
   connected,
@@ -241,6 +245,7 @@ export const VZCodeProvider = ({
   docPresence: any;
   prettierWorker: Worker;
   initialUsername: Username;
+  initialEnableAIGhostCompletions?: boolean;
   children: React.ReactNode;
   codeError?: string | null;
   connected?: boolean;
@@ -303,7 +308,7 @@ export const VZCodeProvider = ({
   // See https://react.dev/reference/react/useReducer
   const [state, dispatch] = useReducer(
     vzReducer,
-    { defaultTheme, initialUsername },
+    { defaultTheme, initialUsername, initialEnableAIGhostCompletions },
     createInitialState,
   );
 
@@ -323,6 +328,7 @@ export const VZCodeProvider = ({
     editorWantsFocus,
     username,
     enableAutoFollow,
+    enableAIGhostCompletions,
     sidebarPresenceIndicators,
   } = state;
 
@@ -357,6 +363,7 @@ export const VZCodeProvider = ({
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    toggleAIGhostCompletions,
     updatePresenceIndicator,
     splitCurrentPane,
   } = useActions(dispatch);
@@ -575,6 +582,8 @@ export const VZCodeProvider = ({
 
     enableAutoFollow,
     toggleAutoFollow,
+    enableAIGhostCompletions,
+    toggleAIGhostCompletions,
     updatePresenceIndicator,
     sidebarPresenceIndicators,
     splitCurrentPane,

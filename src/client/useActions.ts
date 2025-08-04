@@ -230,6 +230,12 @@ export const useActions = (
     });
   }, [dispatch]);
 
+  const toggleAIGhostCompletions = useCallback(() => {
+    dispatch({
+      type: 'toggle_ai_ghost_completions',
+    });
+  }, [dispatch]);
+
   const updatePresenceIndicator = useCallback(
     (presenceIndicator: PresenceIndicator) => {
       dispatch({
@@ -270,6 +276,7 @@ export const useActions = (
     editorNoLongerWantsFocus,
     setUsername,
     toggleAutoFollow,
+    toggleAIGhostCompletions,
     updatePresenceIndicator,
     splitCurrentPane,
   };

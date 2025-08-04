@@ -23,6 +23,10 @@ import {
   useInitialUsername,
   usePersistUsername,
 } from '../usernameLocalStorage';
+import {
+  useInitialEnableAIGhostCompletions,
+  usePersistEnableAIGhostCompletions,
+} from '../aiGhostCompletionsLocalStorage';
 import './style.scss';
 import { useShareDB } from './useShareDB';
 import { useESLint } from '../useESLint';
@@ -56,6 +60,13 @@ const PersistUsername = () => {
   return null;
 };
 
+// Stores the AI ghost completions setting to local storage.
+const PersistAIGhostCompletions = () => {
+  const { enableAIGhostCompletions } = useContext(VZCodeContext);
+  usePersistEnableAIGhostCompletions(enableAIGhostCompletions);
+  return null;
+};
+
 function App() {
   const {
     shareDBDoc,
@@ -79,6 +90,8 @@ function App() {
   const { esLintSource } = useESLint();
   // Get the initial username from localStorage.
   const initialUsername: Username = useInitialUsername();
+  // Get the initial AI ghost completions setting from localStorage.
+  const initialEnableAIGhostCompletions: boolean = useInitialEnableAIGhostCompletions();
 
   //@ts-ignore
   const serverUrl = import.meta.env.VITE_LIVEKIT_URL; //Vite only parses VITE_ prefixed environment variables
@@ -91,14 +104,6 @@ function App() {
   // so that multiple browser windows are not required.
   const enableRightPanel = true;
 
-  // TODO: enable this when the AI copilot is ready
-  // Currently it's glitchy and frustrating to use.
-  // It appears to be bugs in the upstream CodeMirror copilot code.
-  // Ghost text appears after just moving the cursor, not typing.
-  // It's hard to figure out how to dismiss it.
-  // Clicking on it accepts it but should not.
-  const enableCopilot = false;
-
   return (
     <SplitPaneResizeProvider>
       <VZCodeProvider
@@ -109,6 +114,7 @@ function App() {
         docPresence={docPresence}
         prettierWorker={prettierWorker}
         initialUsername={initialUsername}
+        initialEnableAIGhostCompletions={initialEnableAIGhostCompletions}
         connected={connected}
         pending={pending}
         liveKitRoomName={liveKitRoomName}
@@ -120,6 +126,9 @@ function App() {
         aiChatEndpoint="/ai-chat-message"
         aiChatUndoEndpoint="/ai-chat-undo"
         aiChatOptions={{}}
+        getStoredAIPrompt={() => null}
+        clearStoredAIPrompt={() => {}}
+        autoForkAndRetryAI={async () => {}}
       >
         <LiveKitRoom
           audio={true}
@@ -131,9 +140,6 @@ function App() {
           <div className="app">
             <VZLeft />
             <VZMiddle
-              aiCopilotEndpoint={
-                enableCopilot ? '/ai-copilot' : null
-              }
               esLintSource={esLintSource}
             />
             {enableRightPanel ? <VZRight /> : null}
@@ -143,6 +149,7 @@ function App() {
             ) : null}
           </div>
           <PersistUsername />
+          <PersistAIGhostCompletions />
           <RoomAudioRenderer />
         </LiveKitRoom>
       </VZCodeProvider>

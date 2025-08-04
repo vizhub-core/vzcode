@@ -77,6 +77,8 @@ export const VZSettings = ({
     setTheme,
     username,
     setUsername,
+    enableAIGhostCompletions,
+    toggleAIGhostCompletions,
   } = useContext(VZCodeContext);
 
   // State variables for managing font and font size
@@ -260,6 +262,19 @@ export const VZSettings = ({
               </option>
             ))}
           </select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formAIGhostCompletions">
+          <Form.Check
+            type="checkbox"
+            id="aiGhostCompletions"
+            label="AI ghost completions"
+            checked={enableAIGhostCompletions}
+            onChange={toggleAIGhostCompletions}
+          />
+          <Form.Text className="text-muted">
+            Enable AI-powered code completion suggestions that appear as you type
+          </Form.Text>
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
