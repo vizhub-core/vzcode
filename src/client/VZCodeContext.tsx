@@ -195,13 +195,17 @@ export type VZCodeContextValue = {
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
 
-  // Auto-fork related props for VizHub integration
-  vizId?: string;
-  authenticatedUserId?: string;
-  ownerUserName?: string;
-  vizTitle?: string;
-  vizKit?: any;
-  commitId?: string;
+  // Auto-fork functions for VizHub integration
+  autoForkAndRetryAI?: (
+    prompt: string,
+    modelName: string,
+    commitId?: string,
+  ) => Promise<void>;
+  clearStoredAIPrompt?: () => void;
+  getStoredAIPrompt?: () => {
+    prompt: string;
+    modelName: string;
+  } | null;
 };
 
 export const VZCodeProvider = ({
@@ -224,12 +228,9 @@ export const VZCodeProvider = ({
   setLiveKitConnection,
   aiChatEndpoint,
   aiChatOptions,
-  vizId,
-  authenticatedUserId,
-  ownerUserName,
-  vizTitle,
-  vizKit,
-  commitId,
+  autoForkAndRetryAI,
+  clearStoredAIPrompt,
+  getStoredAIPrompt,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -250,12 +251,16 @@ export const VZCodeProvider = ({
   setLiveKitConnection?: (state: boolean) => void;
   aiChatEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
-  vizId?: string;
-  authenticatedUserId?: string;
-  ownerUserName?: string;
-  vizTitle?: string;
-  vizKit?: any;
-  commitId?: string;
+  autoForkAndRetryAI?: (
+    prompt: string,
+    modelName: string,
+    commitId?: string,
+  ) => Promise<void>;
+  clearStoredAIPrompt?: () => void;
+  getStoredAIPrompt?: () => {
+    prompt: string;
+    modelName: string;
+  } | null;
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -581,13 +586,10 @@ export const VZCodeProvider = ({
     aiChatMessage,
     setAIChatMessage,
 
-    // Auto-fork related props for VizHub integration
-    vizId,
-    authenticatedUserId,
-    ownerUserName,
-    vizTitle,
-    vizKit,
-    commitId,
+    // Auto-fork functions for VizHub integration
+    autoForkAndRetryAI,
+    clearStoredAIPrompt,
+    getStoredAIPrompt,
   };
 
   return (

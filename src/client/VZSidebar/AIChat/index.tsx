@@ -9,7 +9,6 @@ import { VZCodeContext } from '../../VZCodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import { useAutoForkForAI } from './useAutoForkForAI';
 import './styles.scss';
 
 const defaultAIChatEndpoint = '/api/ai-chat/';
@@ -31,27 +30,10 @@ export const AIChat = () => {
     aiChatOptions = {},
     aiChatMode,
     setAIChatMode,
-    vizId,
-    authenticatedUserId,
-    ownerUserName,
-    vizTitle,
-    vizKit,
-    commitId,
-  } = useContext(VZCodeContext);
-
-  // Auto-fork functionality for VizHub integration
-  const {
     autoForkAndRetryAI,
     clearStoredAIPrompt,
     getStoredAIPrompt,
-  } = useAutoForkForAI({
-    vizKit,
-    id: vizId,
-    content,
-    authenticatedUserId,
-    ownerUserName,
-    vizTitle,
-  });
+  } = useContext(VZCodeContext);
 
   // Get current chat data from content
   const currentChat = content?.chats?.[currentChatId];
@@ -120,10 +102,9 @@ export const AIChat = () => {
         ) {
           // Trigger auto-fork instead of showing error
           try {
-            await autoForkAndRetryAI(
+            await autoForkAndRetryAI?.(
               currentPrompt,
               aiChatMode,
-              commitId,
             );
             // If we reach here, the fork was successful and redirect should happen
             return;
@@ -158,7 +139,6 @@ export const AIChat = () => {
     currentChatId,
     aiChatMode,
     autoForkAndRetryAI,
-    commitId,
   ]);
 
   // Check for stored AI prompt on component mount (post-fork restoration)
