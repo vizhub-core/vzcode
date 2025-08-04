@@ -162,46 +162,44 @@ export const AIChat = () => {
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
-
     DEBUG &&
       console.log('AIChat: Checking for stored AI prompt');
-            if (getStoredAIPrompt) {
-    const storedPrompt = getStoredAIPrompt();
-    DEBUG &&
-      console.log(
-        'AIChat: Stored prompt result:',
-        storedPrompt,
-      );
-    if (storedPrompt) {
-      // Restore the prompt and mode
+    if (getStoredAIPrompt) {
+      const storedPrompt = getStoredAIPrompt();
       DEBUG &&
-        console.log('AIChat: Restoring prompt and mode');
-      setAIChatMessage(storedPrompt.prompt);
-      setAIChatMode(
-        storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
-      );
-
-      // Clear the stored prompt
-      DEBUG &&
-        console.log('AIChat: Clearing stored prompt');
-      clearStoredAIPrompt();
-
-      // Auto-submit the restored prompt after a short delay
-      DEBUG &&
-        console.log('AIChat: Scheduling auto-submit');
-      setTimeout(() => {
+        console.log(
+          'AIChat: Stored prompt result:',
+          storedPrompt,
+        );
+      if (storedPrompt) {
+        // Restore the prompt and mode
         DEBUG &&
-          console.log(
-            'AIChat: Auto-submitting restored prompt',
-          );
-        handleSendMessage(storedPrompt.prompt);
-      }, 100);
-    } else {
-      DEBUG &&
-        console.log('AIChat: No stored prompt found');
+          console.log('AIChat: Restoring prompt and mode');
+        setAIChatMessage(storedPrompt.prompt);
+        setAIChatMode(
+          storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
+        );
 
+        // Clear the stored prompt
+        DEBUG &&
+          console.log('AIChat: Clearing stored prompt');
+        clearStoredAIPrompt();
+
+        // Auto-submit the restored prompt after a short delay
+        DEBUG &&
+          console.log('AIChat: Scheduling auto-submit');
+        setTimeout(() => {
+          DEBUG &&
+            console.log(
+              'AIChat: Auto-submitting restored prompt',
+            );
+          handleSendMessage(storedPrompt.prompt);
+        }, 100);
+      } else {
+        DEBUG &&
+          console.log('AIChat: No stored prompt found');
+      }
     }
-            }
   }, [
     getStoredAIPrompt,
     clearStoredAIPrompt,

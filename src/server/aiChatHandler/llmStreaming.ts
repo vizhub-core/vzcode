@@ -2,7 +2,6 @@ import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
-import { ChatOpenAI } from '@langchain/openai';
 import OpenAI from 'openai';
 import fs from 'fs';
 import { generateRunId } from '@vizhub/viz-utils';
@@ -52,7 +51,9 @@ export const createLLMFunction = ({
   chatId: VizChatId;
 }) => {
   return async (fullPrompt: string) => {
-    const localPresence = createAIEditLocalPresence();
+    const localPresence = enableStreamingEditing
+      ? createAIEditLocalPresence()
+      : null;
 
     // Create OpenRouter client for reasoning token support
     const openRouterClient = new OpenAI({
@@ -196,14 +197,13 @@ export const createLLMFunction = ({
     )({
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
-      max_tokens: 8192,
       reasoning: {
         effort: 'medium',
         exclude: false,
       },
       provider: {
         sort: 'throughput',
-      }, // New parameter for OpenRouter routing
+      },
       usage: { include: true },
       stream: true,
     });
