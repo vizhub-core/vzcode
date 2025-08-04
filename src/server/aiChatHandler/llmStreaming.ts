@@ -44,15 +44,15 @@ const enableStreamingEditing = false;
  */
 export const createLLMFunction = ({
   shareDBDoc,
-  createVizBotLocalPresence,
+  createAIEditLocalPresence,
   chatId,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
-  createVizBotLocalPresence: () => any;
+  createAIEditLocalPresence: () => any;
   chatId: VizChatId;
 }) => {
   return async (fullPrompt: string) => {
-    const localPresence = createVizBotLocalPresence();
+    const localPresence = createAIEditLocalPresence();
 
     // Create OpenRouter client for reasoning token support
     const openRouterClient = new OpenAI({
@@ -133,13 +133,13 @@ export const createLLMFunction = ({
             line,
           );
 
-          // Update VizBot presence to show cursor at the end of the file
+          // Update AI presence to show cursor at the end of the file
           const currentFile =
             shareDBDoc.data.files[currentEditingFileId];
           if (currentFile && currentFile.text) {
             const textLength = currentFile.text.length;
             const filePresence = {
-              username: 'VizBot',
+              username: 'AI Editor',
               start: [
                 'files',
                 currentEditingFileId,
@@ -157,7 +157,7 @@ export const createLLMFunction = ({
             localPresence.submit(filePresence, (error) => {
               if (error) {
                 console.warn(
-                  'VizBot line presence submission error:',
+                  'AI Editor line presence submission error:',
                   error,
                 );
               }
@@ -275,16 +275,16 @@ export const createLLMFunction = ({
     // Finalize the AI message by clearing temporary fields
     finalizeAIMessage(shareDBDoc, chatId);
 
-    // Clear VizBot presence when done
+    // Clear AI Editor presence when done
     DEBUG &&
       console.log(
-        'AI editing done, clearing VizBot presence',
+        'AI editing done, clearing AI Editor presence',
       );
     localPresence.submit(null, (error) => {
-      DEBUG && console.log('VizBot presence cleared');
+      DEBUG && console.log('AI Editor presence cleared');
       if (error) {
         console.warn(
-          'VizBot presence cleanup error:',
+          'AI Editor presence cleanup error:',
           error,
         );
       }

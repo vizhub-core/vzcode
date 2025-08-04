@@ -110,7 +110,7 @@ export const VZSidebar = ({
   ),
   aiChatToolTipText = (
     <div>
-      <strong>VizBot - AI Code Editor</strong>
+      <strong>Edit with AI</strong>
     </div>
   ),
 }: {

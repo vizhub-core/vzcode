@@ -21,11 +21,11 @@ const DEBUG = false;
 export const handleAIChatMessage =
   ({
     shareDBDoc,
-    createVizBotLocalPresence,
+    createAIEditLocalPresence,
     onCreditDeduction,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
-    createVizBotLocalPresence: () => any;
+    createAIEditLocalPresence: () => any;
     onCreditDeduction?: any;
   }) =>
   async (req: any, res: any) => {
@@ -58,7 +58,7 @@ export const handleAIChatMessage =
       // Create LLM function for streaming
       const llmFunction = createLLMFunction({
         shareDBDoc,
-        createVizBotLocalPresence,
+        createAIEditLocalPresence,
         chatId,
       });
 

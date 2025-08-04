@@ -20,7 +20,7 @@ const ThinkingScratchpadComponent = ({
       <div className="thinking-scratchpad-header">
         <span className="thinking-scratchpad-icon">🧠</span>
         <span className="thinking-scratchpad-title">
-          VizBot is thinking...
+          AI is thinking...
         </span>
       </div>
       <div className="thinking-scratchpad-content">

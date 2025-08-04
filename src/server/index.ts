@@ -100,20 +100,20 @@ app.use(express.static(dir));
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 
-// Set up presence for VizBot following the same pattern as useShareDB.ts
+// Set up presence for AI editing following the same pattern as useShareDB.ts
 const docPresence = shareDBConnection.getDocPresence(
   'documents',
   '1',
 );
 
-// Create local presence for VizBot with a unique ID
-const generateVizBotId = () => {
+// Create local presence for AI editing with a unique ID
+const generateAIEditId = () => {
   const timestamp = Date.now().toString(36);
-  return `vizbot-${timestamp}`;
+  return `ai-edit-${timestamp}`;
 };
 
-const createVizBotLocalPresence = () =>
-  docPresence.create(generateVizBotId());
+const createAIEditLocalPresence = () =>
+  docPresence.create(generateAIEditId());
 
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
@@ -137,7 +137,7 @@ app.post(
   bodyParser.json(),
   handleAIChatMessage({
     shareDBDoc,
-    createVizBotLocalPresence,
+    createAIEditLocalPresence,
     onCreditDeduction: undefined,
   }),
 );
