@@ -201,6 +201,9 @@ export const createLLMFunction = ({
         effort: 'medium',
         exclude: false,
       },
+      provider: {
+        sort: 'throughput',
+      }, // New parameter for OpenRouter routing
       usage: { include: true },
       stream: true,
     });

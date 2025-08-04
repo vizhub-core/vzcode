@@ -154,6 +154,9 @@ export const generateAIResponse = async ({
       effort: 'medium',
       exclude: false,
     } as any, // Type assertion for OpenRouter-specific reasoning parameter
+    provider: {
+      sort: 'throughput',
+    } as any, // Type assertion for OpenRouter-specific provider parameter
     stream: true,
   });
 
