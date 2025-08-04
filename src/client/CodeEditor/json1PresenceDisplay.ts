@@ -115,9 +115,10 @@ export const json1PresenceDisplay = ({
               const { username } = presence;
 
               // Check if this cursor actually moved by comparing with previous position
-              const previousPosition = this.previousCursorPositions[id];
+              const previousPosition =
+                this.previousCursorPositions[id];
               const cursorMoved = previousPosition !== from;
-              
+
               presenceDecorations.push({
                 from,
                 to: from,
@@ -256,7 +257,10 @@ class PresenceWidget extends WidgetType {
   }
 
   eq(other: PresenceWidget) {
-    return other.id === this.id && other.cursorMoved === this.cursorMoved;
+    return (
+      other.id === this.id &&
+      other.cursorMoved === this.cursorMoved
+    );
     // return false;
   }
 
@@ -293,12 +297,12 @@ class PresenceWidget extends WidgetType {
     if (this.cursorMoved) {
       // Start with full opacity when cursor moves
       userDiv.style.opacity = '1';
-      
+
       // Clear any existing timeout to prevent interference
       if (this.timeout) {
         window.clearTimeout(this.timeout);
       }
-      
+
       // after 2 seconds of inactivity, username is made less visible
       this.timeout = window.setTimeout(() => {
         // userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;

@@ -100,9 +100,7 @@ const MessageComponent = ({
         {enableDiffView &&
           diffData &&
           Object.keys(diffData).length > 0 && (
-            <DiffView
-              diffData={diffData}
-            />
+            <DiffView diffData={diffData} />
           )}
         {canUndo && beforeFiles && (
           <div className="undo-button-container">

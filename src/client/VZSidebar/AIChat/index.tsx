@@ -54,93 +54,102 @@ export const AIChat = () => {
   // Check if this is the first time opening the chat (no messages)
   const isEmptyState = rawMessages.length === 0;
 
-  const handleSendMessage = useCallback(async (messageToSend?: string) => {
-    const messageContent = messageToSend || aiChatMessage;
-    if (!messageContent || typeof messageContent !== 'string' || !messageContent.trim() || isLoading) return;
-
-    const currentPrompt = aiChatMessage.trim();
-    setAIChatMessage('');
-    setIsLoading(true);
-    setErrorMessage(null); // Clear any previous errors
-
-    // Call backend endpoint for AI response
-    // The server will handle all ShareDB operations including adding the user message
-    try {
-      const response = await fetch(aiChatEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...aiChatOptions,
-          vizId: aiChatOptions.vizId,
-          content: messageContent.trim(),
-          chatId: currentChatId,
-          mode: aiChatMode,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP error! status: ${response.status}`,
-        );
-      }
-
-      // Parse the response to check for errors
-      const responseData = await response.json();
-
-      // Check if the response contains a VizHub error
+  const handleSendMessage = useCallback(
+    async (messageToSend?: string) => {
+      const messageContent = messageToSend || aiChatMessage;
       if (
-        responseData.outcome === 'failure' &&
-        responseData.error
-      ) {
-        const errorMessage = responseData.error.message;
+        !messageContent ||
+        typeof messageContent !== 'string' ||
+        !messageContent.trim() ||
+        isLoading
+      )
+        return;
 
-        // Check if this is the specific permission error that should trigger auto-fork
-        if (
-          errorMessage ===
-          'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
-        ) {
-          // Trigger auto-fork instead of showing error
-          try {
-            await autoForkAndRetryAI?.(
-              currentPrompt,
-              aiChatMode,
-            );
-            // If we reach here, the fork was successful and redirect should happen
-            return;
-          } catch (forkError) {
-            console.error('Auto-fork failed:', forkError);
-            setErrorMessage(
-              'Failed to fork visualization. Please try forking manually.',
-            );
-            return;
-          }
+      const currentPrompt = aiChatMessage.trim();
+      setAIChatMessage('');
+      setIsLoading(true);
+      setErrorMessage(null); // Clear any previous errors
+
+      // Call backend endpoint for AI response
+      // The server will handle all ShareDB operations including adding the user message
+      try {
+        const response = await fetch(aiChatEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...aiChatOptions,
+            vizId: aiChatOptions.vizId,
+            content: messageContent.trim(),
+            chatId: currentChatId,
+            mode: aiChatMode,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error! status: ${response.status}`,
+          );
         }
 
-        // For other errors, show the error message
-        setErrorMessage(errorMessage);
-        return;
-      }
+        // Parse the response to check for errors
+        const responseData = await response.json();
 
-      // The backend handles all ShareDB operations for successful responses
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      setErrorMessage(
-        'Failed to send message. Please try again.',
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    aiChatMessage,
-    isLoading,
-    aiChatEndpoint,
-    aiChatOptions,
-    currentChatId,
-    aiChatMode,
-    autoForkAndRetryAI,
-  ]);
+        // Check if the response contains a VizHub error
+        if (
+          responseData.outcome === 'failure' &&
+          responseData.error
+        ) {
+          const errorMessage = responseData.error.message;
+
+          // Check if this is the specific permission error that should trigger auto-fork
+          if (
+            errorMessage ===
+            'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
+          ) {
+            // Trigger auto-fork instead of showing error
+            try {
+              await autoForkAndRetryAI?.(
+                currentPrompt,
+                aiChatMode,
+              );
+              // If we reach here, the fork was successful and redirect should happen
+              return;
+            } catch (forkError) {
+              console.error('Auto-fork failed:', forkError);
+              setErrorMessage(
+                'Failed to fork visualization. Please try forking manually.',
+              );
+              return;
+            }
+          }
+
+          // For other errors, show the error message
+          setErrorMessage(errorMessage);
+          return;
+        }
+
+        // The backend handles all ShareDB operations for successful responses
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        setErrorMessage(
+          'Failed to send message. Please try again.',
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      aiChatMessage,
+      isLoading,
+      aiChatEndpoint,
+      aiChatOptions,
+      currentChatId,
+      aiChatMode,
+      autoForkAndRetryAI,
+    ],
+  );
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
@@ -195,7 +204,9 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        handleSendMessage('Explain how this works')
+                        handleSendMessage(
+                          'Explain how this works',
+                        )
                       }
                     >
                       "Explain how this works"
@@ -214,7 +225,9 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        handleSendMessage('What does this function do?')
+                        handleSendMessage(
+                          'What does this function do?',
+                        )
                       }
                     >
                       "What does this function do?"
@@ -222,7 +235,9 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        handleSendMessage('How can I make this more accessible?')
+                        handleSendMessage(
+                          'How can I make this more accessible?',
+                        )
                       }
                     >
                       "How can I make this more accessible?"
@@ -236,7 +251,9 @@ export const AIChat = () => {
                     <button
                       className="ai-chat-suggested-prompt"
                       onClick={() =>
-                        handleSendMessage('Change the circles to squares')
+                        handleSendMessage(
+                          'Change the circles to squares',
+                        )
                       }
                     >
                       "Change the circles to squares"
