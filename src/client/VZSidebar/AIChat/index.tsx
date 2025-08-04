@@ -3,11 +3,13 @@ import {
   useState,
   useCallback,
   useMemo,
+  useEffect,
 } from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
+import { useAutoForkForAI } from './useAutoForkForAI';
 import './styles.scss';
 
 const defaultAIChatEndpoint = '/api/ai-chat/';
@@ -29,7 +31,27 @@ export const AIChat = () => {
     aiChatOptions = {},
     aiChatMode,
     setAIChatMode,
+    vizId,
+    authenticatedUserId,
+    ownerUserName,
+    vizTitle,
+    vizKit,
+    commitId,
   } = useContext(VZCodeContext);
+
+  // Auto-fork functionality for VizHub integration
+  const {
+    autoForkAndRetryAI,
+    clearStoredAIPrompt,
+    getStoredAIPrompt,
+  } = useAutoForkForAI({
+    vizKit,
+    id: vizId,
+    content,
+    authenticatedUserId,
+    ownerUserName,
+    vizTitle,
+  });
 
   // Get current chat data from content
   const currentChat = content?.chats?.[currentChatId];
@@ -53,6 +75,7 @@ export const AIChat = () => {
   const handleSendMessage = useCallback(async () => {
     if (!aiChatMessage.trim() || isLoading) return;
 
+    const currentPrompt = aiChatMessage.trim();
     setAIChatMessage('');
     setIsLoading(true);
     setErrorMessage(null); // Clear any previous errors
@@ -68,7 +91,7 @@ export const AIChat = () => {
         body: JSON.stringify({
           ...aiChatOptions,
           vizId: aiChatOptions.vizId,
-          content: aiChatMessage.trim(),
+          content: currentPrompt,
           chatId: currentChatId,
           mode: aiChatMode,
         }),
@@ -88,7 +111,33 @@ export const AIChat = () => {
         responseData.outcome === 'failure' &&
         responseData.error
       ) {
-        setErrorMessage(responseData.error.message);
+        const errorMessage = responseData.error.message;
+
+        // Check if this is the specific permission error that should trigger auto-fork
+        if (
+          errorMessage ===
+          'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
+        ) {
+          // Trigger auto-fork instead of showing error
+          try {
+            await autoForkAndRetryAI(
+              currentPrompt,
+              aiChatMode,
+              commitId,
+            );
+            // If we reach here, the fork was successful and redirect should happen
+            return;
+          } catch (forkError) {
+            console.error('Auto-fork failed:', forkError);
+            setErrorMessage(
+              'Failed to fork visualization. Please try forking manually.',
+            );
+            return;
+          }
+        }
+
+        // For other errors, show the error message
+        setErrorMessage(errorMessage);
         return;
       }
 
@@ -107,6 +156,35 @@ export const AIChat = () => {
     aiChatEndpoint,
     aiChatOptions,
     currentChatId,
+    aiChatMode,
+    autoForkAndRetryAI,
+    commitId,
+  ]);
+
+  // Check for stored AI prompt on component mount (post-fork restoration)
+  useEffect(() => {
+    const storedPrompt = getStoredAIPrompt();
+    if (storedPrompt) {
+      // Restore the prompt and mode
+      setAIChatMessage(storedPrompt.prompt);
+      setAIChatMode(
+        storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
+      );
+
+      // Clear the stored prompt
+      clearStoredAIPrompt();
+
+      // Auto-submit the restored prompt after a short delay
+      setTimeout(() => {
+        handleSendMessage();
+      }, 100);
+    }
+  }, [
+    getStoredAIPrompt,
+    clearStoredAIPrompt,
+    setAIChatMessage,
+    setAIChatMode,
+    handleSendMessage,
   ]);
 
   return (

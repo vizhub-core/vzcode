@@ -194,6 +194,14 @@ export type VZCodeContextValue = {
   setVoiceChatModalOpen: (state: boolean) => void;
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
+
+  // Auto-fork related props for VizHub integration
+  vizId?: string;
+  authenticatedUserId?: string;
+  ownerUserName?: string;
+  vizTitle?: string;
+  vizKit?: any;
+  commitId?: string;
 };
 
 export const VZCodeProvider = ({
@@ -216,6 +224,12 @@ export const VZCodeProvider = ({
   setLiveKitConnection,
   aiChatEndpoint,
   aiChatOptions,
+  vizId,
+  authenticatedUserId,
+  ownerUserName,
+  vizTitle,
+  vizKit,
+  commitId,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -236,6 +250,12 @@ export const VZCodeProvider = ({
   setLiveKitConnection?: (state: boolean) => void;
   aiChatEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
+  vizId?: string;
+  authenticatedUserId?: string;
+  ownerUserName?: string;
+  vizTitle?: string;
+  vizKit?: any;
+  commitId?: string;
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -560,6 +580,14 @@ export const VZCodeProvider = ({
 
     aiChatMessage,
     setAIChatMessage,
+
+    // Auto-fork related props for VizHub integration
+    vizId,
+    authenticatedUserId,
+    ownerUserName,
+    vizTitle,
+    vizKit,
+    commitId,
   };
 
   return (
