@@ -182,7 +182,7 @@ export const AIChat = () => {
           <div className="ai-chat-empty">
             <div className="ai-chat-empty-icon">✨</div>
             <h3 className="ai-chat-empty-title">
-              Hi, I'm VizBot!
+              Hi! I'm here to help you edit with AI.
             </h3>
             <div className="ai-chat-empty-text">
               How can I help you?
