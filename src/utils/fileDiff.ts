@@ -25,6 +25,9 @@ export function generateFileUnifiedDiff(
     fileName,
     beforeContent,
     afterContent,
+    '',
+    '',
+    { context: 3 },
   );
 
   return unifiedDiff;

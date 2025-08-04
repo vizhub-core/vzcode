@@ -146,12 +146,15 @@
 }
 
 .ai-chat-message-content {
+  .diff-view .diff-files .d2h-code-linenumber {
+    display: none !important;
+  }
+
   padding: 10px 12px;
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
 
-  // Undo button styles (moved from DiffView)
   .undo-button-container {
     display: flex;
     justify-content: flex-end;
