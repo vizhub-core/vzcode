@@ -68,13 +68,15 @@ export const AIChat = () => {
           aiChatMessage,
         );
       const messageContent = messageToSend || aiChatMessage;
+
       if (
         !messageContent ||
         typeof messageContent !== 'string' ||
         !messageContent.trim() ||
         isLoading
-      )
+      ) {
         return;
+      }
 
       const currentPrompt = aiChatMessage.trim();
       setAIChatMessage('');

@@ -50,6 +50,10 @@ const ChatInputComponent = ({
     [onSendMessage],
   );
 
+  const handleSendClick = useCallback(() => {
+    onSendMessage();
+  }, [onSendMessage]);
+
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       setAIChatMessage(event.target.value);
@@ -134,7 +138,7 @@ const ChatInputComponent = ({
         )}
         <Button
           variant="primary"
-          onClick={onSendMessage}
+          onClick={handleSendClick}
           disabled={!aiChatMessage.trim() || isLoading}
           className="ai-chat-send-button"
           aria-label="Send message"
