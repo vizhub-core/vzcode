@@ -162,8 +162,10 @@ export const AIChat = () => {
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
+
     DEBUG &&
       console.log('AIChat: Checking for stored AI prompt');
+            if (getStoredAIPrompt) {
     const storedPrompt = getStoredAIPrompt();
     DEBUG &&
       console.log(
@@ -197,7 +199,9 @@ export const AIChat = () => {
     } else {
       DEBUG &&
         console.log('AIChat: No stored prompt found');
+
     }
+            }
   }, [
     getStoredAIPrompt,
     clearStoredAIPrompt,
