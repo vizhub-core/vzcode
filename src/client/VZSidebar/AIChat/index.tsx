@@ -13,6 +13,8 @@ import './styles.scss';
 
 const defaultAIChatEndpoint = '/api/ai-chat/';
 
+const DEBUG = false;
+
 export const AIChat = () => {
   const { aiChatMessage, setAIChatMessage } =
     useContext(VZCodeContext);
@@ -56,6 +58,13 @@ export const AIChat = () => {
 
   const handleSendMessage = useCallback(
     async (messageToSend?: string) => {
+      DEBUG &&
+        console.log(
+          'AIChat: handleSendMessage called with:',
+          messageToSend,
+          'aiChatMessage:',
+          aiChatMessage,
+        );
       const messageContent = messageToSend || aiChatMessage;
       if (
         !messageContent ||
@@ -153,21 +162,41 @@ export const AIChat = () => {
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
+    DEBUG &&
+      console.log('AIChat: Checking for stored AI prompt');
     const storedPrompt = getStoredAIPrompt();
+    DEBUG &&
+      console.log(
+        'AIChat: Stored prompt result:',
+        storedPrompt,
+      );
     if (storedPrompt) {
       // Restore the prompt and mode
+      DEBUG &&
+        console.log('AIChat: Restoring prompt and mode');
       setAIChatMessage(storedPrompt.prompt);
       setAIChatMode(
         storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
       );
 
       // Clear the stored prompt
+      DEBUG &&
+        console.log('AIChat: Clearing stored prompt');
       clearStoredAIPrompt();
 
       // Auto-submit the restored prompt after a short delay
+      DEBUG &&
+        console.log('AIChat: Scheduling auto-submit');
       setTimeout(() => {
-        handleSendMessage();
+        DEBUG &&
+          console.log(
+            'AIChat: Auto-submitting restored prompt',
+          );
+        handleSendMessage(storedPrompt.prompt);
       }, 100);
+    } else {
+      DEBUG &&
+        console.log('AIChat: No stored prompt found');
     }
   }, [
     getStoredAIPrompt,
