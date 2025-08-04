@@ -195,6 +195,18 @@ export type VZCodeContextValue = {
   setVoiceChatModalOpen: (state: boolean) => void;
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
+
+  // Auto-fork functions for VizHub integration
+  autoForkAndRetryAI?: (
+    prompt: string,
+    modelName: string,
+    commitId?: string,
+  ) => Promise<void>;
+  clearStoredAIPrompt?: () => void;
+  getStoredAIPrompt?: () => {
+    prompt: string;
+    modelName: string;
+  } | null;
 };
 
 export const VZCodeProvider = ({
@@ -218,6 +230,9 @@ export const VZCodeProvider = ({
   aiChatEndpoint,
   aiChatUndoEndpoint,
   aiChatOptions,
+  autoForkAndRetryAI,
+  clearStoredAIPrompt,
+  getStoredAIPrompt,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -239,6 +254,16 @@ export const VZCodeProvider = ({
   aiChatEndpoint?: string;
   aiChatUndoEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
+  autoForkAndRetryAI?: (
+    prompt: string,
+    modelName: string,
+    commitId?: string,
+  ) => Promise<void>;
+  clearStoredAIPrompt?: () => void;
+  getStoredAIPrompt?: () => {
+    prompt: string;
+    modelName: string;
+  } | null;
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -564,6 +589,11 @@ export const VZCodeProvider = ({
 
     aiChatMessage,
     setAIChatMessage,
+
+    // Auto-fork functions for VizHub integration
+    autoForkAndRetryAI,
+    clearStoredAIPrompt,
+    getStoredAIPrompt,
   };
 
   return (
