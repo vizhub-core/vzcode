@@ -10,6 +10,7 @@ import {
   ButtonGroup,
   ToggleButton,
 } from '../../bootstrap';
+import { enableAskMode } from '../../featureFlags';
 
 interface ChatInputProps {
   aiChatMessage: string;
@@ -58,50 +59,52 @@ const ChatInputComponent = ({
 
   return (
     <div className="ai-chat-input-container">
-      <div
-        className="ai-chat-mode-toggle"
-        style={{ marginBottom: '8px' }}
-      >
-        <ButtonGroup size="sm">
-          <ToggleButton
-            id="ai-chat-mode-ask"
-            type="radio"
-            variant={
-              aiChatMode === 'ask'
-                ? 'primary'
-                : 'outline-primary'
-            }
-            name="ai-chat-mode"
-            value="ask"
-            checked={aiChatMode === 'ask'}
-            onChange={() => setAIChatMode('ask')}
-            disabled={isLoading}
-          >
-            💬 Ask
-          </ToggleButton>
-          <ToggleButton
-            id="ai-chat-mode-edit"
-            type="radio"
-            variant={
-              aiChatMode === 'edit'
-                ? 'primary'
-                : 'outline-primary'
-            }
-            name="ai-chat-mode"
-            value="edit"
-            checked={aiChatMode === 'edit'}
-            onChange={() => setAIChatMode('edit')}
-            disabled={isLoading}
-          >
-            ✏️ Edit
-          </ToggleButton>
-        </ButtonGroup>
-        <div className="ai-chat-mode-description">
-          {aiChatMode === 'ask'
-            ? 'Ask questions without editing files'
-            : 'Get answers and code edits'}
+      {enableAskMode && (
+        <div
+          className="ai-chat-mode-toggle"
+          style={{ marginBottom: '8px' }}
+        >
+          <ButtonGroup size="sm">
+            <ToggleButton
+              id="ai-chat-mode-ask"
+              type="radio"
+              variant={
+                aiChatMode === 'ask'
+                  ? 'primary'
+                  : 'outline-primary'
+              }
+              name="ai-chat-mode"
+              value="ask"
+              checked={aiChatMode === 'ask'}
+              onChange={() => setAIChatMode('ask')}
+              disabled={isLoading}
+            >
+              💬 Ask
+            </ToggleButton>
+            <ToggleButton
+              id="ai-chat-mode-edit"
+              type="radio"
+              variant={
+                aiChatMode === 'edit'
+                  ? 'primary'
+                  : 'outline-primary'
+              }
+              name="ai-chat-mode"
+              value="edit"
+              checked={aiChatMode === 'edit'}
+              onChange={() => setAIChatMode('edit')}
+              disabled={isLoading}
+            >
+              ✏️ Edit
+            </ToggleButton>
+          </ButtonGroup>
+          <div className="ai-chat-mode-description">
+            {aiChatMode === 'ask'
+              ? 'Ask questions without editing files'
+              : 'Get answers and code edits'}
+          </div>
         </div>
-      </div>
+      )}
       <Form.Group className="ai-chat-input-group">
         <Form.Control
           as="textarea"

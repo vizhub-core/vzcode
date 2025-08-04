@@ -153,21 +153,25 @@ export const AIChat = () => {
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
-    const storedPrompt = getStoredAIPrompt();
-    if (storedPrompt) {
-      // Restore the prompt and mode
-      setAIChatMessage(storedPrompt.prompt);
-      setAIChatMode(
-        storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
-      );
+    if (getStoredAIPrompt) {
+      const storedPrompt = getStoredAIPrompt();
+      if (storedPrompt) {
+        // Restore the prompt and mode
+        setAIChatMessage(storedPrompt.prompt);
+        setAIChatMode(
+          storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
+        );
 
-      // Clear the stored prompt
-      clearStoredAIPrompt();
+        // Clear the stored prompt
+        if (clearStoredAIPrompt) {
+          clearStoredAIPrompt();
+        }
 
-      // Auto-submit the restored prompt after a short delay
-      setTimeout(() => {
-        handleSendMessage();
-      }, 100);
+        // Auto-submit the restored prompt after a short delay
+        setTimeout(() => {
+          handleSendMessage();
+        }, 100);
+      }
     }
   }, [
     getStoredAIPrompt,
