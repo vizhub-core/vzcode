@@ -1,4 +1,10 @@
-import { memo, useRef, useEffect, useCallback, useState } from 'react';
+import {
+  memo,
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+} from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -12,9 +18,12 @@ const ThinkingScratchpadComponent = ({
   isVisible,
 }: ThinkingScratchpadProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isUserScrolled, setIsUserScrolled] = useState(false);
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
-  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const [isUserScrolled, setIsUserScrolled] =
+    useState(false);
+  const [autoScrollEnabled, setAutoScrollEnabled] =
+    useState(true);
+  const scrollTimeoutRef =
+    useRef<ReturnType<typeof setTimeout>>();
 
   // Check if the user is scrolled to the bottom
   const isScrolledToBottom = useCallback(() => {
@@ -22,8 +31,11 @@ const ThinkingScratchpadComponent = ({
     if (!container) return true;
 
     const threshold = 10; // Allow 10px tolerance for "at bottom"
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    return scrollHeight - scrollTop - clientHeight < threshold;
+    const { scrollTop, scrollHeight, clientHeight } =
+      container;
+    return (
+      scrollHeight - scrollTop - clientHeight < threshold
+    );
   }, []);
 
   // Smooth scroll to bottom
@@ -68,7 +80,12 @@ const ThinkingScratchpadComponent = ({
 
   // Auto-scroll when content changes, but only if auto-scroll is enabled
   useEffect(() => {
-    if (autoScrollEnabled && !isUserScrolled && isVisible && content) {
+    if (
+      autoScrollEnabled &&
+      !isUserScrolled &&
+      isVisible &&
+      content
+    ) {
       // Use a short debounce to prevent multiple scroll calls during rapid updates
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
@@ -84,7 +101,13 @@ const ThinkingScratchpadComponent = ({
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [content, autoScrollEnabled, isUserScrolled, isVisible, scrollToBottom]);
+  }, [
+    content,
+    autoScrollEnabled,
+    isUserScrolled,
+    isVisible,
+    scrollToBottom,
+  ]);
 
   // Clean up timeout on unmount
   useEffect(() => {
@@ -115,7 +138,7 @@ const ThinkingScratchpadComponent = ({
           AI is thinking...
         </span>
       </div>
-      <div 
+      <div
         className="thinking-scratchpad-content"
         ref={contentRef}
         onScroll={handleScroll}
