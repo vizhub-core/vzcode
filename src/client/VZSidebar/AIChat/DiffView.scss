@@ -119,6 +119,14 @@
       border-color: var(--d2h-ins-border-color) !important;
     }
 
+    // Style clickable file names
+    .d2h-file-name {
+      &:hover {
+        text-decoration: underline !important;
+        opacity: 0.8;
+      }
+    }
+
     // Fix wrapper border
     .d2h-file-wrapper {
       border: 1px solid var(--d2h-border-color) !important;
