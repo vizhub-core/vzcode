@@ -472,37 +472,56 @@
     }
   }
 
-  .ai-chat-input-info {
+  .ai-chat-input-footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 12px;
     color: var(--vh-color-neutral-03);
-    margin-bottom: 6px;
+    min-height: 40px; // Prevent layout jumping
 
     .ai-chat-hint {
       font-style: italic;
+      flex: 1;
     }
   }
 
   .ai-chat-send-button {
-    background: var(--vh-color-primary-01);
-    border: none;
-    color: white;
     border-radius: 8px;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    align-self: flex-end;
+    transition: all 0.2s ease;
     min-width: 80px;
+    flex-shrink: 0;
 
-    &:hover:not(:disabled) {
-      background: var(--vh-color-primary-02);
+    &.btn-primary {
+      background: var(--vh-color-primary-01);
+      border-color: var(--vh-color-primary-01);
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: var(--vh-color-primary-02);
+        border-color: var(--vh-color-primary-02);
+      }
+    }
+
+    &.btn-outline-secondary {
+      background: transparent;
+      border-color: var(--vh-color-neutral-03);
+      color: var(--vh-color-neutral-03);
+
+      &:hover:not(:disabled) {
+        background: var(--vh-color-neutral-03);
+        color: var(--vh-color-neutral-01);
+      }
     }
 
     &:disabled {
       background: var(--vh-color-neutral-03);
+      border-color: var(--vh-color-neutral-03);
+      color: var(--vh-color-neutral-02);
       cursor: not-allowed;
     }
   }
