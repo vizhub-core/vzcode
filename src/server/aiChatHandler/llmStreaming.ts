@@ -203,11 +203,11 @@ export const createLLMFunction = ({
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
       reasoning: {
-        effort: 'medium',
+        effort: 'low',
         exclude: false,
       },
       provider: {
-        sort: 'throughput',
+        sort: 'price',
       },
       usage: { include: true },
       stream: true,
