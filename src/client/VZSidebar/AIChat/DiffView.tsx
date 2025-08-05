@@ -1,4 +1,9 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   UnifiedFilesDiff,
   parseUnifiedDiffStats,
@@ -8,7 +13,7 @@ import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 import { VZCodeContext } from '../../VZCodeContext';
-import { VizFileId } from '@vizhub/viz-types';
+import { VizFileId, VizFiles } from '@vizhub/viz-types';
 
 interface DiffViewProps {
   diffData: UnifiedFilesDiff;
@@ -17,9 +22,10 @@ interface DiffViewProps {
 export const DiffView: React.FC<DiffViewProps> = ({
   diffData,
 }) => {
-  const { openTab, setIsAIChatOpen } = useContext(VZCodeContext);
+  const { content, openTab, setIsAIChatOpen } =
+    useContext(VZCodeContext);
   const diffContainerRef = useRef<HTMLDivElement>(null);
-  
+
   const unifiedDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
   );
@@ -48,14 +54,17 @@ export const DiffView: React.FC<DiffViewProps> = ({
   });
 
   // Create a mapping from file name to file ID for click handling
-  const fileNameToIdMap = React.useMemo(() => {
+  const fileNameToIdMap = useMemo(() => {
     const map = new Map<string, VizFileId>();
     Object.entries(diffData).forEach(([fileId, diff]) => {
       // Extract file name from the unified diff
       // The diff contains lines like "--- a/filename" and "+++ b/filename"
       const lines = diff.split('\n');
       for (const line of lines) {
-        if (line.startsWith('--- a/') || line.startsWith('+++ b/')) {
+        if (
+          line.startsWith('--- a/') ||
+          line.startsWith('+++ b/')
+        ) {
           const fileName = line.substring(6); // Remove "--- a/" or "+++ b/"
           map.set(fileName, fileId as VizFileId);
           break;
@@ -74,37 +83,67 @@ export const DiffView: React.FC<DiffViewProps> = ({
       if (target.classList.contains('d2h-file-name')) {
         event.preventDefault();
         event.stopPropagation();
-        
+
+        console.log('File name clicked');
+
         const fileName = target.textContent?.trim();
+
+        console.log('Clicked file name:', fileName);
         if (fileName) {
-          const fileId = fileNameToIdMap.get(fileName);
-          if (fileId) {
-            // Open the file tab and switch to files view
-            openTab({ fileId, isTransient: false });
-            setIsAIChatOpen(false);
+          const files: VizFiles = content?.files;
+          if (files) {
+            //             export type VizFiles = {
+            //     [fileId: VizFileId]: VizFile;
+            // };
+            // export type VizFileId = string;
+            // export type VizFile = {
+            //     name: string;
+            //     text: string;
+            // };
+
+            // TODO get fileId from content.files
+            const fileId = Object.entries(files).find(
+              ([id, file]) => file.name === fileName,
+            )?.[0];
+            console.log('Mapped file ID:', fileId);
+
+            if (fileId) {
+              // Open the file tab and switch to files view
+              openTab({ fileId, isTransient: false });
+              setIsAIChatOpen(false);
+            }
           }
         }
       }
     };
 
     const container = diffContainerRef.current;
-    const fileNameElements = container.querySelectorAll('.d2h-file-name');
-    
+    const fileNameElements = container.querySelectorAll(
+      '.d2h-file-name',
+    );
+
     // Add click event listeners and cursor pointer style
     fileNameElements.forEach((element) => {
-      element.addEventListener('click', handleFileNameClick);
+      element.addEventListener(
+        'click',
+        handleFileNameClick,
+      );
       (element as HTMLElement).style.cursor = 'pointer';
-      (element as HTMLElement).style.textDecoration = 'underline';
+      (element as HTMLElement).style.textDecoration =
+        'underline';
       (element as HTMLElement).style.color = '#58a6ff'; // GitHub blue link color
     });
 
     return () => {
       // Cleanup event listeners
       fileNameElements.forEach((element) => {
-        element.removeEventListener('click', handleFileNameClick);
+        element.removeEventListener(
+          'click',
+          handleFileNameClick,
+        );
       });
     };
-  }, [diffHtml, fileNameToIdMap, openTab, setIsAIChatOpen]);
+  }, [diffHtml, content, openTab, setIsAIChatOpen]);
 
   return (
     <div className="diff-view">
