@@ -146,9 +146,15 @@ export const AIChat = () => {
         // The backend handles all ShareDB operations for successful responses
       } catch (error) {
         console.error('Error getting AI response:', error);
-        setErrorMessage(
-          'Failed to send message. Please try again.',
-        );
+        // Fail silently in case of timeout,
+        // which happens frequently with the longer running LLM calls.
+        // TODO refactor this so that the network request to the server
+        // always returns immediately, and we track the `isLoading` state
+        // within the ShareDB document itself.
+        //
+        // setErrorMessage(
+        //   'Failed to send message. Please try again.',
+        // );
       } finally {
         setIsLoading(false);
       }
@@ -347,7 +353,9 @@ export const AIChat = () => {
           {errorMessage && (
             <div className="ai-chat-error">
               <div className="ai-chat-error-content">
-                <span className="ai-chat-error-icon">⚠️</span>
+                <span className="ai-chat-error-icon">
+                  ⚠️
+                </span>
                 <span className="ai-chat-error-message">
                   {errorMessage}
                 </span>
