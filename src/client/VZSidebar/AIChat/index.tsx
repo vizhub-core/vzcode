@@ -214,159 +214,156 @@ export const AIChat = () => {
 
   return (
     <div className="ai-chat-container">
-      <div
-        style={{
-          padding: '10px',
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {isEmptyState ? (
-          <div className="ai-chat-empty">
-            <div className="ai-chat-empty-icon">✨</div>
-            <h3 className="ai-chat-empty-title">
-              Edit with AI
-            </h3>
-            <div className="ai-chat-empty-text">
-              How can I help you?
-            </div>
-            {showSuggestedRequests && (
-              <div className="ai-chat-empty-examples">
-                {aiChatMode === 'ask' ? (
-                  <>
-                    <h4>Try asking questions like:</h4>
-                    <div className="ai-chat-suggested-prompts">
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'Explain how this works',
-                          )
-                        }
-                      >
-                        "Explain how this works"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'How could I change it so that the circles are bigger?',
-                          )
-                        }
-                      >
-                        "How could I change it so that the
-                        circles are bigger?"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'What does this function do?',
-                          )
-                        }
-                      >
-                        "What does this function do?"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'How can I make this more accessible?',
-                          )
-                        }
-                      >
-                        "How can I make this more
-                        accessible?"
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h4>Try edit requests like these:</h4>
-                    <div className="ai-chat-suggested-prompts">
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'Change the circles to squares',
-                          )
-                        }
-                      >
-                        "Change the circles to squares"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'Add a button that toggles the animation',
-                          )
-                        }
-                      >
-                        "Add a button that toggles the
-                        animation"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'Fix the CSS so the layout is responsive',
-                          )
-                        }
-                      >
-                        "Fix the CSS so the layout is
-                        responsive"
-                      </button>
-                      <button
-                        className="ai-chat-suggested-prompt"
-                        onClick={() =>
-                          handleSendMessage(
-                            'Refactor this function to use async/await',
-                          )
-                        }
-                      >
-                        "Refactor this function to use
-                        async/await"
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-            {showSuggestedRequests && (
+      <div className="ai-chat-content">
+        <div className="ai-chat-messages-container">
+          {isEmptyState ? (
+            <div className="ai-chat-empty">
+              <div className="ai-chat-empty-icon">✨</div>
+              <h3 className="ai-chat-empty-title">
+                Edit with AI
+              </h3>
               <div className="ai-chat-empty-text">
-                {aiChatMode === 'ask'
-                  ? 'Type your question below to get started!'
-                  : 'Type your edit request below to get started!'}
+                How can I help you?
               </div>
-            )}
-          </div>
-        ) : (
-          <MessageList
-            messages={messages}
-            aiStatus={aiStatus}
-            isLoading={isLoading}
-            chatId={currentChatId}
-            aiScratchpad={aiScratchpad}
-          />
-        )}
-        {errorMessage && (
-          <div className="ai-chat-error">
-            <div className="ai-chat-error-content">
-              <span className="ai-chat-error-icon">⚠️</span>
-              <span className="ai-chat-error-message">
-                {errorMessage}
-              </span>
-              <button
-                className="ai-chat-error-dismiss"
-                onClick={() => setErrorMessage(null)}
-                aria-label="Dismiss error"
-              >
-                ×
-              </button>
+              {showSuggestedRequests && (
+                <div className="ai-chat-empty-examples">
+                  {aiChatMode === 'ask' ? (
+                    <>
+                      <h4>Try asking questions like:</h4>
+                      <div className="ai-chat-suggested-prompts">
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'Explain how this works',
+                            )
+                          }
+                        >
+                          "Explain how this works"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'How could I change it so that the circles are bigger?',
+                            )
+                          }
+                        >
+                          "How could I change it so that the
+                          circles are bigger?"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'What does this function do?',
+                            )
+                          }
+                        >
+                          "What does this function do?"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'How can I make this more accessible?',
+                            )
+                          }
+                        >
+                          "How can I make this more
+                          accessible?"
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h4>Try edit requests like these:</h4>
+                      <div className="ai-chat-suggested-prompts">
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'Change the circles to squares',
+                            )
+                          }
+                        >
+                          "Change the circles to squares"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'Add a button that toggles the animation',
+                            )
+                          }
+                        >
+                          "Add a button that toggles the
+                          animation"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'Fix the CSS so the layout is responsive',
+                            )
+                          }
+                        >
+                          "Fix the CSS so the layout is
+                          responsive"
+                        </button>
+                        <button
+                          className="ai-chat-suggested-prompt"
+                          onClick={() =>
+                            handleSendMessage(
+                              'Refactor this function to use async/await',
+                            )
+                          }
+                        >
+                          "Refactor this function to use
+                          async/await"
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+              {showSuggestedRequests && (
+                <div className="ai-chat-empty-text">
+                  {aiChatMode === 'ask'
+                    ? 'Type your question below to get started!'
+                    : 'Type your edit request below to get started!'}
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          ) : (
+            <MessageList
+              messages={messages}
+              aiStatus={aiStatus}
+              isLoading={isLoading}
+              chatId={currentChatId}
+              aiScratchpad={aiScratchpad}
+            />
+          )}
+          {errorMessage && (
+            <div className="ai-chat-error">
+              <div className="ai-chat-error-content">
+                <span className="ai-chat-error-icon">⚠️</span>
+                <span className="ai-chat-error-message">
+                  {errorMessage}
+                </span>
+                <button
+                  className="ai-chat-error-dismiss"
+                  onClick={() => setErrorMessage(null)}
+                  aria-label="Dismiss error"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="ai-chat-input-fixed">
         <ChatInput
           aiChatMessage={aiChatMessage}
           setAIChatMessage={setAIChatMessage}
