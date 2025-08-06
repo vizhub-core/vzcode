@@ -35,7 +35,7 @@ export const AIChat = () => {
     setAIChatMessage,
     handleSendMessage,
     setIsLoading,
-    setAIErrorMessage
+    setAIErrorMessage,
   } = useContext(VZCodeContext);
 
   // Get current chat data from content

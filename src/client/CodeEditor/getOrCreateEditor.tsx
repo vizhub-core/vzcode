@@ -195,7 +195,7 @@ export const getOrCreateEditor = async ({
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
   setAIChatMessage,
-  handleSendMessage
+  handleSendMessage,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -232,7 +232,7 @@ export const getOrCreateEditor = async ({
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
-  setAIChatMessage:  (message: string) => void;
+  setAIChatMessage: (message: string) => void;
   handleSendMessage: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
