@@ -11,10 +11,14 @@ function initializeStars() {
 
 function animationLoop(stars) {
   let angle = 0;
+  let startTime = Date.now();
   
   function animate() {
+    const currentTime = Date.now();
+    const time = currentTime - startTime;
+    
     angle += CONFIG.ROTATION_SPEED;
-    renderFrame(ctx, canvas, stars, angle);
+    renderFrame(ctx, canvas, stars, angle, time);
     requestAnimationFrame(animate);
   }
 
