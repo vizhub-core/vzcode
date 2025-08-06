@@ -45,10 +45,15 @@ export const createLLMFunction = ({
   shareDBDoc,
   createAIEditLocalPresence,
   chatId,
+  // Feature flag to enable/disable reasoning tokens.
+  // When false, reasoning tokens are not requested from the API
+  // and reasoning content is not processed in the streaming response.
+  enableReasoningTokens = false,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
   createAIEditLocalPresence: () => any;
   chatId: VizChatId;
+  enableReasoningTokens?: boolean;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = enableStreamingEditing
@@ -197,21 +202,29 @@ export const createLLMFunction = ({
     const modelName =
       process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
       'anthropic/claude-3.5-sonnet';
-    const stream = await (
-      openRouterClient.chat.completions.create as any
-    )({
+
+    // Configure reasoning tokens based on enableReasoningTokens flag
+    const requestConfig: any = {
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
-      reasoning: {
-        effort: 'low',
-        exclude: false,
-      },
       provider: {
         sort: 'price',
       },
       usage: { include: true },
       stream: true,
-    });
+    };
+
+    // Only include reasoning configuration if reasoning tokens are enabled
+    if (enableReasoningTokens) {
+      requestConfig.reasoning = {
+        effort: 'low',
+        exclude: false,
+      };
+    }
+
+    const stream = await (
+      openRouterClient.chat.completions.create as any
+    )(requestConfig);
 
     let reasoningStarted = false;
     let contentStarted = false;
@@ -219,8 +232,8 @@ export const createLLMFunction = ({
     for await (const chunk of stream) {
       const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
-      if (delta?.reasoning) {
-        // Handle reasoning tokens (thinking)
+      if (delta?.reasoning && enableReasoningTokens) {
+        // Handle reasoning tokens (thinking) - only if enabled
         if (!reasoningStarted) {
           reasoningStarted = true;
           updateAIStatus(shareDBDoc, chatId, 'Thinking...');

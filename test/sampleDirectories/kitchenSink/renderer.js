@@ -16,12 +16,19 @@ export function setupRenderer(container) {
   return { canvas, ctx };
 }
 
-export function renderFrame(ctx, canvas, stars, angle) {
+export function renderFrame(ctx, canvas, stars, angle, time) {
   ctx.fillStyle = CONFIG.BG_COLOR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   stars.forEach(star => {
     star.z -= star.speed;
+
+    // Apply wiggle effect to the star's position
+    const wiggleX = Math.sin(time * CONFIG.WIGGLE_FREQUENCY + star.wigglePhaseX) * CONFIG.WIGGLE_AMPLITUDE * star.wiggleIntensity;
+    const wiggleY = Math.cos(time * CONFIG.WIGGLE_FREQUENCY + star.wigglePhaseY) * CONFIG.WIGGLE_AMPLITUDE * star.wiggleIntensity;
+    
+    star.x = star.baseX + wiggleX;
+    star.y = star.baseY + wiggleY;
 
     const rotatedX = star.x * Math.cos(angle) - star.y * Math.sin(angle);
     const rotatedY = star.x * Math.sin(angle) + star.y * Math.cos(angle);
@@ -60,7 +67,9 @@ export function renderFrame(ctx, canvas, stars, angle) {
 }
 
 function resetStar(star, canvas) {
-  star.x = Math.random() * canvas.width - canvas.width / 2;
-  star.y = Math.random() * canvas.height - canvas.height / 2;
+  star.baseX = Math.random() * canvas.width - canvas.width / 2;
+  star.baseY = Math.random() * canvas.height - canvas.height / 2;
+  star.x = star.baseX;
+  star.y = star.baseY;
   star.z = canvas.width;
 }
