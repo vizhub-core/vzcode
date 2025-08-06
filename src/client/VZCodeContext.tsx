@@ -199,10 +199,10 @@ export type VZCodeContextValue = {
   setAIChatMessage: (message: string) => void;
   isLoading: boolean;
   setIsLoading: (state: boolean) => void;
-  currentChatId: string,
-  aiErrorMessage: string | null,
-  setAIErrorMessage: (state: string | null) => void,
-  handleSendMessage: (messageToSend?: string) => void
+  currentChatId: string;
+  aiErrorMessage: string | null;
+  setAIErrorMessage: (state: string | null) => void;
+  handleSendMessage: (messageToSend?: string) => void;
 
   // Auto-fork functions for VizHub integration
   autoForkAndRetryAI?: (
@@ -345,7 +345,7 @@ export const VZCodeProvider = ({
     username,
     enableAutoFollow,
     sidebarPresenceIndicators,
-    aiChatMode
+    aiChatMode,
   } = state;
 
   const activePane: Pane = findPane(pane, activePaneId);
@@ -502,7 +502,7 @@ export const VZCodeProvider = ({
   const [aiChatMessage, setAIChatMessage] = useState('');
 
   const DEBUG = false;
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [currentChatId] = useState(() => uuidv4());
   const [aiErrorMessage, setAIErrorMessage] = useState<
