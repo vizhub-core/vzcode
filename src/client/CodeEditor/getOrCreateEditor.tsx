@@ -74,6 +74,7 @@ import { getFileExtension } from '../utils/fileExtension';
 import { SparklesSVG } from '../Icons/SparklesSVG';
 import { VZCodeContext } from '../VZCodeContext';
 import { useContext, useMemo } from 'react';
+import { handleAIChatMessage } from '../../server/aiChatHandler';
 
 const DEBUG = false;
 
@@ -194,6 +195,7 @@ export const getOrCreateEditor = async ({
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
   setAIChatMessage,
+  handleSendMessage
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -229,8 +231,9 @@ export const getOrCreateEditor = async ({
     view: EditorView,
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
-  setIsAIChatOpen: any; // TODO fix types
-  setAIChatMessage: any; // TODO fix types
+  setIsAIChatOpen: (isAIChatOpen: boolean) => void;
+  setAIChatMessage:  (message: string) => void;
+  handleSendMessage: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
@@ -500,12 +503,9 @@ export const getOrCreateEditor = async ({
         root.render(
           <div
             onClick={() => {
-              console.log(
-                'TODO set the chat prompt to "Implement the TODO"',
-              );
               setIsAIChatOpen(true);
-              setAIChatMessage('Implement the TODO');
-              // submitAIChatMessage()
+              // setAIChatMessage('Implement the TODO');
+              handleSendMessage('Implement the TODO');
             }}
           >
             <SparklesSVG width={14} height={14} />

@@ -1,4 +1,5 @@
 import {
+  Context,
   createContext,
   useCallback,
   useReducer,
@@ -39,6 +40,7 @@ import { useURLSync } from './useURLSync';
 import { createInitialState, vzReducer } from './vzReducer';
 import { findPane } from './vzReducer/findPane';
 import { usePresenceAutoFollow } from './usePresenceAutoFollow';
+import { v4 as uuidv4 } from 'uuid';
 
 // This context centralizes all the "smart" logic
 // to do with the application state. This includes
@@ -195,6 +197,12 @@ export type VZCodeContextValue = {
   setVoiceChatModalOpen: (state: boolean) => void;
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
+  isLoading: boolean;
+  setIsLoading: (state: boolean) => void;
+  currentChatId: string,
+  aiErrorMessage: string | null,
+  setAIErrorMessage: (state: string | null) => void,
+  handleSendMessage: (messageToSend?: string) => void
 
   // Auto-fork functions for VizHub integration
   autoForkAndRetryAI?: (
@@ -337,6 +345,7 @@ export const VZCodeProvider = ({
     username,
     enableAutoFollow,
     sidebarPresenceIndicators,
+    aiChatMode
   } = state;
 
   const activePane: Pane = findPane(pane, activePaneId);
@@ -492,6 +501,120 @@ export const VZCodeProvider = ({
 
   const [aiChatMessage, setAIChatMessage] = useState('');
 
+  const DEBUG = false;
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentChatId] = useState(() => uuidv4());
+  const [aiErrorMessage, setAIErrorMessage] = useState<
+    string | null
+  >(null);
+
+  const handleSendMessage = useCallback(
+    async (messageToSend?: string) => {
+      DEBUG &&
+        console.log(
+          'AIChat: handleSendMessage called with:',
+          messageToSend,
+          'aiChatMessage:',
+          aiChatMessage,
+        );
+      const messageContent = messageToSend || aiChatMessage;
+
+      if (
+        !messageContent ||
+        typeof messageContent !== 'string' ||
+        !messageContent.trim() ||
+        isLoading
+      ) {
+        return;
+      }
+
+      const currentPrompt = aiChatMessage.trim();
+      setAIChatMessage('');
+      setIsLoading(true);
+      setAIErrorMessage(null); // Clear any previous errors
+
+      // Call backend endpoint for AI response
+      // The server will handle all ShareDB operations including adding the user message
+      try {
+        const response = await fetch(aiChatEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...aiChatOptions,
+            vizId: aiChatOptions.vizId,
+            content: messageContent.trim(),
+            chatId: currentChatId,
+            mode: aiChatMode,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error! status: ${response.status}`,
+          );
+        }
+
+        // Parse the response to check for errors
+        const responseData = await response.json();
+
+        // Check if the response contains a VizHub error
+        if (
+          responseData.outcome === 'failure' &&
+          responseData.error
+        ) {
+          const errorMessage = responseData.error.message;
+
+          // Check if this is the specific permission error that should trigger auto-fork
+          if (
+            aiErrorMessage ===
+            'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
+          ) {
+            // Trigger auto-fork instead of showing error
+            try {
+              await autoForkAndRetryAI?.(
+                currentPrompt,
+                aiChatMode,
+              );
+              // If we reach here, the fork was successful and redirect should happen
+              return;
+            } catch (forkError) {
+              console.error('Auto-fork failed:', forkError);
+              setAIErrorMessage(
+                'Failed to fork visualization. Please try forking manually.',
+              );
+              return;
+            }
+          }
+
+          // For other errors, show the error message
+          setAIErrorMessage(aiErrorMessage);
+          return;
+        }
+
+        // The backend handles all ShareDB operations for successful responses
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        setAIErrorMessage(
+          'Failed to send message. Please try again.',
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [
+      aiChatMessage,
+      isLoading,
+      aiChatEndpoint,
+      aiChatOptions,
+      currentChatId,
+      aiChatMode,
+      autoForkAndRetryAI,
+    ],
+  );
+
   // The value provided by this context.
   const value: VZCodeContextValue = {
     content,
@@ -602,6 +725,12 @@ export const VZCodeProvider = ({
 
     aiChatMessage,
     setAIChatMessage,
+    isLoading,
+    setIsLoading,
+    currentChatId,
+    aiErrorMessage,
+    setAIErrorMessage,
+    handleSendMessage,
 
     // Auto-fork functions for VizHub integration
     autoForkAndRetryAI,
