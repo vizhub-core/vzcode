@@ -1,7 +1,12 @@
 import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useMemo, memo, useState, useContext } from 'react';
+import React, {
+  useMemo,
+  memo,
+  useState,
+  useContext,
+} from 'react';
 import { DiffView } from './DiffView';
 import { UnifiedFilesDiff } from '../../../utils/fileDiff';
 import { enableDiffView } from '../../featureFlags';
@@ -31,8 +36,11 @@ const MessageComponent = ({
   canUndo,
 }: MessageProps) => {
   const [isUndoing, setIsUndoing] = useState(false);
-  const { aiChatUndoEndpoint, aiChatOptions = {} } =
-    useContext(VZCodeContext);
+  const {
+    aiChatUndoEndpoint,
+    aiChatOptions = {},
+    additionalWidgets,
+  } = useContext(VZCodeContext);
 
   // Memoize date formatting to avoid repeated computation
   const formattedTime = useMemo(() => {
@@ -102,7 +110,15 @@ const MessageComponent = ({
           Object.keys(diffData).length > 0 && (
             <DiffView diffData={diffData} />
           )}
-        {canUndo && beforeFiles && (
+        {additionalWidgets &&
+          canUndo &&
+          chatId &&
+          React.createElement(additionalWidgets, {
+            messageId: id,
+            chatId: chatId,
+            canUndo: canUndo,
+          })}
+        {!additionalWidgets && canUndo && beforeFiles && (
           <div className="undo-button-container">
             <button
               className="undo-button"
