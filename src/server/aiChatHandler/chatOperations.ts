@@ -256,7 +256,8 @@ export const addDiffToAIMessage = (
   shareDBDoc: ShareDBDoc<VizContent>,
   chatId: VizChatId,
   diffData: any,
-  beforeFiles?: VizFiles, // Optional snapshot for undo functionality
+  beforeFiles?: VizFiles, // Optional snapshot for undo functionality (legacy)
+  beforeCommitId?: string, // Commit ID before AI changes for VizHub integration
 ) => {
   const chat = shareDBDoc.data.chats[chatId];
   const messages = [...chat.messages];
@@ -270,7 +271,8 @@ export const addDiffToAIMessage = (
     const newMessage = {
       ...messages[lastAIMessageIndex],
       diffData,
-      ...(beforeFiles && { beforeFiles }), // Add beforeFiles only if provided
+      ...(beforeFiles && { beforeFiles }), // Add beforeFiles only if provided (legacy)
+      ...(beforeCommitId && { beforeCommitId }), // Add beforeCommitId for VizHub integration
     };
     // Use type assertion to extend the message with diffData
     (messages[lastAIMessageIndex] as any) = newMessage;

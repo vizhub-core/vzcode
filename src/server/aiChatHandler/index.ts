@@ -23,10 +23,12 @@ export const handleAIChatMessage =
     shareDBDoc,
     createAIEditLocalPresence,
     onCreditDeduction,
+    getCurrentCommitId,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
     createAIEditLocalPresence: () => any;
     onCreditDeduction?: any;
+    getCurrentCommitId?: () => string | null;
   }) =>
   async (req: any, res: any) => {
     const { content, chatId, mode = 'edit' } = req.body;
@@ -51,6 +53,11 @@ export const handleAIChatMessage =
       // Ensure chats structure exists
       ensureChatsExist(shareDBDoc);
       ensureChatExists(shareDBDoc, chatId);
+
+      // Capture the current commit ID before making changes (for VizHub integration)
+      const beforeCommitId = getCurrentCommitId
+        ? getCurrentCommitId()
+        : null;
 
       // Add user message to chat
       addUserMessage(shareDBDoc, chatId, content);
@@ -92,7 +99,8 @@ export const handleAIChatMessage =
           shareDBDoc,
           chatId,
           editResult.diffData,
-          (editResult as any).beforeFiles, // Pass the beforeFiles snapshot for undo (only available for edit mode)
+          (editResult as any).beforeFiles, // Pass the beforeFiles snapshot for undo (legacy)
+          beforeCommitId, // Pass the commit ID before AI changes (for VizHub integration)
         );
       }
 

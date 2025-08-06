@@ -207,6 +207,13 @@ export type VZCodeContextValue = {
     prompt: string;
     modelName: string;
   } | null;
+
+  // Additional widgets that can be rendered in AI chat messages
+  additionalWidgets?: React.ComponentType<{
+    messageId: string;
+    chatId: string;
+    canUndo: boolean;
+  }>;
 };
 
 export const VZCodeProvider = ({
@@ -233,6 +240,7 @@ export const VZCodeProvider = ({
   autoForkAndRetryAI,
   clearStoredAIPrompt,
   getStoredAIPrompt,
+  additionalWidgets,
 }: {
   content: VizContent;
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -264,6 +272,11 @@ export const VZCodeProvider = ({
     prompt: string;
     modelName: string;
   } | null;
+  additionalWidgets?: React.ComponentType<{
+    messageId: string;
+    chatId: string;
+    canUndo: boolean;
+  }>;
 }) => {
   // Auto-run Pretter after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
@@ -594,6 +607,9 @@ export const VZCodeProvider = ({
     autoForkAndRetryAI,
     clearStoredAIPrompt,
     getStoredAIPrompt,
+
+    // Additional widgets that can be rendered in AI chat messages
+    additionalWidgets,
   };
 
   return (
