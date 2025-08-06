@@ -12,7 +12,7 @@ const StreamingMessageComponent = ({
   status,
 }: StreamingMessageProps) => {
   // Don't render if there's no content and no status
-  if (!content.trim() && !status) {
+  if (!content.trim()) {
     return null;
   }
 

@@ -112,7 +112,7 @@ const ChatInputComponent = ({
       <Form.Group className="ai-chat-input-group">
         <Form.Control
           as="textarea"
-          rows={2}
+          rows={5}
           value={aiChatMessage}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -126,26 +126,25 @@ const ChatInputComponent = ({
           disabled={isLoading}
           aria-label="Chat message input"
         />
-        {aiChatMessage && (
-          <div className="ai-chat-input-info">
-            <span className="ai-chat-hint">
-              Shift+Enter for new line
-            </span>
-            <span className="ai-chat-hint">
-              Press Enter to send
-            </span>
-          </div>
-        )}
-        <Button
-          variant="primary"
-          onClick={handleSendClick}
-          disabled={!aiChatMessage.trim() || isLoading}
-          className="ai-chat-send-button"
-          aria-label="Send message"
-          title="Send message (Enter)"
-        >
-          Send
-        </Button>
+        <div className="ai-chat-input-footer">
+          <span className="ai-chat-hint">
+            {aiChatMessage ? 'Press Enter to send' : ''}
+          </span>
+          <Button
+            variant={
+              aiChatMessage.trim()
+                ? 'primary'
+                : 'outline-secondary'
+            }
+            onClick={handleSendClick}
+            disabled={!aiChatMessage.trim() || isLoading}
+            className="ai-chat-send-button"
+            aria-label="Send message"
+            title="Send message (Enter)"
+          >
+            Send
+          </Button>
+        </div>
       </Form.Group>
     </div>
   );
