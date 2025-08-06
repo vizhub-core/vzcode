@@ -57,118 +57,6 @@ export const AIChat = () => {
   // Check if this is the first time opening the chat (no messages)
   const isEmptyState = rawMessages.length === 0;
 
-  const handleSendMessage = useCallback(
-    async (messageToSend?: string) => {
-      DEBUG &&
-        console.log(
-          'AIChat: handleSendMessage called with:',
-          messageToSend,
-          'aiChatMessage:',
-          aiChatMessage,
-        );
-      const messageContent = messageToSend || aiChatMessage;
-
-      if (
-        !messageContent ||
-        typeof messageContent !== 'string' ||
-        !messageContent.trim() ||
-        isLoading
-      ) {
-        return;
-      }
-
-      const currentPrompt = aiChatMessage.trim();
-      setAIChatMessage('');
-      setIsLoading(true);
-      setErrorMessage(null); // Clear any previous errors
-
-      // Call backend endpoint for AI response
-      // The server will handle all ShareDB operations including adding the user message
-      try {
-        const response = await fetch(aiChatEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            ...aiChatOptions,
-            vizId: aiChatOptions.vizId,
-            content: messageContent.trim(),
-            chatId: currentChatId,
-            mode: aiChatMode,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP error! status: ${response.status}`,
-          );
-        }
-
-        // Parse the response to check for errors
-        const responseData = await response.json();
-
-        // Check if the response contains a VizHub error
-        if (
-          responseData.outcome === 'failure' &&
-          responseData.error
-        ) {
-          const errorMessage = responseData.error.message;
-
-          // Check if this is the specific permission error that should trigger auto-fork
-          if (
-            errorMessage ===
-            'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
-          ) {
-            // Trigger auto-fork instead of showing error
-            try {
-              await autoForkAndRetryAI?.(
-                currentPrompt,
-                aiChatMode,
-              );
-              // If we reach here, the fork was successful and redirect should happen
-              return;
-            } catch (forkError) {
-              console.error('Auto-fork failed:', forkError);
-              setErrorMessage(
-                'Failed to fork visualization. Please try forking manually.',
-              );
-              return;
-            }
-          }
-
-          // For other errors, show the error message
-          setErrorMessage(errorMessage);
-          return;
-        }
-
-        // The backend handles all ShareDB operations for successful responses
-      } catch (error) {
-        console.error('Error getting AI response:', error);
-        // Fail silently in case of timeout,
-        // which happens frequently with the longer running LLM calls.
-        // TODO refactor this so that the network request to the server
-        // always returns immediately, and we track the `isLoading` state
-        // within the ShareDB document itself.
-        //
-        // setErrorMessage(
-        //   'Failed to send message. Please try again.',
-        // );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [
-      aiChatMessage,
-      isLoading,
-      aiChatEndpoint,
-      aiChatOptions,
-      currentChatId,
-      aiChatMode,
-      autoForkAndRetryAI,
-    ],
-  );
-
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
     DEBUG &&
@@ -349,18 +237,18 @@ export const AIChat = () => {
               aiScratchpad={aiScratchpad}
             />
           )}
-          {errorMessage && (
+          {aiErrorMessage && (
             <div className="ai-chat-error">
               <div className="ai-chat-error-content">
                 <span className="ai-chat-error-icon">
                   ⚠️
                 </span>
                 <span className="ai-chat-error-message">
-                  {errorMessage}
+                  {aiErrorMessage}
                 </span>
                 <button
                   className="ai-chat-error-dismiss"
-                  onClick={() => setErrorMessage(null)}
+                  onClick={() => setAIErrorMessage(null)}
                   aria-label="Dismiss error"
                 >
                   ×
