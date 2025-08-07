@@ -37,6 +37,7 @@ import {
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
+import { setIsVisualEditorOpenReducer } from './visualEditorReducer';
 export { createInitialState } from './createInitialState';
 
 // The shape of the state managed by the reducer.
@@ -219,6 +220,7 @@ const reducers = [
   toggleSearchFocusedReducer,
   setIsSearchOpenReducer,
   setIsAIChatOpenReducer,
+  setIsVisualEditorOpenReducer,
   toggleAIChatFocusedReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,
