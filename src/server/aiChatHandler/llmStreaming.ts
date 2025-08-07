@@ -53,12 +53,14 @@ export const createLLMFunction = ({
   // and reasoning content is not processed in the streaming response.
   enableReasoningTokens = false,
   model,
+  aiRequestOptions,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
   createAIEditLocalPresence: () => any;
   chatId: VizChatId;
   enableReasoningTokens?: boolean;
   model?: string;
+  aiRequestOptions?: any;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = enableStreamingEditing
@@ -253,11 +255,9 @@ export const createLLMFunction = ({
     const requestConfig: any = {
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
-      provider: {
-        sort: 'price',
-      },
       usage: { include: true },
       stream: true,
+      ...aiRequestOptions,
     };
 
     // Only include reasoning configuration if reasoning tokens are enabled

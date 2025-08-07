@@ -25,12 +25,14 @@ export const handleAIChatMessage =
     onCreditDeduction,
     getCurrentCommitId,
     model,
+    aiRequestOptions,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
     createAIEditLocalPresence: () => any;
     onCreditDeduction?: any;
     getCurrentCommitId?: () => string | null;
     model?: string;
+    aiRequestOptions?: any;
   }) =>
   async (req: any, res: any) => {
     const { content, chatId, mode = 'edit' } = req.body;
@@ -70,6 +72,7 @@ export const handleAIChatMessage =
         createAIEditLocalPresence,
         chatId,
         model,
+        aiRequestOptions,
       });
 
       // Create server-side runCode function using shareDBDoc
