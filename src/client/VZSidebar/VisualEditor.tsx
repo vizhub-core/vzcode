@@ -6,8 +6,12 @@ import { VisualEditorConfigEntry } from '../../types';
 const CONFIG_FILE_NAME = 'config.json';
 
 export const VisualEditor = () => {
-  const { files, submitOperation, runPrettierRef } =
-    useContext(VZCodeContext);
+  const {
+    files,
+    submitOperation,
+    runPrettierRef,
+    iframeRef,
+  } = useContext(VZCodeContext);
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -28,11 +32,11 @@ export const VisualEditor = () => {
 
   let configData;
 
-try {
-   configData  = JSON.parse(files[configFileId].text);
-} catch (error) {
-    return (<>Your config.json file is not valid json.</>)
-}
+  try {
+    configData = JSON.parse(files[configFileId].text);
+  } catch (error) {
+    return <>Your config.json file is not valid json.</>;
+  }
 
   if (!('visualEditorWidgets' in configData)) {
     return (
@@ -47,18 +51,21 @@ try {
   const onInputUpdate = useCallback(
     (
       property: string,
-      previousValue: any
+      previousValue: any,
     ): React.FormEventHandler<HTMLInputElement> =>
       (event) => {
-        //TODO [important]: use window.postMessage to send update to iframe
-
         //TODO: test race condition in which someone is editing the config file as another user uses the visual editor
+
+        const newValueOfConsistentType =
+          typeof previousValue === 'number'
+            ? parseFloat(event.currentTarget.value)
+            : event.currentTarget.value;
+
         const newConfigData = {
           ...configData,
-          [property]: typeof previousValue === "number" ? parseFloat(event.currentTarget.value) : event.currentTarget.value
+          [property]: newValueOfConsistentType,
         };
 
-        console.log('updating');
 
         submitOperation((document: VizContent) => ({
           ...document,
@@ -71,7 +78,11 @@ try {
           },
         }));
 
-        runPrettierRef.current()
+        runPrettierRef.current();
+
+        iframeRef.current.contentWindow.postMessage({
+          [property]: newValueOfConsistentType,
+        });
       },
     [configData, files, configFileId],
   );
@@ -92,7 +103,7 @@ try {
                 max={widgetConfig.max}
                 onInput={onInputUpdate(
                   widgetConfig.property,
-                  configData[widgetConfig.property]
+                  configData[widgetConfig.property],
                 )}
                 defaultValue={
                   configData[widgetConfig.property]

@@ -162,6 +162,8 @@ export type VZCodeContextValue = {
 
   codeEditorRef: React.RefObject<HTMLDivElement>;
 
+  iframeRef: React.MutableRefObject<HTMLIFrameElement>;
+
   connected: boolean;
   pending: boolean;
 
@@ -241,6 +243,8 @@ export const VZCodeProvider = ({
   const sidebarRef = useRef(null);
 
   const codeEditorRef = useRef(null);
+
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // The error message shows either:
   // * `prettierError` - errors from Prettier, client-side only
@@ -515,6 +519,7 @@ export const VZCodeProvider = ({
     runCodeRef,
     sidebarRef,
     codeEditorRef,
+    iframeRef,
 
     connected,
     pending,

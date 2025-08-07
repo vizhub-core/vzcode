@@ -15,12 +15,11 @@ import { vizFilesToFileCollection } from '@vizhub/viz-utils';
 const enableIframe = true;
 
 export const VZRight = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const runtimeRef = useRef<VizHubRuntime | null>(null);
   const isFirstRunRef = useRef(true);
 
   // Get access to the current files.
-  const { content } = useContext(VZCodeContext);
+  const { content, iframeRef } = useContext(VZCodeContext);
 
   const files = useMemo(
     () =>
