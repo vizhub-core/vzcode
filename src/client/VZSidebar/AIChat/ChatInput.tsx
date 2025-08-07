@@ -20,6 +20,9 @@ interface ChatInputProps {
   focused: boolean;
   aiChatMode: 'ask' | 'edit';
   setAIChatMode: (mode: 'ask' | 'edit') => void;
+  navigateMessageHistoryUp: () => void;
+  navigateMessageHistoryDown: () => void;
+  resetMessageHistoryNavigation: () => void;
 }
 
 const ChatInputComponent = ({
@@ -30,6 +33,9 @@ const ChatInputComponent = ({
   focused,
   aiChatMode,
   setAIChatMode,
+  navigateMessageHistoryUp,
+  navigateMessageHistoryDown,
+  resetMessageHistoryNavigation,
 }: ChatInputProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -45,9 +51,44 @@ const ChatInputComponent = ({
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         onSendMessage();
+      } else if (event.key === 'ArrowUp') {
+        // Only navigate history if cursor is at the beginning of the first line
+        const textarea =
+          event.target as HTMLTextAreaElement;
+        const { selectionStart, value } = textarea;
+        const lines = value
+          .substring(0, selectionStart)
+          .split('\n');
+
+        // Check if we're at the beginning of the first line
+        if (lines.length === 1 && selectionStart === 0) {
+          event.preventDefault();
+          navigateMessageHistoryUp();
+        }
+      } else if (event.key === 'ArrowDown') {
+        // Only navigate history if cursor is at the end of the last line
+        const textarea =
+          event.target as HTMLTextAreaElement;
+        const { selectionStart, value } = textarea;
+        const remainingText =
+          value.substring(selectionStart);
+        const remainingLines = remainingText.split('\n');
+
+        // Check if we're at the end of the last line
+        if (
+          remainingLines.length === 1 &&
+          remainingLines[0] === ''
+        ) {
+          event.preventDefault();
+          navigateMessageHistoryDown();
+        }
       }
     },
-    [onSendMessage],
+    [
+      onSendMessage,
+      navigateMessageHistoryUp,
+      navigateMessageHistoryDown,
+    ],
   );
 
   const handleSendClick = useCallback(() => {
@@ -57,8 +98,10 @@ const ChatInputComponent = ({
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       setAIChatMessage(event.target.value);
+      // Reset history navigation when user starts typing
+      resetMessageHistoryNavigation();
     },
-    [setAIChatMessage],
+    [setAIChatMessage, resetMessageHistoryNavigation],
   );
 
   return (

@@ -260,6 +260,13 @@ export const useVZCodeState = ({
 
   const [aiChatMessage, setAIChatMessage] = useState('');
 
+  // Message history for up/down arrow navigation
+  const [messageHistory, setMessageHistory] = useState<
+    string[]
+  >([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [currentDraft, setCurrentDraft] = useState('');
+
   const DEBUG = false;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -267,6 +274,51 @@ export const useVZCodeState = ({
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
   >(null);
+
+  // Message history navigation functions
+  const navigateMessageHistoryUp = useCallback(() => {
+    if (messageHistory.length === 0) return;
+
+    // If we're not navigating history, save current draft
+    if (historyIndex === -1) {
+      setCurrentDraft(aiChatMessage);
+    }
+
+    const newIndex =
+      historyIndex < messageHistory.length - 1
+        ? historyIndex + 1
+        : historyIndex;
+    setHistoryIndex(newIndex);
+    setAIChatMessage(
+      messageHistory[messageHistory.length - 1 - newIndex],
+    );
+  }, [messageHistory, historyIndex, aiChatMessage]);
+
+  const navigateMessageHistoryDown = useCallback(() => {
+    if (historyIndex === -1) return;
+
+    const newIndex = historyIndex - 1;
+    if (newIndex === -1) {
+      // Return to draft
+      setHistoryIndex(-1);
+      setAIChatMessage(currentDraft);
+      setCurrentDraft('');
+    } else {
+      setHistoryIndex(newIndex);
+      setAIChatMessage(
+        messageHistory[
+          messageHistory.length - 1 - newIndex
+        ],
+      );
+    }
+  }, [messageHistory, historyIndex, currentDraft]);
+
+  const resetMessageHistoryNavigation = useCallback(() => {
+    if (historyIndex !== -1) {
+      setHistoryIndex(-1);
+      setCurrentDraft('');
+    }
+  }, [historyIndex]);
 
   const handleSendMessage = useCallback(
     async (
@@ -293,6 +345,18 @@ export const useVZCodeState = ({
 
       const currentPrompt = aiChatMessage.trim();
       setAIChatMessage('');
+
+      // Add message to history
+      if (currentPrompt) {
+        setMessageHistory((prev) => [
+          ...prev,
+          currentPrompt,
+        ]);
+        // Reset history navigation when sending a message
+        setHistoryIndex(-1);
+        setCurrentDraft('');
+      }
+
       setIsLoading(true);
       setAIErrorMessage(null); // Clear any previous errors
 
@@ -373,6 +437,9 @@ export const useVZCodeState = ({
       currentChatId,
       aiChatMode,
       autoForkAndRetryAI,
+      setMessageHistory,
+      setHistoryIndex,
+      setCurrentDraft,
     ],
   );
 
@@ -492,6 +559,11 @@ export const useVZCodeState = ({
     aiErrorMessage,
     setAIErrorMessage,
     handleSendMessage,
+
+    // Message history navigation
+    navigateMessageHistoryUp,
+    navigateMessageHistoryDown,
+    resetMessageHistoryNavigation,
 
     // Auto-fork functions for VizHub integration
     autoForkAndRetryAI,

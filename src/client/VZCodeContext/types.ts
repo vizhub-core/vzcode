@@ -173,6 +173,11 @@ export type VZCodeContextValue = {
     options?: Record<string, string>,
   ) => void;
 
+  // Message history navigation
+  navigateMessageHistoryUp: () => void;
+  navigateMessageHistoryDown: () => void;
+  resetMessageHistoryNavigation: () => void;
+
   // Auto-fork functions for VizHub integration
   autoForkAndRetryAI?: (
     prompt: string,
