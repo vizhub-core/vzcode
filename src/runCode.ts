@@ -1,30 +1,18 @@
+import { generateRunId } from '@vizhub/viz-utils';
 import { SubmitOperation } from './types';
 import { VizContent } from '@vizhub/viz-types';
 
 /**
- * Creates a runCode function that triggers code execution by flashing `isInteracting` to `true`.
+ * Creates a runCode function that triggers code execution by changing the `runId` in the content.
  * This works for both client-side (with submitOperation) and server-side (with ShareDB document).
  */
-export const createRunCodeFunction = (
-  submitOperation: SubmitOperation,
-) => {
-  return () => {
-    // Use the unified submitOperation approach for both client and server
+export const createRunCodeFunction =
+  (submitOperation: SubmitOperation) => () => {
     submitOperation((content: VizContent) => ({
       ...content,
-      isInteracting: true,
+      runId: generateRunId(),
     }));
-
-    setTimeout(() => {
-      // This somewhat cryptic logic
-      // deletes the `isInteracting` property
-      // from the document.
-      submitOperation(
-        ({ isInteracting, ...newDocument }) => newDocument,
-      );
-    }, 100);
   };
-};
 
 /**
  * Creates a runCodeRef object compatible with React refs.

@@ -1,4 +1,7 @@
-import { dateToTimestamp } from '@vizhub/viz-utils';
+import {
+  dateToTimestamp,
+  generateRunId,
+} from '@vizhub/viz-utils';
 import { randomId } from '../../randomId.js';
 import { ShareDBDoc } from '../../types.js';
 import { diff } from '../../ot.js';
@@ -247,6 +250,50 @@ export const finalizeAIMessage = (
 };
 
 /**
+ * Adds diff data to the most recent AI message
+ */
+export const addDiffToAIMessage = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  diffData: any,
+  beforeFiles?: VizFiles, // Optional snapshot for undo functionality (legacy)
+  beforeCommitId?: string, // Commit ID before AI changes for VizHub integration
+) => {
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = [...chat.messages];
+
+  // Find the most recent AI message
+  const lastAIMessageIndex = messages.length - 1;
+  if (
+    lastAIMessageIndex >= 0 &&
+    messages[lastAIMessageIndex].role === 'assistant'
+  ) {
+    const newMessage = {
+      ...messages[lastAIMessageIndex],
+      diffData,
+      ...(beforeFiles && { beforeFiles }), // Add beforeFiles only if provided (legacy)
+      ...(beforeCommitId && { beforeCommitId }), // Add beforeCommitId for VizHub integration
+    };
+    // Use type assertion to extend the message with diffData
+    (messages[lastAIMessageIndex] as any) = newMessage;
+
+    const messageOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [chatId]: {
+          ...chat,
+          messages,
+          updatedAt: dateToTimestamp(new Date()),
+        },
+      },
+    });
+
+    shareDBDoc.submitOp(messageOp);
+  }
+};
+
+/**
  * Adds an AI response message to the chat (legacy function, kept for compatibility)
  */
 export const addAIMessage = (
@@ -406,4 +453,36 @@ export const appendLineToFile = (
   };
 
   shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
+};
+
+/**
+ * Undoes the last AI edit by restoring files and removing the AI message
+ */
+export const undoAIEdit = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  messageId: string,
+  beforeFiles: VizFiles,
+) => {
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = chat.messages.filter(
+    (msg) => msg.id !== messageId,
+  );
+
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    files: beforeFiles,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...chat,
+        messages,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+    // Trigger a re-run
+    runId: generateRunId(),
+  });
+
+  shareDBDoc.submitOp(op);
 };

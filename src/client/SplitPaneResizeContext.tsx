@@ -2,9 +2,8 @@
 import {
   createContext,
   useReducer,
-  useEffect,
   useCallback,
-  useLayoutEffect,
+  useEffect,
 } from 'react';
 
 export type Side = 'left' | 'right';
@@ -16,63 +15,22 @@ export type SplitPaneResizeContextValue = {
   isDraggingRight: boolean;
   isDraggingLeft: boolean;
   setIsDragging: (a: boolean, side: Side) => void;
+  setSidebarView: (isAIChatOpen: boolean) => void;
 };
 
-// Feature flag for developers to use when testing.
-const enableLocalStorage = true;
-
-// The amount of time to wait idle before writing to localStorage.
-// This is to avoid writing to localStorage on every resize event.
-// MS = milliseconds
-const localStorageWriteDebounceMS = 800;
-
-// Properties in LocalStorage
-const sidebarWidthProperty = 'vzCodeSidebarWidth';
-const codeEditorWidthProperty = 'vzCodeCodeEditorWidth';
-
-const initialSidebarWidthDefault = 250;
-let initialSidebarWidth: number =
-  initialSidebarWidthDefault;
-
+// Default widths for different sidebar views
+const filesViewWidth = 300;
+const aiChatViewWidth = 800;
 const initialCodeEditorWidthDefault = 800;
-let initialCodeEditorWidth: number =
-  initialCodeEditorWidthDefault;
-
-// If no value is found in localStorage, we'll use the default.
-let needsInitialization = false;
-
-// If we're in the browser,
-if (typeof window !== 'undefined' && enableLocalStorage) {
-  //check localStorage for a previously stored width.
-  const sidebarWidthLocal: string | null =
-    window.localStorage.getItem(sidebarWidthProperty);
-
-  const codeEditorWidthLocal: string | null =
-    window.localStorage.getItem(codeEditorWidthProperty);
-
-  // If there is a previously stored width,
-  if (sidebarWidthLocal !== null) {
-    // use it as the initial width.
-    initialSidebarWidth = +sidebarWidthLocal;
-    needsInitialization = true;
-  }
-
-  if (codeEditorWidthLocal !== null) {
-    // use it as the initial width.
-    initialCodeEditorWidth = +codeEditorWidthLocal;
-    needsInitialization = true;
-  }
-} else {
-  // If we're not in the browser, use the default initial width.
-}
 
 const initialValue: SplitPaneResizeContextValue = {
-  codeEditorWidth: initialCodeEditorWidth,
-  sidebarWidth: initialSidebarWidth,
+  codeEditorWidth: initialCodeEditorWidthDefault,
+  sidebarWidth: filesViewWidth, // Default to files view
   moveSplitPane: () => {},
   isDraggingRight: false,
   isDraggingLeft: false,
   setIsDragging: () => {},
+  setSidebarView: () => {},
 };
 
 export const SplitPaneResizeContext =
@@ -84,30 +42,13 @@ type SplitPaneState = {
   codeEditorWidth: number;
   isDraggingLeft: boolean;
   isDraggingRight: boolean;
-
-  // False on first render
-  isInitialized: boolean;
 };
 
 const initialState: SplitPaneState = {
-  // sidebarWidth: initialSidebarWidth,
-  // codeEditorWidth: initialCodeEditorWidth,
-
-  // These need to match between SSR and the first
-  // client-side render (hydration), to avoid
-  // React hydration errors like this one:
-  //  * Warning: Prop `style` did not match.
-  //  * Server: "left:210px;width:20px"
-  //  * Client: "left:218px;width:20px"
-
-  sidebarWidth: initialSidebarWidthDefault,
+  sidebarWidth: filesViewWidth,
   codeEditorWidth: initialCodeEditorWidthDefault,
   isDraggingLeft: false,
   isDraggingRight: false,
-
-  // Solution for hydration errors: we set the value from localStorage
-  // in a layoutEffect that happens after first render.
-  isInitialized: false,
 };
 
 type SplitPaneAction =
@@ -122,7 +63,8 @@ type SplitPaneAction =
       isDragging: boolean;
     }
   | {
-      type: 'initialize';
+      type: 'setSidebarView';
+      isAIChatOpen: boolean;
     };
 
 const splitPaneReducer = (
@@ -130,13 +72,6 @@ const splitPaneReducer = (
   action: SplitPaneAction,
 ) => {
   switch (action.type) {
-    case 'initialize':
-      return {
-        ...state,
-        sidebarWidth: initialSidebarWidth,
-        codeEditorWidth: initialCodeEditorWidth,
-        isInitialized: true,
-      };
     case 'move':
       return action.side === 'left'
         ? {
@@ -160,6 +95,13 @@ const splitPaneReducer = (
             ...state,
             isDraggingRight: action.isDragging,
           };
+    case 'setSidebarView':
+      return {
+        ...state,
+        sidebarWidth: action.isAIChatOpen
+          ? aiChatViewWidth
+          : filesViewWidth,
+      };
     default:
       return state;
   }
@@ -185,44 +127,19 @@ export const SplitPaneResizeProvider = ({ children }) => {
     [dispatch],
   );
 
+  const setSidebarView = useCallback(
+    (isAIChatOpen: boolean) => {
+      dispatch({ type: 'setSidebarView', isAIChatOpen });
+    },
+    [dispatch],
+  );
+
   const {
     sidebarWidth,
     codeEditorWidth,
     isDraggingLeft,
     isDraggingRight,
-    isInitialized,
   } = state;
-
-  // Logic around initializing from localStorage.
-  // Only run this on the client.
-  if (typeof window !== 'undefined') {
-    useLayoutEffect(() => {
-      if (needsInitialization && !isInitialized) {
-        dispatch({ type: 'initialize' });
-      }
-    }, [isInitialized]);
-  }
-
-  // Logic around storing the values in localStorage.
-  useEffect(() => {
-    if (sidebarWidth !== initialSidebarWidth) {
-      setTimeout(() => {
-        window.localStorage.setItem(
-          sidebarWidthProperty,
-          '' + sidebarWidth,
-        );
-      }, localStorageWriteDebounceMS);
-    }
-
-    if (codeEditorWidth !== initialCodeEditorWidth) {
-      setTimeout(() => {
-        window.localStorage.setItem(
-          codeEditorWidthProperty,
-          '' + codeEditorWidth,
-        );
-      }, localStorageWriteDebounceMS);
-    }
-  }, [codeEditorWidth, sidebarWidth]);
 
   const value: SplitPaneResizeContextValue = {
     codeEditorWidth,
@@ -231,6 +148,7 @@ export const SplitPaneResizeProvider = ({ children }) => {
     isDraggingLeft,
     isDraggingRight,
     setIsDragging,
+    setSidebarView,
   };
 
   return (

@@ -78,6 +78,23 @@ export const useDragAndDrop = () => {
     return isText;
   };
 
+  const isImageFile = (file: File): boolean => {
+    const imageTypes = ['image/'];
+    const isImage =
+      imageTypes.some((type) =>
+        file.type.startsWith(type),
+      ) ||
+      file.name.match(
+        /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
+      ) !== null;
+
+    DEBUG &&
+      console.log(
+        `[useDragAndDrop] File ${file.name} is${isImage ? '' : ' not'} an image file`,
+      );
+    return isImage;
+  };
+
   const readFileAsText = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       DEBUG &&
@@ -127,6 +144,98 @@ export const useDragAndDrop = () => {
     });
   };
 
+  const readImageAsBase64 = (
+    file: File,
+  ): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      DEBUG &&
+        console.log(
+          `[useDragAndDrop] Reading image file: ${file.name}`,
+        );
+
+      if (!isImageFile(file)) {
+        DEBUG &&
+          console.log(
+            `[useDragAndDrop] Rejected non-image file: ${file.name}`,
+          );
+        reject(
+          new Error(
+            `File ${file.name} is not an image file`,
+          ),
+        );
+        return;
+      }
+
+      // For SVG files, read as text if they're text-based
+      if (
+        file.type === 'image/svg+xml' ||
+        file.name.toLowerCase().endsWith('.svg')
+      ) {
+        const textReader = new FileReader();
+        textReader.onload = (e) => {
+          if (e.target?.result) {
+            DEBUG &&
+              console.log(
+                `[useDragAndDrop] Successfully read SVG file as text: ${file.name}`,
+              );
+            resolve(e.target.result as string);
+          } else {
+            reject(
+              new Error(
+                `Failed to read SVG file ${file.name}`,
+              ),
+            );
+          }
+        };
+        textReader.onerror = () =>
+          reject(
+            new Error(
+              `Error reading SVG file ${file.name}`,
+            ),
+          );
+        textReader.readAsText(file);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Successfully read image file: ${file.name}`,
+            );
+          // Return just the base64 part without the data URL prefix
+          const base64 = (e.target.result as string).split(
+            ',',
+          )[1];
+          resolve(base64);
+        } else {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Failed to read image file: ${file.name}`,
+            );
+          reject(
+            new Error(
+              `Failed to read image file ${file.name}`,
+            ),
+          );
+        }
+      };
+      reader.onerror = () => {
+        DEBUG &&
+          console.log(
+            `[useDragAndDrop] Error reading image file: ${file.name}`,
+          );
+        reject(
+          new Error(
+            `Error reading image file ${file.name}`,
+          ),
+        );
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const processEntry = async (
     entry: FileSystemEntry,
     path: string,
@@ -144,12 +253,21 @@ export const useDragAndDrop = () => {
           );
         entry.file(async (file) => {
           try {
-            const content = await readFileAsText(file);
-            DEBUG &&
-              console.log(
-                `[useDragAndDrop] Creating file: ${path}${file.name}`,
-              );
-            createFile(`${path}${file.name}`, content);
+            if (isImageFile(file)) {
+              const content = await readImageAsBase64(file);
+              DEBUG &&
+                console.log(
+                  `[useDragAndDrop] Creating image file: ${path}${file.name}`,
+                );
+              createFile(`${path}${file.name}`, content);
+            } else {
+              const content = await readFileAsText(file);
+              DEBUG &&
+                console.log(
+                  `[useDragAndDrop] Creating text file: ${path}${file.name}`,
+                );
+              createFile(`${path}${file.name}`, content);
+            }
           } catch (error) {
             console.error(
               `Error processing file ${file.name}:`,
@@ -237,8 +355,15 @@ export const useDragAndDrop = () => {
                   `[useDragAndDrop] Processing dropped file: ${file.name}`,
                 );
               try {
-                const content = await readFileAsText(file);
-                createFile(file.name, content);
+                if (isImageFile(file)) {
+                  const content =
+                    await readImageAsBase64(file);
+                  createFile(file.name, content);
+                } else {
+                  const content =
+                    await readFileAsText(file);
+                  createFile(file.name, content);
+                }
               } catch (error) {
                 console.error(
                   `Error processing file ${file.name}:`,

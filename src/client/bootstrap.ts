@@ -3,6 +3,8 @@
 // Otherwise we get `Error [ERR_UNSUPPORTED_DIR_IMPORT]: Directory import`
 import Form from 'react-bootstrap/cjs/Form.js';
 import Button from 'react-bootstrap/cjs/Button.js';
+import ButtonGroup from 'react-bootstrap/cjs/ButtonGroup.js';
+import ToggleButton from 'react-bootstrap/cjs/ToggleButton.js';
 import Modal from 'react-bootstrap/cjs/Modal.js';
 import OverlayTrigger from 'react-bootstrap/cjs/OverlayTrigger.js';
 import Tooltip from 'react-bootstrap/cjs/Tooltip.js';
@@ -10,4 +12,12 @@ import Tooltip from 'react-bootstrap/cjs/Tooltip.js';
 // Pull in custom CSS from vizhub-ui.
 import 'vizhub-ui/dist/vizhub-ui.css';
 
-export { Form, Button, Modal, OverlayTrigger, Tooltip };
+export {
+  Form,
+  Button,
+  ButtonGroup,
+  ToggleButton,
+  Modal,
+  OverlayTrigger,
+  Tooltip,
+};

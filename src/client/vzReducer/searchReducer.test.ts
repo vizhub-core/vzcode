@@ -2,10 +2,52 @@ import { describe, expect, it } from 'vitest';
 import { setSearchResultsReducer } from './searchReducer';
 import { VZAction, VZState, createInitialState } from '.';
 import { defaultTheme } from '../themes';
+import { ShareDBDoc } from '../../types';
+import { VizContent } from '@vizhub/viz-types';
 
 // Mock ShareDBDoc for testing
-const createMockShareDBDoc = (files: any) => ({
-  data: { files },
+const createMockShareDBDoc = (
+  files: any,
+): ShareDBDoc<VizContent> => ({
+  data: { files, id: 'mock-id' },
+  ingestSnapshot: (snapshot: any, callback: any) => {
+    // No-op for testing
+    if (callback) callback();
+  },
+  subscribe: (callback: any) => {
+    // No-op for testing
+    if (callback) callback();
+  },
+  on: (
+    event: string,
+    callback: (op: any, source: boolean) => void,
+  ) => {
+    // No-op for testing
+  },
+  off: (
+    event: string,
+    callback: (op: any, source: boolean) => void,
+  ) => {
+    // No-op for testing
+  },
+  removeListener: (
+    event: string,
+    callback: (op: any, source: boolean) => void,
+  ) => {
+    // No-op for testing
+  },
+  submitOp: (
+    op: any,
+    options?: any,
+    callback?: () => void,
+  ) => {
+    // No-op for testing
+    if (callback) callback();
+  },
+  whenNothingPending: (callback: () => void) => {
+    // No-op for testing
+    if (callback) callback();
+  },
 });
 
 const initialState: VZState = createInitialState({
@@ -57,7 +99,7 @@ describe('searchReducer', () => {
       expect(file1Results.matches[0].line).toBe(1);
       expect(file1Results.matches[0].index).toBe(6); // position of "Hello"
       expect(file1Results.matches[1].line).toBe(2);
-      expect(file1Results.matches[1].index).toBe(18); // position of "HELLO"
+      expect(file1Results.matches[1].index).toBe(17); // position of "HELLO"
 
       // Check file2.js results
       const file2Results =

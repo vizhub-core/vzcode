@@ -11,15 +11,27 @@ import {
 import BuildWorker from './buildWorker?worker';
 import { VZCodeContext } from './VZCodeContext';
 import { vizFilesToFileCollection } from '@vizhub/viz-utils';
+import { VizContent } from '@vizhub/viz-types';
+
+// Extend VizContent type to include hardRerun property
+type ExtendedVizContent = VizContent & {
+  // TODO remove this, use the runId property from VizContent instead.
+  // If `VizContent.runId` changes, it will trigger a hard rerun.
+  hardRerun?: boolean;
+};
 
 const enableIframe = true;
 
 export const VZRight = () => {
   const runtimeRef = useRef<VizHubRuntime | null>(null);
   const isFirstRunRef = useRef(true);
+  const lastRunIdRef = useRef<string | undefined>(
+    undefined,
+  );
 
   // Get access to the current files.
-  const { content, iframeRef } = useContext(VZCodeContext);
+  const { content, handleRuntimeError, clearRuntimeError, iframeRef } =
+    useContext(VZCodeContext);
 
   const files = useMemo(
     () =>
@@ -30,6 +42,15 @@ export const VZRight = () => {
   );
 
   const isInteracting = content?.isInteracting || false;
+  const runId = content?.runId;
+  const hardRerun =
+    (content as ExtendedVizContent)?.hardRerun || false;
+
+  // Check if runId has changed
+  const runIdChanged = runId !== lastRunIdRef.current;
+  if (runIdChanged) {
+    lastRunIdRef.current = runId;
+  }
 
   useEffect(() => {
     if (!files) return;
@@ -45,14 +66,26 @@ export const VZRight = () => {
             console.error('Build error:', error);
           }
         },
+        handleRuntimeError,
       });
     }
 
-    // Run code in the iframe
-    if (isFirstRunRef.current || isInteracting) {
+    // Run code in the iframe when:
+    // 1. First run
+    // 2. User is interacting with widgets
+    // 3. runId changed (indicating AI finished or other trigger)
+    if (
+      isFirstRunRef.current ||
+      isInteracting ||
+      runIdChanged
+    ) {
+      // Clear runtime errors when new code runs
+      clearRuntimeError();
+
       runtimeRef.current?.run({
         files,
-        enableHotReloading: true,
+        // Enable hot reloading when interacting, disable when runId changed without interaction
+        enableHotReloading: isInteracting,
         enableSourcemap: true,
         vizId: 'example-viz',
       });
@@ -64,7 +97,7 @@ export const VZRight = () => {
     //   runtime.cleanup();
     //   worker.terminate();
     // };
-  }, [files, isInteracting]);
+  }, [files, isInteracting, runIdChanged, hardRerun]);
 
   return (
     <div className="right">

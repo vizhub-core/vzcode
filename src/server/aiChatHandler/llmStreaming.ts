@@ -2,8 +2,9 @@ import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
-import { ChatOpenAI } from '@langchain/openai';
+import OpenAI from 'openai';
 import fs from 'fs';
+import { generateRunId } from '@vizhub/viz-utils';
 import {
   updateAIStatus,
   createAIMessage,
@@ -13,10 +14,17 @@ import {
   clearFileContent,
   appendLineToFile,
   updateFiles,
+  updateAIScratchpad,
 } from './chatOperations.js';
 import { mergeFileChanges } from 'editcodewithai';
+import { diff } from '../../ot.js';
+import { VizChatId, VizContent } from '@vizhub/viz-types';
+import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
+
+// TODO use this to throttle the streaming updates
+const THROTTLE_INTERVAL_MS = 100;
 
 // Feature flag to enable/disable streaming editing.
 // * If `true`, the AI streaming response will be used to
@@ -34,28 +42,41 @@ const DEBUG = false;
 const enableStreamingEditing = false;
 
 /**
- * Creates and configures the LLM function for streaming
+ * Creates and configures the LLM function for streaming with reasoning tokens
  */
 export const createLLMFunction = ({
   shareDBDoc,
-  createVizBotLocalPresence,
+  createAIEditLocalPresence,
   chatId,
+  // Feature flag to enable/disable reasoning tokens.
+  // When false, reasoning tokens are not requested from the API
+  // and reasoning content is not processed in the streaming response.
+  enableReasoningTokens = false,
+  model,
+  aiRequestOptions,
+}: {
+  shareDBDoc: ShareDBDoc<VizContent>;
+  createAIEditLocalPresence: () => any;
+  chatId: VizChatId;
+  enableReasoningTokens?: boolean;
+  model?: string;
+  aiRequestOptions?: any;
 }) => {
   return async (fullPrompt: string) => {
-    const localPresence = createVizBotLocalPresence();
-    const chatModel = new ChatOpenAI({
-      modelName:
-        process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
-        'anthropic/claude-sonnet-4',
-      configuration: {
-        apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
-        baseURL: process.env.VIZHUB_EDIT_WITH_AI_BASE_URL,
-        defaultHeaders: {
-          'HTTP-Referer': 'https://vizhub.com',
-          'X-Title': 'VizHub',
-        },
+    const localPresence = enableStreamingEditing
+      ? createAIEditLocalPresence()
+      : null;
+
+    // Create OpenRouter client for reasoning token support
+    const openRouterClient = new OpenAI({
+      apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
+      baseURL:
+        process.env.VIZHUB_EDIT_WITH_AI_BASE_URL ||
+        'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://vizhub.com',
+        'X-Title': 'VizHub',
       },
-      streaming: true,
     });
 
     let fullContent = '';
@@ -66,18 +87,63 @@ export const createLLMFunction = ({
     // Create initial AI message for streaming
     const aiMessageId = createAIMessage(shareDBDoc, chatId);
 
+    // --- throttle wrapper ---
+    function makeThrottledUpdater() {
+      let lastCall = 0;
+      let latestContent = '';
+      let timer: NodeJS.Timeout | null = null;
+
+      function invoke() {
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          latestContent,
+        );
+        lastCall = Date.now();
+      }
+
+      const fn = (content: string) => {
+        latestContent = content;
+        const now = Date.now();
+
+        if (now - lastCall >= THROTTLE_INTERVAL_MS) {
+          // safe to call immediately
+          invoke();
+        } else if (!timer) {
+          // schedule for later
+          timer = setTimeout(
+            () => {
+              timer = null;
+              invoke();
+            },
+            THROTTLE_INTERVAL_MS - (now - lastCall),
+          );
+        }
+      };
+
+      // expose a flush() helper to force an immediate write
+      fn.flush = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        invoke();
+      };
+
+      return fn;
+    }
+
+    const throttledUpdateAIMessageContent =
+      makeThrottledUpdater();
+
     // Function to report file edited
     // This is called when the AI has finished editing a file
     // and we want to update the message content with the file name.
     const reportFileEdited = () => {
       if (currentEditingFileName) {
         fullContent += ` * Edited ${currentEditingFileName}\n`;
-        updateAIMessageContent(
-          shareDBDoc,
-          chatId,
-          aiMessageId,
-          fullContent,
-        );
+        throttledUpdateAIMessageContent(fullContent);
         currentEditingFileName = null;
       }
     };
@@ -125,13 +191,13 @@ export const createLLMFunction = ({
             line,
           );
 
-          // Update VizBot presence to show cursor at the end of the file
+          // Update AI presence to show cursor at the end of the file
           const currentFile =
             shareDBDoc.data.files[currentEditingFileId];
           if (currentFile && currentFile.text) {
             const textLength = currentFile.text.length;
             const filePresence = {
-              username: 'VizBot',
+              username: 'AI Editor',
               start: [
                 'files',
                 currentEditingFileId,
@@ -146,14 +212,19 @@ export const createLLMFunction = ({
               ],
             };
 
-            localPresence.submit(filePresence, (error) => {
-              if (error) {
-                console.warn(
-                  'VizBot line presence submission error:',
-                  error,
-                );
-              }
-            });
+            if (localPresence) {
+              localPresence.submit(
+                filePresence,
+                (error) => {
+                  if (error) {
+                    console.warn(
+                      'AI Editor line presence submission error:',
+                      error,
+                    );
+                  }
+                },
+              );
+            }
           }
         }
       },
@@ -165,70 +236,121 @@ export const createLLMFunction = ({
           reportFileEdited();
         }
         fullContent += line + '\n';
-        updateAIMessageContent(
-          shareDBDoc,
-          chatId,
-          aiMessageId,
-          fullContent,
-        );
+        throttledUpdateAIMessageContent(fullContent);
       },
     };
 
     const parser = new StreamingMarkdownParser(callbacks);
 
     const chunks = [];
+    let reasoningContent = '';
 
-    // Stream the response
-    const stream = await chatModel.stream(fullPrompt);
+    // Stream the response with reasoning tokens
+    const modelName =
+      model ||
+      process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
+      'anthropic/claude-3.5-sonnet';
+
+    // Configure reasoning tokens based on enableReasoningTokens flag
+    const requestConfig: any = {
+      model: modelName,
+      messages: [{ role: 'user', content: fullPrompt }],
+      usage: { include: true },
+      stream: true,
+      ...aiRequestOptions,
+    };
+
+    // Only include reasoning configuration if reasoning tokens are enabled
+    if (enableReasoningTokens) {
+      requestConfig.reasoning = {
+        effort: 'low',
+        exclude: false,
+      };
+    }
+
+    const stream = await (
+      openRouterClient.chat.completions.create as any
+    )(requestConfig);
+
+    let reasoningStarted = false;
+    let contentStarted = false;
+
     for await (const chunk of stream) {
-      if (chunk && chunk.content) {
-        const chunkContent = String(chunk.content);
+      const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
+
+      if (delta?.reasoning && enableReasoningTokens) {
+        // Handle reasoning tokens (thinking) - only if enabled
+        if (!reasoningStarted) {
+          reasoningStarted = true;
+          updateAIStatus(shareDBDoc, chatId, 'Thinking...');
+        }
+        reasoningContent += delta.reasoning;
+        updateAIScratchpad(
+          shareDBDoc,
+          chatId,
+          reasoningContent,
+        );
+      } else if (delta?.content) {
+        // Handle regular content tokens
+        if (reasoningStarted && !contentStarted) {
+          // Clear reasoning when content starts
+          contentStarted = true;
+          updateAIScratchpad(shareDBDoc, chatId, '');
+          updateAIStatus(
+            shareDBDoc,
+            chatId,
+            'Generating response...',
+          );
+        }
+
+        const chunkContent = delta.content;
         chunks.push(chunkContent);
 
         if (enableStreamingEditing) {
           await parser.processChunk(chunkContent);
         } else {
           fullContent += chunkContent;
-          updateAIMessageContent(
-            shareDBDoc,
-            chatId,
-            aiMessageId,
-            fullContent,
-          );
+          throttledUpdateAIMessageContent(fullContent);
         }
+      } else if (chunk.usage) {
+        // Handle usage information
+        DEBUG && console.log('Usage:', chunk.usage);
       }
 
-      if (!generationId && chunk.lc_kwargs?.id) {
-        generationId = chunk.lc_kwargs.id;
+      if (!generationId && chunk.id) {
+        generationId = chunk.id;
       }
     }
     await parser.flushRemaining();
     reportFileEdited();
+
+    // Final cleanup - clear scratchpad and set final status
+    updateAIScratchpad(shareDBDoc, chatId, '');
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
-    updateAIMessageContent(
-      shareDBDoc,
-      chatId,
-      aiMessageId,
-      fullContent,
-    );
+    throttledUpdateAIMessageContent(fullContent);
+
+    // Flush to ensure the final content is written immediately
+    throttledUpdateAIMessageContent.flush();
 
     // Finalize the AI message by clearing temporary fields
     finalizeAIMessage(shareDBDoc, chatId);
 
-    // Clear VizBot presence when done
+    // Clear AI Editor presence when done
     DEBUG &&
       console.log(
-        'AI editing done, clearing VizBot presence',
+        'AI editing done, clearing AI Editor presence',
       );
-    localPresence.submit(null, (error) => {
-      DEBUG && console.log('VizBot presence cleared');
-      if (error) {
-        console.warn(
-          'VizBot presence cleanup error:',
-          error,
-        );
-      }
-    });
+    if (localPresence) {
+      localPresence.submit(null, (error) => {
+        DEBUG && console.log('AI Editor presence cleared');
+        if (error) {
+          console.warn(
+            'AI Editor presence cleanup error:',
+            error,
+          );
+        }
+      });
+    }
 
     // If streaming editing is not enabled, we need to
     // apply all the edits at once
@@ -241,6 +363,28 @@ export const createLLMFunction = ({
         ),
       );
     }
+
+    // Generate a new runId to trigger a run when AI finishes editing
+    // This will trigger a re-run without hot reloading
+    const newRunId = generateRunId();
+    const runIdOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      runId: newRunId,
+    });
+    shareDBDoc.submitOp(runIdOp, (error) => {
+      if (error) {
+        console.warn(
+          'Error setting runId after AI editing:',
+          error,
+        );
+      } else {
+        DEBUG &&
+          console.log(
+            'Set new runId after AI editing:',
+            newRunId,
+          );
+      }
+    });
 
     // Write chunks file for debugging
     if (DEBUG) {

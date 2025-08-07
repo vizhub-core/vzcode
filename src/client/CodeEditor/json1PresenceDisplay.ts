@@ -41,6 +41,9 @@ export const json1PresenceDisplay = ({
       //Added variable for cursor position
       cursorPosition = {};
 
+      // Track previous cursor positions to detect which cursors actually moved
+      previousCursorPositions = {};
+
       // Flag to prevent multiple pending updates
       pendingUpdate = false;
 
@@ -63,7 +66,6 @@ export const json1PresenceDisplay = ({
         //   this.scrollToCursor(view);
         // });
         // Receive remote presence changes.
-        // Receive remote presence changes.
         docPresence.on(
           'receive',
           (id: PresenceId, presence: Presence) => {
@@ -80,6 +82,7 @@ export const json1PresenceDisplay = ({
               delete presenceState[id];
               // Also remove their cursor position to prevent errors.
               delete this.cursorPosition[id];
+              delete this.previousCursorPositions[id];
             } else {
               // Otherwise, the user is active. Check if the presence
               // is for the current file.
@@ -95,6 +98,7 @@ export const json1PresenceDisplay = ({
                 // If it's for another file, remove them from this view's state.
                 delete presenceState[id];
                 delete this.cursorPosition[id];
+                delete this.previousCursorPositions[id];
               }
             }
 
@@ -110,6 +114,11 @@ export const json1PresenceDisplay = ({
               );
               const { username } = presence;
 
+              // Check if this cursor actually moved by comparing with previous position
+              const previousPosition =
+                this.previousCursorPositions[id];
+              const cursorMoved = previousPosition !== from;
+
               presenceDecorations.push({
                 from,
                 to: from,
@@ -120,6 +129,7 @@ export const json1PresenceDisplay = ({
                     '' + Math.random(),
                     userColor,
                     username,
+                    cursorMoved, // Pass whether this cursor moved
                   ),
                 }),
               });
@@ -141,9 +151,12 @@ export const json1PresenceDisplay = ({
               }
               if (view.state.doc.length >= from) {
                 this.cursorPosition[id] = from;
+                // Update previous position for next comparison
+                this.previousCursorPositions[id] = from;
               } else {
                 // The cursor position is invalid, so remove it.
                 delete this.cursorPosition[id];
+                delete this.previousCursorPositions[id];
               }
             }
 
@@ -229,19 +242,25 @@ class PresenceWidget extends WidgetType {
   color: string;
   username: Username;
   timeout: number;
+  cursorMoved: boolean;
   constructor(
     id: string,
     color: string,
     username: Username,
+    cursorMoved: boolean = true, // Default to true for backward compatibility
   ) {
     super();
     this.id = id;
     this.color = color;
     this.username = username;
+    this.cursorMoved = cursorMoved;
   }
 
   eq(other: PresenceWidget) {
-    return other.id === this.id;
+    return (
+      other.id === this.id &&
+      other.cursorMoved === this.cursorMoved
+    );
     // return false;
   }
 
@@ -274,12 +293,26 @@ class PresenceWidget extends WidgetType {
     );
     span.appendChild(userDiv);
 
-    // after 2 seconds of inactivity, username is made less visible
-    this.timeout = window.setTimeout(() => {
-      // userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
-      // userDiv.style.color = 'rgba(0,0,0,0.2)';
+    // Only reset opacity and start timeout for cursors that actually moved
+    if (this.cursorMoved) {
+      // Start with full opacity when cursor moves
+      userDiv.style.opacity = '1';
+
+      // Clear any existing timeout to prevent interference
+      if (this.timeout) {
+        window.clearTimeout(this.timeout);
+      }
+
+      // after 2 seconds of inactivity, username is made less visible
+      this.timeout = window.setTimeout(() => {
+        // userDiv.style.backgroundColor = `rgba(${this.color}, 0.2)`;
+        // userDiv.style.color = 'rgba(0,0,0,0.2)';
+        userDiv.style.opacity = '0.3';
+      }, 2000);
+    } else {
+      // For cursors that didn't move, keep their reduced opacity
       userDiv.style.opacity = '0.3';
-    }, 2000);
+    }
 
     return span;
   }

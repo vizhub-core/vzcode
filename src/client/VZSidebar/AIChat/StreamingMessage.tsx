@@ -11,6 +11,11 @@ const StreamingMessageComponent = ({
   content,
   status,
 }: StreamingMessageProps) => {
+  // Don't render if there's no content and no status
+  if (!content.trim()) {
+    return null;
+  }
+
   return (
     <div className="ai-chat-message assistant streaming">
       {status && (

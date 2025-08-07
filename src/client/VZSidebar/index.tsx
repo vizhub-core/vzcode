@@ -112,9 +112,10 @@ export const VZSidebar = ({
   ),
   aiChatToolTipText = (
     <div>
-      <strong>AI Chat (beta)</strong>
+      <strong>Edit with AI</strong>
     </div>
   ),
+
 
   visualEditorToolTipText = (
     <div>
@@ -175,20 +176,27 @@ export const VZSidebar = ({
     useState('Copy for AI');
   const [pasteButtonText, setPasteButtonText] =
     useState('Paste for AI');
+  const [exportButtonText, setExportButtonText] =
+    useState('Export to ZIP');
 
   // Create AI copy/paste handlers
-  const { handleCopyForAI, handlePasteForAI } = useMemo(
+  const {
+    handleCopyForAI,
+    handlePasteForAI,
+    handleExportToZip,
+  } = useMemo(
     () =>
       createAICopyPasteHandlers(
         files,
         submitOperation,
         setCopyButtonText,
         setPasteButtonText,
+        setExportButtonText,
       ),
     [files, submitOperation],
   );
 
-  const { sidebarWidth } = useContext(
+  const { sidebarWidth, setSidebarView } = useContext(
     SplitPaneResizeContext,
   );
 
@@ -286,6 +294,11 @@ export const VZSidebar = ({
     previousPendingRef.current = pending;
   }, [pending, connected, isConnecting]);
 
+  // Automatically adjust sidebar width when view changes
+  useEffect(() => {
+    setSidebarView(isAIChatOpen);
+  }, [isAIChatOpen, setSidebarView]);
+
   return (
     <div
       className="vz-sidebar"
@@ -297,6 +310,29 @@ export const VZSidebar = ({
         tabIndex={-1}
       >
         <div className="sidebar-section-buttons">
+          {enableAIChat && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="ai-chat-tooltip">
+                  {aiChatToolTipText}
+                </Tooltip>
+              }
+            >
+              <i
+                id="ai-chat-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  setIsAIChatOpen(true);
+                  setIsSearchOpen(false);
+                  setSidebarView(true); // Switch to AI chat view
+                }}
+              >
+                <SparklesSVG />
+              </i>
+            </OverlayTrigger>
+          )}
+
           <OverlayTrigger
             placement="right"
             overlay={
@@ -311,6 +347,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(false);
                 setIsAIChatOpen(false);
+                setSidebarView(false); // Switch to files view
               }}
             >
               <FolderSVG />
@@ -332,6 +369,7 @@ export const VZSidebar = ({
                 setIsSearchOpen(true);
                 setIsAIChatOpen(false);
                 setIsVisualEditorOpen(false);
+                setSidebarView(false); // Switch to files view (search uses same width as files)
               }}
             >
               <SearchSVG />
@@ -588,6 +626,15 @@ export const VZSidebar = ({
         <div className="ai-buttons">
           {filesExist && (
             <button
+              className="ai-button export-button"
+              onClick={handleExportToZip}
+              title="Export files to ZIP"
+            >
+              {exportButtonText}
+            </button>
+          )}
+          {filesExist && (
+            <button
               className="ai-button copy-button"
               onClick={handleCopyForAI}
               title="Copy files formatted for AI"
@@ -595,6 +642,7 @@ export const VZSidebar = ({
               {copyButtonText}
             </button>
           )}
+
           <button
             className="ai-button paste-button"
             onClick={handlePasteForAI}

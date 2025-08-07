@@ -33,6 +33,7 @@ import {
 import {
   setIsAIChatOpenReducer,
   toggleAIChatFocusedReducer,
+  setAIChatModeReducer,
 } from './aiChatReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
@@ -65,6 +66,9 @@ export type VZState = {
 
   // True if the AI chat input should focus on the next render.
   aiChatFocused: boolean;
+
+  // The current AI chat mode: 'ask' or 'edit'
+  aiChatMode: 'ask' | 'edit';
 
   // True to show the settings modal.
   isSettingsOpen: boolean;
@@ -140,6 +144,10 @@ export type VZAction =
   // `toggle_ai_chat_focused`
   // * Toggles focused variable to trigger AI chat input focus
   | { type: 'toggle_ai_chat_focused' }
+
+  // `set_ai_chat_mode`
+  // * Sets the AI chat mode (ask or edit)
+  | { type: 'set_ai_chat_mode'; mode: 'ask' | 'edit' }
 
   // `set_search`
   //  * Sets the current search pattern
@@ -221,6 +229,7 @@ const reducers = [
   setIsAIChatOpenReducer,
   setIsVisualEditorOpenReducer,
   toggleAIChatFocusedReducer,
+  setAIChatModeReducer,
   setIsSettingsOpenReducer,
   setIsDocOpenReducer,
   editorNoLongerWantsFocusReducer,

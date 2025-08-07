@@ -14,9 +14,19 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { handleAIChatMessage } from './handleAIChatMessage.js';
+import { handleAIChatUndo } from './handleAIChatUndo.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
+
+// Import the image file utility
+const isImageFile = (fileName) => {
+  return (
+    fileName.match(
+      /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
+    ) !== null
+  );
+};
 
 // The time in milliseconds by which auto-saving is debounced.
 const autoSaveDebounceTimeMS = 800;
@@ -90,20 +100,20 @@ app.use(express.static(dir));
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 
-// Set up presence for VizBot following the same pattern as useShareDB.ts
+// Set up presence for AI editing following the same pattern as useShareDB.ts
 const docPresence = shareDBConnection.getDocPresence(
   'documents',
   '1',
 );
 
-// Create local presence for VizBot with a unique ID
-const generateVizBotId = () => {
+// Create local presence for AI editing with a unique ID
+const generateAIEditId = () => {
   const timestamp = Date.now().toString(36);
-  return `vizbot-${timestamp}`;
+  return `ai-edit-${timestamp}`;
 };
 
-const createVizBotLocalPresence = () =>
-  docPresence.create(generateVizBotId());
+const createAIEditLocalPresence = () =>
+  docPresence.create(generateAIEditId());
 
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
@@ -127,8 +137,17 @@ app.post(
   bodyParser.json(),
   handleAIChatMessage({
     shareDBDoc,
-    createVizBotLocalPresence,
+    createAIEditLocalPresence,
     onCreditDeduction: undefined,
+  }),
+);
+
+// Handle AI Chat Undo requests.
+app.post(
+  '/ai-chat-undo',
+  bodyParser.json(),
+  handleAIChatUndo({
+    shareDBDoc,
   }),
 );
 
@@ -161,7 +180,17 @@ const save = () => {
     if (previous && current) {
       // Handle changing of text content.
       if (previous.text !== current.text) {
-        fs.writeFileSync(current.name, current.text);
+        if (isImageFile(current.name)) {
+          // Write image files as binary from base64
+          const buffer = Buffer.from(
+            current.text,
+            'base64',
+          );
+          fs.writeFileSync(current.name, buffer);
+        } else {
+          // Write non-image files as text
+          fs.writeFileSync(current.name, current.text);
+        }
       }
 
       // // Handle renaming files.
@@ -256,7 +285,17 @@ const save = () => {
     if (!previous && current) {
       //File Creation
       if (!isDirectory(current.name)) {
-        fs.writeFileSync(current.name, current.text);
+        if (isImageFile(current.name)) {
+          // Write image files as binary from base64
+          const buffer = Buffer.from(
+            current.text,
+            'base64',
+          );
+          fs.writeFileSync(current.name, buffer);
+        } else {
+          // Write non-image files as text
+          fs.writeFileSync(current.name, current.text);
+        }
       } else {
         fs.mkdirSync(current.name, { recursive: true });
       }

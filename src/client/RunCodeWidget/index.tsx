@@ -28,24 +28,27 @@ export const RunCodeWidget = ({
     useContext(VZCodeContext);
   const [isRunning, setIsRunning] = useState(false);
 
-  const handleClick = useCallback(() => {
-    setIsRunning(true); // Set the running state to true
+  const handleClick = useCallback(
+    (event?: React.MouseEvent) => {
+      setIsRunning(true); // Set the running state to true
 
-    // Run Prettier
-    const runPrettier = runPrettierRef.current;
-    if (runPrettier !== null) {
-      runPrettier();
-    }
+      // Run Prettier
+      const runPrettier = runPrettierRef.current;
+      if (runPrettier !== null) {
+        runPrettier();
+      }
 
-    // Run the code
-    const runCode = runCodeRef.current;
-    if (runCode !== null) {
-      runCode();
-    }
+      // Run the code
+      const runCode = runCodeRef.current;
+      if (runCode !== null) {
+        runCode();
+      }
 
-    // Optional: reset the icon state after animation completes (e.g., 1 second)
-    setTimeout(() => setIsRunning(false), 1000);
-  }, [runCodeRef, runPrettierRef]);
+      // Optional: reset the icon state after animation completes (e.g., 1 second)
+      setTimeout(() => setIsRunning(false), 1000);
+    },
+    [runCodeRef, runPrettierRef],
+  );
 
   const handleSplitEditor = useCallback(() => {
     splitCurrentPane();
