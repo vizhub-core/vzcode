@@ -554,10 +554,10 @@ export const VZCodeProvider = ({
           },
           body: JSON.stringify({
             ...aiChatOptions,
-            vizId: aiChatOptions.vizId,
             content: messageContent.trim(),
             chatId: currentChatId,
             mode: aiChatMode,
+            ...options
           }),
         });
 

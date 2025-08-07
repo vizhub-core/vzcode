@@ -49,11 +49,13 @@ export const createLLMFunction = ({
   // When false, reasoning tokens are not requested from the API
   // and reasoning content is not processed in the streaming response.
   enableReasoningTokens = false,
+  model,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
   createAIEditLocalPresence: () => any;
   chatId: VizChatId;
   enableReasoningTokens?: boolean;
+  model?: string;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = enableStreamingEditing
@@ -200,6 +202,7 @@ export const createLLMFunction = ({
 
     // Stream the response with reasoning tokens
     const modelName =
+      model ||
       process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
       'anthropic/claude-3.5-sonnet';
 
