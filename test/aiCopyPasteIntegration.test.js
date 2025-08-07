@@ -66,6 +66,7 @@ vi.mock('editcodewithai', () => ({
 
 vi.mock('@vizhub/viz-utils', () => ({
   vizFilesToFileCollection: vi.fn((files) => files),
+  generateRunId: vi.fn(() => 'mock-run-id'),
 }));
 
 // Mock navigator.clipboard

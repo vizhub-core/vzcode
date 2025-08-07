@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { StreamingMarkdownParser } from 'llm-code-format';
 import { randomId } from '../src/randomId.js';
-import { diff } from '../src/client/diff.js';
+import { diff } from '../src/ot.js';
 import { textUnicode } from '../src/ot.js';
 import OTJSON1Presence from 'sharedb-client-browser/dist/ot-json1-presence-umd.cjs';
 
