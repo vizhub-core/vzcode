@@ -23,7 +23,6 @@ type ExtendedVizContent = VizContent & {
 const enableIframe = true;
 
 export const VZRight = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const runtimeRef = useRef<VizHubRuntime | null>(null);
   const isFirstRunRef = useRef(true);
   const lastRunIdRef = useRef<string | undefined>(
@@ -31,8 +30,12 @@ export const VZRight = () => {
   );
 
   // Get access to the current files.
-  const { content, handleRuntimeError, clearRuntimeError } =
-    useContext(VZCodeContext);
+  const {
+    content,
+    handleRuntimeError,
+    clearRuntimeError,
+    iframeRef,
+  } = useContext(VZCodeContext);
 
   const files = useMemo(
     () =>
