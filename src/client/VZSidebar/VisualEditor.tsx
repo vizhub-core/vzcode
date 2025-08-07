@@ -1,12 +1,13 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { VZCodeContext } from '../VZCodeContext';
-import { VizFileId } from '@vizhub/viz-types';
+import { VizContent, VizFileId } from '@vizhub/viz-types';
 import { VisualEditorConfigEntry } from '../../types';
 
 const CONFIG_FILE_NAME = 'config.json';
 
 export const VisualEditor = () => {
-  const { files } = useContext(VZCodeContext);
+  const { files, submitOperation, runPrettierRef } =
+    useContext(VZCodeContext);
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -25,7 +26,13 @@ export const VisualEditor = () => {
     );
   }
 
-  const configData = JSON.parse(files[configFileId].text);
+  let configData;
+
+try {
+   configData  = JSON.parse(files[configFileId].text);
+} catch (error) {
+    return (<>Your config.json file is not valid json.</>)
+}
 
   if (!('visualEditorWidgets' in configData)) {
     return (
@@ -37,14 +44,65 @@ export const VisualEditor = () => {
     );
   }
 
+  const onInputUpdate = useCallback(
+    (
+      property: string,
+      previousValue: any
+    ): React.FormEventHandler<HTMLInputElement> =>
+      (event) => {
+        //TODO [important]: use window.postMessage to send update to iframe
+
+        //TODO: test race condition in which someone is editing the config file as another user uses the visual editor
+        const newConfigData = {
+          ...configData,
+          [property]: typeof previousValue === "number" ? parseFloat(event.currentTarget.value) : event.currentTarget.value
+        };
+
+        console.log('updating');
+
+        submitOperation((document: VizContent) => ({
+          ...document,
+          files: {
+            ...files,
+            [configFileId]: {
+              name: 'config.json',
+              text: JSON.stringify(newConfigData),
+            },
+          },
+        }));
+
+        runPrettierRef.current()
+      },
+    [configData, files, configFileId],
+  );
+
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
   return (
     <>
-      {visualEditorWidgets.map((widgetConfig) => {
+      {visualEditorWidgets.map((widgetConfig, index) => {
         if (widgetConfig.type === 'number') {
-            return <div><input type='range' id={widgetConfig.property} min={widgetConfig.min} max={widgetConfig.max}></input><label htmlFor={widgetConfig.property}>{widgetConfig.label}</label></div>
+          return (
+            <div key={widgetConfig.property}>
+              <input
+                type="range"
+                id={widgetConfig.property}
+                min={widgetConfig.min}
+                max={widgetConfig.max}
+                onInput={onInputUpdate(
+                  widgetConfig.property,
+                  configData[widgetConfig.property]
+                )}
+                defaultValue={
+                  configData[widgetConfig.property]
+                }
+              ></input>
+              <label htmlFor={widgetConfig.property}>
+                {widgetConfig.label}
+              </label>
+            </div>
+          );
         }
       })}
     </>
