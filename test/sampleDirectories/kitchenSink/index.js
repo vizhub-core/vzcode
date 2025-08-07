@@ -1,6 +1,6 @@
 import { CONFIG } from './constants.js';
 import { createStar } from './star.js';
-import { setupRenderer, renderFrame } from './renderer.js';
+import { setupRenderer, renderFrame, applyHueShift } from './renderer.js';
 
 const starfield = document.getElementById('starfield');
 const { canvas, ctx } = setupRenderer(starfield);
@@ -11,6 +11,7 @@ function initializeStars() {
 
 function animationLoop(stars) {
   let angle = 0;
+  let hueShift = 0;
   let startTime = Date.now();
   
   function animate() {
@@ -18,7 +19,16 @@ function animationLoop(stars) {
     const time = currentTime - startTime;
     
     angle += CONFIG.ROTATION_SPEED;
+    hueShift += CONFIG.HUE_SHIFT_SPEED;
+    
+    // Keep hue shift within 0-360 range
+    if (hueShift >= 360) {
+      hueShift -= 360;
+    }
+    
     renderFrame(ctx, canvas, stars, angle, time);
+    applyHueShift(canvas, hueShift);
+    
     requestAnimationFrame(animate);
   }
 
