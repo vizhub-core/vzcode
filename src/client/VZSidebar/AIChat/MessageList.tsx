@@ -12,13 +12,11 @@ import { VizChatMessage } from '@vizhub/viz-types';
 
 const MessageListComponent = ({
   messages,
-  aiStatus,
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
 }: {
   messages: VizChatMessage[];
-  aiStatus?: string;
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type

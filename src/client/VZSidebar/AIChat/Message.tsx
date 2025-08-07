@@ -40,6 +40,7 @@ const MessageComponent = ({
     aiChatUndoEndpoint,
     aiChatOptions = {},
     additionalWidgets,
+    handleSendMessage,
   } = useContext(VZCodeContext);
 
   // Memoize date formatting to avoid repeated computation
@@ -117,6 +118,7 @@ const MessageComponent = ({
             messageId: id,
             chatId: chatId,
             canUndo: canUndo,
+            handleSendMessage,
           })}
         {!additionalWidgets && canUndo && beforeFiles && (
           <div className="undo-button-container">
