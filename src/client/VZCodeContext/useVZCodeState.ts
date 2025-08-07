@@ -1,237 +1,30 @@
 import {
-  Context,
-  createContext,
   useCallback,
   useReducer,
   useRef,
   useState,
 } from 'react';
+import { VizContent } from '@vizhub/viz-types';
 import {
-  ItemId,
-  LeafPane,
-  Pane,
-  PaneId,
-  PresenceIndicator,
-  SearchFileVisibility,
-  SearchResults,
-  ShareDBDoc,
-  SubmitOperation,
-  TabState,
-  Username,
-} from '../types';
-import { VizFiles, VizContent } from '@vizhub/viz-types';
-import {
-  ThemeLabel,
   defaultTheme,
   useDynamicTheme,
-} from './themes';
-import { useActions } from './useActions';
-import {
-  EditorCache,
-  useEditorCache,
-} from './useEditorCache';
-import { useFileCRUD } from './useFileCRUD';
-import { useKeyboardShortcuts } from './useKeyboardShortcuts';
-import { useOpenDirectories } from './useOpenDirectories';
-import { usePrettier } from './usePrettier';
-import { useRunCode } from './useRunCode';
-import { useRuntimeError } from './useRuntimeError';
-import { useURLSync } from './useURLSync';
-import { createInitialState, vzReducer } from './vzReducer';
-import { findPane } from './vzReducer/findPane';
-import { usePresenceAutoFollow } from './usePresenceAutoFollow';
+} from '../themes';
+import { useActions } from '../useActions';
+import { useEditorCache } from '../useEditorCache';
+import { useFileCRUD } from '../useFileCRUD';
+import { useKeyboardShortcuts } from '../useKeyboardShortcuts';
+import { useOpenDirectories } from '../useOpenDirectories';
+import { usePrettier } from '../usePrettier';
+import { useRunCode } from '../useRunCode';
+import { useRuntimeError } from '../useRuntimeError';
+import { useURLSync } from '../useURLSync';
+import { createInitialState, vzReducer } from '../vzReducer';
+import { findPane } from '../vzReducer/findPane';
+import { usePresenceAutoFollow } from '../usePresenceAutoFollow';
 import { v4 as uuidv4 } from 'uuid';
+import { VZCodeContextValue, VZCodeProviderProps } from './types';
 
-// This context centralizes all the "smart" logic
-// to do with the application state. This includes
-//  * Accessing and manipulating ShareDB data
-//  * Centralized application state
-export const VZCodeContext =
-  createContext<VZCodeContextValue>(null);
-
-// The type of the object provided by this context.
-export type VZCodeContextValue = {
-  content: VizContent | null;
-  shareDBDoc: ShareDBDoc<VizContent> | null;
-  submitOperation: (
-    next: (content: VizContent) => VizContent,
-  ) => void;
-  // TODO pull in this type from ShareDB if possible
-  localPresence: any;
-  // TODO pull in this type from ShareDB if possible
-  docPresence: any;
-
-  files: VizFiles | null;
-  createFile: (fileName: string, text?: string) => void;
-  renameFile: (fileId: string, fileName: string) => void;
-  deleteFile: (fileId: string) => void;
-  createDirectory: (
-    fileName: string,
-    text?: string,
-  ) => void;
-  renameDirectory: (
-    directoryId: string,
-    directoryOldName: string,
-    directoryName: string,
-  ) => void;
-  deleteDirectory: (directoryId: string) => void;
-
-  setActiveFileId: (fileId: string | null) => void;
-  setActiveFileLeft: () => void;
-  setActiveFileRight: () => void;
-
-  activePaneId: PaneId;
-  pane: Pane;
-  activePane: LeafPane;
-
-  openTab: (tabState: TabState) => void;
-  closeTabs: (fileIds: string[]) => void;
-
-  isSettingsOpen: boolean;
-  setIsSettingsOpen: (isSettingsOpen: boolean) => void;
-  closeSettings: () => void;
-
-  isDocOpen: boolean;
-  setIsDocOpen: (isDocOpen: boolean) => void;
-  closeDoc: () => void;
-
-  theme: ThemeLabel;
-  setTheme: (theme: ThemeLabel) => void;
-
-  username: Username;
-  setUsername: (username: Username) => void;
-
-  isDirectoryOpen: (path: string) => boolean;
-  toggleDirectory: (path: string) => void;
-
-  editorCache: EditorCache;
-
-  // Whether the editor should be focused.
-  editorWantsFocus: boolean;
-  // Signals that the editor no longer wants focus.
-  editorNoLongerWantsFocus: () => void;
-
-  errorMessage: string | null;
-
-  // Runtime error handling
-  handleRuntimeError: (
-    formattedErrorMessage: string,
-  ) => void;
-  clearRuntimeError: () => void;
-
-  search: SearchResults;
-  isSearchOpen: boolean;
-  setIsSearchOpen: (isSearchOpen: boolean) => void;
-  setSearch: (pattern: string) => void;
-
-  isAIChatOpen: boolean;
-  setIsAIChatOpen: (isAIChatOpen: boolean) => void;
-  aiChatFocused: boolean;
-  toggleAIChatFocused: () => void;
-  aiChatMode: 'ask' | 'edit';
-  setAIChatMode: (mode: 'ask' | 'edit') => void;
-  aiChatEndpoint?: string;
-  aiChatUndoEndpoint?: string;
-  aiChatOptions?: { [key: string]: any };
-  setSearchResults: (files: ShareDBDoc<VizContent>) => void;
-  setSearchFileVisibility: (
-    files: ShareDBDoc<VizContent>,
-    id: string,
-    visibility: SearchFileVisibility,
-  ) => void;
-  setSearchLineVisibility: (
-    files: ShareDBDoc<VizContent>,
-    id: string,
-    line: number,
-  ) => void;
-  setSearchFocusedIndex: (
-    focusedIndex: number,
-    childIndex: number,
-  ) => void;
-  toggleSearchFocused: () => void;
-
-  isCreateFileModalOpen: boolean;
-  handleOpenCreateFileModal: () => void;
-  handleCloseCreateFileModal: () => void;
-  handleCreateFileClick: (newFileName: string) => void;
-
-  isCreateDirModalOpen: boolean;
-  handleOpenCreateDirModal: () => void;
-  handleCloseCreateDirModal: () => void;
-  handleCreateDirClick: (newFileName: string) => void;
-
-  runPrettierRef: React.MutableRefObject<
-    null | (() => void)
-  >;
-  runCodeRef: React.MutableRefObject<
-    null | ((hardRerun?: boolean) => void)
-  >;
-
-  sidebarRef: React.RefObject<HTMLDivElement>;
-
-  codeEditorRef: React.RefObject<HTMLDivElement>;
-
-  connected: boolean;
-  pending: boolean;
-
-  hoveredItemId: ItemId | null;
-  setHoveredItemId: (itemId: ItemId | null) => void;
-
-  enableAutoFollow: boolean;
-  toggleAutoFollow: () => void;
-
-  updatePresenceIndicator: (
-    presenceIndicator: PresenceIndicator,
-  ) => void;
-
-  sidebarPresenceIndicators: Array<PresenceIndicator>;
-  splitCurrentPane: () => void;
-
-  liveKitToken: string;
-  setLiveKitToken: (state: string) => void;
-  liveKitRoomName: string;
-  setLiveKitRoom: (state: string) => void;
-  liveKitConnection: boolean;
-  setLiveKitConnection: (state: boolean) => void;
-  voiceChatModalOpen: boolean;
-  setVoiceChatModalOpen: (state: boolean) => void;
-  aiChatMessage: string;
-  setAIChatMessage: (message: string) => void;
-  isLoading: boolean;
-  setIsLoading: (state: boolean) => void;
-  currentChatId: string;
-  aiErrorMessage: string | null;
-  setAIErrorMessage: (state: string | null) => void;
-  handleSendMessage: (
-    messageToSend?: string,
-    options?: Record<string, string>,
-  ) => void;
-
-  // Auto-fork functions for VizHub integration
-  autoForkAndRetryAI?: (
-    prompt: string,
-    modelName: string,
-    commitId?: string,
-  ) => Promise<void>;
-  clearStoredAIPrompt?: () => void;
-  getStoredAIPrompt?: () => {
-    prompt: string;
-    modelName: string;
-  } | null;
-
-  // Additional widgets that can be rendered in AI chat messages
-  additionalWidgets?: React.ComponentType<{
-    messageId: string;
-    chatId: string;
-    canUndo: boolean;
-    handleSendMessage?: (
-      messageToSend?: string,
-      options?: Record<string, string>,
-    ) => void;
-  }>;
-};
-
-export const VZCodeProvider = ({
+export const useVZCodeState = ({
   content,
   shareDBDoc,
   submitOperation,
@@ -239,7 +32,6 @@ export const VZCodeProvider = ({
   docPresence,
   prettierWorker,
   initialUsername,
-  children,
   codeError = null,
   connected,
   pending,
@@ -256,44 +48,8 @@ export const VZCodeProvider = ({
   clearStoredAIPrompt,
   getStoredAIPrompt,
   additionalWidgets,
-}: {
-  content: VizContent;
-  shareDBDoc: ShareDBDoc<VizContent>;
-  submitOperation: SubmitOperation;
-  localPresence: any;
-  docPresence: any;
-  prettierWorker: Worker;
-  initialUsername: Username;
-  children: React.ReactNode;
-  codeError?: string | null;
-  connected?: boolean;
-  pending?: boolean;
-  liveKitToken?: string | undefined;
-  setLiveKitToken?: (state: string) => void;
-  liveKitRoomName?: string | undefined;
-  setLiveKitRoom?: (state: string) => void;
-  liveKitConnection?: boolean;
-  setLiveKitConnection?: (state: boolean) => void;
-  aiChatEndpoint?: string;
-  aiChatUndoEndpoint?: string;
-  aiChatOptions?: { [key: string]: any };
-  autoForkAndRetryAI?: (
-    prompt: string,
-    modelName: string,
-    commitId?: string,
-  ) => Promise<void>;
-  clearStoredAIPrompt?: () => void;
-  getStoredAIPrompt?: () => {
-    prompt: string;
-    modelName: string;
-  } | null;
-  additionalWidgets?: React.ComponentType<{
-    messageId: string;
-    chatId: string;
-    canUndo: boolean;
-  }>;
-}) => {
-  // Auto-run Pretter after local changes.
+}: Omit<VZCodeProviderProps, 'children'>): VZCodeContextValue => {
+  // Auto-run Prettier after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
     shareDBDoc,
     submitOperation,
@@ -336,8 +92,6 @@ export const VZCodeProvider = ({
   );
 
   // Unpack state.
-  // print the state object to see what it contains
-  // console.log('state: ', state);
   const {
     pane,
     activePaneId,
@@ -355,7 +109,7 @@ export const VZCodeProvider = ({
     aiChatMode,
   } = state;
 
-  const activePane: Pane = findPane(pane, activePaneId);
+  const activePane = findPane(pane, activePaneId);
   if (activePane.type !== 'leafPane') {
     // Should never happen
     throw new Error('Expected leafPane');
@@ -400,12 +154,11 @@ export const VZCodeProvider = ({
   });
 
   // The set of open directories.
-  // TODO move this into reducer/useActions
   const { isDirectoryOpen, toggleDirectory } =
     useOpenDirectories({ activePane, content });
 
   // Cache of CodeMirror editors by file id.
-  const editorCache: EditorCache = useEditorCache();
+  const editorCache = useEditorCache();
 
   // Handle dynamic theme changes.
   useDynamicTheme(editorCache, theme);
@@ -467,13 +220,10 @@ export const VZCodeProvider = ({
   );
 
   // Isolate the files object from the document.
-  const files: VizFiles | null = content
-    ? content.files
-    : null;
+  const files = content ? content.files : null;
 
   useKeyboardShortcuts({
     closeTabs,
-    // TODO verify that this makes sense
     activeFileId: activePane.activeFileId,
     activePaneId,
     handleOpenCreateFileModal,
@@ -488,12 +238,9 @@ export const VZCodeProvider = ({
   });
 
   // Track the currently hovered file id.
-  const [hoveredItemId, setHoveredItemId] =
-    useState<ItemId | null>(null);
+  const [hoveredItemId, setHoveredItemId] = useState(null);
 
   // Handle presence-based auto-following
-  // This hook manages opening tabs when presence is received on files
-  // that are not currently open, independent of CodeMirror extensions
   usePresenceAutoFollow({
     docPresence,
     enableAutoFollow,
@@ -502,7 +249,6 @@ export const VZCodeProvider = ({
   });
 
   // Livekit Voice Chat Modal
-
   const [voiceChatModalOpen, setVoiceChatModalOpen] =
     useState(false);
 
@@ -545,7 +291,6 @@ export const VZCodeProvider = ({
       setAIErrorMessage(null); // Clear any previous errors
 
       // Call backend endpoint for AI response
-      // The server will handle all ShareDB operations including adding the user message
       try {
         const response = await fetch(aiChatEndpoint, {
           method: 'POST',
@@ -625,8 +370,8 @@ export const VZCodeProvider = ({
     ],
   );
 
-  // The value provided by this context.
-  const value: VZCodeContextValue = {
+  // Return the context value
+  return {
     content,
     shareDBDoc,
     submitOperation,
@@ -750,10 +495,4 @@ export const VZCodeProvider = ({
     // Additional widgets that can be rendered in AI chat messages
     additionalWidgets,
   };
-
-  return (
-    <VZCodeContext.Provider value={value}>
-      {children}
-    </VZCodeContext.Provider>
-  );
 };
