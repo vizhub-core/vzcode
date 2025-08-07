@@ -66,7 +66,6 @@ export const VisualEditor = () => {
           [property]: newValueOfConsistentType,
         };
 
-
         submitOperation((document: VizContent) => ({
           ...document,
           files: {

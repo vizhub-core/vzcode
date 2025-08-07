@@ -72,7 +72,7 @@ export const useActions = (
         value: value,
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   // True to show the settings modal.

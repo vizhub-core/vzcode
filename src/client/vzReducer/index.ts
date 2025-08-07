@@ -137,7 +137,6 @@ export type VZAction =
   // * Sets whether the Visual Editor is open.
   | { type: 'set_is_visual_editor_open'; value: boolean }
 
-
   // `toggle_ai_chat_focused`
   // * Toggles focused variable to trigger AI chat input focus
   | { type: 'toggle_ai_chat_focused' }

@@ -193,4 +193,13 @@ export type SubmitOperation = (
 ) => void;
 
 // A value that has the capacity to be changed in the visual editor
-export type VisualEditorConfigEntry = {type:"number", property:string, label:string, min:number, max:number, value:number} | {type:"boolean"}
+export type VisualEditorConfigEntry =
+  | {
+      type: 'number';
+      property: string;
+      label: string;
+      min: number;
+      max: number;
+      value: number;
+    }
+  | { type: 'boolean' };
