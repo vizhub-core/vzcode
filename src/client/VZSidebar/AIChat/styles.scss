@@ -17,6 +17,8 @@
   overflow-y: auto;
   padding: 10px;
   padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .ai-chat-input-fixed {

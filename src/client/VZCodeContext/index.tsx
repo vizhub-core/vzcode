@@ -1,5 +1,8 @@
 import React, { Context, createContext } from 'react';
-import { VZCodeContextValue, VZCodeProviderProps } from './types';
+import {
+  VZCodeContextValue,
+  VZCodeProviderProps,
+} from './types';
 import { useVZCodeState } from './useVZCodeState';
 
 // This context centralizes all the "smart" logic
@@ -9,10 +12,9 @@ import { useVZCodeState } from './useVZCodeState';
 export const VZCodeContext: Context<VZCodeContextValue | null> =
   createContext<VZCodeContextValue>(null);
 
-export const VZCodeProvider: React.FC<VZCodeProviderProps> = ({
-  children,
-  ...props
-}) => {
+export const VZCodeProvider: React.FC<
+  VZCodeProviderProps
+> = ({ children, ...props }) => {
   // Use the custom hook to get all the context value
   const value = useVZCodeState(props);
 
