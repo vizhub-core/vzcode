@@ -561,6 +561,21 @@
     max-height: 200px;
     overflow-y: auto;
     background: var(--vh-color-neutral-02);
+    scroll-behavior: smooth;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--vh-color-neutral-02);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--vh-color-neutral-04);
+      border-radius: 3px;
+    }
 
     // Style markdown content in thinking scratchpad
     p {
