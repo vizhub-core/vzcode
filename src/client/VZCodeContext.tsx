@@ -557,7 +557,7 @@ export const VZCodeProvider = ({
             content: messageContent.trim(),
             chatId: currentChatId,
             mode: aiChatMode,
-            ...options
+            ...options,
           }),
         });
 

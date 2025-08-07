@@ -66,6 +66,10 @@ export function renderFrame(ctx, canvas, stars, angle, time) {
   });
 }
 
+export function applyHueShift(canvas, hueShift) {
+  canvas.style.filter = `hue-rotate(${hueShift}deg)`;
+}
+
 function resetStar(star, canvas) {
   star.baseX = Math.random() * canvas.width - canvas.width / 2;
   star.baseY = Math.random() * canvas.height - canvas.height / 2;
