@@ -6,7 +6,7 @@ import './styles.scss';
 
 const DEBUG = false;
 
-const showSuggestedRequests = true;
+const showSuggestedRequests = false;
 
 export const AIChat = () => {
   const {

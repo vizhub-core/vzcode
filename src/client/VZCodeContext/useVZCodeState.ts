@@ -5,10 +5,7 @@ import {
   useState,
 } from 'react';
 import { VizContent } from '@vizhub/viz-types';
-import {
-  defaultTheme,
-  useDynamicTheme,
-} from '../themes';
+import { defaultTheme, useDynamicTheme } from '../themes';
 import { useActions } from '../useActions';
 import { useEditorCache } from '../useEditorCache';
 import { useFileCRUD } from '../useFileCRUD';
@@ -18,11 +15,17 @@ import { usePrettier } from '../usePrettier';
 import { useRunCode } from '../useRunCode';
 import { useRuntimeError } from '../useRuntimeError';
 import { useURLSync } from '../useURLSync';
-import { createInitialState, vzReducer } from '../vzReducer';
+import {
+  createInitialState,
+  vzReducer,
+} from '../vzReducer';
 import { findPane } from '../vzReducer/findPane';
 import { usePresenceAutoFollow } from '../usePresenceAutoFollow';
 import { v4 as uuidv4 } from 'uuid';
-import { VZCodeContextValue, VZCodeProviderProps } from './types';
+import {
+  VZCodeContextValue,
+  VZCodeProviderProps,
+} from './types';
 
 export const useVZCodeState = ({
   content,
@@ -48,7 +51,10 @@ export const useVZCodeState = ({
   clearStoredAIPrompt,
   getStoredAIPrompt,
   additionalWidgets,
-}: Omit<VZCodeProviderProps, 'children'>): VZCodeContextValue => {
+}: Omit<
+  VZCodeProviderProps,
+  'children'
+>): VZCodeContextValue => {
   // Auto-run Prettier after local changes.
   const { prettierError, runPrettierRef } = usePrettier({
     shareDBDoc,
