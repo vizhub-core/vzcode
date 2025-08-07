@@ -202,7 +202,10 @@ export type VZCodeContextValue = {
   currentChatId: string;
   aiErrorMessage: string | null;
   setAIErrorMessage: (state: string | null) => void;
-  handleSendMessage: (messageToSend?: string) => void;
+  handleSendMessage: (
+    messageToSend?: string,
+    options?: Record<string, string>,
+  ) => void;
 
   // Auto-fork functions for VizHub integration
   autoForkAndRetryAI?: (
@@ -221,6 +224,10 @@ export type VZCodeContextValue = {
     messageId: string;
     chatId: string;
     canUndo: boolean;
+    handleSendMessage?: (
+      messageToSend?: string,
+      options?: Record<string, string>,
+    ) => void;
   }>;
 };
 
@@ -510,7 +517,10 @@ export const VZCodeProvider = ({
   >(null);
 
   const handleSendMessage = useCallback(
-    async (messageToSend?: string) => {
+    async (
+      messageToSend?: string,
+      options?: Record<string, string>,
+    ) => {
       DEBUG &&
         console.log(
           'AIChat: handleSendMessage called with:',

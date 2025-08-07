@@ -1,17 +1,8 @@
-import {
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  useEffect,
-} from 'react';
+import { useContext, useMemo, useEffect } from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
-import { v4 as uuidv4 } from 'uuid';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import './styles.scss';
-
-const defaultAIChatEndpoint = '/api/ai-chat/';
 
 const DEBUG = false;
 
@@ -21,20 +12,16 @@ export const AIChat = () => {
   const {
     aiChatFocused,
     content,
-    aiChatEndpoint = defaultAIChatEndpoint,
-    aiChatOptions = {},
     aiChatMode,
     aiChatMessage,
     isLoading,
     currentChatId,
     aiErrorMessage,
     setAIChatMode,
-    autoForkAndRetryAI,
     clearStoredAIPrompt,
     getStoredAIPrompt,
     setAIChatMessage,
     handleSendMessage,
-    setIsLoading,
     setAIErrorMessage,
   } = useContext(VZCodeContext);
 
