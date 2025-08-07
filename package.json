@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "test-interactive": "cd test/sampleDirectories/kitchenSink && node --import \"data:text/javascript,import { register } from 'node:module'; import { pathToFileURL } from 'node:url'; register('ts-node/esm', pathToFileURL('./'));\" ../../../src/server/index.ts",
+    "test-interactive": "cd test/sampleDirectories/visualEditor && node --import \"data:text/javascript,import { register } from 'node:module'; import { pathToFileURL } from 'node:url'; register('ts-node/esm', pathToFileURL('./'));\" ../../../src/server/index.ts",
     "prettier": "prettier {*.*,**/*.*} --write",
     "typecheck": "tsc --noEmit",
     "dev": "cross-env EDITOR_PORT=5173 concurrently \"npm run test-interactive\" \"vite\"",

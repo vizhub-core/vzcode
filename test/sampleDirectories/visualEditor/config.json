@@ -13,7 +13,7 @@
   "yAxisLabelOffset": 20,
   "fontSize": "14px",
   "fontFamily": "sans-serif",
-  "pointRadius": 6,
+  "pointRadius": 15,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",

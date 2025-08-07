@@ -19,9 +19,12 @@ export const viz = (container, state, setState) => {
       // Verify the message contains config data
       if (event.data && typeof event.data === 'object') {
         // Update the config with the received data
-        setConfig((prevConfig) => ({
-          ...prevConfig,
-          ...event.data,
+        setState((state) => ({
+          ...state,
+          config: {
+            ...state.config,
+            ...event.data,
+          },
         }));
       }
     });
