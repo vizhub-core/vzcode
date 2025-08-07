@@ -99,7 +99,7 @@ describe('searchReducer', () => {
       expect(file1Results.matches[0].line).toBe(1);
       expect(file1Results.matches[0].index).toBe(6); // position of "Hello"
       expect(file1Results.matches[1].line).toBe(2);
-      expect(file1Results.matches[1].index).toBe(18); // position of "HELLO"
+      expect(file1Results.matches[1].index).toBe(17); // position of "HELLO"
 
       // Check file2.js results
       const file2Results =

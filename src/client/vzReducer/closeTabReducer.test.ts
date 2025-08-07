@@ -58,7 +58,7 @@ describe('closeTabsReducer', () => {
     expect(newState.pane.activeFileId).toBe('file1');
   });
 
-  it.only('Activates previous tab after closing an active tab', () => {
+  it('Activates previous tab after closing an active tab', () => {
     const action: VZAction = {
       type: 'close_tabs',
       fileIdsToClose: ['file2'],
