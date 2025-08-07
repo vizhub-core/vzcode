@@ -72,12 +72,10 @@ export const VisualEditor = () => {
             ...files,
             [configFileId]: {
               name: 'config.json',
-              text: JSON.stringify(newConfigData),
+              text: JSON.stringify(newConfigData, null, 2),
             },
           },
         }));
-
-        runPrettierRef.current();
 
         iframeRef.current.contentWindow.postMessage({
           [property]: newValueOfConsistentType,
