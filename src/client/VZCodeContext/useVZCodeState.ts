@@ -324,7 +324,7 @@ export const useVZCodeState = ({
 
           // Check if this is the specific permission error that should trigger auto-fork
           if (
-            aiErrorMessage ===
+            errorMessage ===
             'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
           ) {
             // Trigger auto-fork instead of showing error
@@ -345,7 +345,7 @@ export const useVZCodeState = ({
           }
 
           // For other errors, show the error message
-          setAIErrorMessage(aiErrorMessage);
+          setAIErrorMessage(errorMessage);
           return;
         }
 
