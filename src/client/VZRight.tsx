@@ -30,8 +30,12 @@ export const VZRight = () => {
   );
 
   // Get access to the current files.
-  const { content, handleRuntimeError, clearRuntimeError, iframeRef } =
-    useContext(VZCodeContext);
+  const {
+    content,
+    handleRuntimeError,
+    clearRuntimeError,
+    iframeRef,
+  } = useContext(VZCodeContext);
 
   const files = useMemo(
     () =>

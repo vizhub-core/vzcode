@@ -116,7 +116,6 @@ export const VZSidebar = ({
     </div>
   ),
 
-
   visualEditorToolTipText = (
     <div>
       <strong>Visual Editor</strong>
@@ -347,6 +346,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(false);
                 setIsAIChatOpen(false);
+                setIsVisualEditorOpen(false);
                 setSidebarView(false); // Switch to files view
               }}
             >

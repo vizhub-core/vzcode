@@ -75,6 +75,8 @@ export const useVZCodeState = ({
 
   const codeEditorRef = useRef(null);
 
+  const iframeRef = useRef(null);
+
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority
   // * `prettierError` - errors from Prettier, client-side only
@@ -104,6 +106,7 @@ export const useVZCodeState = ({
     theme,
     search,
     isSearchOpen,
+    isVisualEditorOpen,
     isAIChatOpen,
     aiChatFocused,
     isSettingsOpen,
@@ -136,6 +139,7 @@ export const useVZCodeState = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsVisualEditorOpen,
     setIsAIChatOpen,
     toggleAIChatFocused,
     setAIChatMode,
@@ -415,6 +419,9 @@ export const useVZCodeState = ({
     setSearchFocusedIndex,
     toggleSearchFocused,
 
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
+
     isAIChatOpen,
     setIsAIChatOpen,
     aiChatFocused,
@@ -463,6 +470,7 @@ export const useVZCodeState = ({
     runCodeRef,
     sidebarRef,
     codeEditorRef,
+    iframeRef,
 
     connected,
     pending,
