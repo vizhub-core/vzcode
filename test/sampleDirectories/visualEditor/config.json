@@ -5,15 +5,15 @@
   "yAxisLabel": "Sepal Width",
   "margin": {
     "top": 20,
-    "right": 20,
+    "right": 67,
     "bottom": 60,
     "left": 60
   },
   "xAxisLabelOffset": 5,
-  "yAxisLabelOffset": 20,
+  "yAxisLabelOffset": 116,
   "fontSize": "14px",
   "fontFamily": "sans-serif",
-  "pointRadius": 15,
+  "pointRadius": "13.1363758029979",
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
