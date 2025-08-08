@@ -59,6 +59,17 @@ export const VisualEditor = () => {
     );
   }
 
+  if (!Array.isArray(configData.visualEditorWidgets)) {
+    return (
+      <EmptyState>
+        Your config.json file has "visualEditorWidgets" but
+        it is not an array. Please make sure
+        "visualEditorWidgets" is an array of widget
+        configurations.
+      </EmptyState>
+    );
+  }
+
   const onInputUpdate = useCallback(
     (
       property: string,
