@@ -104,4 +104,53 @@ body,
       border: none;
     }
   }
+
+  /* Mobile-first responsive layout */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+
+    .left {
+      order: 1;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .middle {
+      order: 2;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .right {
+      order: 3;
+      flex: 1;
+      min-height: 300px;
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 300px;
+      }
+    }
+  }
+
+  /* Tablet layout adjustments */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .left {
+      flex-shrink: 0;
+    }
+
+    .middle {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .right {
+      flex: 1;
+      min-width: 300px;
+    }
+  }
 }

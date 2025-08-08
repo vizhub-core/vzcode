@@ -31,3 +31,10 @@
 .vz-resizer:hover .vz-resizer-thumb {
   background-color: #0078d4;
 }
+
+/* Hide resizers on mobile devices */
+@media (max-width: 768px) {
+  .vz-resizer {
+    display: none !important;
+  }
+}
