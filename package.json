@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "test-interactive": "cd test/sampleDirectories/kitchenSink && node --import \"data:text/javascript,import { register } from 'node:module'; import { pathToFileURL } from 'node:url'; register('ts-node/esm', pathToFileURL('./'));\" ../../../src/server/index.ts",
+    "test-interactive": "cd test/sampleDirectories/visualEditor && node --import \"data:text/javascript,import { register } from 'node:module'; import { pathToFileURL } from 'node:url'; register('ts-node/esm', pathToFileURL('./'));\" ../../../src/server/index.ts",
     "prettier": "prettier {*.*,**/*.*} --write",
     "typecheck": "tsc --noEmit",
     "dev": "cross-env EDITOR_PORT=5173 concurrently \"npm run test-interactive\" \"vite\"",
@@ -141,6 +141,7 @@
     "@vizhub/viz-types": "^0.4.0",
     "@vizhub/viz-utils": "^1.4.0",
     "body-parser": "^2.2.0",
+    "bootstrap-icons": "^1.13.1",
     "codemirror": "^6.0.2",
     "codemirror-copilot": "^0.0.7",
     "codemirror-ot": "^5.0.0",

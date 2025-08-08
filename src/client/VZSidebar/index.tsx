@@ -26,6 +26,7 @@ import {
   QuestionMarkSVG,
   SearchSVG,
   SparklesSVG,
+  AdjustmentSVG,
 } from '../Icons';
 import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
@@ -41,6 +42,7 @@ import {
   enableAIChat,
 } from '../featureFlags';
 import './styles.scss';
+import { VisualEditor } from './VisualEditor';
 
 const enableConnectionStatus = true;
 
@@ -113,6 +115,12 @@ export const VZSidebar = ({
       <strong>Edit with AI</strong>
     </div>
   ),
+
+  visualEditorToolTipText = (
+    <div>
+      <strong>Visual Editor</strong>
+    </div>
+  ),
 }: {
   createFileTooltipText?: React.ReactNode;
   createDirTooltipText?: React.ReactNode;
@@ -125,6 +133,7 @@ export const VZSidebar = ({
   disableAutoFollowTooltipText?: React.ReactNode;
   voiceChatToolTipText?: React.ReactNode;
   aiChatToolTipText?: React.ReactNode;
+  visualEditorToolTipText?: React.ReactNode;
 }) => {
   const {
     files,
@@ -133,6 +142,8 @@ export const VZSidebar = ({
     setIsDocOpen,
     isSearchOpen,
     setIsSearchOpen,
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
     isAIChatOpen,
     setIsAIChatOpen,
     handleOpenCreateFileModal,
@@ -335,6 +346,7 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(false);
                 setIsAIChatOpen(false);
+                setIsVisualEditorOpen(false);
                 setSidebarView(false); // Switch to files view
               }}
             >
@@ -356,10 +368,55 @@ export const VZSidebar = ({
               onClick={() => {
                 setIsSearchOpen(true);
                 setIsAIChatOpen(false);
+                setIsVisualEditorOpen(false);
                 setSidebarView(false); // Switch to files view (search uses same width as files)
               }}
             >
               <SearchSVG />
+            </i>
+          </OverlayTrigger>
+
+          {enableAIChat && (
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="ai-chat-tooltip">
+                  {aiChatToolTipText}
+                </Tooltip>
+              }
+            >
+              <i
+                id="ai-chat-icon"
+                className="icon-button icon-button-dark"
+                onClick={() => {
+                  setIsAIChatOpen(true);
+                  setIsSearchOpen(false);
+                  setIsVisualEditorOpen(false);
+                }}
+              >
+                <SparklesSVG />
+              </i>
+            </OverlayTrigger>
+          )}
+
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="visual-editor-tooltip">
+                {visualEditorToolTipText}
+              </Tooltip>
+            }
+          >
+            <i
+              id="visual-editor-icon"
+              className="icon-button icon-button-dark"
+              onClick={() => {
+                setIsVisualEditorOpen(true);
+                setIsAIChatOpen(false);
+                setIsSearchOpen(false);
+              }}
+            >
+              <AdjustmentSVG />
             </i>
           </OverlayTrigger>
 
@@ -516,6 +573,10 @@ export const VZSidebar = ({
             <div className="sidebar-search">
               <Search />
             </div>
+          ) : isVisualEditorOpen ? (
+            <div className="sidebar-visual-editor">
+              <VisualEditor />
+            </div>
           ) : (
             <div className="sidebar-files">
               {isDragOver ? (
@@ -569,6 +630,7 @@ export const VZSidebar = ({
               onClick={handleExportToZip}
               title="Export files to ZIP"
             >
+              <i className="bi bi-download"></i>
               {exportButtonText}
             </button>
           )}
@@ -578,6 +640,7 @@ export const VZSidebar = ({
               onClick={handleCopyForAI}
               title="Copy files formatted for AI"
             >
+              <i className="bi bi-clipboard"></i>
               {copyButtonText}
             </button>
           )}
@@ -587,6 +650,7 @@ export const VZSidebar = ({
             onClick={handlePasteForAI}
             title="Paste files from AI"
           >
+            <i className="bi bi-clipboard-plus"></i>
             {pasteButtonText}
           </button>
         </div>

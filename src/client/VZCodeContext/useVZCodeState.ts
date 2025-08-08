@@ -75,6 +75,8 @@ export const useVZCodeState = ({
 
   const codeEditorRef = useRef(null);
 
+  const iframeRef = useRef(null);
+
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority
   // * `prettierError` - errors from Prettier, client-side only
@@ -104,6 +106,7 @@ export const useVZCodeState = ({
     theme,
     search,
     isSearchOpen,
+    isVisualEditorOpen,
     isAIChatOpen,
     aiChatFocused,
     isSettingsOpen,
@@ -136,6 +139,7 @@ export const useVZCodeState = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsVisualEditorOpen,
     setIsAIChatOpen,
     toggleAIChatFocused,
     setAIChatMode,
@@ -270,8 +274,11 @@ export const useVZCodeState = ({
 
   const DEBUG = false;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Compute isLoading based on the current chat's aiStatus
   const [currentChatId] = useState(() => uuidv4());
+  const currentChat = content?.chats?.[currentChatId];
+  const isLoading = currentChat?.aiStatus === 'generating';
+
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
   >(null);
@@ -421,13 +428,12 @@ export const useVZCodeState = ({
         }
 
         // The backend handles all ShareDB operations for successful responses
+        // The loading state is now managed via ShareDB aiStatus
       } catch (error) {
         console.error('Error getting AI response:', error);
         setAIErrorMessage(
           'Failed to send message. Please try again.',
         );
-      } finally {
-        setIsLoading(false);
       }
     },
     [
@@ -483,6 +489,9 @@ export const useVZCodeState = ({
     setSearchFocusedIndex,
     toggleSearchFocused,
 
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
+
     isAIChatOpen,
     setIsAIChatOpen,
     aiChatFocused,
@@ -531,6 +540,7 @@ export const useVZCodeState = ({
     runCodeRef,
     sidebarRef,
     codeEditorRef,
+    iframeRef,
 
     connected,
     pending,
@@ -555,7 +565,6 @@ export const useVZCodeState = ({
     aiChatMessage,
     setAIChatMessage,
     isLoading,
-    setIsLoading,
     currentChatId,
     aiErrorMessage,
     setAIErrorMessage,

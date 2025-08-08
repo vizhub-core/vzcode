@@ -90,6 +90,11 @@ export type VZCodeContextValue = {
   setIsSearchOpen: (isSearchOpen: boolean) => void;
   setSearch: (pattern: string) => void;
 
+  isVisualEditorOpen: boolean;
+  setIsVisualEditorOpen: (
+    isVisualEditorOpen: boolean,
+  ) => void;
+
   isAIChatOpen: boolean;
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   aiChatFocused: boolean;
@@ -137,6 +142,8 @@ export type VZCodeContextValue = {
 
   codeEditorRef: React.RefObject<HTMLDivElement>;
 
+  iframeRef: React.MutableRefObject<HTMLIFrameElement>;
+
   connected: boolean;
   pending: boolean;
 
@@ -164,7 +171,6 @@ export type VZCodeContextValue = {
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
   isLoading: boolean;
-  setIsLoading: (state: boolean) => void;
   currentChatId: string;
   aiErrorMessage: string | null;
   setAIErrorMessage: (state: string | null) => void;
