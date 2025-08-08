@@ -261,6 +261,7 @@ export const useVZCodeState = ({
   const [aiChatMessage, setAIChatMessage] = useState('');
 
   // Message history for up/down arrow navigation
+  // TODO use the ShareDB document data structure for this, not local state
   const [messageHistory, setMessageHistory] = useState<
     string[]
   >([]);
