@@ -17,6 +17,13 @@
     44,
     52
   ); /* Variable for the background color */
+
+  /* Mobile-specific variables */
+  --mobile-breakpoint: 768px;
+  --tablet-breakpoint: 1024px;
+  --mobile-sidebar-width: 100vw;
+  --mobile-header-height: 60px;
+  --mobile-touch-target: 44px;
 }
 
 /* Scrollbar Styles */
@@ -35,6 +42,24 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Mobile scrollbar styles - thinner for touch devices */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Hide scrollbars on mobile but keep functionality */
+  .mobile-hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+  }
 }
 
 /* Layout Styles */
