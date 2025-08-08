@@ -10,6 +10,7 @@ export const scatterPlot = (svg, options) => {
     margin: { left, right, top, bottom },
     xValue,
     yValue,
+    colorScale,
   } = options;
 
   const xScale = scaleLinear()
@@ -22,5 +23,5 @@ export const scatterPlot = (svg, options) => {
 
   renderAxisLabels(svg, options);
   renderAxes(svg, { ...options, xScale, yScale });
-  renderMarks(svg, { ...options, xScale, yScale });
+  renderMarks(svg, { ...options, xScale, yScale, colorScale });
 };

@@ -267,10 +267,10 @@ export const useVZCodeState = ({
   const DEBUG = false;
 
   // Compute isLoading based on the current chat's aiStatus
+  const [currentChatId] = useState(() => uuidv4());
   const currentChat = content?.chats?.[currentChatId];
   const isLoading = currentChat?.aiStatus === 'generating';
 
-  const [currentChatId] = useState(() => uuidv4());
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
   >(null);
