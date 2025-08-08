@@ -184,6 +184,7 @@ export const useVZCodeState = ({
     createDirectory,
     renameDirectory,
     deleteDirectory,
+    deleteAllFiles,
   } = useFileCRUD({
     submitOperation,
     closeTabs,
@@ -461,6 +462,7 @@ export const useVZCodeState = ({
     createDirectory,
     renameDirectory,
     deleteDirectory,
+    deleteAllFiles,
 
     setActiveFileId,
     setActiveFileLeft,

@@ -41,6 +41,7 @@ export type VZCodeContextValue = {
     directoryName: string,
   ) => void;
   deleteDirectory: (directoryId: string) => void;
+  deleteAllFiles: () => void;
 
   setActiveFileId: (fileId: string | null) => void;
   setActiveFileLeft: () => void;
