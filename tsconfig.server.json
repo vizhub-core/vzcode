@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noEmit": false
+  },
+  "include": [
+    "src/cli.ts",
+    "src/server/**/*.ts",
+    "src/types.ts",
+    "src/randomId.ts",
+    "src/ot.ts",
+    "src/utils/**/*.ts"
+  ],
+  "exclude": [
+    "src/client/**/*",
+    "test/**/*",
+    "**/*.test.ts"
+  ]
+}
