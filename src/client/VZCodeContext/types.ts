@@ -171,7 +171,6 @@ export type VZCodeContextValue = {
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
   isLoading: boolean;
-  setIsLoading: (state: boolean) => void;
   currentChatId: string;
   aiErrorMessage: string | null;
   setAIErrorMessage: (state: string | null) => void;

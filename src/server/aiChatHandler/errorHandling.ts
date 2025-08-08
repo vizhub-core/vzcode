@@ -46,8 +46,21 @@ export const handleError = (
     );
   }
 
-  res.status(500).json({
-    error: 'Internal server error',
-    message: error.message,
-  });
+  if (res) {
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * Handles errors in background processing (without HTTP response)
+ */
+export const handleBackgroundError = (
+  shareDBDoc,
+  chatId,
+  error,
+) => {
+  handleError(shareDBDoc, chatId, error, null);
 };
