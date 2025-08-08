@@ -13,13 +13,18 @@
   "yAxisLabelOffset": 116,
   "fontSize": "14px",
   "fontFamily": "sans-serif",
-  "pointRadius": "13.1363758029979",
+  "pointRadius": 15,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
   "loadingFontFamily": "sans-serif",
   "loadingMessage": "Loading...",
   "dataUrl": "iris.csv",
+  "colorScale": {
+    "setosa": "#1f77b4",
+    "versicolor": "#ff7f0e",
+    "virginica": "#2ca02c"
+  },
   "visualEditorWidgets": [
     {
       "type": "number",

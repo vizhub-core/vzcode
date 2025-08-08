@@ -23,7 +23,15 @@ import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
 
-// TODO use this to throttle the streaming updates
+// Useful for testing/debugging the streaming behavior
+const slowMode = false;
+
+// Throttle the streaming updates, so that we don't
+// overwhelm the ShareDB server with too many updates.
+// It happened actually, before adding this.
+// MongoDB VizHub server got in fact overloaded with
+// too many updates from the AI streaming response, with
+// warning: "Replication Oplog Window has gone below 1 hour"
 const THROTTLE_INTERVAL_MS = 100;
 
 // Feature flag to enable/disable streaming editing.
@@ -276,6 +284,11 @@ export const createLLMFunction = ({
     let contentStarted = false;
 
     for await (const chunk of stream) {
+      if (slowMode) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 500),
+        );
+      }
       const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
       if (delta?.reasoning && enableReasoningTokens) {

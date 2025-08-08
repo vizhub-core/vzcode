@@ -228,6 +228,28 @@ export const updateAIMessageContent = (
 };
 
 /**
+ * Sets the AI status for a chat
+ */
+export const setAIStatus = (
+  shareDBDoc: ShareDBDoc<VizContent>,
+  chatId: VizChatId,
+  status: string | undefined,
+) => {
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        aiStatus: status,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
  * Finalizes an AI message by clearing temporary fields
  */
 export const finalizeAIMessage = (

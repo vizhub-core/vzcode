@@ -266,8 +266,11 @@ export const useVZCodeState = ({
 
   const DEBUG = false;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Compute isLoading based on the current chat's aiStatus
   const [currentChatId] = useState(() => uuidv4());
+  const currentChat = content?.chats?.[currentChatId];
+  const isLoading = currentChat?.aiStatus === 'generating';
+
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
   >(null);
@@ -297,7 +300,6 @@ export const useVZCodeState = ({
 
       const currentPrompt = aiChatMessage.trim();
       setAIChatMessage('');
-      setIsLoading(true);
       setAIErrorMessage(null); // Clear any previous errors
 
       // Call backend endpoint for AI response
@@ -360,13 +362,12 @@ export const useVZCodeState = ({
         }
 
         // The backend handles all ShareDB operations for successful responses
+        // The loading state is now managed via ShareDB aiStatus
       } catch (error) {
         console.error('Error getting AI response:', error);
         setAIErrorMessage(
           'Failed to send message. Please try again.',
         );
-      } finally {
-        setIsLoading(false);
       }
     },
     [
@@ -495,7 +496,6 @@ export const useVZCodeState = ({
     aiChatMessage,
     setAIChatMessage,
     isLoading,
-    setIsLoading,
     currentChatId,
     aiErrorMessage,
     setAIErrorMessage,

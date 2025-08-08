@@ -7,7 +7,7 @@ export const renderMarks = (
     xValue,
     yValue,
     pointRadius,
-    pointFill,
+    colorScale,
     pointOpacity,
   },
 ) =>
@@ -19,5 +19,5 @@ export const renderMarks = (
     .attr('cx', (d) => xScale(xValue(d)))
     .attr('cy', (d) => yScale(yValue(d)))
     .attr('r', pointRadius)
-    .attr('fill', pointFill)
+    .attr('fill', (d) => colorScale[d.species])
     .attr('opacity', pointOpacity);
