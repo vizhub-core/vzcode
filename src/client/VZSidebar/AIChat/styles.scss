@@ -625,3 +625,172 @@
     }
   }
 }
+
+/* Mobile-specific AI Chat styles */
+@media (max-width: 768px) {
+  .ai-chat-container {
+    height: 100%;
+    max-height: calc(40vh - 60px);
+  }
+
+  .ai-chat-content {
+    height: 100%;
+  }
+
+  .ai-chat-messages-container {
+    padding: 8px;
+    padding-bottom: 0;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ai-chat-input-fixed {
+    padding: 8px;
+    padding-top: 0;
+    flex-shrink: 0;
+    background: var(--vh-color-neutral-01);
+    border-top: 1px solid var(--vh-color-neutral-02);
+  }
+
+  .ai-chat-message {
+    margin-bottom: 12px;
+
+    &.user {
+      .ai-chat-message-content {
+        margin-left: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+    }
+
+    &.assistant {
+      .ai-chat-message-content {
+        margin-right: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  .ai-chat-input-group {
+    gap: 6px;
+
+    textarea {
+      min-height: 44px;
+      font-size: 16px; /* Prevent zoom on iOS */
+      padding: 12px;
+      line-height: 1.3;
+      border-radius: 12px;
+
+      /* Improve mobile keyboard experience */
+      -webkit-appearance: none;
+      resize: none;
+
+      &:focus {
+        /* Ensure focus styles work well on mobile */
+        outline: none !important;
+        border-color: var(--vh-color-primary-01) !important;
+        box-shadow: 0 0 0 2px rgba(38, 67, 153, 0.3) !important;
+      }
+    }
+  }
+
+  .ai-chat-mode-toggle {
+    .btn-group {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+        min-height: var(--mobile-touch-target);
+        font-size: 14px;
+        padding: 8px 12px;
+
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+    }
+  }
+
+  .ai-chat-send-button {
+    min-height: var(--mobile-touch-target);
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .ai-chat-empty {
+    padding: 16px;
+    text-align: center;
+
+    .ai-chat-empty-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .ai-chat-empty-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .ai-chat-empty-text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+
+  .ai-chat-suggested-prompts {
+    .ai-chat-suggested-prompt {
+      min-height: var(--mobile-touch-target);
+      padding: 10px 16px;
+      margin: 4px 0;
+      font-size: 14px;
+      line-height: 1.3;
+      border-radius: 8px;
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  .ai-chat-error {
+    margin: 8px;
+
+    .ai-chat-error-content {
+      padding: 10px 12px;
+      border-radius: 8px;
+
+      .ai-chat-error-dismiss {
+        min-width: var(--mobile-touch-target);
+        min-height: var(--mobile-touch-target);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  /* Thinking scratchpad mobile styles */
+  .thinking-scratchpad {
+    margin: 8px 0;
+    font-size: 12px;
+
+    .thinking-scratchpad-content {
+      max-height: 150px;
+      padding: 10px;
+
+      p {
+        font-size: 12px;
+        line-height: 1.3;
+      }
+    }
+  }
+}
