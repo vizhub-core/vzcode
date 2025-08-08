@@ -1,7 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import fuzzysort from "fuzzysort";
 import { VZCodeContext } from "./VZCodeContext";
-import type { VZState, VZAction } from "./types";
+import type { VZState, VZAction } from ".";
 
 /**
  * QuickOpenPalette – VS Code–style file opener
