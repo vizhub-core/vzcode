@@ -565,4 +565,29 @@
     color: var(--vh-color-neutral-03);
     font-weight: 400;
   }
+
+  // Empty State Component Styles
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    margin: 16px;
+    background: var(--vh-color-neutral-01);
+    border: 1px solid var(--vh-color-neutral-02);
+    border-radius: 8px;
+    text-align: center;
+    font-family: var(--vzcode-font-family);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--vh-color-neutral-04);
+    line-height: 1.5;
+    min-height: 80px;
+
+    &:hover {
+      border-color: var(--vh-color-neutral-03);
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
 }

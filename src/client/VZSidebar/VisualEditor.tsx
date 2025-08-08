@@ -8,6 +8,7 @@ import {
 import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
 import { VisualEditorConfigEntry } from '../../types';
+import { EmptyState } from './EmptyState';
 
 const CONFIG_FILE_NAME = 'config.json';
 
@@ -29,10 +30,10 @@ export const VisualEditor = () => {
 
   if (configFileId === null) {
     return (
-      <>
+      <EmptyState>
         To begin using the visual editor, create a
         config.json.
-      </>
+      </EmptyState>
     );
   }
 
@@ -41,16 +42,20 @@ export const VisualEditor = () => {
   try {
     configData = JSON.parse(files[configFileId].text);
   } catch (error) {
-    return <>Your config.json file is not valid json.</>;
+    return (
+      <EmptyState>
+        Your config.json file is not valid json.
+      </EmptyState>
+    );
   }
 
   if (!('visualEditorWidgets' in configData)) {
     return (
-      <>
+      <EmptyState>
         To begin using the visual editor, make sure your
         config.json has a key called "visualEditorWidgets",
         whose value is the config for the visual editor.
-      </>
+      </EmptyState>
     );
   }
 
