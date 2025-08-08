@@ -1,6 +1,7 @@
 import { PaneId, Pane } from '../../types';
 import { VZAction, VZState } from '.';
 import { updatePane } from './updatePane';
+import { findPane } from './findPane';
 
 export const splitCurrentPaneReducer = (
   state: VZState,
@@ -12,12 +13,18 @@ export const splitCurrentPaneReducer = (
   }
 
   const activePaneId = state.activePaneId;
+  const currentPane = findPane(state.pane, activePaneId);
 
+  if (!currentPane || currentPane.type !== 'leafPane') {
+    return state; // Can only split leaf panes
+  }
+
+  // Create two new leaf panes - the first one gets the current tabs
   const newLeafPane1: Pane = {
     id: `${activePaneId}-1`, // Generate unique IDs for new panes
     type: 'leafPane',
-    tabList: [],
-    activeFileId: null,
+    tabList: currentPane.tabList, // Transfer current tabs to first pane
+    activeFileId: currentPane.activeFileId, // Transfer active file
   };
 
   const newLeafPane2: Pane = {
@@ -27,6 +34,7 @@ export const splitCurrentPaneReducer = (
     activeFileId: null,
   };
 
+  // Create the new split pane to replace the current pane
   const newSplitPane: Pane = {
     id: activePaneId,
     type: 'splitPane',
@@ -34,13 +42,7 @@ export const splitCurrentPaneReducer = (
     children: [newLeafPane1, newLeafPane2],
   };
 
-  const updatedPane = updatePane({
-    pane: state.pane,
-    activePaneId,
-    newTabList: undefined,
-    newActiveFileId: undefined,
-  });
-
+  // Helper function to recursively update the pane tree
   const updateSplitPane = (pane: Pane, id: PaneId): Pane =>
     pane.id === id
       ? newSplitPane
@@ -54,13 +56,13 @@ export const splitCurrentPaneReducer = (
         : pane;
 
   const finalPane = updateSplitPane(
-    updatedPane,
+    state.pane,
     activePaneId,
   );
 
   return {
     ...state,
     pane: finalPane,
-    activePaneId: newLeafPane1.id,
+    activePaneId: newLeafPane1.id, // Keep the first pane as active
   };
 };
