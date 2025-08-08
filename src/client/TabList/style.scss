@@ -3,6 +3,7 @@
   background-color: #1f2022;
   // When the tab list becomes too large, a horizontal scroll bar appears.
   overflow-x: auto;
+  align-items: center;
 
   .tab {
     // background: #47546b;
@@ -44,8 +45,23 @@
 
   .icon-button {
     color: var(--vh-color-neutral-03);
+    background: none;
+    border: none;
+    padding: 6px;
+    margin: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      color: var(--vh-color-action-03);
+      background-color: rgba(255, 255, 255, 0.075);
+    }
   }
-  .icon-button:hover {
-    color: var(--vh-color-action-03);
+
+  .split-pane-button {
+    margin-left: auto; // Push to the right side
   }
 }

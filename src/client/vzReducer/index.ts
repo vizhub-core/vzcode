@@ -37,6 +37,7 @@ import {
 } from './aiChatReducer';
 import { toggleAutoFollowReducer } from './toggleAutoFollowReducer';
 import { updatePresenceIndicatorReducer } from './updatePresenceIndicatorReducer';
+import { setActivePaneReducer } from './setActivePaneReducer';
 import { splitCurrentPaneReducer } from './splitCurrentPaneReducer';
 import { setIsVisualEditorOpenReducer } from './visualEditorReducer';
 export { createInitialState } from './createInitialState';
@@ -210,7 +211,11 @@ export type VZAction =
     }
 
   // `split_current_pane`
-  | { type: 'split_current_pane' };
+  | { type: 'split_current_pane' }
+
+  // `set_active_pane`
+  //  * Sets the active pane ID.
+  | { type: 'set_active_pane'; paneId: PaneId };
 
 const reducers = [
   setActiveFileIdReducer,
@@ -236,6 +241,7 @@ const reducers = [
   setUsernameReducer,
   toggleAutoFollowReducer,
   updatePresenceIndicatorReducer,
+  setActivePaneReducer,
   splitCurrentPaneReducer,
 ];
 

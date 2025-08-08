@@ -2,12 +2,18 @@ import { useContext } from 'react';
 import { TabState } from '../../types';
 import { VZCodeContext } from '../VZCodeContext';
 import { Tab } from './Tab';
+import { SplitEditorSVG } from '../Icons/SplitEditorSVG';
 import './style.scss';
 
 // Displays the list of tabs above the code editor.
 export const TabList = ({ activeFileId, tabList }) => {
-  const { files, setActiveFileId, openTab, closeTabs } =
-    useContext(VZCodeContext);
+  const {
+    files,
+    setActiveFileId,
+    openTab,
+    closeTabs,
+    splitCurrentPane,
+  } = useContext(VZCodeContext);
 
   return (
     <div className="vz-tab-list">
@@ -30,6 +36,13 @@ export const TabList = ({ activeFileId, tabList }) => {
               fileName={files[tabState.fileId].name}
             />
           ))}
+      <button
+        className="icon-button split-pane-button"
+        onClick={splitCurrentPane}
+        title="Split Pane"
+      >
+        <SplitEditorSVG />
+      </button>
     </div>
   );
 };

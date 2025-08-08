@@ -152,6 +152,7 @@ export const useVZCodeState = ({
     setUsername,
     toggleAutoFollow,
     updatePresenceIndicator,
+    setActivePane,
     splitCurrentPane,
   } = useActions(dispatch);
 
@@ -546,6 +547,7 @@ export const useVZCodeState = ({
     toggleAutoFollow,
     updatePresenceIndicator,
     sidebarPresenceIndicators,
+    setActivePane,
     splitCurrentPane,
     liveKitRoomName,
     setLiveKitRoom,
