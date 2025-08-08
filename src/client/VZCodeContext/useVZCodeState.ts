@@ -52,6 +52,7 @@ export const useVZCodeState = ({
   clearStoredAIPrompt,
   getStoredAIPrompt,
   additionalWidgets,
+  iframeRef: externalIframeRef,
 }: Omit<
   VZCodeProviderProps,
   'children'
@@ -76,7 +77,8 @@ export const useVZCodeState = ({
 
   const codeEditorRef = useRef(null);
 
-  const iframeRef = useRef(null);
+  // Use external iframeRef if provided, otherwise create our own
+  const iframeRef = externalIframeRef || useRef(null);
 
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority

@@ -244,4 +244,5 @@ export interface VZCodeProviderProps {
     chatId: string;
     canUndo: boolean;
   }>;
+  iframeRef?: React.MutableRefObject<HTMLIFrameElement>;
 }
