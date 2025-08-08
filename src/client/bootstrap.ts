@@ -12,6 +12,9 @@ import Tooltip from 'react-bootstrap/cjs/Tooltip.js';
 // Pull in custom CSS from vizhub-ui.
 import 'vizhub-ui/dist/vizhub-ui.css';
 
+// Pull in Bootstrap Icons CSS.
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
 export {
   Form,
   Button,

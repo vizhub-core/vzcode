@@ -141,6 +141,7 @@
     "@vizhub/viz-types": "^0.4.0",
     "@vizhub/viz-utils": "^1.4.0",
     "body-parser": "^2.2.0",
+    "bootstrap-icons": "^1.13.1",
     "codemirror": "^6.0.2",
     "codemirror-copilot": "^0.0.7",
     "codemirror-ot": "^5.0.0",
