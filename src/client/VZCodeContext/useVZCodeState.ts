@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -264,20 +265,24 @@ export const useVZCodeState = ({
 
   const [aiChatMessage, setAIChatMessage] = useState('');
 
-  // Message history for up/down arrow navigation
-  // TODO use the ShareDB document data structure for this, not local state
-  const [messageHistory, setMessageHistory] = useState<
-    string[]
-  >([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
-  const [currentDraft, setCurrentDraft] = useState('');
-
   const DEBUG = false;
 
   // Compute isLoading based on the current chat's aiStatus
   const [currentChatId] = useState(() => uuidv4());
   const currentChat = content?.chats?.[currentChatId];
   const isLoading = currentChat?.aiStatus === 'generating';
+
+  // Message history for up/down arrow navigation - using ShareDB document data
+  const messageHistory = useMemo(() => {
+    if (!currentChat?.messages) return [];
+    // Extract user messages in chronological order for history navigation
+    return currentChat.messages
+      .filter((msg) => msg.role === 'user')
+      .map((msg) => msg.content);
+  }, [currentChat?.messages]);
+
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [currentDraft, setCurrentDraft] = useState('');
 
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
@@ -354,18 +359,10 @@ export const useVZCodeState = ({
       const currentPrompt = aiChatMessage.trim();
       setAIChatMessage('');
 
-      // Add message to history
-      if (currentPrompt) {
-        setMessageHistory((prev) => [
-          ...prev,
-          currentPrompt,
-        ]);
-        // Reset history navigation when sending a message
-        setHistoryIndex(-1);
-        setCurrentDraft('');
-      }
+      // Reset history navigation when sending a message
+      setHistoryIndex(-1);
+      setCurrentDraft('');
 
-      setIsLoading(true);
       setAIErrorMessage(null); // Clear any previous errors
 
       // Call backend endpoint for AI response
@@ -444,9 +441,6 @@ export const useVZCodeState = ({
       currentChatId,
       aiChatMode,
       autoForkAndRetryAI,
-      setMessageHistory,
-      setHistoryIndex,
-      setCurrentDraft,
     ],
   );
 
