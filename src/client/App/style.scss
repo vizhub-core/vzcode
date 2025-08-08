@@ -128,11 +128,71 @@ body,
       order: 3;
       flex: 1;
       min-height: 300px;
+      position: relative;
 
       iframe {
         width: 100%;
         height: 100%;
         min-height: 300px;
+        border: none;
+        background-color: white;
+
+        /* Ensure iframe is always visible and interactive on mobile */
+        touch-action: manipulation;
+        -webkit-overflow-scrolling: touch;
+
+        /* Prevent iframe from being too small */
+        max-width: 100vw;
+
+        /* Add subtle border for better visual separation */
+        border-top: 1px solid var(--vh-color-neutral-02);
+      }
+
+      /* Add a loading indicator area */
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+      }
+    }
+  }
+
+  /* Mobile landscape orientation - prioritize iframe */
+  @media (max-width: 768px) and (orientation: landscape) {
+    .left {
+      max-height: 30vh;
+    }
+
+    .middle {
+      flex: 0.8;
+    }
+
+    .right {
+      flex: 1.2;
+      min-height: 250px;
+    }
+  }
+
+  /* Mobile portrait - balanced layout */
+  @media (max-width: 768px) and (orientation: portrait) {
+    .right {
+      min-height: 350px;
+
+      iframe {
+        min-height: 350px;
       }
     }
   }
