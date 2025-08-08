@@ -35,6 +35,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { AIChat } from './AIChat';
 import { Listing } from './Listing';
 import { Search } from './Search';
+import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { useDragAndDrop } from './useDragAndDrop';
 import { createAICopyPasteHandlers } from './aiCopyPaste';
 import {
@@ -157,6 +158,7 @@ export const VZSidebar = ({
     updatePresenceIndicator,
     setVoiceChatModalOpen,
     submitOperation,
+    deleteAllFiles,
   } = useContext(VZCodeContext);
 
   const fileTree = useMemo(
@@ -178,6 +180,10 @@ export const VZSidebar = ({
   const [exportButtonText, setExportButtonText] =
     useState('Export to ZIP');
 
+  // State for delete all confirmation modal
+  const [showDeleteAllModal, setShowDeleteAllModal] =
+    useState(false);
+
   // Create AI copy/paste handlers
   const {
     handleCopyForAI,
@@ -194,6 +200,20 @@ export const VZSidebar = ({
       ),
     [files, submitOperation],
   );
+
+  // Delete all handlers
+  const handleDeleteAllClick = useCallback(() => {
+    setShowDeleteAllModal(true);
+  }, []);
+
+  const handleDeleteAllModalClose = useCallback(() => {
+    setShowDeleteAllModal(false);
+  }, []);
+
+  const handleDeleteAllConfirm = useCallback(() => {
+    setShowDeleteAllModal(false);
+    deleteAllFiles();
+  }, [deleteAllFiles]);
 
   const { sidebarWidth, setSidebarView } = useContext(
     SplitPaneResizeContext,
@@ -653,6 +673,17 @@ export const VZSidebar = ({
             <i className="bi bi-clipboard-plus"></i>
             {pasteButtonText}
           </button>
+
+          {filesExist && (
+            <button
+              className="ai-button delete-all-button"
+              onClick={handleDeleteAllClick}
+              title="Delete all files"
+            >
+              <i className="bi bi-trash"></i>
+              delete all
+            </button>
+          )}
         </div>
       )}
       {enableConnectionStatus && (
@@ -680,6 +711,17 @@ export const VZSidebar = ({
             />
           </div>
         </div>
+      )}
+
+      {/* Delete All Files Confirmation Modal */}
+      {showDeleteAllModal && (
+        <DeleteConfirmationModal
+          show={showDeleteAllModal}
+          onClose={handleDeleteAllModalClose}
+          onConfirm={handleDeleteAllConfirm}
+          isDirectory={false}
+          name="all files"
+        />
       )}
     </div>
   );

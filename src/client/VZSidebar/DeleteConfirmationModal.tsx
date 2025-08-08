@@ -36,15 +36,26 @@ export const DeleteConfirmationModal = ({
     <Modal show={show} onHide={onClose} centered>
       <Modal.Header closeButton onClick={onClose}>
         <Modal.Title>
-          Delete {isDirectory ? 'Directory' : 'File'}
+          Delete{' '}
+          {name === 'all files'
+            ? 'All Files'
+            : isDirectory
+              ? 'Directory'
+              : 'File'}
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <p>
-          This will delete the{' '}
-          {isDirectory ? 'directory' : 'file'}{' '}
-          <strong>{name}</strong>.
+          {name === 'all files' ? (
+            'This will delete all files in the project.'
+          ) : (
+            <>
+              This will delete the{' '}
+              {isDirectory ? 'directory' : 'file'}{' '}
+              <strong>{name}</strong>.
+            </>
+          )}
         </p>
       </Modal.Body>
 

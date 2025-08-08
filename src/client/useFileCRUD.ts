@@ -203,6 +203,19 @@ export const useFileCRUD = ({
     [submitOperation, closeTabs],
   );
 
+  // Deletes all files
+  const deleteAllFiles = useCallback(() => {
+    const tabsToClose: Array<VizFileId> = [];
+    submitOperation((document: VizContent) => {
+      // Collect all file IDs for closing tabs
+      for (const fileId in document.files) {
+        tabsToClose.push(fileId);
+      }
+      return { ...document, files: {} };
+    });
+    closeTabs(tabsToClose);
+  }, [submitOperation, closeTabs]);
+
   return {
     createFile,
     renameFile,
@@ -210,5 +223,6 @@ export const useFileCRUD = ({
     createDirectory,
     renameDirectory,
     deleteDirectory,
+    deleteAllFiles,
   };
 };
