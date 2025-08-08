@@ -6,6 +6,7 @@ import {
   ShareDBDoc,
   TabState,
   Username,
+  PaneId,
 } from '../types';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { VZAction } from './vzReducer';
@@ -251,6 +252,16 @@ export const useActions = (
     [dispatch],
   );
 
+  const setActivePane = useCallback(
+    (paneId: PaneId) => {
+      dispatch({
+        type: 'set_active_pane',
+        paneId,
+      });
+    },
+    [dispatch],
+  );
+
   const splitCurrentPane = useCallback(() => {
     dispatch({
       type: 'split_current_pane',
@@ -283,6 +294,7 @@ export const useActions = (
     setUsername,
     toggleAutoFollow,
     updatePresenceIndicator,
+    setActivePane,
     splitCurrentPane,
   };
 };

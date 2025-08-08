@@ -41,11 +41,20 @@ const LeafPaneView = ({
     view: EditorView,
   ) => Promise<readonly Diagnostic[]>;
 }) => {
+  const { setActivePane, activePaneId } =
+    useContext(VZCodeContext);
+
   // This prevents the CodeEditor from rendering during SSR.
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handlePaneClick = () => {
+    setActivePane(pane.id);
+  };
+
+  const isActivePane = pane.id === activePaneId;
 
   return (
     <div
@@ -54,7 +63,13 @@ const LeafPaneView = ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        border: isActivePane
+          ? '2px solid #007ACC'
+          : '2px solid transparent',
+        borderRadius: '4px',
+        cursor: 'pointer',
       }}
+      onClick={handlePaneClick}
     >
       <TabList
         activeFileId={pane.activeFileId}
