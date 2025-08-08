@@ -317,6 +317,10 @@
       cursor: pointer;
       transition: all 0.2s ease;
 
+      i {
+        margin-right: 8px;
+      }
+
       &:hover {
         background: var(--vh-color-hover-dark);
         border-color: var(--vh-color-neutral-04);

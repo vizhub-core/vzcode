@@ -630,7 +630,7 @@ export const VZSidebar = ({
               onClick={handleExportToZip}
               title="Export files to ZIP"
             >
-              <i className="bi bi-download"></i>{' '}
+              <i className="bi bi-download"></i>
               {exportButtonText}
             </button>
           )}
@@ -640,7 +640,7 @@ export const VZSidebar = ({
               onClick={handleCopyForAI}
               title="Copy files formatted for AI"
             >
-              <i className="bi bi-clipboard"></i>{' '}
+              <i className="bi bi-clipboard"></i>
               {copyButtonText}
             </button>
           )}
@@ -650,7 +650,7 @@ export const VZSidebar = ({
             onClick={handlePasteForAI}
             title="Paste files from AI"
           >
-            <i className="bi bi-clipboard-plus"></i>{' '}
+            <i className="bi bi-clipboard-plus"></i>
             {pasteButtonText}
           </button>
         </div>
