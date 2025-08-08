@@ -16,8 +16,11 @@ describe('closeTabsReducer', () => {
 
     const stateWithTabs = {
       ...initialState,
-      tabList: [{ fileId: 'file1', isTransient: false }],
-      activeFileId: 'file1',
+      pane: {
+        ...initialState.pane,
+        tabList: [{ fileId: 'file1', isTransient: false }],
+        activeFileId: 'file1',
+      },
     };
 
     const newState = closeTabsReducer(
@@ -116,12 +119,15 @@ describe('closeTabsReducer', () => {
   it('Closes a tab that is not currently active', () => {
     const stateWithMultipleTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-        { fileId: 'file3', isTransient: false },
-      ],
-      activeFileId: 'file3',
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+          { fileId: 'file3', isTransient: false },
+        ],
+        activeFileId: 'file3',
+      },
     };
 
     const action: VZAction = {
@@ -142,12 +148,15 @@ describe('closeTabsReducer', () => {
   it('Closes the first tab out of many, when it is active', () => {
     const stateWithMultipleTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-        { fileId: 'file3', isTransient: false },
-      ],
-      activeFileId: 'file1',
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+          { fileId: 'file3', isTransient: false },
+        ],
+        activeFileId: 'file1',
+      },
     };
 
     const action: VZAction = {
@@ -168,12 +177,15 @@ describe('closeTabsReducer', () => {
   it('Closes multiple tabs at once', () => {
     const stateWithMultipleTabs = {
       ...initialState,
-      tabList: [
-        { fileId: 'file1', isTransient: false },
-        { fileId: 'file2', isTransient: false },
-        { fileId: 'file3', isTransient: false },
-      ],
-      activeFileId: 'file2',
+      pane: {
+        ...initialState.pane,
+        tabList: [
+          { fileId: 'file1', isTransient: false },
+          { fileId: 'file2', isTransient: false },
+          { fileId: 'file3', isTransient: false },
+        ],
+        activeFileId: 'file2',
+      },
     };
 
     const action: VZAction = {

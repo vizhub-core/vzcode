@@ -56,13 +56,6 @@ test('AI Chat Timeout Prevention - Basic Logic', async () => {
   // Verify AI processing still happens
   const finalAiResult = await newResult.aiProcessing;
   expect(finalAiResult.aiStatus).toBe('completed');
-
-  console.log(
-    '✅ New implementation returns HTTP response immediately',
-  );
-  console.log(
-    '✅ AI status tracked in ShareDB for UI state management',
-  );
 });
 
 test('ShareDB aiStatus State Management', () => {
@@ -83,8 +76,4 @@ test('ShareDB aiStatus State Management', () => {
   // AI fails -> set error status
   aiStatus = 'error';
   expect(aiStatus).toBe('error');
-
-  console.log(
-    '✅ AI status state management works correctly',
-  );
 });
