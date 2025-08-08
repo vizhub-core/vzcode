@@ -4,10 +4,9 @@
   "description": "Multiplayer code editor system",
   "main": "src/index.ts",
   "type": "module",
-  "bin": "src/server/index.ts",
+  "bin": "dist/cli.js",
   "files": [
-    "dist/**",
-    "src/**"
+    "dist/**"
   ],
   "scripts": {
     "test": "vitest run",
@@ -15,8 +14,9 @@
     "prettier": "prettier {*.*,**/*.*} --write",
     "typecheck": "tsc --noEmit",
     "dev": "cross-env EDITOR_PORT=5173 concurrently \"npm run test-interactive\" \"vite\"",
-    "build": "vite build",
-    "build-release": "vite build --mode release",
+    "build": "vite build && npm run build:server",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build-release": "vite build --mode release && npm run build:server",
     "preview": "concurrently \"npm run test-interactive\" \"vite preview\"",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
