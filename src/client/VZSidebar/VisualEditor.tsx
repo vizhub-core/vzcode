@@ -12,13 +12,31 @@ import { EmptyState } from './EmptyState';
 
 const CONFIG_FILE_NAME = 'config.json';
 
+// Helper function to calculate percentage for progress fill
+const calculatePercentage = (
+  value: number,
+  min: number,
+  max: number,
+) => {
+  return ((value - min) / (max - min)) * 100;
+};
+
+// Helper function to format values nicely
+const formatValue = (
+  value: number,
+  min: number,
+  max: number,
+) => {
+  // Determine decimal places based on the range
+  const range = max - min;
+  const decimalPlaces =
+    range < 10 ? 2 : range < 100 ? 1 : 0;
+  return Number(value).toFixed(decimalPlaces);
+};
+
 export const VisualEditor = () => {
-  const {
-    files,
-    submitOperation,
-    runPrettierRef,
-    iframeRef,
-  } = useContext(VZCodeContext);
+  const { files, submitOperation, iframeRef } =
+    useContext(VZCodeContext);
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -98,10 +116,6 @@ export const VisualEditor = () => {
             },
           },
         }));
-
-        iframeRef.current.contentWindow.postMessage({
-          [property]: newValueOfConsistentType,
-        });
       },
     [configData, files, configFileId],
   );
@@ -114,12 +128,7 @@ export const VisualEditor = () => {
 
   // Detect config.json changes and send updates to iframe
   useEffect(() => {
-    if (
-      !configFileId ||
-      !files ||
-      !files[configFileId] ||
-      !iframeRef.current?.contentWindow
-    ) {
+    if (!configFileId || !files || !files[configFileId]) {
       return;
     }
 
@@ -185,124 +194,6 @@ export const VisualEditor = () => {
       }
     }
   }, [files, configFileId, iframeRef]);
-
-  // State for advanced interactions
-  const [activeSlider, setActiveSlider] = useState<
-    string | null
-  >(null);
-  const [isDragging, setIsDragging] = useState<
-    string | null
-  >(null);
-  const [hoverValue, setHoverValue] = useState<
-    number | null
-  >(null);
-  const sliderRefs = useRef<{
-    [key: string]: HTMLInputElement | null;
-  }>({});
-
-  // Helper function to format values nicely
-  const formatValue = (
-    value: number,
-    min: number,
-    max: number,
-  ) => {
-    // Determine decimal places based on the range
-    const range = max - min;
-    const decimalPlaces =
-      range < 10 ? 2 : range < 100 ? 1 : 0;
-    return Number(value).toFixed(decimalPlaces);
-  };
-
-  // Helper function to calculate percentage for progress fill
-  const calculatePercentage = (
-    value: number,
-    min: number,
-    max: number,
-  ) => {
-    return ((value - min) / (max - min)) * 100;
-  };
-
-  // Enhanced input handler with animations
-  const onInputUpdateEnhanced = useCallback(
-    (
-      property: string,
-      previousValue: any,
-      widgetConfig: VisualEditorConfigEntry,
-    ): React.FormEventHandler<HTMLInputElement> =>
-      (event) => {
-        const newValueOfConsistentType =
-          typeof previousValue === 'number'
-            ? parseFloat(event.currentTarget.value)
-            : event.currentTarget.value;
-
-        const newConfigData = {
-          ...configData,
-          [property]: newValueOfConsistentType,
-        };
-
-        submitOperation((document: VizContent) => ({
-          ...document,
-          files: {
-            ...files,
-            [configFileId]: {
-              name: 'config.json',
-              text: JSON.stringify(newConfigData, null, 2),
-            },
-          },
-        }));
-
-        iframeRef.current.contentWindow.postMessage({
-          [property]: newValueOfConsistentType,
-        });
-
-        // Trigger value change animation
-        const sliderElement = sliderRefs.current[property];
-        if (sliderElement) {
-          sliderElement.classList.add('value-changed');
-          setTimeout(() => {
-            sliderElement.classList.remove('value-changed');
-          }, 300);
-        }
-      },
-    [configData, files, configFileId],
-  );
-
-  // Mouse event handlers for enhanced interactions
-  const handleMouseDown = (property: string) => {
-    setIsDragging(property);
-    setActiveSlider(property);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(null);
-  };
-
-  const handleMouseEnter = (property: string) => {
-    setActiveSlider(property);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveSlider(null);
-    setHoverValue(null);
-  };
-
-  // Add global mouse up listener
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      setIsDragging(null);
-    };
-
-    document.addEventListener(
-      'mouseup',
-      handleGlobalMouseUp,
-    );
-    return () => {
-      document.removeEventListener(
-        'mouseup',
-        handleGlobalMouseUp,
-      );
-    };
-  }, []);
 
   return (
     <div className="visual-editor">
