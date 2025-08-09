@@ -11,6 +11,8 @@ import {
   ToggleButton,
 } from '../../bootstrap';
 import { enableAskMode } from '../../featureFlags';
+import { useSpeechRecognition } from './useSpeechRecognition';
+import { MicSVG, MicOffSVG } from '../../Icons';
 
 interface ChatInputProps {
   aiChatMessage: string;
@@ -38,6 +40,13 @@ const ChatInputComponent = ({
   resetMessageHistoryNavigation,
 }: ChatInputProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Use the speech recognition hook
+  const {
+    isSpeaking,
+    toggleSpeechRecognition,
+    stopSpeaking,
+  } = useSpeechRecognition(setAIChatMessage);
 
   useEffect(() => {
     // Focus the input when the AI chat is focused
@@ -92,8 +101,12 @@ const ChatInputComponent = ({
   );
 
   const handleSendClick = useCallback(() => {
+    // If speech recognition is active, stop it
+    if (isSpeaking) {
+      stopSpeaking();
+    }
     onSendMessage();
-  }, [onSendMessage]);
+  }, [onSendMessage, isSpeaking, stopSpeaking]);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -173,20 +186,50 @@ const ChatInputComponent = ({
           <span className="ai-chat-hint">
             {aiChatMessage ? 'Press Enter to send' : ''}
           </span>
-          <Button
-            variant={
-              aiChatMessage.trim()
-                ? 'primary'
-                : 'outline-secondary'
-            }
-            onClick={handleSendClick}
-            disabled={!aiChatMessage.trim() || isLoading}
-            className="ai-chat-send-button"
-            aria-label="Send message"
-            title="Send message (Enter)"
-          >
-            Send
-          </Button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Button
+              variant={
+                isSpeaking ? 'danger' : 'outline-secondary'
+              }
+              size="sm"
+              onClick={toggleSpeechRecognition}
+              disabled={isLoading}
+              aria-label={
+                isSpeaking
+                  ? 'Stop voice typing'
+                  : 'Start voice typing'
+              }
+              title={
+                isSpeaking
+                  ? 'Stop voice typing'
+                  : 'Start voice typing'
+              }
+              style={{
+                borderColor: isSpeaking
+                  ? undefined
+                  : '#dee2e6',
+                borderRadius: '0.375rem',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+              }}
+            >
+              {isSpeaking ? <MicOffSVG /> : <MicSVG />}
+            </Button>
+            <Button
+              variant={
+                aiChatMessage.trim()
+                  ? 'primary'
+                  : 'outline-secondary'
+              }
+              onClick={handleSendClick}
+              disabled={!aiChatMessage.trim() || isLoading}
+              className="ai-chat-send-button"
+              aria-label="Send message"
+              title="Send message (Enter)"
+            >
+              Send
+            </Button>
+          </div>
         </div>
       </Form.Group>
     </div>

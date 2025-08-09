@@ -21,4 +21,6 @@ export { HtmlSVG } from './HtmlSVG';
 export { CssSVG } from './CssSVG';
 export { JsonSVG } from './JsonSVG';
 export { MarkdownSVG } from './MarkdownSVG';
+export { MicSVG } from './MicSVG';
+export { MicOffSVG } from './MicOffSVG';
 export { AdjustmentSVG } from './AdjustmentSVG';
