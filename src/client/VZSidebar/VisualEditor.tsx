@@ -38,6 +38,11 @@ export const VisualEditor = () => {
   const { files, submitOperation, iframeRef } =
     useContext(VZCodeContext);
 
+  // Local state to track slider values during user interaction
+  const [localValues, setLocalValues] = useState<{
+    [key: string]: number;
+  }>({});
+
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
     if (files[fileId].name === CONFIG_FILE_NAME) {
@@ -88,22 +93,23 @@ export const VisualEditor = () => {
     );
   }
 
-  const onInputUpdate = useCallback(
-    (
-      property: string,
-      previousValue: any,
-    ): React.FormEventHandler<HTMLInputElement> =>
-      (event) => {
-        //TODO: test race condition in which someone is editing the config file as another user uses the visual editor
+  const onSliderChange = useCallback(
+    (property: string) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseFloat(
+          event.currentTarget.value,
+        );
 
-        const newValueOfConsistentType =
-          typeof previousValue === 'number'
-            ? parseFloat(event.currentTarget.value)
-            : event.currentTarget.value;
+        // Update local state immediately for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newValue,
+        }));
 
+        // Update config.json
         const newConfigData = {
           ...configData,
-          [property]: newValueOfConsistentType,
+          [property]: newValue,
         };
 
         submitOperation((document: VizContent) => ({
@@ -117,11 +123,23 @@ export const VisualEditor = () => {
           },
         }));
       },
-    [configData, files, configFileId],
+    [configData, files, configFileId, setLocalValues],
   );
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
+
+  // Sync local values with config data when it changes (including remote updates)
+  useEffect(() => {
+    const newLocalValues: { [key: string]: number } = {};
+    visualEditorWidgets.forEach((widget) => {
+      if (widget.type === 'number') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+      }
+    });
+    setLocalValues(newLocalValues);
+  }, [configData, visualEditorWidgets]);
 
   // Track previous config state to detect changes from any source (remote clients, text editor, etc.)
   const previousConfigRef = useRef<any>(null);
@@ -199,7 +217,9 @@ export const VisualEditor = () => {
     <div className="visual-editor">
       {visualEditorWidgets.map((widgetConfig, index) => {
         if (widgetConfig.type === 'number') {
+          // Use local value if available, otherwise fall back to config value
           const currentValue =
+            localValues[widgetConfig.property] ??
             configData[widgetConfig.property];
           const percentage = calculatePercentage(
             currentValue,
@@ -235,11 +255,10 @@ export const VisualEditor = () => {
                   min={widgetConfig.min}
                   max={widgetConfig.max}
                   step="any"
-                  onInput={onInputUpdate(
+                  value={currentValue}
+                  onChange={onSliderChange(
                     widgetConfig.property,
-                    configData[widgetConfig.property],
                   )}
-                  defaultValue={currentValue}
                 />
                 <div
                   className="slider-track-fill"
