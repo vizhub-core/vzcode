@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -51,6 +52,7 @@ export const useVZCodeState = ({
   clearStoredAIPrompt,
   getStoredAIPrompt,
   additionalWidgets,
+  iframeRef: externalIframeRef,
 }: Omit<
   VZCodeProviderProps,
   'children'
@@ -74,6 +76,9 @@ export const useVZCodeState = ({
   const sidebarRef = useRef(null);
 
   const codeEditorRef = useRef(null);
+
+  // Use external iframeRef if provided, otherwise create our own
+  const iframeRef = externalIframeRef || useRef(null);
 
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority
@@ -104,6 +109,7 @@ export const useVZCodeState = ({
     theme,
     search,
     isSearchOpen,
+    isVisualEditorOpen,
     isAIChatOpen,
     aiChatFocused,
     isSettingsOpen,
@@ -136,6 +142,7 @@ export const useVZCodeState = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+    setIsVisualEditorOpen,
     setIsAIChatOpen,
     toggleAIChatFocused,
     setAIChatMode,
@@ -177,6 +184,7 @@ export const useVZCodeState = ({
     createDirectory,
     renameDirectory,
     deleteDirectory,
+    deleteAllFiles,
   } = useFileCRUD({
     submitOperation,
     closeTabs,
@@ -262,11 +270,71 @@ export const useVZCodeState = ({
 
   const DEBUG = false;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Compute isLoading based on the current chat's aiStatus
   const [currentChatId] = useState(() => uuidv4());
+  const currentChat = content?.chats?.[currentChatId];
+  const isLoading = currentChat?.aiStatus === 'generating';
+
+  // Message history for up/down arrow navigation - using ShareDB document data
+  const messageHistory = useMemo(() => {
+    if (!currentChat?.messages) return [];
+    // Extract user messages in chronological order for history navigation
+    return currentChat.messages
+      .filter((msg) => msg.role === 'user')
+      .map((msg) => msg.content);
+  }, [currentChat?.messages]);
+
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [currentDraft, setCurrentDraft] = useState('');
+
   const [aiErrorMessage, setAIErrorMessage] = useState<
     string | null
   >(null);
+
+  // Message history navigation functions
+  const navigateMessageHistoryUp = useCallback(() => {
+    if (messageHistory.length === 0) return;
+
+    // If we're not navigating history, save current draft
+    if (historyIndex === -1) {
+      setCurrentDraft(aiChatMessage);
+    }
+
+    const newIndex =
+      historyIndex < messageHistory.length - 1
+        ? historyIndex + 1
+        : historyIndex;
+    setHistoryIndex(newIndex);
+    setAIChatMessage(
+      messageHistory[messageHistory.length - 1 - newIndex],
+    );
+  }, [messageHistory, historyIndex, aiChatMessage]);
+
+  const navigateMessageHistoryDown = useCallback(() => {
+    if (historyIndex === -1) return;
+
+    const newIndex = historyIndex - 1;
+    if (newIndex === -1) {
+      // Return to draft
+      setHistoryIndex(-1);
+      setAIChatMessage(currentDraft);
+      setCurrentDraft('');
+    } else {
+      setHistoryIndex(newIndex);
+      setAIChatMessage(
+        messageHistory[
+          messageHistory.length - 1 - newIndex
+        ],
+      );
+    }
+  }, [messageHistory, historyIndex, currentDraft]);
+
+  const resetMessageHistoryNavigation = useCallback(() => {
+    if (historyIndex !== -1) {
+      setHistoryIndex(-1);
+      setCurrentDraft('');
+    }
+  }, [historyIndex]);
 
   const handleSendMessage = useCallback(
     async (
@@ -293,7 +361,11 @@ export const useVZCodeState = ({
 
       const currentPrompt = aiChatMessage.trim();
       setAIChatMessage('');
-      setIsLoading(true);
+
+      // Reset history navigation when sending a message
+      setHistoryIndex(-1);
+      setCurrentDraft('');
+
       setAIErrorMessage(null); // Clear any previous errors
 
       // Call backend endpoint for AI response
@@ -356,13 +428,12 @@ export const useVZCodeState = ({
         }
 
         // The backend handles all ShareDB operations for successful responses
+        // The loading state is now managed via ShareDB aiStatus
       } catch (error) {
         console.error('Error getting AI response:', error);
         setAIErrorMessage(
           'Failed to send message. Please try again.',
         );
-      } finally {
-        setIsLoading(false);
       }
     },
     [
@@ -391,6 +462,7 @@ export const useVZCodeState = ({
     createDirectory,
     renameDirectory,
     deleteDirectory,
+    deleteAllFiles,
 
     setActiveFileId,
     setActiveFileLeft,
@@ -414,6 +486,9 @@ export const useVZCodeState = ({
     setSearchLineVisibility,
     setSearchFocusedIndex,
     toggleSearchFocused,
+
+    isVisualEditorOpen,
+    setIsVisualEditorOpen,
 
     isAIChatOpen,
     setIsAIChatOpen,
@@ -463,6 +538,7 @@ export const useVZCodeState = ({
     runCodeRef,
     sidebarRef,
     codeEditorRef,
+    iframeRef,
 
     connected,
     pending,
@@ -487,11 +563,15 @@ export const useVZCodeState = ({
     aiChatMessage,
     setAIChatMessage,
     isLoading,
-    setIsLoading,
     currentChatId,
     aiErrorMessage,
     setAIErrorMessage,
     handleSendMessage,
+
+    // Message history navigation
+    navigateMessageHistoryUp,
+    navigateMessageHistoryDown,
+    resetMessageHistoryNavigation,
 
     // Auto-fork functions for VizHub integration
     autoForkAndRetryAI,

@@ -15,11 +15,13 @@ const MessageListComponent = ({
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
+  aiStatus, // Add aiStatus prop
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
+  aiStatus?: string; // Add aiStatus to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -104,6 +106,29 @@ const MessageListComponent = ({
     isUserScrolled,
     scrollToBottom,
   ]);
+
+  // Track previous loading state to detect when AI generation completes
+  const [prevIsLoading, setPrevIsLoading] =
+    useState(isLoading);
+
+  // Scroll to bottom when AI generation completes (loading changes from true to false)
+  useEffect(() => {
+    // If AI was generating and now it's finished, scroll to bottom
+    if (prevIsLoading && !isLoading) {
+      // Force scroll to bottom regardless of user scroll state
+      // This ensures we always scroll to bottom when generation completes
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+
+      // Re-enable auto-scroll for future messages
+      setIsUserScrolled(false);
+      setAutoScrollEnabled(true);
+    }
+
+    setPrevIsLoading(isLoading);
+  }, [isLoading, prevIsLoading]);
 
   // Clean up timeout on unmount
   useEffect(() => {

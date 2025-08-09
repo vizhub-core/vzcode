@@ -23,3 +23,4 @@ export { JsonSVG } from './JsonSVG';
 export { MarkdownSVG } from './MarkdownSVG';
 export { MicSVG } from './MicSVG';
 export { MicOffSVG } from './MicOffSVG';
+export { AdjustmentSVG } from './AdjustmentSVG';

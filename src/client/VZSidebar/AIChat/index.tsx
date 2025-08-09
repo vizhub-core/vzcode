@@ -23,6 +23,9 @@ export const AIChat = () => {
     setAIChatMessage,
     handleSendMessage,
     setAIErrorMessage,
+    navigateMessageHistoryUp,
+    navigateMessageHistoryDown,
+    resetMessageHistoryNavigation,
   } = useContext(VZCodeContext);
 
   // Get current chat data from content
@@ -254,6 +257,15 @@ export const AIChat = () => {
           focused={aiChatFocused}
           aiChatMode={aiChatMode}
           setAIChatMode={setAIChatMode}
+          navigateMessageHistoryUp={
+            navigateMessageHistoryUp
+          }
+          navigateMessageHistoryDown={
+            navigateMessageHistoryDown
+          }
+          resetMessageHistoryNavigation={
+            resetMessageHistoryNavigation
+          }
         />
       </div>
     </div>

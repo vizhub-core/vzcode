@@ -40,14 +40,9 @@ Suggest changes to the original files using this exact format:
 
 Only include the files that need to be updated or created.`;
 
-    console.log('=== Testing problematic input ===');
     const parsed = parseMarkdownFiles(
       problematicInput,
       'bold',
-    );
-    console.log(
-      'Parsed files:',
-      Object.keys(parsed.files || {}),
     );
 
     // This should show the problem - extra files being created
@@ -110,12 +105,6 @@ Only include the files that need to be updated or created.`;
     const parsedFixed = parseMarkdownFiles(
       preprocessed,
       'bold',
-    );
-
-    console.log('=== Testing with preprocessing ===');
-    console.log(
-      'Parsed files after preprocessing:',
-      Object.keys(parsedFixed.files || {}),
     );
 
     // After preprocessing, only the real files should be present

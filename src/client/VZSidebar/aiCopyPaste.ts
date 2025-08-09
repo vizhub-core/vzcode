@@ -102,7 +102,7 @@ export const createAICopyPasteHandlers = (
       ) {
         // Use mergeFileChanges utility from editcodewithai
         const mergedFiles = mergeFileChanges(
-          files,
+          files || {},
           parsed.files,
         );
 

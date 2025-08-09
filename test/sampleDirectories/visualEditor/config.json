@@ -1,0 +1,33 @@
+{
+  "xValue": "sepal_length",
+  "yValue": "sepal_width",
+  "margin": {
+    "top": 20,
+    "right": 67,
+    "bottom": 60,
+    "left": 60
+  },
+  "fontSize": "14px",
+  "fontFamily": "sans-serif",
+  "pointRadius": 15.2885994263862,
+  "pointFill": "black",
+  "pointOpacity": 0.7,
+  "loadingFontSize": "24px",
+  "loadingFontFamily": "sans-serif",
+  "loadingMessage": "Loading...",
+  "dataUrl": "iris.csv",
+  "colorScale": {
+    "setosa": "#1f77b4",
+    "versicolor": "#ff7f0e",
+    "virginica": "#2ca02c"
+  },
+  "visualEditorWidgets": [
+    {
+      "type": "number",
+      "label": "Point Radius",
+      "property": "pointRadius",
+      "min": 1,
+      "max": 30
+    }
+  ]
+}

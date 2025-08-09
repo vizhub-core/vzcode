@@ -23,6 +23,17 @@ import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
 
+// Useful for testing/debugging the streaming behavior
+const slowMode = false;
+
+// Throttle the streaming updates, so that we don't
+// overwhelm the ShareDB server with too many updates.
+// It happened actually, before adding this.
+// MongoDB VizHub server got in fact overloaded with
+// too many updates from the AI streaming response, with
+// warning: "Replication Oplog Window has gone below 1 hour"
+const THROTTLE_INTERVAL_MS = 100;
+
 // Feature flag to enable/disable streaming editing.
 // * If `true`, the AI streaming response will be used to
 //   edit files in real-time by submitting ShareDB ops.
@@ -50,12 +61,14 @@ export const createLLMFunction = ({
   // and reasoning content is not processed in the streaming response.
   enableReasoningTokens = false,
   model,
+  aiRequestOptions,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
   createAIEditLocalPresence: () => any;
   chatId: VizChatId;
   enableReasoningTokens?: boolean;
   model?: string;
+  aiRequestOptions?: any;
 }) => {
   return async (fullPrompt: string) => {
     const localPresence = enableStreamingEditing
@@ -82,18 +95,63 @@ export const createLLMFunction = ({
     // Create initial AI message for streaming
     const aiMessageId = createAIMessage(shareDBDoc, chatId);
 
+    // --- throttle wrapper ---
+    function makeThrottledUpdater() {
+      let lastCall = 0;
+      let latestContent = '';
+      let timer: NodeJS.Timeout | null = null;
+
+      function invoke() {
+        updateAIMessageContent(
+          shareDBDoc,
+          chatId,
+          aiMessageId,
+          latestContent,
+        );
+        lastCall = Date.now();
+      }
+
+      const fn = (content: string) => {
+        latestContent = content;
+        const now = Date.now();
+
+        if (now - lastCall >= THROTTLE_INTERVAL_MS) {
+          // safe to call immediately
+          invoke();
+        } else if (!timer) {
+          // schedule for later
+          timer = setTimeout(
+            () => {
+              timer = null;
+              invoke();
+            },
+            THROTTLE_INTERVAL_MS - (now - lastCall),
+          );
+        }
+      };
+
+      // expose a flush() helper to force an immediate write
+      fn.flush = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        invoke();
+      };
+
+      return fn;
+    }
+
+    const throttledUpdateAIMessageContent =
+      makeThrottledUpdater();
+
     // Function to report file edited
     // This is called when the AI has finished editing a file
     // and we want to update the message content with the file name.
     const reportFileEdited = () => {
       if (currentEditingFileName) {
         fullContent += ` * Edited ${currentEditingFileName}\n`;
-        updateAIMessageContent(
-          shareDBDoc,
-          chatId,
-          aiMessageId,
-          fullContent,
-        );
+        throttledUpdateAIMessageContent(fullContent);
         currentEditingFileName = null;
       }
     };
@@ -186,12 +244,7 @@ export const createLLMFunction = ({
           reportFileEdited();
         }
         fullContent += line + '\n';
-        updateAIMessageContent(
-          shareDBDoc,
-          chatId,
-          aiMessageId,
-          fullContent,
-        );
+        throttledUpdateAIMessageContent(fullContent);
       },
     };
 
@@ -210,11 +263,9 @@ export const createLLMFunction = ({
     const requestConfig: any = {
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
-      provider: {
-        sort: 'price',
-      },
       usage: { include: true },
       stream: true,
+      ...aiRequestOptions,
     };
 
     // Only include reasoning configuration if reasoning tokens are enabled
@@ -233,6 +284,11 @@ export const createLLMFunction = ({
     let contentStarted = false;
 
     for await (const chunk of stream) {
+      if (slowMode) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 500),
+        );
+      }
       const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
       if (delta?.reasoning && enableReasoningTokens) {
@@ -267,12 +323,7 @@ export const createLLMFunction = ({
           await parser.processChunk(chunkContent);
         } else {
           fullContent += chunkContent;
-          updateAIMessageContent(
-            shareDBDoc,
-            chatId,
-            aiMessageId,
-            fullContent,
-          );
+          throttledUpdateAIMessageContent(fullContent);
         }
       } else if (chunk.usage) {
         // Handle usage information
@@ -289,12 +340,10 @@ export const createLLMFunction = ({
     // Final cleanup - clear scratchpad and set final status
     updateAIScratchpad(shareDBDoc, chatId, '');
     updateAIStatus(shareDBDoc, chatId, 'Done editing.');
-    updateAIMessageContent(
-      shareDBDoc,
-      chatId,
-      aiMessageId,
-      fullContent,
-    );
+    throttledUpdateAIMessageContent(fullContent);
+
+    // Flush to ensure the final content is written immediately
+    throttledUpdateAIMessageContent.flush();
 
     // Finalize the AI message by clearing temporary fields
     finalizeAIMessage(shareDBDoc, chatId);
