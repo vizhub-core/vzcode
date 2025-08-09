@@ -12,13 +12,36 @@ import { EmptyState } from './EmptyState';
 
 const CONFIG_FILE_NAME = 'config.json';
 
+// Helper function to calculate percentage for progress fill
+const calculatePercentage = (
+  value: number,
+  min: number,
+  max: number,
+) => {
+  return ((value - min) / (max - min)) * 100;
+};
+
+// Helper function to format values nicely
+const formatValue = (
+  value: number,
+  min: number,
+  max: number,
+) => {
+  // Determine decimal places based on the range
+  const range = max - min;
+  const decimalPlaces =
+    range < 10 ? 2 : range < 100 ? 1 : 0;
+  return Number(value).toFixed(decimalPlaces);
+};
+
 export const VisualEditor = () => {
-  const {
-    files,
-    submitOperation,
-    runPrettierRef,
-    iframeRef,
-  } = useContext(VZCodeContext);
+  const { files, submitOperation, iframeRef } =
+    useContext(VZCodeContext);
+
+  // Local state to track slider values during user interaction
+  const [localValues, setLocalValues] = useState<{
+    [key: string]: number;
+  }>({});
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -70,22 +93,23 @@ export const VisualEditor = () => {
     );
   }
 
-  const onInputUpdate = useCallback(
-    (
-      property: string,
-      previousValue: any,
-    ): React.FormEventHandler<HTMLInputElement> =>
-      (event) => {
-        //TODO: test race condition in which someone is editing the config file as another user uses the visual editor
+  const onSliderChange = useCallback(
+    (property: string) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseFloat(
+          event.currentTarget.value,
+        );
 
-        const newValueOfConsistentType =
-          typeof previousValue === 'number'
-            ? parseFloat(event.currentTarget.value)
-            : event.currentTarget.value;
+        // Update local state immediately for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newValue,
+        }));
 
+        // Update config.json
         const newConfigData = {
           ...configData,
-          [property]: newValueOfConsistentType,
+          [property]: newValue,
         };
 
         submitOperation((document: VizContent) => ({
@@ -98,140 +122,104 @@ export const VisualEditor = () => {
             },
           },
         }));
-
-        iframeRef.current.contentWindow.postMessage({
-          [property]: newValueOfConsistentType,
-        });
       },
-    [configData, files, configFileId],
+    [configData, files, configFileId, setLocalValues],
   );
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
-  // State for advanced interactions
-  const [activeSlider, setActiveSlider] = useState<
-    string | null
-  >(null);
-  const [isDragging, setIsDragging] = useState<
-    string | null
-  >(null);
-  const [hoverValue, setHoverValue] = useState<
-    number | null
-  >(null);
-  const sliderRefs = useRef<{
-    [key: string]: HTMLInputElement | null;
-  }>({});
-
-  // Helper function to format values nicely
-  const formatValue = (
-    value: number,
-    min: number,
-    max: number,
-  ) => {
-    // Determine decimal places based on the range
-    const range = max - min;
-    const decimalPlaces =
-      range < 10 ? 2 : range < 100 ? 1 : 0;
-    return Number(value).toFixed(decimalPlaces);
-  };
-
-  // Helper function to calculate percentage for progress fill
-  const calculatePercentage = (
-    value: number,
-    min: number,
-    max: number,
-  ) => {
-    return ((value - min) / (max - min)) * 100;
-  };
-
-  // Enhanced input handler with animations
-  const onInputUpdateEnhanced = useCallback(
-    (
-      property: string,
-      previousValue: any,
-      widgetConfig: VisualEditorConfigEntry,
-    ): React.FormEventHandler<HTMLInputElement> =>
-      (event) => {
-        const newValueOfConsistentType =
-          typeof previousValue === 'number'
-            ? parseFloat(event.currentTarget.value)
-            : event.currentTarget.value;
-
-        const newConfigData = {
-          ...configData,
-          [property]: newValueOfConsistentType,
-        };
-
-        submitOperation((document: VizContent) => ({
-          ...document,
-          files: {
-            ...files,
-            [configFileId]: {
-              name: 'config.json',
-              text: JSON.stringify(newConfigData, null, 2),
-            },
-          },
-        }));
-
-        iframeRef.current.contentWindow.postMessage({
-          [property]: newValueOfConsistentType,
-        });
-
-        // Trigger value change animation
-        const sliderElement = sliderRefs.current[property];
-        if (sliderElement) {
-          sliderElement.classList.add('value-changed');
-          setTimeout(() => {
-            sliderElement.classList.remove('value-changed');
-          }, 300);
-        }
-      },
-    [configData, files, configFileId],
-  );
-
-  // Mouse event handlers for enhanced interactions
-  const handleMouseDown = (property: string) => {
-    setIsDragging(property);
-    setActiveSlider(property);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(null);
-  };
-
-  const handleMouseEnter = (property: string) => {
-    setActiveSlider(property);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveSlider(null);
-    setHoverValue(null);
-  };
-
-  // Add global mouse up listener
+  // Sync local values with config data when it changes (including remote updates)
   useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      setIsDragging(null);
-    };
+    const newLocalValues: { [key: string]: number } = {};
+    visualEditorWidgets.forEach((widget) => {
+      if (widget.type === 'number') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+      }
+    });
+    setLocalValues(newLocalValues);
+  }, [configData, visualEditorWidgets]);
 
-    document.addEventListener(
-      'mouseup',
-      handleGlobalMouseUp,
-    );
-    return () => {
-      document.removeEventListener(
-        'mouseup',
-        handleGlobalMouseUp,
-      );
-    };
-  }, []);
+  // Track previous config state to detect changes from any source (remote clients, text editor, etc.)
+  const previousConfigRef = useRef<any>(null);
+
+  // Detect config.json changes and send updates to iframe
+  useEffect(() => {
+    if (!configFileId || !files || !files[configFileId]) {
+      return;
+    }
+
+    let newConfigData;
+    try {
+      newConfigData = JSON.parse(files[configFileId].text);
+    } catch (error) {
+      // If config is invalid JSON, we can't process changes
+      return;
+    }
+
+    const previousConfig = previousConfigRef.current;
+
+    // Update the ref with the new config
+    previousConfigRef.current = newConfigData;
+
+    // Skip processing if this is the first time or if there's no previous config
+    if (!previousConfig) {
+      return;
+    }
+
+    // Find changed top-level properties
+    const changedProperties: { [key: string]: any } = {};
+
+    // Check all properties in the new config
+    for (const key in newConfigData) {
+      if (newConfigData[key] !== previousConfig[key]) {
+        // Deep comparison for objects to detect actual changes
+        if (
+          typeof newConfigData[key] === 'object' &&
+          typeof previousConfig[key] === 'object'
+        ) {
+          if (
+            JSON.stringify(newConfigData[key]) !==
+            JSON.stringify(previousConfig[key])
+          ) {
+            changedProperties[key] = newConfigData[key];
+          }
+        } else {
+          changedProperties[key] = newConfigData[key];
+        }
+      }
+    }
+
+    // Check for deleted properties (properties that existed before but don't exist now)
+    for (const key in previousConfig) {
+      if (!(key in newConfigData)) {
+        changedProperties[key] = undefined;
+      }
+    }
+
+    // Send changed properties to iframe if any changes were detected
+    if (Object.keys(changedProperties).length > 0) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          changedProperties,
+        );
+      } catch (error) {
+        console.error(
+          'Failed to send config changes to iframe:',
+          error,
+        );
+      }
+    }
+  }, [files, configFileId, iframeRef]);
 
   return (
     <div className="visual-editor">
       {visualEditorWidgets.map((widgetConfig, index) => {
         if (widgetConfig.type === 'number') {
+          // Use local value if available, otherwise fall back to config value
           const currentValue =
+            localValues[widgetConfig.property] ??
             configData[widgetConfig.property];
           const percentage = calculatePercentage(
             currentValue,
@@ -267,11 +255,10 @@ export const VisualEditor = () => {
                   min={widgetConfig.min}
                   max={widgetConfig.max}
                   step="any"
-                  onInput={onInputUpdate(
+                  value={currentValue}
+                  onChange={onSliderChange(
                     widgetConfig.property,
-                    configData[widgetConfig.property],
                   )}
-                  defaultValue={currentValue}
                 />
                 <div
                   className="slider-track-fill"
