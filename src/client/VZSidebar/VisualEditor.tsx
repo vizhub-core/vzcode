@@ -109,6 +109,83 @@ export const VisualEditor = () => {
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
+  // Track previous config state to detect changes from any source (remote clients, text editor, etc.)
+  const previousConfigRef = useRef<any>(null);
+
+  // Detect config.json changes and send updates to iframe
+  useEffect(() => {
+    if (
+      !configFileId ||
+      !files ||
+      !files[configFileId] ||
+      !iframeRef.current?.contentWindow
+    ) {
+      return;
+    }
+
+    let newConfigData;
+    try {
+      newConfigData = JSON.parse(files[configFileId].text);
+    } catch (error) {
+      // If config is invalid JSON, we can't process changes
+      return;
+    }
+
+    const previousConfig = previousConfigRef.current;
+
+    // Update the ref with the new config
+    previousConfigRef.current = newConfigData;
+
+    // Skip processing if this is the first time or if there's no previous config
+    if (!previousConfig) {
+      return;
+    }
+
+    // Find changed top-level properties
+    const changedProperties: { [key: string]: any } = {};
+
+    // Check all properties in the new config
+    for (const key in newConfigData) {
+      if (newConfigData[key] !== previousConfig[key]) {
+        // Deep comparison for objects to detect actual changes
+        if (
+          typeof newConfigData[key] === 'object' &&
+          typeof previousConfig[key] === 'object'
+        ) {
+          if (
+            JSON.stringify(newConfigData[key]) !==
+            JSON.stringify(previousConfig[key])
+          ) {
+            changedProperties[key] = newConfigData[key];
+          }
+        } else {
+          changedProperties[key] = newConfigData[key];
+        }
+      }
+    }
+
+    // Check for deleted properties (properties that existed before but don't exist now)
+    for (const key in previousConfig) {
+      if (!(key in newConfigData)) {
+        changedProperties[key] = undefined;
+      }
+    }
+
+    // Send changed properties to iframe if any changes were detected
+    if (Object.keys(changedProperties).length > 0) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          changedProperties,
+        );
+      } catch (error) {
+        console.error(
+          'Failed to send config changes to iframe:',
+          error,
+        );
+      }
+    }
+  }, [files, configFileId, iframeRef]);
+
   // State for advanced interactions
   const [activeSlider, setActiveSlider] = useState<
     string | null
