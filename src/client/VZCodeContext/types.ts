@@ -103,7 +103,6 @@ export type VZCodeContextValue = {
   aiChatMode: 'ask' | 'edit';
   setAIChatMode: (mode: 'ask' | 'edit') => void;
   aiChatEndpoint?: string;
-  aiChatUndoEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
   setSearchResults: (files: ShareDBDoc<VizContent>) => void;
   setSearchFileVisibility: (
@@ -201,7 +200,6 @@ export type VZCodeContextValue = {
   additionalWidgets?: React.ComponentType<{
     messageId: string;
     chatId: string;
-    canUndo: boolean;
     handleSendMessage?: (
       messageToSend?: string,
       options?: Record<string, string>,
@@ -228,7 +226,6 @@ export interface VZCodeProviderProps {
   liveKitConnection?: boolean;
   setLiveKitConnection?: (state: boolean) => void;
   aiChatEndpoint?: string;
-  aiChatUndoEndpoint?: string;
   aiChatOptions?: { [key: string]: any };
   autoForkAndRetryAI?: (
     prompt: string,
@@ -243,7 +240,6 @@ export interface VZCodeProviderProps {
   additionalWidgets?: React.ComponentType<{
     messageId: string;
     chatId: string;
-    canUndo: boolean;
   }>;
   iframeRef?: React.MutableRefObject<HTMLIFrameElement>;
 }

@@ -278,7 +278,6 @@ export const addDiffToAIMessage = (
   shareDBDoc: ShareDBDoc<VizContent>,
   chatId: VizChatId,
   diffData: any,
-  beforeFiles?: VizFiles, // Optional snapshot for undo functionality (legacy)
   beforeCommitId?: string, // Commit ID before AI changes for VizHub integration
 ) => {
   const chat = shareDBDoc.data.chats[chatId];
@@ -293,7 +292,6 @@ export const addDiffToAIMessage = (
     const newMessage = {
       ...messages[lastAIMessageIndex],
       diffData,
-      ...(beforeFiles && { beforeFiles }), // Add beforeFiles only if provided (legacy)
       ...(beforeCommitId && { beforeCommitId }), // Add beforeCommitId for VizHub integration
     };
     // Use type assertion to extend the message with diffData
@@ -477,34 +475,4 @@ export const appendLineToFile = (
   shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
 };
 
-/**
- * Undoes the last AI edit by restoring files and removing the AI message
- */
-export const undoAIEdit = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  chatId: VizChatId,
-  messageId: string,
-  beforeFiles: VizFiles,
-) => {
-  const chat = shareDBDoc.data.chats[chatId];
-  const messages = chat.messages.filter(
-    (msg) => msg.id !== messageId,
-  );
 
-  const op = diff(shareDBDoc.data, {
-    ...shareDBDoc.data,
-    files: beforeFiles,
-    chats: {
-      ...shareDBDoc.data.chats,
-      [chatId]: {
-        ...chat,
-        messages,
-        updatedAt: dateToTimestamp(new Date()),
-      },
-    },
-    // Trigger a re-run
-    runId: generateRunId(),
-  });
-
-  shareDBDoc.submitOp(op);
-};

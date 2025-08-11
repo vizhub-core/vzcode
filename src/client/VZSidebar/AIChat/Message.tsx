@@ -19,9 +19,7 @@ interface MessageProps {
   timestamp: number;
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
-  beforeFiles?: any;
   chatId?: string;
-  canUndo?: boolean;
 }
 
 const MessageComponent = ({
@@ -31,14 +29,9 @@ const MessageComponent = ({
   timestamp,
   isStreaming,
   diffData,
-  beforeFiles,
   chatId,
-  canUndo,
 }: MessageProps) => {
-  const [isUndoing, setIsUndoing] = useState(false);
   const {
-    aiChatUndoEndpoint,
-    aiChatOptions = {},
     additionalWidgets,
     handleSendMessage,
   } = useContext(VZCodeContext);
@@ -59,46 +52,7 @@ const MessageComponent = ({
     return `ai-chat-message ${role}${isStreaming ? ' streaming' : ''}`;
   }, [role, isStreaming]);
 
-  const handleUndo = async () => {
-    if (
-      !id ||
-      !chatId ||
-      !beforeFiles ||
-      isUndoing ||
-      !aiChatUndoEndpoint
-    ) {
-      return;
-    }
 
-    setIsUndoing(true);
-    try {
-      const response = await fetch(aiChatUndoEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          vizId: aiChatOptions.vizId,
-          chatId,
-          messageId: id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP error! status: ${response.status}`,
-        );
-      }
-
-      // The server will handle the ShareDB operations to undo the changes
-      // The UI will update automatically via ShareDB
-    } catch (error) {
-      console.error('Error undoing AI edit:', error);
-      // TODO: Show user-friendly error message
-    } finally {
-      setIsUndoing(false);
-    }
-  };
 
   return (
     <div className={messageClassName}>
@@ -112,26 +66,12 @@ const MessageComponent = ({
             <DiffView diffData={diffData} />
           )}
         {additionalWidgets &&
-          canUndo &&
           chatId &&
           React.createElement(additionalWidgets, {
             messageId: id,
             chatId: chatId,
-            canUndo: canUndo,
             handleSendMessage,
           })}
-        {!additionalWidgets && canUndo && beforeFiles && (
-          <div className="undo-button-container">
-            <button
-              className="undo-button"
-              onClick={handleUndo}
-              disabled={isUndoing}
-              title="Undo this AI edit"
-            >
-              {isUndoing ? 'Undoing...' : 'Undo'}
-            </button>
-          </div>
-        )}
       </div>
       <div className="ai-chat-message-time">
         {formattedTime}
