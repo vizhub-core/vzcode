@@ -1,4 +1,9 @@
-import { useContext, useMemo, useEffect } from 'react';
+import {
+  useContext,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
@@ -8,6 +13,35 @@ const DEBUG = false;
 
 const showSuggestedRequests = false;
 
+// Component for displaying the list of existing chats
+const ChatList = ({
+  chats,
+  selectedChatId,
+  onSelectChat,
+  getChatTitle,
+}) => {
+  return (
+    <div className="ai-chat-list">
+      <div className="ai-chat-list-header">
+        <h4>Previous Chats</h4>
+      </div>
+      <div className="ai-chat-suggested-prompts">
+        {chats.map((chat) => (
+          <button
+            key={chat.id}
+            className={`ai-chat-suggested-prompt ${
+              selectedChatId === chat.id ? 'selected' : ''
+            }`}
+            onClick={() => onSelectChat(chat.id)}
+          >
+            {getChatTitle(chat)}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const AIChat = () => {
   const {
     aiChatFocused,
@@ -16,6 +50,8 @@ export const AIChat = () => {
     aiChatMessage,
     isLoading,
     currentChatId,
+    selectedChatId,
+    setSelectedChatId,
     aiErrorMessage,
     setAIChatMode,
     clearStoredAIPrompt,
@@ -28,8 +64,12 @@ export const AIChat = () => {
     resetMessageHistoryNavigation,
   } = useContext(VZCodeContext);
 
-  // Get current chat data from content
-  const currentChat = content?.chats?.[currentChatId];
+  // Get the active chat ID and chat data
+  // If selectedChatId is set, use it; otherwise, if no chat selected, don't default to currentChatId
+  const activeChatId = selectedChatId;
+  const currentChat = activeChatId
+    ? content?.chats?.[activeChatId]
+    : null;
   const rawMessages = currentChat?.messages || [];
   const aiStatus = currentChat?.aiStatus;
   const aiScratchpad = currentChat?.aiScratchpad;
@@ -44,8 +84,44 @@ export const AIChat = () => {
     [rawMessages],
   );
 
-  // Check if this is the first time opening the chat (no messages)
-  const isEmptyState = rawMessages.length === 0;
+  // Check if this is the first time opening the chat (no messages) or no chat selected
+  const isEmptyState =
+    !selectedChatId || rawMessages.length === 0;
+
+  // Get all existing chats
+  const allChats = content?.chats || {};
+  const existingChats = Object.values(allChats).filter(
+    (chat) => chat.messages.length > 0,
+  );
+  const hasExistingChats = existingChats.length > 0;
+
+  // Generate title for a chat (first 50 characters of first user message)
+  const getChatTitle = (chat) => {
+    const firstUserMessage = chat.messages.find(
+      (msg) => msg.role === 'user',
+    );
+    if (!firstUserMessage) return 'New Chat';
+    return (
+      firstUserMessage.content.slice(0, 50) +
+      (firstUserMessage.content.length > 50 ? '...' : '')
+    );
+  };
+
+  // Wrapper for handleSendMessage to automatically select the chat when sending
+  const handleSendMessageWithSelection = useCallback(() => {
+    // If no chat is selected, select the currentChatId when sending a message
+    if (!selectedChatId) {
+      setSelectedChatId(currentChatId);
+    }
+
+    // Call the original handleSendMessage without parameters
+    return handleSendMessage();
+  }, [
+    selectedChatId,
+    setSelectedChatId,
+    currentChatId,
+    handleSendMessage,
+  ]);
 
   // Check for stored AI prompt on component mount (post-fork restoration)
   useEffect(() => {
@@ -108,6 +184,14 @@ export const AIChat = () => {
               <div className="ai-chat-empty-text">
                 How can I help you?
               </div>
+              {hasExistingChats && (
+                <ChatList
+                  chats={existingChats}
+                  selectedChatId={selectedChatId}
+                  onSelectChat={setSelectedChatId}
+                  getChatTitle={getChatTitle}
+                />
+              )}
               {showSuggestedRequests && (
                 <div className="ai-chat-empty-examples">
                   {aiChatMode === 'ask' ? (
@@ -223,7 +307,7 @@ export const AIChat = () => {
               messages={messages}
               aiStatus={aiStatus}
               isLoading={isLoading}
-              chatId={currentChatId}
+              chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
             />
           )}
@@ -252,7 +336,7 @@ export const AIChat = () => {
         <ChatInput
           aiChatMessage={aiChatMessage}
           setAIChatMessage={setAIChatMessage}
-          onSendMessage={handleSendMessage}
+          onSendMessage={handleSendMessageWithSelection}
           isLoading={isLoading}
           focused={aiChatFocused}
           aiChatMode={aiChatMode}
