@@ -188,7 +188,7 @@ Before completing any code changes, always verify:
 **Environment Variables** (create .env file from .env.example):
 
 ```bash
-VIZHUB_EDIT_WITH_AI_API_KEY=your_openai_api_key_here
+VZCODE_EDIT_WITH_AI_API_KEY=your_openai_api_key_here
 NGROK_TOKEN=your_ngrok_token_here
 EDITOR_PORT=5173
 ```
