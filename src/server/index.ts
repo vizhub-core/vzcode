@@ -14,7 +14,7 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { handleAIChatMessage } from './handleAIChatMessage.js';
-import { handleAIChatUndo } from './handleAIChatUndo.js';
+
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
@@ -142,14 +142,6 @@ app.post(
   }),
 );
 
-// Handle AI Chat Undo requests.
-app.post(
-  '/ai-chat-undo',
-  bodyParser.json(),
-  handleAIChatUndo({
-    shareDBDoc,
-  }),
-);
 
 // Livekit Token Generator
 app.get('/livekit-token', async (req, res) => {

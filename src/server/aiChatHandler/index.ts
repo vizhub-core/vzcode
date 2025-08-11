@@ -163,7 +163,6 @@ const processAIRequestAsync = async ({
         shareDBDoc,
         chatId,
         editResult.diffData,
-        (editResult as any).beforeFiles, // Pass the beforeFiles snapshot for undo (legacy)
         beforeCommitId, // Pass the commit ID before AI changes (for VizHub integration)
       );
     }

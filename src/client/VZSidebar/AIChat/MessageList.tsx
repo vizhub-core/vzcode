@@ -161,19 +161,6 @@ const MessageListComponent = ({
       onScroll={handleScroll}
     >
       {messages.map((msg, index) => {
-        // Only the most recent assistant message with diffData can be undone
-        const isLastAssistantMessage =
-          msg.role === 'assistant' &&
-          index === messages.length - 1 &&
-          !isLoading; // Can't undo while AI is still generating
-
-        const canUndo =
-          isLastAssistantMessage &&
-          (msg as any).diffData &&
-          (msg as any).beforeFiles &&
-          Object.keys((msg as any).diffData || {}).length >
-            0;
-
         return (
           <Message
             key={msg.id}
@@ -182,9 +169,7 @@ const MessageListComponent = ({
             content={msg.content}
             timestamp={msg.timestamp}
             diffData={(msg as any).diffData}
-            beforeFiles={(msg as any).beforeFiles}
             chatId={chatId}
-            canUndo={canUndo}
           />
         );
       })}

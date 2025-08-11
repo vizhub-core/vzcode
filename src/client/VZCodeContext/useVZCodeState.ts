@@ -46,7 +46,6 @@ export const useVZCodeState = ({
   liveKitConnection,
   setLiveKitConnection,
   aiChatEndpoint,
-  aiChatUndoEndpoint,
   aiChatOptions,
   autoForkAndRetryAI,
   clearStoredAIPrompt,
@@ -509,7 +508,6 @@ export const useVZCodeState = ({
     aiChatMode: state.aiChatMode,
     setAIChatMode,
     aiChatEndpoint,
-    aiChatUndoEndpoint,
     aiChatOptions,
 
     isSettingsOpen,
