@@ -53,6 +53,7 @@ export const useVZCodeState = ({
   getStoredAIPrompt,
   additionalWidgets,
   iframeRef: externalIframeRef,
+  handleChatError,
 }: Omit<
   VZCodeProviderProps,
   'children'
@@ -287,9 +288,20 @@ export const useVZCodeState = ({
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [currentDraft, setCurrentDraft] = useState('');
 
-  const [aiErrorMessage, setAIErrorMessage] = useState<
+  const [aiErrorMessage, setAIErrorMessageState] = useState<
     string | null
   >(null);
+
+  // Create the combined setAIErrorMessage function that calls both state setter and external callback
+  const setAIErrorMessage = useCallback(
+    (error: string | null) => {
+      setAIErrorMessageState(error);
+      if (error && handleChatError) {
+        handleChatError(error);
+      }
+    },
+    [handleChatError],
+  );
 
   // Message history navigation functions
   const navigateMessageHistoryUp = useCallback(() => {

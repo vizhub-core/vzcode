@@ -246,4 +246,5 @@ export interface VZCodeProviderProps {
     canUndo: boolean;
   }>;
   iframeRef?: React.MutableRefObject<HTMLIFrameElement>;
+  handleChatError?: (error: string) => void;
 }
