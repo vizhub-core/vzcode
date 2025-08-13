@@ -2,7 +2,15 @@ import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
-import OpenAI from 'openai';
+import { ChatOpenAI } from '@langchain/openai';
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from '@langchain/core/prompts';
+import {
+  AIMessage,
+  HumanMessage,
+} from '@langchain/core/messages';
 import fs from 'fs';
 import { generateRunId } from '@vizhub/viz-utils';
 import {
@@ -18,8 +26,96 @@ import {
 } from './chatOperations.js';
 import { mergeFileChanges } from 'editcodewithai';
 import { diff } from '../../ot.js';
-import { VizChatId, VizContent } from '@vizhub/viz-types';
+import {
+  VizChatId,
+  VizContent,
+  VizChatMessage,
+} from '@vizhub/viz-types';
 import { ShareDBDoc } from '../../types.js';
+
+// ---------- LangChain History Management ----------
+const sessions = new Map<
+  string,
+  (HumanMessage | AIMessage)[]
+>();
+
+/**
+ * Store last N *turns* (each turn = 1 human + 1 AI message).
+ * If MAX_TURNS=6, that's at most 12 messages added to the prompt.
+ */
+const MAX_TURNS = 6;
+
+function getSessionHistory(
+  sessionId: string,
+): (HumanMessage | AIMessage)[] {
+  if (!sessions.has(sessionId)) sessions.set(sessionId, []);
+  return sessions.get(sessionId)!;
+}
+
+function trimToLastTurns(
+  history: (HumanMessage | AIMessage)[],
+  maxTurns = MAX_TURNS,
+): (HumanMessage | AIMessage)[] {
+  const maxMessages = maxTurns * 2;
+  if (history.length <= maxMessages) return history;
+  return history.slice(history.length - maxMessages);
+}
+
+/**
+ * Converts VZCode chat messages to LangChain message format
+ */
+function convertToLangChainMessages(
+  messages: VizChatMessage[],
+): (HumanMessage | AIMessage)[] {
+  return messages.map((msg) => {
+    if (msg.role === 'user') {
+      return new HumanMessage(msg.content);
+    } else {
+      return new AIMessage(msg.content);
+    }
+  });
+}
+
+/**
+ * Creates LangChain model with proper configuration
+ */
+const createLangChainModel = (
+  model?: string,
+  aiRequestOptions?: any,
+) => {
+  const modelName =
+    model ||
+    process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
+    'anthropic/claude-3.5-sonnet';
+
+  return new ChatOpenAI({
+    model: modelName,
+    temperature: 0.7,
+    openAIApiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
+    configuration: {
+      baseURL:
+        process.env.VIZHUB_EDIT_WITH_AI_BASE_URL ||
+        'https://openrouter.ai/api/v1',
+      defaultHeaders: {
+        'HTTP-Referer': 'https://vizhub.com',
+        'X-Title': 'VizHub',
+        ...aiRequestOptions?.headers,
+      },
+    },
+    streaming: true,
+    ...aiRequestOptions,
+  });
+};
+
+/**
+ * Creates LangChain prompt template with history support
+ */
+const createPromptTemplate = () => {
+  return ChatPromptTemplate.fromMessages([
+    new MessagesPlaceholder('history'),
+    ['human', '{input}'],
+  ]);
+};
 
 const DEBUG = false;
 
@@ -50,7 +146,7 @@ const THROTTLE_INTERVAL_MS = 100;
 const enableStreamingEditing = false;
 
 /**
- * Creates and configures the LLM function for streaming with reasoning tokens
+ * Creates and configures the LLM function for streaming with reasoning tokens using LangChain
  */
 export const createLLMFunction = ({
   shareDBDoc,
@@ -75,17 +171,31 @@ export const createLLMFunction = ({
       ? createAIEditLocalPresence()
       : null;
 
-    // Create OpenRouter client for reasoning token support
-    const openRouterClient = new OpenAI({
-      apiKey: process.env.VIZHUB_EDIT_WITH_AI_API_KEY,
-      baseURL:
-        process.env.VIZHUB_EDIT_WITH_AI_BASE_URL ||
-        'https://openrouter.ai/api/v1',
-      defaultHeaders: {
-        'HTTP-Referer': 'https://vizhub.com',
-        'X-Title': 'VizHub',
-      },
-    });
+    // Create LangChain model and prompt template
+    const llm = createLangChainModel(
+      model,
+      aiRequestOptions,
+    );
+    const promptTemplate = createPromptTemplate();
+
+    // Get chat history from ShareDB
+    const chatMessages: VizChatMessage[] =
+      shareDBDoc.data.chats?.[chatId]?.messages || [];
+
+    // Get session history and convert from ShareDB if available
+    let sessionHistory = getSessionHistory(chatId);
+
+    // If we have fresh chat history from ShareDB, convert and use it
+    // (excluding the most recent message which should be the current input)
+    if (chatMessages.length > 0) {
+      const langchainHistory = convertToLangChainMessages(
+        chatMessages.slice(0, -1),
+      );
+      sessionHistory = langchainHistory;
+    }
+
+    // Trim history to prevent token overflow
+    const trimmedHistory = trimToLastTurns(sessionHistory);
 
     let fullContent = '';
     let generationId = '';
@@ -253,32 +363,14 @@ export const createLLMFunction = ({
     const chunks = [];
     let reasoningContent = '';
 
-    // Stream the response with reasoning tokens
-    const modelName =
-      model ||
-      process.env.VIZHUB_EDIT_WITH_AI_MODEL_NAME ||
-      'anthropic/claude-3.5-sonnet';
+    // Create LangChain streaming chain
+    const chain = promptTemplate.pipe(llm);
 
-    // Configure reasoning tokens based on enableReasoningTokens flag
-    const requestConfig: any = {
-      model: modelName,
-      messages: [{ role: 'user', content: fullPrompt }],
-      usage: { include: true },
-      stream: true,
-      ...aiRequestOptions,
-    };
-
-    // Only include reasoning configuration if reasoning tokens are enabled
-    if (enableReasoningTokens) {
-      requestConfig.reasoning = {
-        effort: 'low',
-        exclude: false,
-      };
-    }
-
-    const stream = await (
-      openRouterClient.chat.completions.create as any
-    )(requestConfig);
+    // Stream the response using LangChain
+    const stream = await chain.stream({
+      input: fullPrompt,
+      history: trimmedHistory,
+    });
 
     let reasoningStarted = false;
     let contentStarted = false;
@@ -289,34 +381,14 @@ export const createLLMFunction = ({
           setTimeout(resolve, 500),
         );
       }
-      const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
-      if (delta?.reasoning && enableReasoningTokens) {
-        // Handle reasoning tokens (thinking) - only if enabled
-        if (!reasoningStarted) {
-          reasoningStarted = true;
-          updateAIStatus(shareDBDoc, chatId, 'Thinking...');
-        }
-        reasoningContent += delta.reasoning;
-        updateAIScratchpad(
-          shareDBDoc,
-          chatId,
-          reasoningContent,
-        );
-      } else if (delta?.content) {
-        // Handle regular content tokens
-        if (reasoningStarted && !contentStarted) {
-          // Clear reasoning when content starts
-          contentStarted = true;
-          updateAIScratchpad(shareDBDoc, chatId, '');
-          updateAIStatus(
-            shareDBDoc,
-            chatId,
-            'Generating response...',
-          );
-        }
+      // Handle LangChain streaming chunks
+      const chunkContent =
+        typeof chunk.content === 'string'
+          ? chunk.content
+          : chunk.content?.toString() || '';
 
-        const chunkContent = delta.content;
+      if (chunkContent) {
         chunks.push(chunkContent);
 
         if (enableStreamingEditing) {
@@ -325,13 +397,11 @@ export const createLLMFunction = ({
           fullContent += chunkContent;
           throttledUpdateAIMessageContent(fullContent);
         }
-      } else if (chunk.usage) {
-        // Handle usage information
-        DEBUG && console.log('Usage:', chunk.usage);
       }
 
-      if (!generationId && chunk.id) {
-        generationId = chunk.id;
+      // Generate a simple ID for the first chunk
+      if (!generationId && chunks.length === 1) {
+        generationId = 'langchain-' + Date.now();
       }
     }
     await parser.flushRemaining();
@@ -364,6 +434,11 @@ export const createLLMFunction = ({
         }
       });
     }
+
+    // Update LangChain session history for future conversations
+    sessionHistory.push(new HumanMessage(fullPrompt));
+    sessionHistory.push(new AIMessage(fullContent));
+    sessions.set(chatId, trimToLastTurns(sessionHistory));
 
     // If streaming editing is not enabled, we need to
     // apply all the edits at once

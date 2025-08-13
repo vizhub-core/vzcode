@@ -7,6 +7,7 @@ import {
   createFilesSnapshot,
   generateFilesUnifiedDiff,
 } from '../../utils/fileDiff.js';
+import { createLangChainChatbot } from './langchainChatbot.js';
 import {
   VizChatId,
   VizChatMessage,
@@ -17,31 +18,6 @@ import {
 const delayStart = false;
 
 /**
- * Formats chat history for inclusion in LLM prompts
- * Excludes the most recent user message since it's passed separately as the main prompt
- */
-const formatChatHistory = (
-  messages: VizChatMessage[],
-): string => {
-  // Get all messages except the last one (which should be the current user message)
-  const historyMessages = messages.slice(0, -1);
-
-  if (historyMessages.length === 0) {
-    return '';
-  }
-
-  const formattedHistory = historyMessages
-    .map((msg) => {
-      const role =
-        msg.role === 'user' ? 'User' : 'Assistant';
-      return `${role}: ${msg.content}`;
-    })
-    .join('\n\n');
-
-  return `Previous conversation:\n${formattedHistory}\n\nCurrent request:\n`;
-};
-
-/**
  * Performs AI chat without editing - just generates a response
  */
 export const performAIChat = async ({
@@ -49,29 +25,40 @@ export const performAIChat = async ({
   shareDBDoc,
   llmFunction,
   chatId,
+  model,
+  aiRequestOptions,
 }: {
   prompt: string;
   shareDBDoc: any;
   llmFunction: any;
   chatId: VizChatId;
+  model?: string;
+  aiRequestOptions?: any;
 }) => {
   const preparedFiles = prepareFilesForPrompt(
     shareDBDoc.data.files,
   );
   const filesContext = formatMarkdownFiles(preparedFiles);
 
-  // Include chat history in the prompt
-  const chatMessages =
-    shareDBDoc.data.chats?.[chatId]?.messages || [];
-  const chatHistoryPrefix = formatChatHistory(chatMessages);
-  const promptWithHistory = chatHistoryPrefix + prompt;
-
-  // 2. Assemble the final prompt for Q&A mode
-  const fullPrompt = assembleFullPrompt({
+  // Assemble the system prompt for Q&A mode using existing format
+  const systemPrompt = assembleFullPrompt({
     filesContext,
-    prompt: promptWithHistory,
+    prompt:
+      'You are a helpful AI assistant for code review and questions.',
     editFormat: 'whole',
   });
+
+  // Get chat history from ShareDB
+  const chatMessages: VizChatMessage[] =
+    shareDBDoc.data.chats?.[chatId]?.messages || [];
+
+  // Create LangChain chatbot with proper history management
+  const chatbot = createLangChainChatbot(
+    systemPrompt,
+    chatId,
+    model,
+    aiRequestOptions,
+  );
 
   if (delayStart) {
     await new Promise((resolve) =>
@@ -79,12 +66,15 @@ export const performAIChat = async ({
     );
   }
 
-  // Call the LLM function which will handle streaming but won't edit files
-  const result = await llmFunction(fullPrompt);
+  // Use LangChain chatbot for chat mode (no file editing needed)
+  const responseContent = await chatbot.sendMessage(
+    prompt,
+    chatMessages,
+  );
 
   return {
-    content: result.content,
-    generationId: result.generationId,
+    content: responseContent,
+    generationId: 'langchain-' + Date.now(), // Generate a simple ID
     diffData: {}, // No file changes in ask mode
   };
 };
@@ -98,12 +88,16 @@ export const performAIEditing = async ({
   llmFunction,
   runCode,
   chatId,
+  model,
+  aiRequestOptions,
 }: {
   prompt: string;
   shareDBDoc: any;
   llmFunction: any;
   runCode: any;
   chatId: VizChatId;
+  model?: string;
+  aiRequestOptions?: any;
 }) => {
   // 1. Capture the current state of files before editing
   const beforeFiles = createFilesSnapshot(
@@ -115,18 +109,25 @@ export const performAIEditing = async ({
   );
   const filesContext = formatMarkdownFiles(preparedFiles);
 
-  // Include chat history in the prompt
-  const chatMessages =
-    shareDBDoc.data.chats?.[chatId]?.messages || [];
-  const chatHistoryPrefix = formatChatHistory(chatMessages);
-  const promptWithHistory = chatHistoryPrefix + prompt;
-
-  // 2. Assemble the final prompt
-  const fullPrompt = assembleFullPrompt({
+  // Assemble the system prompt for editing mode
+  const systemPrompt = assembleFullPrompt({
     filesContext,
-    prompt: promptWithHistory,
+    prompt:
+      'You are a helpful AI assistant for code editing. When making changes, provide complete file contents with your modifications.',
     editFormat: 'whole',
   });
+
+  // Get chat history from ShareDB
+  const chatMessages: VizChatMessage[] =
+    shareDBDoc.data.chats?.[chatId]?.messages || [];
+
+  // Create LangChain chatbot with proper history management
+  const chatbot = createLangChainChatbot(
+    systemPrompt,
+    chatId,
+    model,
+    aiRequestOptions,
+  );
 
   if (delayStart) {
     await new Promise((resolve) =>
@@ -134,8 +135,8 @@ export const performAIEditing = async ({
     );
   }
 
-  // Call the LLM function which will handle streaming and incremental file updates
-  const result = await llmFunction(fullPrompt);
+  // Use the updated LLM function (which now uses LangChain internally)
+  const result = await llmFunction(systemPrompt);
 
   runCode();
 

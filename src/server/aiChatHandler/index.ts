@@ -147,6 +147,8 @@ const processAIRequestAsync = async ({
             shareDBDoc,
             llmFunction,
             chatId,
+            model,
+            aiRequestOptions,
           })
         : await performAIEditing({
             prompt: content,
@@ -154,6 +156,8 @@ const processAIRequestAsync = async ({
             llmFunction,
             runCode,
             chatId,
+            model,
+            aiRequestOptions,
           });
 
     // Add diff data to the AI message if there are changes
