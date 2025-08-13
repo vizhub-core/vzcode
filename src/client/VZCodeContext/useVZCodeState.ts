@@ -272,7 +272,13 @@ export const useVZCodeState = ({
 
   // Compute isLoading based on the current chat's aiStatus
   const [currentChatId] = useState(() => uuidv4());
-  const currentChat = content?.chats?.[currentChatId];
+  const [selectedChatId, setSelectedChatId] = useState<
+    string | null
+  >(null);
+
+  // Use selectedChatId if available, otherwise use currentChatId for backward compatibility
+  const activeChatId = selectedChatId || currentChatId;
+  const currentChat = content?.chats?.[activeChatId];
   const isLoading = currentChat?.aiStatus === 'generating';
 
   // Message history for up/down arrow navigation - using ShareDB document data
@@ -389,7 +395,7 @@ export const useVZCodeState = ({
           body: JSON.stringify({
             ...aiChatOptions,
             content: messageContent.trim(),
-            chatId: currentChatId,
+            chatId: activeChatId,
             mode: aiChatMode,
             ...options,
           }),
@@ -452,7 +458,7 @@ export const useVZCodeState = ({
       isLoading,
       aiChatEndpoint,
       aiChatOptions,
-      currentChatId,
+      activeChatId,
       aiChatMode,
       autoForkAndRetryAI,
     ],
@@ -574,6 +580,8 @@ export const useVZCodeState = ({
     setAIChatMessage,
     isLoading,
     currentChatId,
+    selectedChatId,
+    setSelectedChatId,
     aiErrorMessage,
     setAIErrorMessage,
     handleSendMessage,

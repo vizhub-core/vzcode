@@ -100,7 +100,26 @@
           color: white;
           border-color: var(--vh-color-primary-01);
         }
+
+        &.selected {
+          background: var(--vh-color-primary-01);
+          color: white;
+          border-color: var(--vh-color-primary-01);
+        }
       }
+    }
+  }
+}
+
+.ai-chat-list {
+  margin-top: 20px;
+
+  .ai-chat-list-header {
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--vh-color-neutral-04);
+      margin-bottom: 10px;
     }
   }
 }
