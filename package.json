@@ -6,7 +6,8 @@
   "type": "module",
   "bin": "dist/cli.js",
   "files": [
-    "dist/**"
+    "dist/**",
+    "src/**"
   ],
   "scripts": {
     "test": "vitest run",
