@@ -474,5 +474,3 @@ export const appendLineToFile = (
 
   shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
 };
-
-

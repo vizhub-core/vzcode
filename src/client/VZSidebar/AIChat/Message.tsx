@@ -31,10 +31,8 @@ const MessageComponent = ({
   diffData,
   chatId,
 }: MessageProps) => {
-  const {
-    additionalWidgets,
-    handleSendMessage,
-  } = useContext(VZCodeContext);
+  const { additionalWidgets, handleSendMessage } =
+    useContext(VZCodeContext);
 
   // Memoize date formatting to avoid repeated computation
   const formattedTime = useMemo(() => {
@@ -51,8 +49,6 @@ const MessageComponent = ({
   const messageClassName = useMemo(() => {
     return `ai-chat-message ${role}${isStreaming ? ' streaming' : ''}`;
   }, [role, isStreaming]);
-
-
 
   return (
     <div className={messageClassName}>
