@@ -60,6 +60,10 @@ const ChatInputComponent = ({
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         onSendMessage();
+      } else if (event.key === 'Enter' && event.shiftKey) {
+        // Shift+Enter should add a newline, not trigger run code
+        // We prevent the event from bubbling up to the global keyboard handler
+        event.stopPropagation();
       } else if (event.key === 'ArrowUp') {
         // Only navigate history if cursor is at the beginning of the first line
         const textarea =

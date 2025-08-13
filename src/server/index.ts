@@ -142,7 +142,6 @@ app.post(
   }),
 );
 
-
 // Livekit Token Generator
 app.get('/livekit-token', async (req, res) => {
   const { room, username } = req.query;
