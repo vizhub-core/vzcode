@@ -39,5 +39,23 @@ export function vzReducer(state: VZState, action: VZAction): VZState {
     /* ————————— default ————————— */
     default:
       return state;
+      case "command.show":
+  return {
+    ...state,
+    commandPalette: { ...state.commandPalette, isVisible: true, query: "" },
+  };
+
+case "command.hide":
+  return {
+    ...state,
+    commandPalette: { ...state.commandPalette, isVisible: false, query: "" },
+  };
+
+case "command.setQuery":
+  return {
+    ...state,
+    commandPalette: { ...state.commandPalette, query: action.value },
+  };
   }
+  
 }

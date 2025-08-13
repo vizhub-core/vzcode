@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useCallback,
-  useContext,
-  Fragment,
-  KeyboardEvent as ReactKeyboardEvent,
-} from "react";
+import { useEffect, useCallback, useContext, Fragment } from "react";
 import { VZCodeContext } from "./VZCodeContext";
 
 import { VZLeft } from "./VZLeft";
@@ -19,34 +13,39 @@ import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { VoiceChatModal } from "./VoiceChatModal";
 
 import { QuickOpenPalette } from "./QuickOpenPalette";
-import { ThemeToggleButton } from "./ThemeToggleButton";
-
-import { ActionType } from './actionTypes'; // Ensure this path is correct
+import { CommandPalette } from "./CommandPalette";
 
 export const VZRoot = () => {
-    const { state, dispatch } = useContext(VZCodeContext) as { state: any; dispatch: React.Dispatch<ActionType> };
+  const { state, dispatch } = useContext(VZCodeContext);
 
-  /* ——— global keyboard shortcuts ——— */
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent | ReactKeyboardEvent) => {
+    (e: KeyboardEvent) => {
       // Quick Open
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
         e.preventDefault();
-        dispatch({ type: "quickOpen.show" });
+        dispatch({ type: "quickOpen.show" } as any);
         return;
       }
       if (e.key === "Escape") {
-        dispatch({ type: "quickOpen.hide" });
+        dispatch({ type: "quickOpen.hide" } as any);
+        dispatch({ type: "command.hide" } as any);
+        return;
+      }
+
+      // Command Palette (Ctrl/⌘ + Shift + P)
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+        dispatch({ type: "command.show" });
         return;
       }
 
       // Reopen closed tab
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "t") {
         e.preventDefault();
-        const last = state.closedTabs[0];
+        const last = state.closedTabs?.[0];
         if (last) {
-          dispatch({ type: "openTab", filename: last });
-          dispatch({ type: "tabs.popClosed" });
+          dispatch({ type: "openTab", filename: last } as any);
+          dispatch({ type: "tabs.popClosed" } as any);
         }
         return;
       }
@@ -54,31 +53,23 @@ export const VZRoot = () => {
       // Zen Mode
       if ((e.metaKey || e.ctrlKey) && e.altKey && e.key.toLowerCase() === "z") {
         e.preventDefault();
-        dispatch({ type: "zen.toggle" });
+        dispatch({ type: "zen.toggle" } as any);
         return;
       }
 
-      // Theme toggle  (Ctrl/⌘ + Shift + L)
+      // Theme toggle (Ctrl/⌘ + Shift + L)
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "l") {
         e.preventDefault();
-        dispatch({ type: "theme.toggle" });
+        dispatch({ type: "theme.toggle" } as any);
       }
     },
     [dispatch, state.closedTabs]
   );
 
-  /* attach listener once */
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
-
-  /* Apply theme class to <html> so Tailwind/daisyUI etc. can respond */
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("theme-light", state.theme === "light");
-    root.classList.toggle("theme-dark", state.theme === "dark");
-  }, [state.theme]);
 
   return (
     <Fragment>
@@ -97,9 +88,9 @@ export const VZRoot = () => {
       {state.modals?.showDeleteConfirm && <DeleteConfirmationModal />}
       {state.modals?.showVoiceChat && <VoiceChatModal />}
 
-      {/* ——— Global UI helpers ——— */}
-      <ThemeToggleButton />
+      {/* ——— Overlays ——— */}
       <QuickOpenPalette />
+      <CommandPalette />
     </Fragment>
   );
 };
