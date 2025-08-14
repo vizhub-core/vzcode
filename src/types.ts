@@ -206,4 +206,5 @@ export type VisualEditorConfigEntry =
       type: 'checkbox';
       property: string;
       label: string;
-    };
+    }
+  | { type: 'textInput'; property: string; label: string };

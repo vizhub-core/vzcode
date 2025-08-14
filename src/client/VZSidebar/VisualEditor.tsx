@@ -41,7 +41,7 @@ export const VisualEditor = () => {
 
   // Local state to track widget values during user interaction
   const [localValues, setLocalValues] = useState<{
-    [key: string]: number | boolean;
+    [key: string]: number | boolean | string;
   }>({});
 
   let configFileId: VizFileId | null = null;
@@ -161,19 +161,53 @@ export const VisualEditor = () => {
     [configData, files, configFileId, setLocalValues],
   );
 
+  const onTextInputChange = useCallback(
+    (property: string) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = event.currentTarget.value;
+
+        // Update local state immediately for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newValue,
+        }));
+
+        // Update config.json
+        const newConfigData = {
+          ...configData,
+          [property]: newValue,
+        };
+
+        submitOperation((document: VizContent) => ({
+          ...document,
+          files: {
+            ...files,
+            [configFileId]: {
+              name: 'config.json',
+              text: JSON.stringify(newConfigData, null, 2),
+            },
+          },
+        }));
+      },
+    [configData, files, configFileId, setLocalValues],
+  );
+
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
   // Sync local values with config data when it changes (including remote updates)
   useEffect(() => {
     const newLocalValues: {
-      [key: string]: number | boolean;
+      [key: string]: number | boolean | string;
     } = {};
     visualEditorWidgets.forEach((widget) => {
       if (widget.type === 'slider') {
         newLocalValues[widget.property] =
           configData[widget.property];
       } else if (widget.type === 'checkbox') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+      } else if (widget.type === 'textInput') {
         newLocalValues[widget.property] =
           configData[widget.property];
       }
@@ -354,6 +388,39 @@ export const VisualEditor = () => {
                     }`}
                   />
                 </div>
+              </div>
+            </div>
+          );
+        } else if (widgetConfig.type === 'textInput') {
+          // Use local value if available, otherwise fall back to config value
+          const currentValue =
+            localValues[widgetConfig.property] ??
+            configData[widgetConfig.property];
+
+          return (
+            <div
+              key={widgetConfig.property}
+              className="visual-editor-text-input"
+            >
+              <div className="text-input-header">
+                <label
+                  htmlFor={widgetConfig.property}
+                  className="text-input-label"
+                >
+                  {widgetConfig.label}
+                </label>
+               
+              </div>
+              <div className="text-input-container">
+                <input
+                  type="text"
+                  id={widgetConfig.property}
+                  className="text-input-field"
+                  value={currentValue || ''}
+                  onChange={onTextInputChange(
+                    widgetConfig.property,
+                  )}
+                />
               </div>
             </div>
           );

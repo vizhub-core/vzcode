@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "sans-serif",
-  "pointRadius": 3.5,
+  "pointRadius": 6,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -22,6 +22,7 @@
     "virginica": "#2ca02c"
   },
   "showAxis": true,
+  "scatterPlotTitle": "My Scatter plot",
   "visualEditorWidgets": [
     {
       "type": "slider",
@@ -35,6 +36,11 @@
       "type": "checkbox",
       "label": "Show Axis",
       "property": "showAxis"
+    },
+    {
+      "type": "textInput",
+      "label": "Title",
+      "property": "scatterPlotTitle"
     }
   ]
 }
