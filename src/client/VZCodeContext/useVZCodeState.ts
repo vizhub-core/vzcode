@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -467,6 +468,89 @@ export const useVZCodeState = ({
       autoForkAndRetryAI,
     ],
   );
+
+  // Config.json change detection and iframe notification
+  // This logic was moved from VisualEditor.tsx to ensure it runs
+  // even when the visual editor is not open, fixing cross-client propagation
+  const previousConfigRef = useRef<any>(null);
+  const CONFIG_FILE_NAME = 'config.json';
+
+  useEffect(() => {
+    // Find config.json file
+    let configFileId = null;
+    for (const fileId in files) {
+      if (files[fileId].name === CONFIG_FILE_NAME) {
+        configFileId = fileId;
+        break;
+      }
+    }
+
+    if (!configFileId || !files || !files[configFileId]) {
+      return;
+    }
+
+    let newConfigData;
+    try {
+      newConfigData = JSON.parse(files[configFileId].text);
+    } catch (error) {
+      // If config is invalid JSON, we can't process changes
+      return;
+    }
+
+    const previousConfig = previousConfigRef.current;
+
+    // Update the ref with the new config
+    previousConfigRef.current = newConfigData;
+
+    // Skip processing if this is the first time or if there's no previous config
+    if (!previousConfig) {
+      return;
+    }
+
+    // Find changed top-level properties
+    const changedProperties: { [key: string]: any } = {};
+
+    // Check all properties in the new config
+    for (const key in newConfigData) {
+      if (newConfigData[key] !== previousConfig[key]) {
+        // Deep comparison for objects to detect actual changes
+        if (
+          typeof newConfigData[key] === 'object' &&
+          typeof previousConfig[key] === 'object'
+        ) {
+          if (
+            JSON.stringify(newConfigData[key]) !==
+            JSON.stringify(previousConfig[key])
+          ) {
+            changedProperties[key] = newConfigData[key];
+          }
+        } else {
+          changedProperties[key] = newConfigData[key];
+        }
+      }
+    }
+
+    // Check for deleted properties (properties that existed before but don't exist now)
+    for (const key in previousConfig) {
+      if (!(key in newConfigData)) {
+        changedProperties[key] = undefined;
+      }
+    }
+
+    // Send changed properties to iframe if any changes were detected
+    if (Object.keys(changedProperties).length > 0) {
+      try {
+        iframeRef.current?.contentWindow?.postMessage(
+          changedProperties,
+        );
+      } catch (error) {
+        console.error(
+          'Failed to send config changes to iframe:',
+          error,
+        );
+      }
+    }
+  }, [files, iframeRef]);
 
   // Return the context value
   return {

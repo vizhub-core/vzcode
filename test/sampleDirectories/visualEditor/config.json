@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "cursive",
-  "pointRadius": 21,
+  "pointRadius": 16,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -21,7 +21,7 @@
     "versicolor": "#ff7f0e",
     "virginica": "#2ca02c"
   },
-  "showAxis": true,
+  "showAxis": false,
   "scatterPlotTitle": "My Scatter 2",
   "visualEditorWidgets": [
     {
@@ -46,7 +46,11 @@
       "type": "dropdown",
       "label": "Font family",
       "property": "fontFamily",
-      "options": ["sans-serif", "cursive", "monospace"]
+      "options": [
+        "sans-serif",
+        "cursive",
+        "monospace"
+      ]
     },
     {
       "type": "dropdown",
