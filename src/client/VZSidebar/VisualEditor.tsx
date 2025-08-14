@@ -44,6 +44,11 @@ export const VisualEditor = () => {
     [key: string]: number | boolean | string;
   }>({});
 
+  // State to track which dropdown is open
+  const [openDropdown, setOpenDropdown] = useState<
+    string | null
+  >(null);
+
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
     if (files[fileId].name === CONFIG_FILE_NAME) {
@@ -58,7 +63,7 @@ export const VisualEditor = () => {
     } catch (error) {
       return null;
     }
-  }, [files[configFileId]?.text]);
+  }, [files?.[configFileId]?.text]);
 
   const onSliderChange = useCallback(
     (property: string) =>
@@ -156,35 +161,73 @@ export const VisualEditor = () => {
   );
 
   const onDropdownChange = useCallback(
-    (property: string) =>
-      (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newValue = event.currentTarget.value;
+    (property: string, newValue: string) => {
+      // Update local state immediately for responsive UI
+      setLocalValues((prev) => ({
+        ...prev,
+        [property]: newValue,
+      }));
 
-        // Update local state immediately for responsive UI
-        setLocalValues((prev) => ({
-          ...prev,
-          [property]: newValue,
-        }));
+      // Update config.json
+      const newConfigData = {
+        ...configData,
+        [property]: newValue,
+      };
 
-        // Update config.json
-        const newConfigData = {
-          ...configData,
-          [property]: newValue,
-        };
-
-        submitOperation((document: VizContent) => ({
-          ...document,
-          files: {
-            ...files,
-            [configFileId]: {
-              name: 'config.json',
-              text: JSON.stringify(newConfigData, null, 2),
-            },
+      submitOperation((document: VizContent) => ({
+        ...document,
+        files: {
+          ...files,
+          [configFileId]: {
+            name: 'config.json',
+            text: JSON.stringify(newConfigData, null, 2),
           },
-        }));
-      },
+        },
+      }));
+    },
     [configData, files, configFileId, setLocalValues],
   );
+
+  // Custom dropdown handlers
+  const handleDropdownToggle = useCallback(
+    (property: string) => {
+      setOpenDropdown((prev) =>
+        prev === property ? null : property,
+      );
+    },
+    [],
+  );
+
+  const handleDropdownOptionClick = useCallback(
+    (property: string, value: string) => {
+      onDropdownChange(property, value);
+      setOpenDropdown(null);
+    },
+    [onDropdownChange],
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdown) {
+        const target = event.target as Element;
+        if (!target.closest('.visual-editor-dropdown')) {
+          setOpenDropdown(null);
+        }
+      }
+    };
+
+    document.addEventListener(
+      'mousedown',
+      handleClickOutside,
+    );
+    return () => {
+      document.removeEventListener(
+        'mousedown',
+        handleClickOutside,
+      );
+    };
+  }, [openDropdown]);
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData?.visualEditorWidgets ?? [];
@@ -469,6 +512,8 @@ export const VisualEditor = () => {
           const currentValue =
             localValues[widgetConfig.property] ??
             configData[widgetConfig.property];
+          const isOpen =
+            openDropdown === widgetConfig.property;
 
           return (
             <div
@@ -482,42 +527,72 @@ export const VisualEditor = () => {
                 >
                   {widgetConfig.label}
                 </label>
-                <span className="dropdown-value">
+                {/* <span className="dropdown-value">
                   {currentValue}
-                </span>
+                </span> */}
               </div>
               <div className="dropdown-container">
-                <select
-                  id={widgetConfig.property}
-                  className="dropdown-select"
-                  value={currentValue}
-                  onChange={onDropdownChange(
-                    widgetConfig.property,
-                  )}
+                <button
+                  type="button"
+                  className={`dropdown-button ${
+                    isOpen ? 'open' : ''
+                  }`}
+                  onClick={() =>
+                    handleDropdownToggle(
+                      widgetConfig.property,
+                    )
+                  }
+                  aria-expanded={isOpen}
+                  aria-haspopup="listbox"
                 >
-                  {widgetConfig.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <div className="dropdown-arrow">
-                  <svg
-                    width="12"
-                    height="8"
-                    viewBox="0 0 12 8"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <span className="dropdown-button-text">
+                    {currentValue}
+                  </span>
+                  <div
+                    className={`dropdown-arrow ${
+                      isOpen ? 'open' : ''
+                    }`}
                   >
-                    <path
-                      d="M1 1.5L6 6.5L11 1.5"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      width="12"
+                      height="8"
+                      viewBox="0 0 12 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 1.5L6 6.5L11 1.5"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </button>
+                {isOpen && (
+                  <div className="dropdown-options">
+                    {widgetConfig.options.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        className={`dropdown-option ${
+                          option === currentValue
+                            ? 'selected'
+                            : ''
+                        }`}
+                        onClick={() =>
+                          handleDropdownOptionClick(
+                            widgetConfig.property,
+                            option,
+                          )
+                        }
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           );
