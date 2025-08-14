@@ -299,10 +299,10 @@ export const useVZCodeState = ({
 
   // Create the combined setAIErrorMessage function that calls both state setter and external callback
   const setAIErrorMessage = useCallback(
-    (error: string | null) => {
+    (error: string | null, message?: string) => {
       setAIErrorMessageState(error);
       if (error && handleChatError) {
-        handleChatError(error);
+        handleChatError(error, message);
       }
     },
     [handleChatError],
@@ -440,7 +440,10 @@ export const useVZCodeState = ({
           }
 
           // For other errors, show the error message
-          setAIErrorMessage(errorMessage);
+          setAIErrorMessage(
+            errorMessage,
+            messageContent.trim(),
+          );
           return;
         }
 
@@ -450,6 +453,7 @@ export const useVZCodeState = ({
         console.error('Error getting AI response:', error);
         setAIErrorMessage(
           'Failed to send message. Please try again.',
+          messageContent.trim(),
         );
       }
     },

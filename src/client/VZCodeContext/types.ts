@@ -244,5 +244,8 @@ export interface VZCodeProviderProps {
     chatId: string;
   }>;
   iframeRef?: React.MutableRefObject<HTMLIFrameElement>;
-  handleChatError?: (error: string) => void;
+  handleChatError?: (
+    error: string,
+    message?: string,
+  ) => void;
 }
