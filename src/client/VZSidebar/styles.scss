@@ -795,7 +795,11 @@
       }
 
       &:checked {
-        background: linear-gradient(135deg, #77fd8c, #66ecff);
+        background: linear-gradient(
+          135deg,
+          #77fd8c,
+          #66ecff
+        );
         color: var(--vh-color-neutral-01);
       }
     }

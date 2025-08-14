@@ -52,22 +52,13 @@ export const VisualEditor = () => {
     }
   }
 
-  if (configFileId === null) {
-    return (
-      <EmptyState>
-        To begin using the visual editor, create a
-        config.json.
-      </EmptyState>
-    );
-  }
-
   const configData = useMemo(() => {
     try {
       return JSON.parse(files[configFileId].text);
     } catch (error) {
       return null;
     }
-  }, [files[configFileId].text]);
+  }, [files[configFileId]?.text]);
 
   const onSliderChange = useCallback(
     (property: string) =>
@@ -292,6 +283,15 @@ export const VisualEditor = () => {
       }
     }
   }, [files, configFileId, iframeRef]);
+
+  if (configFileId === null) {
+    return (
+      <EmptyState>
+        To begin using the visual editor, create a
+        config.json.
+      </EmptyState>
+    );
+  }
 
   if (!configData) {
     return (
