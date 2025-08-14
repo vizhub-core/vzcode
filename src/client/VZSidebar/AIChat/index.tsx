@@ -13,6 +13,8 @@ const DEBUG = false;
 
 const showSuggestedRequests = false;
 
+const showPreviousChats = false;
+
 // Component for displaying the list of existing chats
 const ChatList = ({
   chats,
@@ -184,7 +186,7 @@ export const AIChat = () => {
               <div className="ai-chat-empty-text">
                 How can I help you?
               </div>
-              {hasExistingChats && (
+              {hasExistingChats && showPreviousChats && (
                 <ChatList
                   chats={existingChats}
                   selectedChatId={selectedChatId}
