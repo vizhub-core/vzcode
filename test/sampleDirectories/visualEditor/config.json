@@ -22,7 +22,7 @@
     "virginica": "#2ca02c"
   },
   "showAxis": true,
-  "scatterPlotTitle": "My Scatter plot",
+  "scatterPlotTitle": "My Scatter 2",
   "visualEditorWidgets": [
     {
       "type": "slider",
@@ -41,6 +41,16 @@
       "type": "textInput",
       "label": "Title",
       "property": "scatterPlotTitle"
+    },
+    {
+      "type": "dropdown",
+      "label": "Font family",
+      "property": "fontFamily",
+      "options": [
+        "sans-serif",
+        "cursive",
+        "monospace"
+      ]
     }
   ]
 }

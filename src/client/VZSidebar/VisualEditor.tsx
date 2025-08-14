@@ -192,6 +192,37 @@ export const VisualEditor = () => {
     [configData, files, configFileId, setLocalValues],
   );
 
+  const onDropdownChange = useCallback(
+    (property: string) =>
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newValue = event.currentTarget.value;
+
+        // Update local state immediately for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newValue,
+        }));
+
+        // Update config.json
+        const newConfigData = {
+          ...configData,
+          [property]: newValue,
+        };
+
+        submitOperation((document: VizContent) => ({
+          ...document,
+          files: {
+            ...files,
+            [configFileId]: {
+              name: 'config.json',
+              text: JSON.stringify(newConfigData, null, 2),
+            },
+          },
+        }));
+      },
+    [configData, files, configFileId, setLocalValues],
+  );
+
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
@@ -208,6 +239,9 @@ export const VisualEditor = () => {
         newLocalValues[widget.property] =
           configData[widget.property];
       } else if (widget.type === 'textInput') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+      } else if (widget.type === 'dropdown') {
         newLocalValues[widget.property] =
           configData[widget.property];
       }
@@ -409,7 +443,6 @@ export const VisualEditor = () => {
                 >
                   {widgetConfig.label}
                 </label>
-               
               </div>
               <div className="text-input-container">
                 <input
@@ -421,6 +454,63 @@ export const VisualEditor = () => {
                     widgetConfig.property,
                   )}
                 />
+              </div>
+            </div>
+          );
+        } else if (widgetConfig.type === 'dropdown') {
+          // Use local value if available, otherwise fall back to config value
+          const currentValue =
+            localValues[widgetConfig.property] ??
+            configData[widgetConfig.property];
+
+          return (
+            <div
+              key={widgetConfig.property}
+              className="visual-editor-dropdown"
+            >
+              <div className="dropdown-header">
+                <label
+                  htmlFor={widgetConfig.property}
+                  className="dropdown-label"
+                >
+                  {widgetConfig.label}
+                </label>
+                <span className="dropdown-value">
+                  {currentValue}
+                </span>
+              </div>
+              <div className="dropdown-container">
+                <select
+                  id={widgetConfig.property}
+                  className="dropdown-select"
+                  value={currentValue}
+                  onChange={onDropdownChange(
+                    widgetConfig.property,
+                  )}
+                >
+                  {widgetConfig.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <div className="dropdown-arrow">
+                  <svg
+                    width="12"
+                    height="8"
+                    viewBox="0 0 12 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M1 1.5L6 6.5L11 1.5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
           );

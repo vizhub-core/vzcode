@@ -207,4 +207,10 @@ export type VisualEditorConfigEntry =
       property: string;
       label: string;
     }
-  | { type: 'textInput'; property: string; label: string };
+  | { type: 'textInput'; property: string; label: string }
+  | {
+      type: 'dropdown';
+      property: string;
+      label: string;
+      options: string[];
+    };
