@@ -749,7 +749,7 @@
     align-items: center;
   }
 
-  .dropdown-select {
+  .dropdown-button {
     width: 100%;
     height: 100%;
     background: var(--vh-color-neutral-02);
@@ -762,10 +762,11 @@
     padding: 8px 32px 8px 12px;
     cursor: pointer;
     outline: none;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
 
     &:hover {
       border-color: var(--vh-color-neutral-04);
@@ -778,54 +779,85 @@
       box-shadow: 0 0 0 3px rgba(102, 236, 255, 0.3);
     }
 
-    &:active {
+    &.open {
+      border-color: #66ecff;
       background: var(--vh-color-neutral-03);
-    }
-
-    // Custom option styling
-    option {
-      background: var(--vh-color-neutral-02);
-      color: var(--vh-color-neutral-04);
-      font-family: var(--vzcode-font-family);
-      font-size: 13px;
-      padding: 8px 12px;
-
-      &:hover {
-        background: var(--vh-color-neutral-03);
-      }
-
-      &:checked {
-        background: linear-gradient(
-          135deg,
-          #77fd8c,
-          #66ecff
-        );
-        color: var(--vh-color-neutral-01);
-      }
     }
   }
 
+  .dropdown-button-text {
+    flex: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
   .dropdown-arrow {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
     color: var(--vh-color-neutral-04);
     transition: all 0.2s ease;
-    z-index: 1;
+    margin-left: 8px;
+    flex-shrink: 0;
 
     svg {
       display: block;
       transition: transform 0.2s ease;
     }
+
+    &.open {
+      color: #66ecff;
+
+      svg {
+        transform: rotate(180deg);
+      }
+    }
   }
 
-  .dropdown-select:focus + .dropdown-arrow {
-    color: #66ecff;
+  .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--vh-color-neutral-02);
+    border: 1px solid var(--vh-color-neutral-03);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 2px;
+  }
 
-    svg {
-      transform: rotate(180deg);
+  .dropdown-option {
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    color: var(--vh-color-neutral-04);
+    font-family: var(--vzcode-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: block;
+
+    &:hover {
+      background: var(--vh-color-neutral-03);
+    }
+
+    &.selected {
+      background: linear-gradient(135deg, #77fd8c, #66ecff);
+      color: var(--vh-color-neutral-01);
+    }
+
+    &:first-child {
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
     }
   }
 
