@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "cursive",
-  "pointRadius": 6,
+  "pointRadius": 21,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -46,11 +46,7 @@
       "type": "dropdown",
       "label": "Font family",
       "property": "fontFamily",
-      "options": [
-        "sans-serif",
-        "cursive",
-        "monospace"
-      ]
+      "options": ["sans-serif", "cursive", "monospace"]
     },
     {
       "type": "dropdown",

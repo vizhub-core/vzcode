@@ -61,41 +61,13 @@ export const VisualEditor = () => {
     );
   }
 
-  let configData;
-
-  try {
-    configData = useMemo(
-      () => JSON.parse(files[configFileId].text),
-      [files[configFileId].text],
-    );
-  } catch (error) {
-    return (
-      <EmptyState>
-        Your config.json file is not valid json.
-      </EmptyState>
-    );
-  }
-
-  if (!('visualEditorWidgets' in configData)) {
-    return (
-      <EmptyState>
-        To begin using the visual editor, make sure your
-        config.json has a key called "visualEditorWidgets",
-        whose value is the config for the visual editor.
-      </EmptyState>
-    );
-  }
-
-  if (!Array.isArray(configData.visualEditorWidgets)) {
-    return (
-      <EmptyState>
-        Your config.json file has "visualEditorWidgets" but
-        it is not an array. Please make sure
-        "visualEditorWidgets" is an array of widget
-        configurations.
-      </EmptyState>
-    );
-  }
+  const configData = useMemo(() => {
+    try {
+      return JSON.parse(files[configFileId].text);
+    } catch (error) {
+      return null;
+    }
+  }, [files[configFileId].text]);
 
   const onSliderChange = useCallback(
     (property: string) =>
@@ -224,7 +196,7 @@ export const VisualEditor = () => {
   );
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
-    configData.visualEditorWidgets;
+    configData?.visualEditorWidgets ?? [];
 
   // Sync local values with config data when it changes (including remote updates)
   useEffect(() => {
@@ -247,7 +219,7 @@ export const VisualEditor = () => {
       }
     });
     setLocalValues(newLocalValues);
-  }, [configData, visualEditorWidgets]);
+  }, [configData]);
 
   // Track previous config state to detect changes from any source (remote clients, text editor, etc.)
   const previousConfigRef = useRef<any>(null);
@@ -320,6 +292,41 @@ export const VisualEditor = () => {
       }
     }
   }, [files, configFileId, iframeRef]);
+
+  if (!configData) {
+    return (
+      <EmptyState>
+        Your config.json file is not valid json.
+      </EmptyState>
+    );
+  }
+
+  if (
+    configData &&
+    !('visualEditorWidgets' in configData)
+  ) {
+    return (
+      <EmptyState>
+        To begin using the visual editor, make sure your
+        config.json has a key called "visualEditorWidgets",
+        whose value is the config for the visual editor.
+      </EmptyState>
+    );
+  }
+
+  if (
+    configData &&
+    !Array.isArray(configData.visualEditorWidgets)
+  ) {
+    return (
+      <EmptyState>
+        Your config.json file has "visualEditorWidgets" but
+        it is not an array. Please make sure
+        "visualEditorWidgets" is an array of widget
+        configurations.
+      </EmptyState>
+    );
+  }
 
   return (
     <div className="visual-editor">
