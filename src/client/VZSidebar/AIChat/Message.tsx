@@ -63,7 +63,7 @@ const MessageComponent = ({
           )}
         {additionalWidgets &&
           chatId &&
-          React.createElement(additionalWidgets, {
+          additionalWidgets({
             messageId: id,
             chatId: chatId,
             handleSendMessage,

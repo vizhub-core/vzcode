@@ -199,14 +199,14 @@ export type VZCodeContextValue = {
   } | null;
 
   // Additional widgets that can be rendered in AI chat messages
-  additionalWidgets?: React.ComponentType<{
+  additionalWidgets?: (props: {
     messageId: string;
     chatId: string;
     handleSendMessage?: (
       messageToSend?: string,
       options?: Record<string, string>,
     ) => void;
-  }>;
+  }) => React.ReactNode;
 };
 
 export interface VZCodeProviderProps {
@@ -239,10 +239,14 @@ export interface VZCodeProviderProps {
     prompt: string;
     modelName: string;
   } | null;
-  additionalWidgets?: React.ComponentType<{
+  additionalWidgets?: (props: {
     messageId: string;
     chatId: string;
-  }>;
+    handleSendMessage?: (
+      messageToSend?: string,
+      options?: Record<string, string>,
+    ) => void;
+  }) => React.ReactNode;
   iframeRef?: React.MutableRefObject<HTMLIFrameElement>;
   handleChatError?: (
     error: string,
