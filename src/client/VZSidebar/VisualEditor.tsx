@@ -4,6 +4,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useMemo,
 } from 'react';
 import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
@@ -38,9 +39,9 @@ export const VisualEditor = () => {
   const { files, submitOperation, iframeRef } =
     useContext(VZCodeContext);
 
-  // Local state to track slider values during user interaction
+  // Local state to track widget values during user interaction
   const [localValues, setLocalValues] = useState<{
-    [key: string]: number;
+    [key: string]: number | boolean;
   }>({});
 
   let configFileId: VizFileId | null = null;
@@ -63,7 +64,10 @@ export const VisualEditor = () => {
   let configData;
 
   try {
-    configData = JSON.parse(files[configFileId].text);
+    configData = useMemo(
+      () => JSON.parse(files[configFileId].text),
+      [files[configFileId].text],
+    );
   } catch (error) {
     return (
       <EmptyState>
@@ -126,14 +130,50 @@ export const VisualEditor = () => {
     [configData, files, configFileId, setLocalValues],
   );
 
+  const onCheckboxChange = useCallback(
+    (property: string) =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = event.currentTarget.checked;
+
+        // Update local state immediately for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newValue,
+        }));
+
+        // Update config.json
+        const newConfigData = {
+          ...configData,
+          [property]: newValue,
+        };
+
+        submitOperation((document: VizContent) => ({
+          ...document,
+          files: {
+            ...files,
+            [configFileId]: {
+              name: 'config.json',
+              text: JSON.stringify(newConfigData, null, 2),
+            },
+          },
+        }));
+      },
+    [configData, files, configFileId, setLocalValues],
+  );
+
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData.visualEditorWidgets;
 
   // Sync local values with config data when it changes (including remote updates)
   useEffect(() => {
-    const newLocalValues: { [key: string]: number } = {};
+    const newLocalValues: {
+      [key: string]: number | boolean;
+    } = {};
     visualEditorWidgets.forEach((widget) => {
-      if (widget.type === 'number') {
+      if (widget.type === 'slider') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+      } else if (widget.type === 'checkbox') {
         newLocalValues[widget.property] =
           configData[widget.property];
       }
@@ -216,7 +256,7 @@ export const VisualEditor = () => {
   return (
     <div className="visual-editor">
       {visualEditorWidgets.map((widgetConfig, index) => {
-        if (widgetConfig.type === 'number') {
+        if (widgetConfig.type === 'slider') {
           // Use local value if available, otherwise fall back to config value
           const currentValue =
             localValues[widgetConfig.property] ??
@@ -254,7 +294,7 @@ export const VisualEditor = () => {
                   className="slider-input"
                   min={widgetConfig.min}
                   max={widgetConfig.max}
-                  step="any"
+                  step={widgetConfig.step}
                   value={currentValue}
                   onChange={onSliderChange(
                     widgetConfig.property,
@@ -272,6 +312,48 @@ export const VisualEditor = () => {
                 <span className="max-value">
                   {widgetConfig.max}
                 </span>
+              </div>
+            </div>
+          );
+        } else if (widgetConfig.type === 'checkbox') {
+          // Use local value if available, otherwise fall back to config value
+          const currentValue =
+            localValues[widgetConfig.property] ??
+            configData[widgetConfig.property];
+
+          return (
+            <div
+              key={widgetConfig.property}
+              className="visual-editor-checkbox"
+            >
+              <div className="checkbox-header">
+                <label
+                  htmlFor={widgetConfig.property}
+                  className="checkbox-label"
+                >
+                  {widgetConfig.label}
+                </label>
+                <span className="checkbox-value">
+                  {currentValue ? 'On' : 'Off'}
+                </span>
+              </div>
+              <div className="checkbox-container">
+                <input
+                  type="checkbox"
+                  id={widgetConfig.property}
+                  className="checkbox-input"
+                  checked={currentValue}
+                  onChange={onCheckboxChange(
+                    widgetConfig.property,
+                  )}
+                />
+                <div className="checkbox-visual">
+                  <div
+                    className={`checkbox-indicator ${
+                      currentValue ? 'checked' : ''
+                    }`}
+                  />
+                </div>
               </div>
             </div>
           );

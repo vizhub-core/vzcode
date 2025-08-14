@@ -585,6 +585,116 @@
     font-weight: 400;
   }
 
+  // Visual Editor Checkbox Styles
+  .visual-editor-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 10px;
+    background: var(--vh-color-neutral-01);
+    border: 1px solid var(--vh-color-neutral-02);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:hover {
+      border-color: var(--vh-color-neutral-03);
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  .checkbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .checkbox-label {
+    font-family: var(--vzcode-font-family);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vh-color-neutral-04);
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .checkbox-value {
+    font-family: var(--vzcode-font-family);
+    font-size: 13px;
+    font-weight: 600;
+    color: #66ecff; // SKY color from theme
+    background: rgba(102, 236, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  .checkbox-container {
+    position: relative;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    z-index: 2;
+  }
+
+  .checkbox-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 20px;
+    background: var(--vh-color-neutral-02);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--vh-color-neutral-03);
+
+    &:hover {
+      border-color: var(--vh-color-neutral-04);
+      background: var(--vh-color-neutral-03);
+    }
+  }
+
+  .checkbox-indicator {
+    width: 16px;
+    height: 16px;
+    background: var(--vh-color-neutral-04);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    transform: translateX(-8px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    &.checked {
+      background: linear-gradient(135deg, #77fd8c, #66ecff);
+      transform: translateX(8px);
+      box-shadow: 0 2px 6px rgba(119, 253, 140, 0.3);
+    }
+  }
+
+  .checkbox-input:focus + .checkbox-visual {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 236, 255, 0.3);
+  }
+
+  .checkbox-input:checked + .checkbox-visual {
+    background: rgba(119, 253, 140, 0.2);
+    border-color: #77fd8c;
+  }
+
   // Empty State Component Styles
   .empty-state {
     display: flex;

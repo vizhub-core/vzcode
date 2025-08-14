@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "sans-serif",
-  "pointRadius": 16.2649529569892,
+  "pointRadius": 3.5,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -21,13 +21,20 @@
     "versicolor": "#ff7f0e",
     "virginica": "#2ca02c"
   },
+  "showAxis": true,
   "visualEditorWidgets": [
     {
-      "type": "number",
+      "type": "slider",
       "label": "Point Radius",
       "property": "pointRadius",
       "min": 1,
-      "max": 30
+      "max": 30,
+      "step": 2.5
+    },
+    {
+      "type": "checkbox",
+      "label": "Show Axis",
+      "property": "showAxis"
     }
   ]
 }

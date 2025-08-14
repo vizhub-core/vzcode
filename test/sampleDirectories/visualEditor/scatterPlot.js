@@ -1,5 +1,6 @@
 import { scaleLinear, extent } from 'd3';
 import { renderMarks } from './renderMarks.js';
+import { renderAxes } from './renderAxes.js';
 
 export const scatterPlot = (svg, options) => {
   const {
@@ -9,6 +10,7 @@ export const scatterPlot = (svg, options) => {
     xValue,
     yValue,
     colorScale,
+    showAxis,
   } = options;
 
   const xScale = scaleLinear()
@@ -20,4 +22,12 @@ export const scatterPlot = (svg, options) => {
     .range([height - bottom, top]);
 
   renderMarks(svg, { ...options, xScale, yScale, colorScale });
+  
+  renderAxes(svg, { 
+    xScale, 
+    yScale, 
+    dimensions: { width, height }, 
+    margin: { left, right, top, bottom },
+    showAxis 
+  });
 };

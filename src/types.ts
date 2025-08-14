@@ -195,11 +195,15 @@ export type SubmitOperation = (
 // A value that has the capacity to be changed in the visual editor
 export type VisualEditorConfigEntry =
   | {
-      type: 'number';
+      type: 'slider';
       property: string;
       label: string;
       min: number;
       max: number;
-      value: number;
+      step?: number;
     }
-  | { type: 'boolean' };
+  | {
+      type: 'checkbox';
+      property: string;
+      label: string;
+    };
