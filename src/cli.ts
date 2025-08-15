@@ -153,9 +153,6 @@ function startServerInBackground(
 async function launchBrowserVersion(
   workingDirectory: string,
 ): Promise<void> {
-  const { default: open } = await import('open');
-  const serverModule = await import('./server/index.js');
-
   // Note: The server/index.js will use process.cwd() automatically
   // and we're already in the correct working directory
   console.log(

@@ -20,8 +20,7 @@ export const useSpeechRecognition = (
   const [recognition, setRecognition] =
     // @ts-ignore
     useState<SpeechRecognition | null>(null);
-  const [finalTranscript, setFinalTranscript] =
-    useState<string>('');
+  const [, setFinalTranscript] = useState<string>('');
 
   // Speech recognition setup
   useEffect(() => {

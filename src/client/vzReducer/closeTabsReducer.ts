@@ -1,5 +1,5 @@
 import { VZAction, VZState } from '.';
-import { Pane, PaneId, TabState } from '../../types';
+import { Pane, TabState } from '../../types';
 import { VizFileId } from '@vizhub/viz-types';
 import { findPane } from './findPane';
 import { updatePane } from './updatePane';

@@ -1,12 +1,7 @@
 import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import React, {
-  useMemo,
-  memo,
-  useState,
-  useContext,
-} from 'react';
+import React, { useMemo, memo, useContext } from 'react';
 import { DiffView } from './DiffView';
 import { UnifiedFilesDiff } from '../../../utils/fileDiff';
 import { enableDiffView } from '../../featureFlags';

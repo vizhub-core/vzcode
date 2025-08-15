@@ -103,7 +103,7 @@ export const computeInitialDocument = ({ fullPath }) => {
    * Stack for recursively traversing directories.
    * @type {string[]}
    */
-  let files = [];
+  const files = [];
 
   const ignoreFileMatcher = createIgnore().add(
     ignoreFilePattern,

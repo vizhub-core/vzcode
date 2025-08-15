@@ -3,9 +3,9 @@ import { ShareDBDoc, TabState } from '../../types';
 import { VizContent } from '@vizhub/viz-types';
 
 export const AIAssistCodeMirrorKeyMap = ({
-  shareDBDoc,
-  fileId,
-  tabList,
+  shareDBDoc: _shareDBDoc,
+  fileId: _fileId,
+  tabList: _tabList,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
   fileId: string;
@@ -14,7 +14,7 @@ export const AIAssistCodeMirrorKeyMap = ({
   keymap.of([
     {
       key: 'control-m',
-      run: (view: EditorView) => {
+      run: (_view: EditorView) => {
         // if (
         //   shareDBDoc.data.aiStreams === undefined ||
         //   shareDBDoc.data.aiStreams[mostRecentStreamId] ===

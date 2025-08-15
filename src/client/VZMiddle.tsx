@@ -11,8 +11,6 @@ import { RunCodeWidget } from './RunCodeWidget';
 import { InteractRule } from '@replit/codemirror-interact';
 import { EditorView } from '@codemirror/view';
 import { Diagnostic } from '@codemirror/lint';
-import { VizContent } from '@vizhub/viz-types';
-import { LeafPane } from '../types';
 import { isImageFile } from './utils/isImageFile';
 
 // TODO modify this to handle the SplitPane type
@@ -104,8 +102,6 @@ export const VZMiddle = ({
   aiAssistTooltipText,
   aiAssistClickOverride,
   aiCopilotEndpoint,
-  aiChatEndpoint,
-  aiChatOptions,
   customInteractRules,
   esLintSource,
 }: {
@@ -115,8 +111,6 @@ export const VZMiddle = ({
   aiAssistTooltipText?: string;
   aiAssistClickOverride?: () => void;
   aiCopilotEndpoint?: string;
-  aiChatEndpoint?: string;
-  aiChatOptions?: { [key: string]: any };
   customInteractRules?: Array<InteractRule>;
   esLintSource: (
     view: EditorView,

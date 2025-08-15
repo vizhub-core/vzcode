@@ -94,7 +94,7 @@ class RotationCircle extends WidgetType {
     this.angle = angle;
   }
 
-  toDOM(view: EditorView): HTMLElement {
+  toDOM(_view: EditorView): HTMLElement {
     const parent = document.createElement('div');
 
     parent.setAttribute('style', 'width:20px;height:20px');

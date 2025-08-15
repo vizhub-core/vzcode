@@ -29,7 +29,7 @@ export const RunCodeWidget = ({
   const [isRunning, setIsRunning] = useState(false);
 
   const handleClick = useCallback(
-    (event?: React.MouseEvent) => {
+    (_event?: React.MouseEvent) => {
       setIsRunning(true); // Set the running state to true
 
       // Run Prettier

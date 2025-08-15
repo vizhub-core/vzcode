@@ -10,43 +10,43 @@ const createMockShareDBDoc = (
   files: any,
 ): ShareDBDoc<VizContent> => ({
   data: { files, id: 'mock-id' },
-  ingestSnapshot: (snapshot: any, callback: any) => {
+  ingestSnapshot: (snapshot: any, _callback: any) => {
     // No-op for testing
-    if (callback) callback();
+    if (_callback) _callback();
   },
-  subscribe: (callback: any) => {
+  subscribe: (_callback: any) => {
     // No-op for testing
-    if (callback) callback();
+    if (_callback) _callback();
   },
   on: (
-    event: string,
-    callback: (op: any, source: boolean) => void,
+    _event: string,
+    _callback: (op: any, source: boolean) => void,
   ) => {
     // No-op for testing
   },
   off: (
-    event: string,
-    callback: (op: any, source: boolean) => void,
+    _event: string,
+    _callback: (op: any, source: boolean) => void,
   ) => {
     // No-op for testing
   },
   removeListener: (
-    event: string,
-    callback: (op: any, source: boolean) => void,
+    _event: string,
+    _callback: (op: any, source: boolean) => void,
   ) => {
     // No-op for testing
   },
   submitOp: (
-    op: any,
-    options?: any,
-    callback?: () => void,
+    _op: any,
+    _options?: any,
+    _callback?: () => void,
   ) => {
     // No-op for testing
-    if (callback) callback();
+    if (_callback) _callback();
   },
-  whenNothingPending: (callback: () => void) => {
+  whenNothingPending: (_callback: () => void) => {
     // No-op for testing
-    if (callback) callback();
+    if (_callback) _callback();
   },
 });
 

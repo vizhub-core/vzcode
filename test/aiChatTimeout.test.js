@@ -1,4 +1,4 @@
-import { expect, test, vi } from 'vitest';
+import { expect, test } from 'vitest';
 
 test('AI Chat Timeout Prevention - Basic Logic', async () => {
   // Test that the conceptual change is correct:

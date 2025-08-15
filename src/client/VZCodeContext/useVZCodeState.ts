@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { VizContent } from '@vizhub/viz-types';
 import { defaultTheme, useDynamicTheme } from '../themes';
 import { useActions } from '../useActions';
 import { useEditorCache } from '../useEditorCache';
@@ -77,9 +76,10 @@ export const useVZCodeState = ({
   const sidebarRef = useRef(null);
 
   const codeEditorRef = useRef(null);
+  const internalIframeRef = useRef(null);
 
-  // Use external iframeRef if provided, otherwise create our own
-  const iframeRef = externalIframeRef || useRef(null);
+  // Use external iframeRef if provided, otherwise use internal one
+  const iframeRef = externalIframeRef || internalIframeRef;
 
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority
@@ -492,7 +492,7 @@ export const useVZCodeState = ({
     let newConfigData;
     try {
       newConfigData = JSON.parse(files[configFileId].text);
-    } catch (error) {
+    } catch {
       // If config is invalid JSON, we can't process changes
       return;
     }
@@ -543,10 +543,10 @@ export const useVZCodeState = ({
         iframeRef.current?.contentWindow?.postMessage(
           changedProperties,
         );
-      } catch (error) {
+      } catch (_error_) {
         console.error(
           'Failed to send config changes to iframe:',
-          error,
+          _error_,
         );
       }
     }
