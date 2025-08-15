@@ -61,6 +61,7 @@ export const CodeErrorOverlay = ({
     };
   }, [handleCloseClick]);
 
+    /*
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">
       <pre>{errorMessage}</pre>
@@ -74,4 +75,28 @@ export const CodeErrorOverlay = ({
       ) : null}
     </div>
   ) : null;
+   */
+
+  return isOverlayVisible && errorMessage !== null ? (
+  <div className="vz-code-error-overlay">
+    <div className="vz-code-error-overlay-actions">
+      <button
+        className="icon-button icon-button-dark"
+        onClick={() => navigator.clipboard.writeText(errorMessage)}
+        title="Copy error"
+      >
+        button
+      </button>
+      {enableErrorDismiss ? (
+        <i
+          className="icon-button icon-button-dark error-dismiss-button"
+          onClick={handleCloseClick}
+        >
+          <CloseSVG />
+        </i>
+      ) : null}
+    </div>
+    <pre>{errorMessage}</pre>
+  </div>
+) : null;
 };
