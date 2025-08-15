@@ -27,9 +27,17 @@
 
   /* Customize the dismiss button style */
   .error-dismiss-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+    //position: absolute;
+    //top: 8px;
+    //right: 8px;
   }
 }
 
+.vz-code-error-overlay-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+}

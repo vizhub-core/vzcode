@@ -85,7 +85,7 @@ export const CodeErrorOverlay = ({
         onClick={() => navigator.clipboard.writeText(errorMessage)}
         title="Copy error"
       >
-        button
+        Fix This
       </button>
       {enableErrorDismiss ? (
         <i
