@@ -33,6 +33,6 @@ export const createInitialState = ({
   isDocOpen: false,
   editorWantsFocus: false,
   username: initialUsername,
-  enableAutoFollow: true,
+  enableAutoFollow: false,
   sidebarPresenceIndicators: [],
 });
