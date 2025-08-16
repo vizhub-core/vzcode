@@ -72,7 +72,7 @@ export default defineConfig([
       'react-hooks/exhaustive-deps': 'warn',
 
       // General rules
-      'no-console': 'warn',
+      'no-console': 'off',
       'no-debugger': 'error',
       'no-unused-vars': 'off', // Using TypeScript version instead
       'prefer-const': 'error',
