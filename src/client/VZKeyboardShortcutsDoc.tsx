@@ -1,29 +1,14 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Button, Modal, Form } from './bootstrap';
-import { ThemeLabel, themes } from './themes';
 import { VZCodeContext } from './VZCodeContext';
 
 export const VZKeyboardShortcutsDoc = ({
-  enableUsernameField = true,
+  enableUsernameField: _enableUsernameField = true,
 }: {
   // Feature flag to enable/disable username field
   enableUsernameField?: boolean;
 }) => {
-  const {
-    isDocOpen,
-    closeDoc,
-
-    setTheme,
-
-    setUsername,
-  } = useContext(VZCodeContext);
-
-  const handleThemeChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setTheme(event.target.value as ThemeLabel);
-    },
-    [],
-  );
+  const { isDocOpen, closeDoc } = useContext(VZCodeContext);
 
   return isDocOpen ? (
     <Modal

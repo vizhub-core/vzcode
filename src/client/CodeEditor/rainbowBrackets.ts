@@ -80,7 +80,6 @@ const rainbowBracketsPlugin = ViewPlugin.fromClass(
       return Decoration.set(decorations);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     getMatchingBracket(closingBracket) {
       switch (closingBracket) {
         case ')':

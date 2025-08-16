@@ -5,7 +5,6 @@ import { randomId } from '../randomId';
 import { EditorCache } from './useEditorCache';
 import { getFileExtension } from './utils/fileExtension';
 import { getLanguageExtension } from './CodeEditor/getOrCreateEditor';
-import { editorCacheKey } from './useEditorCache';
 
 // CRUD operations for files and directories
 // CRUD = Create, Read, Update, Delete

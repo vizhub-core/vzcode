@@ -1,14 +1,8 @@
 import { EditorView } from 'codemirror';
 import { ShareDBDoc, TabState } from '../../types';
-import {
-  VizFile,
-  VizFileId,
-  VizContent,
-} from '@vizhub/viz-types';
+import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { RequestId } from '../generateRequestId';
 import { formatFile } from './formatFile';
-
-const debug = false;
 
 // Enables inclusion of code from open tabs as context.
 const enableTabContext = false;

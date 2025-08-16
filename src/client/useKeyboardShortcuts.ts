@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { shouldTriggerRun } from './shouldTriggerRun';
 import { syntaxTree } from '@codemirror/language';
 import { SyntaxNode, SyntaxNodeRef } from '@lezer/common';
@@ -381,8 +381,12 @@ export const useKeyboardShortcuts = ({
       let position: number;
       try {
         position = editor.posAtDOM(element);
-      } catch (error) {
+      } catch (_error) {
         // Element is not within the current editor's document
+        console.log(
+          'Error finding element position:',
+          _error,
+        );
         return;
       }
       const identifier: SyntaxNode = tree.resolveInner(

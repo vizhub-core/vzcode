@@ -1,7 +1,6 @@
 import React, {
   useContext,
   useEffect,
-  useMemo,
   useRef,
 } from 'react';
 import {
@@ -13,7 +12,7 @@ import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 import { VZCodeContext } from '../../VZCodeContext';
-import { VizFileId, VizFiles } from '@vizhub/viz-types';
+import { VizFiles } from '@vizhub/viz-types';
 
 interface DiffViewProps {
   diffData: UnifiedFilesDiff;
@@ -29,10 +28,6 @@ export const DiffView: React.FC<DiffViewProps> = ({
   const unifiedDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
   );
-
-  if (unifiedDiffs.length === 0) {
-    return null;
-  }
 
   // Calculate statistics from all unified diffs
   let totalAdditions = 0;
@@ -52,27 +47,6 @@ export const DiffView: React.FC<DiffViewProps> = ({
     diffStyle: 'word',
     outputFormat: 'line-by-line',
   });
-
-  // Create a mapping from file name to file ID for click handling
-  const fileNameToIdMap = useMemo(() => {
-    const map = new Map<string, VizFileId>();
-    Object.entries(diffData).forEach(([fileId, diff]) => {
-      // Extract file name from the unified diff
-      // The diff contains lines like "--- a/filename" and "+++ b/filename"
-      const lines = diff.split('\n');
-      for (const line of lines) {
-        if (
-          line.startsWith('--- a/') ||
-          line.startsWith('+++ b/')
-        ) {
-          const fileName = line.substring(6); // Remove "--- a/" or "+++ b/"
-          map.set(fileName, fileId as VizFileId);
-          break;
-        }
-      }
-    });
-    return map;
-  }, [diffData]);
 
   // Add click handlers to file names after HTML is rendered
   useEffect(() => {
@@ -103,7 +77,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
 
             // TODO get fileId from content.files
             const fileId = Object.entries(files).find(
-              ([id, file]) => file.name === fileName,
+              ([_id, file]) => file.name === fileName,
             )?.[0];
             console.log('Mapped file ID:', fileId);
 
@@ -144,6 +118,10 @@ export const DiffView: React.FC<DiffViewProps> = ({
       });
     };
   }, [diffHtml, content, openTab, setIsAIChatOpen]);
+
+  if (unifiedDiffs.length === 0) {
+    return null;
+  }
 
   return (
     <div className="diff-view">

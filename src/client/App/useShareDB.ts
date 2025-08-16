@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { randomId } from '../../randomId';
 import { ShareDBDoc } from '../../types';
 import { VizContent } from '@vizhub/viz-types';

@@ -2,7 +2,6 @@ import {
   useCallback,
   useContext,
   useState,
-  useRef,
   useEffect,
   useMemo,
 } from 'react';
@@ -60,7 +59,8 @@ export const VisualEditor = () => {
   const configData = useMemo(() => {
     try {
       return JSON.parse(files[configFileId].text);
-    } catch (error) {
+    } catch (_error) {
+      console.error('Error parsing config.json:', _error);
       return null;
     }
   }, [files?.[configFileId]?.text]);
@@ -301,7 +301,7 @@ export const VisualEditor = () => {
 
   return (
     <div className="visual-editor">
-      {visualEditorWidgets.map((widgetConfig, index) => {
+      {visualEditorWidgets.map((widgetConfig, _index) => {
         if (widgetConfig.type === 'slider') {
           // Use local value if available, otherwise fall back to config value
           const currentValue =

@@ -23,7 +23,6 @@ export const DirectoryListing = ({
     deleteDirectory,
     isDirectoryOpen,
     toggleDirectory,
-    sidebarPresenceIndicators,
   } = useContext(VZCodeContext);
 
   const handleClick = useCallback(() => {

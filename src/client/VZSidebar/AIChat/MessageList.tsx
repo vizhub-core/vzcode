@@ -15,13 +15,11 @@ const MessageListComponent = ({
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
-  aiStatus, // Add aiStatus prop
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
-  aiStatus?: string; // Add aiStatus to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -160,7 +158,7 @@ const MessageListComponent = ({
       ref={messagesContainerRef}
       onScroll={handleScroll}
     >
-      {messages.map((msg, index) => {
+      {messages.map((msg, _index) => {
         return (
           <Message
             key={msg.id}

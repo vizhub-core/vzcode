@@ -252,7 +252,7 @@ const save = () => {
 
     // handle deleting files and directories.
     if (previous && !current) {
-      let stats = fs.statSync(previous.name);
+      const stats = fs.statSync(previous.name);
       //Check if the file path we are trying to delete is a directory
       if (!stats.isDirectory()) {
         fs.unlinkSync(previous.name);
@@ -370,7 +370,7 @@ server.listen(port, async () => {
   // Note: ngrok support can be added when the package is properly installed
   // Sets the port to the one specified in the environment
   // variable (for development) or the default port.
-  let livePort = process.env.EDITOR_PORT || port;
+  const livePort = process.env.EDITOR_PORT || port;
   console.log(`EDITOR_PORT: ${process.env.EDITOR_PORT}`);
   console.log(
     `Editor is live at http://localhost:${livePort}`,

@@ -13,7 +13,6 @@ export function VoiceChatModal() {
   const {
     liveKitRoomName,
     setLiveKitRoom,
-    liveKitToken,
     setLiveKitToken,
     liveKitConnection,
     setLiveKitConnection,
