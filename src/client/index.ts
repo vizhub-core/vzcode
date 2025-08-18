@@ -1,7 +1,10 @@
 export type { ThemeLabel, ThemeOption } from './themes';
 export type { EditorCache } from './useEditorCache';
 
-export { VZCodeProvider } from './VZCodeContext';
+export {
+  VZCodeProvider,
+  VZCodeContext,
+} from './VZCodeContext';
 export { VZSidebar } from './VZSidebar';
 export { VZSettings } from './VZSettings';
 export { VZKeyboardShortcutsDoc } from './VZKeyboardShortcutsDoc';
