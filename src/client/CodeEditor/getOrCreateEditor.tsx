@@ -187,10 +187,11 @@ export const getOrCreateEditor = async ({
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
   handleSendMessage,
+  isChatDraftEditor = false,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
-  fileId: VizFileId;
+  fileId?: VizFileId; // NOW OPTIONAL
 
   // The ShareDB document that contains the file.
   // Used when the editor is created for:
@@ -204,7 +205,7 @@ export const getOrCreateEditor = async ({
   // editing is not enabled.
   shareDBDoc: ShareDBDoc<VizContent>;
 
-  filesPath: string[];
+  filesPath?: string[]; // NOW OPTIONAL
   localPresence: any;
   docPresence: any;
   theme: ThemeLabel;
@@ -224,11 +225,22 @@ export const getOrCreateEditor = async ({
   rainbowBracketsEnabled?: boolean; // New parameter type
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
   handleSendMessage: any; // TODO fix types
+  isChatDraftEditor?: boolean; // NEW PARAMETER
 }): Promise<ExtendedEditorCacheValue> => {
+  // Determine paths and cache key based on editor type
+  const textPath = isChatDraftEditor
+    ? ['currentChatDraft']
+    : [...(filesPath || []), fileId!, 'text'];
+
+  const namePath = isChatDraftEditor
+    ? null // Chat draft doesn't have a name
+    : [...(filesPath || []), fileId!, 'name'];
+
+  const cacheKey = isChatDraftEditor
+    ? 'chat-draft-editor'
+    : editorCacheKey(fileId!, paneId);
+
   // Cache hit
-
-  const cacheKey = editorCacheKey(fileId, paneId);
-
   if (editorCache.has(cacheKey)) {
     return editorCache.get(
       cacheKey,
@@ -237,14 +249,19 @@ export const getOrCreateEditor = async ({
 
   // Cache miss
 
-  // Compute `text` and `fileExtension` from the ShareDB document.
-  const textPath = [...filesPath, fileId, 'text'];
-  const namePath = [...filesPath, fileId, 'name'];
-  const content = shareDBDoc.data;
-  const text = getAtPath(content, textPath);
-  const name = getAtPath(content, namePath);
+  // Get initial content
+  const content:VizContent= shareDBDoc.data;
+  const text = isChatDraftEditor
+    ? (content as any).currentChatDraft || ''
+    : getAtPath(content, textPath);
 
-  const fileExtension = getFileExtension(name);
+  const name = isChatDraftEditor
+    ? 'chat-draft'
+    : getAtPath(content, namePath);
+
+  const fileExtension = isChatDraftEditor
+    ? 'md' // Treat chat as markdown for basic formatting
+    : getFileExtension(name);
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts

@@ -49,7 +49,6 @@ export const AIChat = () => {
     aiChatFocused,
     content,
     aiChatMode,
-    aiChatMessage,
     isLoading,
     currentChatId,
     selectedChatId,
@@ -58,13 +57,15 @@ export const AIChat = () => {
     setAIChatMode,
     clearStoredAIPrompt,
     getStoredAIPrompt,
-    setAIChatMessage,
     handleSendMessage,
     setAIErrorMessage,
     navigateMessageHistoryUp,
     navigateMessageHistoryDown,
     resetMessageHistoryNavigation,
   } = useContext(VZCodeContext);
+
+  // Get current chat draft content from ShareDB (at root level)
+  const currentChatDraft = (content as any)?.currentChatDraft || '';
 
   // Get the active chat ID and chat data
   // If selectedChatId is set, use it; otherwise, if no chat selected, don't default to currentChatId
@@ -140,7 +141,7 @@ export const AIChat = () => {
         // Restore the prompt and mode
         DEBUG &&
           console.log('AIChat: Restoring prompt and mode');
-        setAIChatMessage(storedPrompt.prompt);
+        // TODO: Update ShareDB currentChatDraft with storedPrompt.prompt
         setAIChatMode(
           storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
         );
@@ -168,7 +169,6 @@ export const AIChat = () => {
   }, [
     getStoredAIPrompt,
     clearStoredAIPrompt,
-    setAIChatMessage,
     setAIChatMode,
     handleSendMessage,
   ]);
@@ -307,7 +307,6 @@ export const AIChat = () => {
           ) : (
             <MessageList
               messages={messages}
-              aiStatus={aiStatus}
               isLoading={isLoading}
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
@@ -336,8 +335,6 @@ export const AIChat = () => {
       </div>
       <div className="ai-chat-input-fixed">
         <ChatInput
-          aiChatMessage={aiChatMessage}
-          setAIChatMessage={setAIChatMessage}
           onSendMessage={handleSendMessageWithSelection}
           isLoading={isLoading}
           focused={aiChatFocused}
