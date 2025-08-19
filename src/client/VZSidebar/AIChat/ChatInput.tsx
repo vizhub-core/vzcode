@@ -3,6 +3,7 @@ import {
   useEffect,
   useCallback,
   memo,
+  useContext,
 } from 'react';
 import {
   Form,
@@ -13,10 +14,11 @@ import {
 import { enableAskMode } from '../../featureFlags';
 import { useSpeechRecognition } from './useSpeechRecognition';
 import { MicSVG, MicOffSVG } from '../../Icons';
+import { getOrCreateEditor } from '../../CodeEditor/getOrCreateEditor';
+import { VZCodeContext } from '../../VZCodeContext';
+import { diff } from '../../../ot';
 
 interface ChatInputProps {
-  aiChatMessage: string;
-  setAIChatMessage: (message: string) => void;
   onSendMessage: () => void;
   isLoading: boolean;
   focused: boolean;
@@ -28,8 +30,6 @@ interface ChatInputProps {
 }
 
 const ChatInputComponent = ({
-  aiChatMessage,
-  setAIChatMessage,
   onSendMessage,
   isLoading,
   focused,
@@ -39,61 +39,132 @@ const ChatInputComponent = ({
   navigateMessageHistoryDown,
   resetMessageHistoryNavigation,
 }: ChatInputProps) => {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<any>(null);
+
+  const {
+    shareDBDoc,
+    localPresence,
+    docPresence,
+    theme,
+    editorCache,
+    setIsAIChatOpen,
+    handleSendMessage,
+  } = useContext(VZCodeContext);
+
+  // Create refs for missing properties
+  const usernameRef = useRef('Anonymous');
+  const enableAutoFollowRef = useRef(false);
+
+  // Get current chat draft content from ShareDB
+  const currentChatDraft =
+    (shareDBDoc?.data as any)?.currentChatDraft || '';
 
   // Use the speech recognition hook
   const {
     isSpeaking,
     toggleSpeechRecognition,
     stopSpeaking,
-  } = useSpeechRecognition(setAIChatMessage);
+  } = useSpeechRecognition((text) => {
+    // Update ShareDB directly instead of local state
+    if (shareDBDoc) {
+      const op =
+        (shareDBDoc.data as any).currentChatDraft !== text
+          ? diff(shareDBDoc.data, {
+              ...shareDBDoc.data,
+              currentChatDraft: text,
+            })
+          : null;
+      if (op) shareDBDoc.submitOp(op);
+    }
+  });
 
+  // Initialize CodeMirror editor
   useEffect(() => {
-    // Focus the input when the AI chat is focused
-    if (focused && inputRef.current) {
-      inputRef.current.focus();
+    if (
+      !editorContainerRef.current ||
+      !shareDBDoc ||
+      editorRef.current
+    )
+      return;
+
+    const initEditor = async () => {
+      try {
+        const editorValue = await getOrCreateEditor({
+          shareDBDoc,
+          localPresence,
+          docPresence,
+          theme,
+          editorCache,
+          usernameRef,
+          enableAutoFollowRef,
+          setIsAIChatOpen,
+          handleSendMessage,
+          isChatDraftEditor: true, // Special flag for chat draft
+          esLintSource: async () => [], // No linting for chat
+        });
+
+        editorRef.current = editorValue;
+        editorContainerRef.current!.appendChild(
+          editorValue.editor.dom,
+        );
+
+        // Set up keyboard handlers
+        editorValue.editor.dom.addEventListener(
+          'keydown',
+          handleKeyDown,
+        );
+      } catch (error) {
+        console.error(
+          'Failed to initialize chat editor:',
+          error,
+        );
+      }
+    };
+
+    initEditor();
+
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.editor.dom.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        );
+      }
+    };
+  }, [shareDBDoc, theme]);
+
+  // Focus handling
+  useEffect(() => {
+    if (focused && editorRef.current) {
+      editorRef.current.editor.focus();
     }
   }, [focused]);
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
+    (event: KeyboardEvent) => {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         onSendMessage();
-      } else if (event.key === 'Enter' && event.shiftKey) {
-        // Shift+Enter should add a newline, not trigger run code
-        // We prevent the event from bubbling up to the global keyboard handler
-        event.stopPropagation();
       } else if (event.key === 'ArrowUp') {
-        // Only navigate history if cursor is at the beginning of the first line
-        const textarea =
-          event.target as HTMLTextAreaElement;
-        const { selectionStart, value } = textarea;
-        const lines = value
-          .substring(0, selectionStart)
-          .split('\n');
-
-        // Check if we're at the beginning of the first line
-        if (lines.length === 1 && selectionStart === 0) {
-          event.preventDefault();
-          navigateMessageHistoryUp();
+        // Handle message history navigation
+        const editor = editorRef.current?.editor;
+        if (editor) {
+          const { selection } = editor.state;
+          if (selection.main.head === 0) {
+            event.preventDefault();
+            navigateMessageHistoryUp();
+          }
         }
       } else if (event.key === 'ArrowDown') {
-        // Only navigate history if cursor is at the end of the last line
-        const textarea =
-          event.target as HTMLTextAreaElement;
-        const { selectionStart, value } = textarea;
-        const remainingText =
-          value.substring(selectionStart);
-        const remainingLines = remainingText.split('\n');
-
-        // Check if we're at the end of the last line
-        if (
-          remainingLines.length === 1 &&
-          remainingLines[0] === ''
-        ) {
-          event.preventDefault();
-          navigateMessageHistoryDown();
+        // Handle message history navigation
+        const editor = editorRef.current?.editor;
+        if (editor) {
+          const { selection, doc } = editor.state;
+          if (selection.main.head === doc.length) {
+            event.preventDefault();
+            navigateMessageHistoryDown();
+          }
         }
       }
     },
@@ -105,21 +176,11 @@ const ChatInputComponent = ({
   );
 
   const handleSendClick = useCallback(() => {
-    // If speech recognition is active, stop it
     if (isSpeaking) {
       stopSpeaking();
     }
     onSendMessage();
   }, [onSendMessage, isSpeaking, stopSpeaking]);
-
-  const handleChange = useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setAIChatMessage(event.target.value);
-      // Reset history navigation when user starts typing
-      resetMessageHistoryNavigation();
-    },
-    [setAIChatMessage, resetMessageHistoryNavigation],
-  );
 
   return (
     <div className="ai-chat-input-container">
@@ -169,26 +230,24 @@ const ChatInputComponent = ({
           </div>
         </div>
       )}
+
       <Form.Group className="ai-chat-input-group">
-        <Form.Control
-          as="textarea"
-          rows={5}
-          value={aiChatMessage}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          ref={inputRef}
-          placeholder={
-            aiChatMode === 'edit'
-              ? 'Ask me to make code changes...'
-              : 'Ask me anything about your code...'
-          }
-          spellCheck="false"
-          disabled={isLoading}
-          aria-label="Chat message input"
+        <div
+          ref={editorContainerRef}
+          className="ai-chat-editor-container"
+          style={{
+            border: '1px solid #ced4da',
+            borderRadius: '0.375rem',
+            minHeight: '120px',
+            padding: '8px',
+          }}
         />
+
         <div className="ai-chat-input-footer">
           <span className="ai-chat-hint">
-            {aiChatMessage ? 'Press Enter to send' : ''}
+            {currentChatDraft.trim()
+              ? 'Press Enter to send'
+              : ''}
           </span>
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button
@@ -221,12 +280,14 @@ const ChatInputComponent = ({
             </Button>
             <Button
               variant={
-                aiChatMessage.trim()
+                currentChatDraft.trim()
                   ? 'primary'
                   : 'outline-secondary'
               }
               onClick={handleSendClick}
-              disabled={!aiChatMessage.trim() || isLoading}
+              disabled={
+                !currentChatDraft.trim() || isLoading
+              }
               className="ai-chat-send-button"
               aria-label="Send message"
               title="Send message (Enter)"
