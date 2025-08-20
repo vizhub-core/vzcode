@@ -15,6 +15,7 @@ export const scatterPlot = (svg, options) => {
     scatterPlotTitle,
     fontSize,
     fontFamily,
+    axisColor,
   } = options;
 
   const xScale = scaleLinear()
@@ -32,7 +33,8 @@ export const scatterPlot = (svg, options) => {
     yScale, 
     dimensions: { width, height }, 
     margin: { left, right, top, bottom },
-    showAxis 
+    showAxis,
+    axisColor 
   });
 
   renderTitle(svg, {

@@ -10,6 +10,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
 import { VisualEditorConfigEntry } from '../../types';
 import { EmptyState } from './EmptyState';
+import {color, hcl, HCLColor, rgb}  from 'd3-color';
 
 const CONFIG_FILE_NAME = 'config.json';
 
@@ -186,6 +187,92 @@ export const VisualEditor = () => {
     [configData, files, configFileId, setLocalValues],
   );
 
+  const onColorChange = useCallback(
+    (property: string, lchComponent: 'l' | 'c' | 'h') =>
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = parseFloat(
+          event.currentTarget.value,
+        );
+
+        // Get current hex color from config
+        const currentHex =
+          configData[property] || '#000000';
+
+        // Convert current hex to LCH
+        let hclFromRGB: HCLColor;
+        try {
+          const rgbColor = rgb(currentHex);
+          hclFromRGB = hcl(rgbColor);
+        } catch (error) {
+          // Fallback to black if conversion fails
+          hclFromRGB = hcl('black');
+        }
+
+        let hclArray: number[] = [
+          (localValues[`${property}_h`] as number) ??
+            hclFromRGB.h,
+          (localValues[`${property}_c`] as number) ??
+            hclFromRGB.c,
+          (localValues[`${property}_l`] as number) ??
+            hclFromRGB.l,
+        ];
+
+
+        // Update the specific LCH component
+        const newhcl = [...hclArray];
+        if (lchComponent === 'h') newhcl[0] = newValue;
+        else if (lchComponent === 'c') newhcl[1] = newValue;
+        else if (lchComponent === 'l') newhcl[2] = newValue;
+
+        // Convert back to hex
+        let newHex;
+        try {
+          const newColor = hcl(
+            newhcl[0],
+            newhcl[1],
+            newhcl[2],
+          );
+
+          if (newColor.displayable()) {
+            newHex = newColor.formatHex();
+          }
+          else{
+            newHex = currentHex;
+          }
+        } catch (error) {
+          // Fallback to current color if conversion fails
+          newHex = currentHex;
+        }
+
+        // Update local state for responsive UI
+        setLocalValues((prev) => ({
+          ...prev,
+          [property]: newHex,
+          [`${property}_h`]: newhcl[0],
+          [`${property}_c`]: newhcl[1],
+          [`${property}_l`]: newhcl[2],
+        }));
+
+        // Update config.json with hex value
+        const newConfigData = {
+          ...configData,
+          [property]: newHex,
+        };
+
+        submitOperation((document: VizContent) => ({
+          ...document,
+          files: {
+            ...files,
+            [configFileId]: {
+              name: 'config.json',
+              text: JSON.stringify(newConfigData, null, 2),
+            },
+          },
+        }));
+      },
+    [configData, files, configFileId, setLocalValues],
+  );
+
   const visualEditorWidgets: VisualEditorConfigEntry[] =
     configData?.visualEditorWidgets ?? [];
 
@@ -207,6 +294,32 @@ export const VisualEditor = () => {
       } else if (widget.type === 'dropdown') {
         newLocalValues[widget.property] =
           configData[widget.property];
+      } else if (widget.type === 'color') {
+        newLocalValues[widget.property] =
+          configData[widget.property];
+
+        // Convert hex to LCH for internal state
+        const hexColor = configData[widget.property];
+
+        if (localValues[widget.property] !== hexColor) {
+          if (hexColor) {
+            try {
+              const rgbColor = color(hexColor);
+              const lch = hcl(rgbColor);
+              newLocalValues[`${widget.property}_h`] =
+              lch.h;
+              newLocalValues[`${widget.property}_c`] =
+              lch.c;
+              newLocalValues[`${widget.property}_l`] =
+              lch.l;
+            } catch (error) {
+              // Fallback values if conversion fails
+              newLocalValues[`${widget.property}_l`] = 0;
+              newLocalValues[`${widget.property}_c`] = 0;
+              newLocalValues[`${widget.property}_h`] = 0;
+            }
+          }
+        }
       }
     });
     setLocalValues(newLocalValues);
@@ -517,6 +630,159 @@ export const VisualEditor = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
+                </div>
+              </div>
+            </div>
+          );
+        } else if (widgetConfig.type === 'color') {
+          // Use local value if available, otherwise fall back to config value
+          const currentHex =
+            localValues[widgetConfig.property] ??
+            configData[widgetConfig.property] ??
+            '#000000';
+
+          // Convert hex to LCH for slider values
+          let hclColor;
+          try {
+            const rgbColor = color(currentHex);
+            hclColor = hcl(rgbColor)
+          } catch (error) {
+            hclColor = hcl("black");
+          }
+
+          // Use local LCH values if available, otherwise convert from hex
+          const currentH =
+            localValues[`${widgetConfig.property}_h`] ??
+            hclColor.h;
+          const currentC =
+            localValues[`${widgetConfig.property}_c`] ??
+            hclColor.c;
+          const currentL =
+            localValues[`${widgetConfig.property}_l`] ??
+            hclColor.l;
+
+          return (
+            <div
+              key={widgetConfig.property}
+              className="visual-editor-color"
+            >
+              <div className="color-header">
+                <label className="color-label">
+                  {widgetConfig.label}
+                </label>
+                <span className="color-value">
+                  {currentHex}
+                </span>
+              </div>
+
+              <div
+                className="color-preview"
+                style={{ backgroundColor: currentHex }}
+              />
+
+              <div className="lch-sliders">
+                {/* Lightness Slider */}
+                <div className="lch-slider">
+                  <div className="slider-header">
+                    <label className="slider-label">
+                      Lightness
+                    </label>
+                    <span className="slider-value">
+                      {Math.round(currentL)}
+                    </span>
+                  </div>
+                  <div className="slider-container">
+                    <input
+                      type="range"
+                      className="slider-input"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={currentL}
+                      onChange={onColorChange(
+                        widgetConfig.property,
+                        'l',
+                      )}
+                    />
+                    <div
+                      className="slider-track-fill"
+                      style={{ width: `${currentL}%` }}
+                    />
+                  </div>
+                  <div className="slider-bounds">
+                    <span className="min-value">0</span>
+                    <span className="max-value">100</span>
+                  </div>
+                </div>
+
+                {/* Chroma Slider */}
+                <div className="lch-slider">
+                  <div className="slider-header">
+                    <label className="slider-label">
+                      Chroma
+                    </label>
+                    <span className="slider-value">
+                      {Math.round(currentC)}
+                    </span>
+                  </div>
+                  <div className="slider-container">
+                    <input
+                      type="range"
+                      className="slider-input"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={currentC}
+                      onChange={onColorChange(
+                        widgetConfig.property,
+                        'c',
+                      )}
+                    />
+                    <div
+                      className="slider-track-fill"
+                      style={{ width: `${currentC}%` }}
+                    />
+                  </div>
+                  <div className="slider-bounds">
+                    <span className="min-value">0</span>
+                    <span className="max-value">100</span>
+                  </div>
+                </div>
+
+                {/* Hue Slider */}
+                <div className="lch-slider">
+                  <div className="slider-header">
+                    <label className="slider-label">
+                      Hue
+                    </label>
+                    <span className="slider-value">
+                      {Math.round(currentH)}°
+                    </span>
+                  </div>
+                  <div className="slider-container">
+                    <input
+                      type="range"
+                      className="slider-input"
+                      min={0}
+                      max={360}
+                      step={1}
+                      value={currentH}
+                      onChange={onColorChange(
+                        widgetConfig.property,
+                        'h',
+                      )}
+                    />
+                    <div
+                      className="slider-track-fill"
+                      style={{
+                        width: `${(currentH / 360) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="slider-bounds">
+                    <span className="min-value">0°</span>
+                    <span className="max-value">360°</span>
+                  </div>
                 </div>
               </div>
             </div>
