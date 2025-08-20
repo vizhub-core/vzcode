@@ -213,4 +213,5 @@ export type VisualEditorConfigEntry =
       property: string;
       label: string;
       options: string[];
-    };
+    }
+  | { type: 'color'; property: string; label: string };
