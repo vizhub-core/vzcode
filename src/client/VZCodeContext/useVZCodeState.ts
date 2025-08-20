@@ -423,18 +423,31 @@ export const useVZCodeState = ({
             errorMessage ===
             'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
           ) {
-            // Trigger auto-fork instead of showing error
-            try {
-              await autoForkAndRetryAI?.(
-                currentPrompt,
-                aiChatMode,
-              );
-              // If we reach here, the fork was successful and redirect should happen
-              return;
-            } catch (forkError) {
-              console.error('Auto-fork failed:', forkError);
+            // For authenticated users, trigger auto-fork
+            if (autoForkAndRetryAI) {
+              try {
+                await autoForkAndRetryAI(
+                  currentPrompt,
+                  aiChatMode,
+                );
+                // If we reach here, the fork was successful and redirect should happen
+                return;
+              } catch (forkError) {
+                console.error(
+                  'Auto-fork failed:',
+                  forkError,
+                );
+                setAIErrorMessage(
+                  'Failed to fork visualization. Please try forking manually.',
+                );
+                return;
+              }
+            } else {
+              // For unauthenticated users, store the message and trigger login flow
+              // This will be handled by the external error handler
               setAIErrorMessage(
-                'Failed to fork visualization. Please try forking manually.',
+                errorMessage,
+                messageContent.trim(),
               );
               return;
             }
