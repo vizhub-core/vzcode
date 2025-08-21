@@ -126,6 +126,8 @@ export const AIChat = () => {
   ]);
 
   // Check for stored AI prompt on component mount (post-fork restoration)
+  // This logic is now handled by the AutoSendAIMessage component in VizHub
+  // to ensure proper timing and coordination with editor opening
   useEffect(() => {
     DEBUG &&
       console.log('AIChat: Checking for stored AI prompt');
@@ -137,41 +139,29 @@ export const AIChat = () => {
           storedPrompt,
         );
       if (storedPrompt) {
-        // Restore the prompt and mode
+        // Only restore the prompt and mode, but don't auto-send
+        // The AutoSendAIMessage component will handle the sending
         DEBUG &&
-          console.log('AIChat: Restoring prompt and mode');
+          console.log(
+            'AIChat: Restoring prompt and mode only',
+          );
         setAIChatMessage(storedPrompt.prompt);
         setAIChatMode(
           storedPrompt.modelName === 'ask' ? 'ask' : 'edit',
         );
 
-        // Clear the stored prompt
+        // Don't clear the stored prompt here - let AutoSendAIMessage handle it
+        // Don't auto-submit here - let AutoSendAIMessage handle the timing
         DEBUG &&
-          console.log('AIChat: Clearing stored prompt');
-        clearStoredAIPrompt();
-
-        // Auto-submit the restored prompt after a short delay
-        DEBUG &&
-          console.log('AIChat: Scheduling auto-submit');
-        setTimeout(() => {
-          DEBUG &&
-            console.log(
-              'AIChat: Auto-submitting restored prompt',
-            );
-          handleSendMessage(storedPrompt.prompt);
-        }, 100);
+          console.log(
+            'AIChat: Prompt restored, waiting for AutoSendAIMessage to handle sending',
+          );
       } else {
         DEBUG &&
           console.log('AIChat: No stored prompt found');
       }
     }
-  }, [
-    getStoredAIPrompt,
-    clearStoredAIPrompt,
-    setAIChatMessage,
-    setAIChatMode,
-    handleSendMessage,
-  ]);
+  }, [getStoredAIPrompt, setAIChatMessage, setAIChatMode]);
 
   return (
     <div className="ai-chat-container">
@@ -307,7 +297,6 @@ export const AIChat = () => {
           ) : (
             <MessageList
               messages={messages}
-              aiStatus={aiStatus}
               isLoading={isLoading}
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
