@@ -10,7 +10,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
 import { VisualEditorConfigEntry } from '../../types';
 import { EmptyState } from './EmptyState';
-import {color, hcl, HCLColor, rgb}  from 'd3-color';
+import { color, hcl, HCLColor, rgb } from 'd3-color';
 
 const CONFIG_FILE_NAME = 'config.json';
 
@@ -37,7 +37,11 @@ const formatValue = (
 };
 
 // Helper function to check if HCL color is displayable
-const hclOk = (h: number, c: number, l: number): boolean => {
+const hclOk = (
+  h: number,
+  c: number,
+  l: number,
+): boolean => {
   try {
     const color = hcl(h, c, l);
     return color.displayable();
@@ -50,20 +54,20 @@ const hclOk = (h: number, c: number, l: number): boolean => {
 const renderSliderBackground = (
   canvas: HTMLCanvasElement | null,
   channel: 'h' | 'c' | 'l',
-  values: { h: number; c: number; l: number }
+  values: { h: number; c: number; l: number },
 ): void => {
   if (!canvas) return;
-  
+
   const width = canvas.width;
   const height = canvas.height;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
   const imageData = ctx.createImageData(width, height);
-  
+
   for (let x = 0; x < width; x++) {
     let h, c, l;
-    
+
     // Map x pixel to value in slider domain
     if (channel === 'h') {
       const val = (x * 360) / (width - 1);
@@ -75,24 +79,29 @@ const renderSliderBackground = (
       h = Math.max(0, Math.min(values.h, 360));
       c = val;
       l = Math.max(0, Math.min(values.l, 100));
-    } else { // channel === 'l'
+    } else {
+      // channel === 'l'
       const val = (x * 100) / (width - 1);
       h = Math.max(0, Math.min(values.h, 360));
       c = Math.max(0, Math.min(values.c, 100));
       l = val;
     }
-    
+
     // Determine display color
     let displayColor;
     if (hclOk(h, c, l)) {
       const hclColor = hcl(h, c, l);
       const rgbColor = hclColor.rgb();
-      displayColor = { r: rgbColor.r, g: rgbColor.g, b: rgbColor.b };
+      displayColor = {
+        r: rgbColor.r,
+        g: rgbColor.g,
+        b: rgbColor.b,
+      };
     } else {
       // Out-of-gamut: show gray
       displayColor = { r: 128, g: 128, b: 128 };
     }
-    
+
     // Fill the column
     for (let y = 0; y < height; y++) {
       const i = 4 * (y * width + x);
@@ -102,7 +111,7 @@ const renderSliderBackground = (
       imageData.data[i + 3] = 255; // Alpha
     }
   }
-  
+
   ctx.putImageData(imageData, 0, 0);
 };
 
@@ -121,7 +130,9 @@ export const VisualEditor = () => {
   >(null);
 
   // Refs for canvas elements (for color slider backgrounds)
-  const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
+  const canvasRefs = useRef<{
+    [key: string]: HTMLCanvasElement | null;
+  }>({});
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -334,7 +345,6 @@ export const VisualEditor = () => {
             hclFromRGB.l,
         ];
 
-
         // Update the specific LCH component
         const newhcl = [...hclArray];
         if (lchComponent === 'h') newhcl[0] = newValue;
@@ -352,8 +362,7 @@ export const VisualEditor = () => {
 
           if (newColor.displayable()) {
             newHex = newColor.formatHex();
-          }
-          else{
+          } else {
             newHex = currentHex;
           }
         } catch (error) {
@@ -424,11 +433,11 @@ export const VisualEditor = () => {
               const rgbColor = color(hexColor);
               const lch = hcl(rgbColor);
               newLocalValues[`${widget.property}_h`] =
-              lch.h;
+                lch.h;
               newLocalValues[`${widget.property}_c`] =
-              lch.c;
+                lch.c;
               newLocalValues[`${widget.property}_l`] =
-              lch.l;
+                lch.l;
             } catch (error) {
               // Fallback values if conversion fails
               newLocalValues[`${widget.property}_l`] = 0;
@@ -447,25 +456,47 @@ export const VisualEditor = () => {
     visualEditorWidgets.forEach((widget) => {
       if (widget.type === 'color') {
         // Get current HCL values
-        const currentHex = localValues[widget.property] || configData[widget.property] || '#000000';
+        const currentHex =
+          localValues[widget.property] ||
+          configData[widget.property] ||
+          '#000000';
         let hclColor;
         try {
           const rgbColor = color(currentHex);
           hclColor = hcl(rgbColor);
         } catch (error) {
-          hclColor = hcl("black");
+          hclColor = hcl('black');
         }
 
-        const currentH = localValues[`${widget.property}_h`] ?? hclColor.h;
-        const currentC = localValues[`${widget.property}_c`] ?? hclColor.c;
-        const currentL = localValues[`${widget.property}_l`] ?? hclColor.l;
+        const currentH =
+          localValues[`${widget.property}_h`] ?? hclColor.h;
+        const currentC =
+          localValues[`${widget.property}_c`] ?? hclColor.c;
+        const currentL =
+          localValues[`${widget.property}_l`] ?? hclColor.l;
 
-        const values = { h: currentH, c: currentC, l: currentL };
+        const values = {
+          h: currentH,
+          c: currentC,
+          l: currentL,
+        };
 
         // Render backgrounds for each slider
-        renderSliderBackground(canvasRefs.current[`${widget.property}_l_bg`], 'l', values);
-        renderSliderBackground(canvasRefs.current[`${widget.property}_c_bg`], 'c', values);
-        renderSliderBackground(canvasRefs.current[`${widget.property}_h_bg`], 'h', values);
+        renderSliderBackground(
+          canvasRefs.current[`${widget.property}_l_bg`],
+          'l',
+          values,
+        );
+        renderSliderBackground(
+          canvasRefs.current[`${widget.property}_c_bg`],
+          'c',
+          values,
+        );
+        renderSliderBackground(
+          canvasRefs.current[`${widget.property}_h_bg`],
+          'h',
+          values,
+        );
       }
     });
   }, [localValues, configData, visualEditorWidgets]);
@@ -750,9 +781,9 @@ export const VisualEditor = () => {
           let hclColor;
           try {
             const rgbColor = color(currentHex);
-            hclColor = hcl(rgbColor)
+            hclColor = hcl(rgbColor);
           } catch (error) {
-            hclColor = hcl("black");
+            hclColor = hcl('black');
           }
 
           // Use local LCH values if available, otherwise convert from hex
@@ -799,7 +830,9 @@ export const VisualEditor = () => {
                   <div className="slider-container">
                     <canvas
                       ref={(canvas) => {
-                        canvasRefs.current[`${widgetConfig.property}_l_bg`] = canvas;
+                        canvasRefs.current[
+                          `${widgetConfig.property}_l_bg`
+                        ] = canvas;
                       }}
                       className="slider-bg-canvas"
                       width={200}
@@ -837,7 +870,9 @@ export const VisualEditor = () => {
                   <div className="slider-container">
                     <canvas
                       ref={(canvas) => {
-                        canvasRefs.current[`${widgetConfig.property}_c_bg`] = canvas;
+                        canvasRefs.current[
+                          `${widgetConfig.property}_c_bg`
+                        ] = canvas;
                       }}
                       className="slider-bg-canvas"
                       width={200}
@@ -875,7 +910,9 @@ export const VisualEditor = () => {
                   <div className="slider-container">
                     <canvas
                       ref={(canvas) => {
-                        canvasRefs.current[`${widgetConfig.property}_h_bg`] = canvas;
+                        canvasRefs.current[
+                          `${widgetConfig.property}_h_bg`
+                        ] = canvas;
                       }}
                       className="slider-bg-canvas"
                       width={200}
