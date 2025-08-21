@@ -1,6 +1,6 @@
 {
-  "xValue": "sepal_width",
-  "yValue": "petal_length",
+  "xValue": "petal_length",
+  "yValue": "sepal_length",
   "margin": {
     "top": 20,
     "right": 67,
@@ -21,7 +21,7 @@
     "versicolor": "#ff7f0e",
     "virginica": "#2ca02c"
   },
-  "showAxis": false,
+  "showAxis": true,
   "scatterPlotTitle": "My Scatter 2",
   "visualEditorWidgets": [
     {
@@ -73,6 +73,12 @@
         "petal_length",
         "petal_width"
       ]
+    },
+    {
+      "type": "color",
+      "label": "Axis Color",
+      "property": "axisColor"
     }
-  ]
+  ],
+  "axisColor": "#c6c68c"
 }
