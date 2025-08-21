@@ -4,6 +4,7 @@ import {
   useState,
   useEffect,
   useMemo,
+  useRef,
 } from 'react';
 import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
@@ -35,6 +36,76 @@ const formatValue = (
   return Number(value).toFixed(decimalPlaces);
 };
 
+// Helper function to check if HCL color is displayable
+const hclOk = (h: number, c: number, l: number): boolean => {
+  try {
+    const color = hcl(h, c, l);
+    return color.displayable();
+  } catch (e) {
+    return false;
+  }
+};
+
+// Helper function to render slider background gradients
+const renderSliderBackground = (
+  canvas: HTMLCanvasElement | null,
+  channel: 'h' | 'c' | 'l',
+  values: { h: number; c: number; l: number }
+): void => {
+  if (!canvas) return;
+  
+  const width = canvas.width;
+  const height = canvas.height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const imageData = ctx.createImageData(width, height);
+  
+  for (let x = 0; x < width; x++) {
+    let h, c, l;
+    
+    // Map x pixel to value in slider domain
+    if (channel === 'h') {
+      const val = (x * 360) / (width - 1);
+      h = val;
+      c = Math.max(0, Math.min(values.c, 100));
+      l = Math.max(0, Math.min(values.l, 100));
+    } else if (channel === 'c') {
+      const val = (x * 100) / (width - 1);
+      h = Math.max(0, Math.min(values.h, 360));
+      c = val;
+      l = Math.max(0, Math.min(values.l, 100));
+    } else { // channel === 'l'
+      const val = (x * 100) / (width - 1);
+      h = Math.max(0, Math.min(values.h, 360));
+      c = Math.max(0, Math.min(values.c, 100));
+      l = val;
+    }
+    
+    // Determine display color
+    let displayColor;
+    if (hclOk(h, c, l)) {
+      const hclColor = hcl(h, c, l);
+      const rgbColor = hclColor.rgb();
+      displayColor = { r: rgbColor.r, g: rgbColor.g, b: rgbColor.b };
+    } else {
+      // Out-of-gamut: show gray
+      displayColor = { r: 128, g: 128, b: 128 };
+    }
+    
+    // Fill the column
+    for (let y = 0; y < height; y++) {
+      const i = 4 * (y * width + x);
+      imageData.data[i] = displayColor.r;
+      imageData.data[i + 1] = displayColor.g;
+      imageData.data[i + 2] = displayColor.b;
+      imageData.data[i + 3] = 255; // Alpha
+    }
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+};
+
 export const VisualEditor = () => {
   const { files, submitOperation } =
     useContext(VZCodeContext);
@@ -48,6 +119,9 @@ export const VisualEditor = () => {
   const [openDropdown, setOpenDropdown] = useState<
     string | null
   >(null);
+
+  // Refs for canvas elements (for color slider backgrounds)
+  const canvasRefs = useRef<{ [key: string]: HTMLCanvasElement | null }>({});
 
   let configFileId: VizFileId | null = null;
   for (const fileId in files) {
@@ -367,6 +441,34 @@ export const VisualEditor = () => {
     });
     setLocalValues(newLocalValues);
   }, [configData]);
+
+  // Update color slider backgrounds when values change
+  useEffect(() => {
+    visualEditorWidgets.forEach((widget) => {
+      if (widget.type === 'color') {
+        // Get current HCL values
+        const currentHex = localValues[widget.property] || configData[widget.property] || '#000000';
+        let hclColor;
+        try {
+          const rgbColor = color(currentHex);
+          hclColor = hcl(rgbColor);
+        } catch (error) {
+          hclColor = hcl("black");
+        }
+
+        const currentH = localValues[`${widget.property}_h`] ?? hclColor.h;
+        const currentC = localValues[`${widget.property}_c`] ?? hclColor.c;
+        const currentL = localValues[`${widget.property}_l`] ?? hclColor.l;
+
+        const values = { h: currentH, c: currentC, l: currentL };
+
+        // Render backgrounds for each slider
+        renderSliderBackground(canvasRefs.current[`${widget.property}_l_bg`], 'l', values);
+        renderSliderBackground(canvasRefs.current[`${widget.property}_c_bg`], 'c', values);
+        renderSliderBackground(canvasRefs.current[`${widget.property}_h_bg`], 'h', values);
+      }
+    });
+  }, [localValues, configData, visualEditorWidgets]);
 
   if (configFileId === null) {
     return (
@@ -695,6 +797,14 @@ export const VisualEditor = () => {
                     </span>
                   </div>
                   <div className="slider-container">
+                    <canvas
+                      ref={(canvas) => {
+                        canvasRefs.current[`${widgetConfig.property}_l_bg`] = canvas;
+                      }}
+                      className="slider-bg-canvas"
+                      width={200}
+                      height={4}
+                    />
                     <input
                       type="range"
                       className="slider-input"
@@ -706,10 +816,6 @@ export const VisualEditor = () => {
                         widgetConfig.property,
                         'l',
                       )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{ width: `${currentL}%` }}
                     />
                   </div>
                   <div className="slider-bounds">
@@ -729,6 +835,14 @@ export const VisualEditor = () => {
                     </span>
                   </div>
                   <div className="slider-container">
+                    <canvas
+                      ref={(canvas) => {
+                        canvasRefs.current[`${widgetConfig.property}_c_bg`] = canvas;
+                      }}
+                      className="slider-bg-canvas"
+                      width={200}
+                      height={4}
+                    />
                     <input
                       type="range"
                       className="slider-input"
@@ -740,10 +854,6 @@ export const VisualEditor = () => {
                         widgetConfig.property,
                         'c',
                       )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{ width: `${currentC}%` }}
                     />
                   </div>
                   <div className="slider-bounds">
@@ -763,6 +873,14 @@ export const VisualEditor = () => {
                     </span>
                   </div>
                   <div className="slider-container">
+                    <canvas
+                      ref={(canvas) => {
+                        canvasRefs.current[`${widgetConfig.property}_h_bg`] = canvas;
+                      }}
+                      className="slider-bg-canvas"
+                      width={200}
+                      height={4}
+                    />
                     <input
                       type="range"
                       className="slider-input"
@@ -774,12 +892,6 @@ export const VisualEditor = () => {
                         widgetConfig.property,
                         'h',
                       )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{
-                        width: `${(currentH / 360) * 100}%`,
-                      }}
                     />
                   </div>
                   <div className="slider-bounds">
