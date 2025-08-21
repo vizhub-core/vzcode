@@ -1101,7 +1101,11 @@
         appearance: none;
         width: 14px;
         height: 14px;
-        background: linear-gradient(135deg, #66ecff, #00ffff);
+        background: linear-gradient(
+          135deg,
+          #66ecff,
+          #00ffff
+        );
         border-radius: 50%;
         cursor: pointer;
         border: 1px solid var(--vh-color-neutral-01);
@@ -1124,7 +1128,11 @@
       &::-moz-range-thumb {
         width: 14px;
         height: 14px;
-        background: linear-gradient(135deg, #66ecff, #00ffff);
+        background: linear-gradient(
+          135deg,
+          #66ecff,
+          #00ffff
+        );
         border-radius: 50%;
         cursor: pointer;
         border: 1px solid var(--vh-color-neutral-01);

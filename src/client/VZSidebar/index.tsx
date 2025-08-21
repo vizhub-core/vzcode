@@ -396,29 +396,6 @@ export const VZSidebar = ({
             </i>
           </OverlayTrigger>
 
-          {enableAIChat && (
-            <OverlayTrigger
-              placement="right"
-              overlay={
-                <Tooltip id="ai-chat-tooltip">
-                  {aiChatToolTipText}
-                </Tooltip>
-              }
-            >
-              <i
-                id="ai-chat-icon"
-                className="icon-button icon-button-dark"
-                onClick={() => {
-                  setIsAIChatOpen(true);
-                  setIsSearchOpen(false);
-                  setIsVisualEditorOpen(false);
-                }}
-              >
-                <SparklesSVG />
-              </i>
-            </OverlayTrigger>
-          )}
-
           <OverlayTrigger
             placement="right"
             overlay={

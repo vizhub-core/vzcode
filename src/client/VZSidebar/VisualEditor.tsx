@@ -9,7 +9,7 @@ import { VZCodeContext } from '../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
 import { VisualEditorConfigEntry } from '../../types';
 import { EmptyState } from './EmptyState';
-import {color, hcl, HCLColor, rgb}  from 'd3-color';
+import { color, hcl, HCLColor, rgb } from 'd3-color';
 
 const CONFIG_FILE_NAME = 'config.json';
 
@@ -260,7 +260,6 @@ export const VisualEditor = () => {
             hclFromRGB.l,
         ];
 
-
         // Update the specific LCH component
         const newhcl = [...hclArray];
         if (lchComponent === 'h') newhcl[0] = newValue;
@@ -278,8 +277,7 @@ export const VisualEditor = () => {
 
           if (newColor.displayable()) {
             newHex = newColor.formatHex();
-          }
-          else{
+          } else {
             newHex = currentHex;
           }
         } catch (error) {
@@ -350,11 +348,11 @@ export const VisualEditor = () => {
               const rgbColor = color(hexColor);
               const lch = hcl(rgbColor);
               newLocalValues[`${widget.property}_h`] =
-              lch.h;
+                lch.h;
               newLocalValues[`${widget.property}_c`] =
-              lch.c;
+                lch.c;
               newLocalValues[`${widget.property}_l`] =
-              lch.l;
+                lch.l;
             } catch (error) {
               // Fallback values if conversion fails
               newLocalValues[`${widget.property}_l`] = 0;
@@ -648,9 +646,9 @@ export const VisualEditor = () => {
           let hclColor;
           try {
             const rgbColor = color(currentHex);
-            hclColor = hcl(rgbColor)
+            hclColor = hcl(rgbColor);
           } catch (error) {
-            hclColor = hcl("black");
+            hclColor = hcl('black');
           }
 
           // Use local LCH values if available, otherwise convert from hex
