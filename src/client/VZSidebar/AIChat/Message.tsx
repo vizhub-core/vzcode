@@ -15,6 +15,7 @@ interface MessageProps {
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
   chatId?: string;
+  showAdditionalWidgets?: boolean;
 }
 
 const MessageComponent = ({
@@ -25,6 +26,7 @@ const MessageComponent = ({
   isStreaming,
   diffData,
   chatId,
+  showAdditionalWidgets = false,
 }: MessageProps) => {
   const { additionalWidgets, handleSendMessage } =
     useContext(VZCodeContext);
@@ -56,7 +58,8 @@ const MessageComponent = ({
           Object.keys(diffData).length > 0 && (
             <DiffView diffData={diffData} />
           )}
-        {additionalWidgets &&
+        {showAdditionalWidgets &&
+          additionalWidgets &&
           chatId &&
           additionalWidgets({
             messageId: id,
