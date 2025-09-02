@@ -152,13 +152,24 @@ const MessageListComponent = ({
     aiScratchpad && aiScratchpad.trim(),
   );
 
+  // Find the most recent assistant message index
+  const lastAssistantMessageIndex = messages
+    .map((m, i) => (m.role === 'assistant' ? i : -1))
+    .filter((i) => i !== -1)
+    .pop();
+
   return (
     <div
       className="ai-chat-messages"
       ref={messagesContainerRef}
       onScroll={handleScroll}
     >
-      {messages.map((msg, _index) => {
+      {messages.map((msg, index) => {
+        // Only show additionalWidgets for the most recent assistant message
+        const showAdditionalWidgets =
+          msg.role === 'assistant' &&
+          index === lastAssistantMessageIndex;
+
         return (
           <Message
             key={msg.id}
@@ -168,6 +179,7 @@ const MessageListComponent = ({
             timestamp={msg.timestamp}
             diffData={(msg as any).diffData}
             chatId={chatId}
+            showAdditionalWidgets={showAdditionalWidgets}
           />
         );
       })}
