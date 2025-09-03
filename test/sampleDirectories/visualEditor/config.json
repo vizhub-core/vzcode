@@ -1,5 +1,5 @@
 {
-  "xValue": "petal_length",
+  "xValue": "sepal_width",
   "yValue": "sepal_length",
   "margin": {
     "top": 20,
@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "cursive",
-  "pointRadius": 16,
+  "pointRadius": 18.5,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -80,5 +80,5 @@
       "property": "axisColor"
     }
   ],
-  "axisColor": "#c6c68c"
+  "axisColor": "#a69851"
 }

@@ -5,35 +5,17 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-import { VZCodeContext } from '../VZCodeContext';
+import { VZCodeContext } from '../../VZCodeContext';
 import { VizContent, VizFileId } from '@vizhub/viz-types';
-import { VisualEditorConfigEntry } from '../../types';
-import { EmptyState } from './EmptyState';
+import { VisualEditorConfigEntry } from '../../../types';
+import { EmptyState } from '../EmptyState';
 import { color, hcl, HCLColor, rgb } from 'd3-color';
-
-const CONFIG_FILE_NAME = 'config.json';
-
-// Helper function to calculate percentage for progress fill
-const calculatePercentage = (
-  value: number,
-  min: number,
-  max: number,
-) => {
-  return ((value - min) / (max - min)) * 100;
-};
-
-// Helper function to format values nicely
-const formatValue = (
-  value: number,
-  min: number,
-  max: number,
-) => {
-  // Determine decimal places based on the range
-  const range = max - min;
-  const decimalPlaces =
-    range < 10 ? 2 : range < 100 ? 1 : 0;
-  return Number(value).toFixed(decimalPlaces);
-};
+import { CONFIG_FILE_NAME } from './constants';
+import { SliderWidget } from './SliderWidget';
+import { CheckboxWidget } from './CheckboxWidget';
+import { TextInputWidget } from './TextInputWidget';
+import { DropdownWidget } from './DropdownWidget';
+import { ColorWidget } from './ColorWidget';
 
 export const VisualEditor = () => {
   const { files, submitOperation } =
@@ -418,59 +400,20 @@ export const VisualEditor = () => {
           const currentValue =
             localValues[widgetConfig.property] ??
             configData[widgetConfig.property];
-          const percentage = calculatePercentage(
-            currentValue,
-            widgetConfig.min,
-            widgetConfig.max,
-          );
 
           return (
-            <div
+            <SliderWidget
               key={widgetConfig.property}
-              className="visual-editor-slider"
-            >
-              <div className="slider-header">
-                <label
-                  htmlFor={widgetConfig.property}
-                  className="slider-label"
-                >
-                  {widgetConfig.label}
-                </label>
-                <span className="slider-value">
-                  {formatValue(
-                    currentValue,
-                    widgetConfig.min,
-                    widgetConfig.max,
-                  )}
-                </span>
-              </div>
-              <div className="slider-container">
-                <input
-                  type="range"
-                  id={widgetConfig.property}
-                  className="slider-input"
-                  min={widgetConfig.min}
-                  max={widgetConfig.max}
-                  step={widgetConfig.step}
-                  value={currentValue}
-                  onChange={onSliderChange(
-                    widgetConfig.property,
-                  )}
-                />
-                <div
-                  className="slider-track-fill"
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-              <div className="slider-bounds">
-                <span className="min-value">
-                  {widgetConfig.min}
-                </span>
-                <span className="max-value">
-                  {widgetConfig.max}
-                </span>
-              </div>
-            </div>
+              property={widgetConfig.property}
+              label={widgetConfig.label}
+              min={widgetConfig.min}
+              max={widgetConfig.max}
+              step={widgetConfig.step}
+              currentValue={currentValue}
+              onChange={onSliderChange(
+                widgetConfig.property,
+              )}
+            />
           );
         } else if (widgetConfig.type === 'checkbox') {
           // Use local value if available, otherwise fall back to config value
@@ -479,40 +422,15 @@ export const VisualEditor = () => {
             configData[widgetConfig.property];
 
           return (
-            <div
+            <CheckboxWidget
               key={widgetConfig.property}
-              className="visual-editor-checkbox"
-            >
-              <div className="checkbox-header">
-                <label
-                  htmlFor={widgetConfig.property}
-                  className="checkbox-label"
-                >
-                  {widgetConfig.label}
-                </label>
-                <span className="checkbox-value">
-                  {currentValue ? 'On' : 'Off'}
-                </span>
-              </div>
-              <div className="checkbox-container">
-                <input
-                  type="checkbox"
-                  id={widgetConfig.property}
-                  className="checkbox-input"
-                  checked={currentValue}
-                  onChange={onCheckboxChange(
-                    widgetConfig.property,
-                  )}
-                />
-                <div className="checkbox-visual">
-                  <div
-                    className={`checkbox-indicator ${
-                      currentValue ? 'checked' : ''
-                    }`}
-                  />
-                </div>
-              </div>
-            </div>
+              property={widgetConfig.property}
+              label={widgetConfig.label}
+              currentValue={currentValue}
+              onChange={onCheckboxChange(
+                widgetConfig.property,
+              )}
+            />
           );
         } else if (widgetConfig.type === 'textInput') {
           // Use local value if available, otherwise fall back to config value
@@ -521,30 +439,15 @@ export const VisualEditor = () => {
             configData[widgetConfig.property];
 
           return (
-            <div
+            <TextInputWidget
               key={widgetConfig.property}
-              className="visual-editor-text-input"
-            >
-              <div className="text-input-header">
-                <label
-                  htmlFor={widgetConfig.property}
-                  className="text-input-label"
-                >
-                  {widgetConfig.label}
-                </label>
-              </div>
-              <div className="text-input-container">
-                <input
-                  type="text"
-                  id={widgetConfig.property}
-                  className="text-input-field"
-                  value={currentValue || ''}
-                  onChange={onTextInputChange(
-                    widgetConfig.property,
-                  )}
-                />
-              </div>
-            </div>
+              property={widgetConfig.property}
+              label={widgetConfig.label}
+              currentValue={currentValue}
+              onChange={onTextInputChange(
+                widgetConfig.property,
+              )}
+            />
           );
         } else if (widgetConfig.type === 'dropdown') {
           // Use local value if available, otherwise fall back to config value
@@ -555,85 +458,23 @@ export const VisualEditor = () => {
             openDropdown === widgetConfig.property;
 
           return (
-            <div
+            <DropdownWidget
               key={widgetConfig.property}
-              className="visual-editor-dropdown"
-            >
-              <div className="dropdown-header">
-                <label
-                  htmlFor={widgetConfig.property}
-                  className="dropdown-label"
-                >
-                  {widgetConfig.label}
-                </label>
-                {/* <span className="dropdown-value">
-                  {currentValue}
-                </span> */}
-              </div>
-              <div className="dropdown-container">
-                <button
-                  type="button"
-                  className={`dropdown-button ${
-                    isOpen ? 'open' : ''
-                  }`}
-                  onClick={() =>
-                    handleDropdownToggle(
-                      widgetConfig.property,
-                    )
-                  }
-                  aria-expanded={isOpen}
-                  aria-haspopup="listbox"
-                >
-                  <span className="dropdown-button-text">
-                    {currentValue}
-                  </span>
-                  <div
-                    className={`dropdown-arrow ${
-                      isOpen ? 'open' : ''
-                    }`}
-                  >
-                    <svg
-                      width="12"
-                      height="8"
-                      viewBox="0 0 12 8"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M1 1.5L6 6.5L11 1.5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </button>
-                {isOpen && (
-                  <div className="dropdown-options">
-                    {widgetConfig.options.map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        className={`dropdown-option ${
-                          option === currentValue
-                            ? 'selected'
-                            : ''
-                        }`}
-                        onClick={() =>
-                          handleDropdownOptionClick(
-                            widgetConfig.property,
-                            option,
-                          )
-                        }
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+              property={widgetConfig.property}
+              label={widgetConfig.label}
+              options={widgetConfig.options}
+              currentValue={currentValue}
+              isOpen={isOpen}
+              onToggle={() =>
+                handleDropdownToggle(widgetConfig.property)
+              }
+              onOptionClick={(value) =>
+                handleDropdownOptionClick(
+                  widgetConfig.property,
+                  value,
+                )
+              }
+            />
           );
         } else if (widgetConfig.type === 'color') {
           // Use local value if available, otherwise fall back to config value
@@ -663,130 +504,16 @@ export const VisualEditor = () => {
             hclColor.l;
 
           return (
-            <div
+            <ColorWidget
               key={widgetConfig.property}
-              className="visual-editor-color"
-            >
-              <div className="color-header">
-                <label className="color-label">
-                  {widgetConfig.label}
-                </label>
-                <span className="color-value">
-                  {currentHex}
-                </span>
-              </div>
-
-              <div
-                className="color-preview"
-                style={{ backgroundColor: currentHex }}
-              />
-
-              <div className="lch-sliders">
-                {/* Lightness Slider */}
-                <div className="lch-slider">
-                  <div className="slider-header">
-                    <label className="slider-label">
-                      Lightness
-                    </label>
-                    <span className="slider-value">
-                      {Math.round(currentL)}
-                    </span>
-                  </div>
-                  <div className="slider-container">
-                    <input
-                      type="range"
-                      className="slider-input"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={currentL}
-                      onChange={onColorChange(
-                        widgetConfig.property,
-                        'l',
-                      )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{ width: `${currentL}%` }}
-                    />
-                  </div>
-                  <div className="slider-bounds">
-                    <span className="min-value">0</span>
-                    <span className="max-value">100</span>
-                  </div>
-                </div>
-
-                {/* Chroma Slider */}
-                <div className="lch-slider">
-                  <div className="slider-header">
-                    <label className="slider-label">
-                      Chroma
-                    </label>
-                    <span className="slider-value">
-                      {Math.round(currentC)}
-                    </span>
-                  </div>
-                  <div className="slider-container">
-                    <input
-                      type="range"
-                      className="slider-input"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={currentC}
-                      onChange={onColorChange(
-                        widgetConfig.property,
-                        'c',
-                      )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{ width: `${currentC}%` }}
-                    />
-                  </div>
-                  <div className="slider-bounds">
-                    <span className="min-value">0</span>
-                    <span className="max-value">100</span>
-                  </div>
-                </div>
-
-                {/* Hue Slider */}
-                <div className="lch-slider">
-                  <div className="slider-header">
-                    <label className="slider-label">
-                      Hue
-                    </label>
-                    <span className="slider-value">
-                      {Math.round(currentH)}°
-                    </span>
-                  </div>
-                  <div className="slider-container">
-                    <input
-                      type="range"
-                      className="slider-input"
-                      min={0}
-                      max={360}
-                      step={1}
-                      value={currentH}
-                      onChange={onColorChange(
-                        widgetConfig.property,
-                        'h',
-                      )}
-                    />
-                    <div
-                      className="slider-track-fill"
-                      style={{
-                        width: `${(currentH / 360) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <div className="slider-bounds">
-                    <span className="min-value">0°</span>
-                    <span className="max-value">360°</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              property={widgetConfig.property}
+              label={widgetConfig.label}
+              currentHex={currentHex}
+              currentH={currentH}
+              currentC={currentC}
+              currentL={currentL}
+              onColorChange={onColorChange}
+            />
           );
         }
       })}
