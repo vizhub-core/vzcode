@@ -1110,8 +1110,8 @@
       &::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
         background: linear-gradient(
           135deg,
           #66ecff,
@@ -1119,26 +1119,26 @@
         );
         border-radius: 50%;
         cursor: pointer;
-        border: 1px solid var(--vh-color-neutral-01);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        border: 2px solid var(--vh-color-neutral-01);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         transition: all 0.2s ease;
         position: relative;
         z-index: 3;
 
         &:hover {
           transform: scale(1.1);
-          box-shadow: 0 2px 4px rgba(102, 236, 255, 0.4);
+          box-shadow: 0 3px 8px rgba(102, 236, 255, 0.4);
         }
 
         &:active {
           transform: scale(1.05);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
       }
 
       &::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
         background: linear-gradient(
           135deg,
           #66ecff,
@@ -1146,18 +1146,18 @@
         );
         border-radius: 50%;
         cursor: pointer;
-        border: 1px solid var(--vh-color-neutral-01);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        border: 2px solid var(--vh-color-neutral-01);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         transition: all 0.2s ease;
 
         &:hover {
           transform: scale(1.1);
-          box-shadow: 0 2px 4px rgba(102, 236, 255, 0.4);
+          box-shadow: 0 3px 8px rgba(102, 236, 255, 0.4);
         }
 
         &:active {
           transform: scale(1.05);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
         }
       }
 
@@ -1166,11 +1166,11 @@
         outline: none;
 
         &::-webkit-slider-thumb {
-          box-shadow: 0 0 0 2px rgba(102, 236, 255, 0.3);
+          box-shadow: 0 0 0 3px rgba(102, 236, 255, 0.3);
         }
 
         &::-moz-range-thumb {
-          box-shadow: 0 0 0 2px rgba(102, 236, 255, 0.3);
+          box-shadow: 0 0 0 3px rgba(102, 236, 255, 0.3);
         }
       }
     }
