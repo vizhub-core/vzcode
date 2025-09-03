@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import { color, hcl } from 'd3-color';
 import { renderSliderBackground } from './utils';
 
 interface ColorWidgetProps {
@@ -86,7 +85,6 @@ export const ColorWidget: React.FC<ColorWidgetProps> = ({
               }}
               className="slider-bg-canvas"
               width={200}
-              height={4}
             />
             <input
               type="range"
@@ -120,7 +118,6 @@ export const ColorWidget: React.FC<ColorWidgetProps> = ({
               }}
               className="slider-bg-canvas"
               width={200}
-              height={4}
             />
             <input
               type="range"
@@ -154,7 +151,6 @@ export const ColorWidget: React.FC<ColorWidgetProps> = ({
               }}
               className="slider-bg-canvas"
               width={200}
-              height={4}
             />
             <input
               type="range"

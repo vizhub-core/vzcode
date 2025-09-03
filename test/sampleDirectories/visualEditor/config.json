@@ -9,7 +9,7 @@
   },
   "fontSize": "14px",
   "fontFamily": "cursive",
-  "pointRadius": 18.5,
+  "pointRadius": 13.5,
   "pointFill": "black",
   "pointOpacity": 0.7,
   "loadingFontSize": "24px",
@@ -80,5 +80,5 @@
       "property": "axisColor"
     }
   ],
-  "axisColor": "#799d6c"
+  "axisColor": "#ab9804"
 }
