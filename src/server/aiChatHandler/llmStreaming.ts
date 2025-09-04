@@ -1,9 +1,11 @@
+import fs from 'fs';
+import OpenAI from 'openai';
 import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
-import OpenAI from 'openai';
-import fs from 'fs';
+import { mergeFileChanges } from 'editcodewithai';
+import { VizChatId, VizContent } from '@vizhub/viz-types';
 import { generateRunId } from '@vizhub/viz-utils';
 import {
   updateAIStatus,
@@ -16,9 +18,7 @@ import {
   updateFiles,
   updateAIScratchpad,
 } from './chatOperations.js';
-import { mergeFileChanges } from 'editcodewithai';
 import { diff } from '../../ot.js';
-import { VizChatId, VizContent } from '@vizhub/viz-types';
 import { ShareDBDoc } from '../../types.js';
 
 const DEBUG = false;
@@ -54,7 +54,6 @@ const enableStreamingEditing = false;
  */
 export const createLLMFunction = ({
   shareDBDoc,
-  createAIEditLocalPresence,
   chatId,
   // Feature flag to enable/disable reasoning tokens.
   // When false, reasoning tokens are not requested from the API
@@ -64,17 +63,12 @@ export const createLLMFunction = ({
   aiRequestOptions,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
-  createAIEditLocalPresence: () => any;
   chatId: VizChatId;
   enableReasoningTokens?: boolean;
   model?: string;
   aiRequestOptions?: any;
 }) => {
   return async (fullPrompt: string) => {
-    const localPresence = enableStreamingEditing
-      ? createAIEditLocalPresence()
-      : null;
-
     // Create OpenRouter client for reasoning token support
     const openRouterClient = new OpenAI({
       apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
@@ -198,42 +192,6 @@ export const createLLMFunction = ({
             currentEditingFileId,
             line,
           );
-
-          // Update AI presence to show cursor at the end of the file
-          const currentFile =
-            shareDBDoc.data.files[currentEditingFileId];
-          if (currentFile && currentFile.text) {
-            const textLength = currentFile.text.length;
-            const filePresence = {
-              username: 'AI Editor',
-              start: [
-                'files',
-                currentEditingFileId,
-                'text',
-                textLength,
-              ],
-              end: [
-                'files',
-                currentEditingFileId,
-                'text',
-                textLength,
-              ],
-            };
-
-            if (localPresence) {
-              localPresence.submit(
-                filePresence,
-                (error) => {
-                  if (error) {
-                    console.warn(
-                      'AI Editor line presence submission error:',
-                      error,
-                    );
-                  }
-                },
-              );
-            }
-          }
         }
       },
       onNonCodeLine: async (line: string) => {
@@ -347,23 +305,6 @@ export const createLLMFunction = ({
 
     // Finalize the AI message by clearing temporary fields
     finalizeAIMessage(shareDBDoc, chatId);
-
-    // Clear AI Editor presence when done
-    DEBUG &&
-      console.log(
-        'AI editing done, clearing AI Editor presence',
-      );
-    if (localPresence) {
-      localPresence.submit(null, (error) => {
-        DEBUG && console.log('AI Editor presence cleared');
-        if (error) {
-          console.warn(
-            'AI Editor presence cleanup error:',
-            error,
-          );
-        }
-      });
-    }
 
     // If streaming editing is not enabled, we need to
     // apply all the edits at once
