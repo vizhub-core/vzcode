@@ -14,7 +14,6 @@ import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
 import { handleAIChatMessage } from './handleAIChatMessage.js';
-
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
@@ -100,21 +99,6 @@ app.use(express.static(dir));
 const shareDBConnection = shareDBBackend.connect();
 const shareDBDoc = shareDBConnection.get('documents', '1');
 
-// Set up presence for AI editing following the same pattern as useShareDB.ts
-const docPresence = shareDBConnection.getDocPresence(
-  'documents',
-  '1',
-);
-
-// Create local presence for AI editing with a unique ID
-const generateAIEditId = () => {
-  const timestamp = Date.now().toString(36);
-  return `ai-edit-${timestamp}`;
-};
-
-const createAIEditLocalPresence = () =>
-  docPresence.create(generateAIEditId());
-
 shareDBDoc.create(initialDocument, json1Presence.type.uri);
 
 // Handle AI Assist requests.
@@ -137,7 +121,6 @@ app.post(
   bodyParser.json(),
   handleAIChatMessage({
     shareDBDoc,
-    createAIEditLocalPresence,
     onCreditDeduction: undefined,
   }),
 );
