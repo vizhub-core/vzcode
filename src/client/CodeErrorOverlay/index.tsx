@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { VizContent } from '@vizhub/viz-types';
 import { CloseSVG } from '../Icons';
 import './style.scss';
+import { VZCodeContext } from "../../VZCodeContext";
+
 
 const enableErrorDismiss = true;
 
@@ -82,8 +84,10 @@ export const CodeErrorOverlay = ({
     <div className="vz-code-error-overlay-actions">
       <button
         className="icon-button icon-button-dark"
-        onClick={() => navigator.clipboard.writeText(errorMessage)}
-        title="Copy error"
+        //onClick={() => navigator.clipboard.writeText(errorMessage)}
+        onClick={() => handleSendMessage(errorMessage)}
+
+        title="Fix error with AI"
       >
         Fix This
       </button>
