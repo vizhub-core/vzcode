@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { VizContent } from '@vizhub/viz-types';
 import { CloseSVG } from '../Icons';
 import './style.scss';
+import { VZCodeContext } from "../../VZCodeContext";
+
 
 const enableErrorDismiss = true;
 
@@ -61,6 +63,7 @@ export const CodeErrorOverlay = ({
     };
   }, [handleCloseClick]);
 
+    /*
   return isOverlayVisible && errorMessage !== null ? (
     <div className="vz-code-error-overlay">
       <pre>{errorMessage}</pre>
@@ -74,4 +77,30 @@ export const CodeErrorOverlay = ({
       ) : null}
     </div>
   ) : null;
+   */
+
+  return isOverlayVisible && errorMessage !== null ? (
+  <div className="vz-code-error-overlay">
+    <div className="vz-code-error-overlay-actions">
+      <button
+        className="icon-button icon-button-dark"
+        //onClick={() => navigator.clipboard.writeText(errorMessage)}
+        onClick={() => handleSendMessage(errorMessage)}
+
+        title="Fix error with AI"
+      >
+        Fix This
+      </button>
+      {enableErrorDismiss ? (
+        <i
+          className="icon-button icon-button-dark error-dismiss-button"
+          onClick={handleCloseClick}
+        >
+          <CloseSVG />
+        </i>
+      ) : null}
+    </div>
+    <pre>{errorMessage}</pre>
+  </div>
+) : null;
 };
