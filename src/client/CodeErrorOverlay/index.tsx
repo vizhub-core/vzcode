@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useContext  } from 'react';
 import { VizContent } from '@vizhub/viz-types';
 import { CloseSVG } from '../Icons';
 import './style.scss';
-import { VZCodeContext } from "../../VZCodeContext";
+import { VZCodeContext } from "../VZCodeContext";
 
 
 const enableErrorDismiss = true;
@@ -18,6 +18,10 @@ export const CodeErrorOverlay = ({
   //   'errorMessage in CodeErrorOverlay: ',
   //   errorMessage,
   // );
+
+  const { handleSendMessage } = useContext(VZCodeContext);
+
+
   const [isOverlayVisible, setIsOverlayVisible] =
     useState(true);
 
