@@ -8,6 +8,7 @@ export const renderAxes = (
     dimensions: { width, height },
     margin: { left, right, top, bottom },
     showAxis = true,
+    axisColor
   },
 ) => {
   if (showAxis) {
@@ -24,6 +25,7 @@ export const renderAxes = (
       .join('g')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0, ${height - bottom})`)
+      .attr('fill',axisColor)
       .call(xAxis);
     
     // Render Y-axis
@@ -33,6 +35,7 @@ export const renderAxes = (
       .join('g')
       .attr('class', 'y-axis')
       .attr('transform', `translate(${left}, 0)`)
+      .attr('fill',axisColor)
       .call(yAxis);
   } else {
     // Remove axes when showAxis is false

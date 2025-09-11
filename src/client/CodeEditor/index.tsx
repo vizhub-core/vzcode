@@ -44,7 +44,6 @@ export const CodeEditor = ({
     codeEditorRef,
     enableAutoFollow,
     setIsAIChatOpen,
-    setAIChatMessage,
     handleSendMessage,
   } = useContext(VZCodeContext);
 
@@ -71,7 +70,10 @@ export const CodeEditor = ({
 
       // This logic deletes the `isInteracting` property from the document
       submitOperation(
-        ({ isInteracting, ...newDocument }) => ({
+        ({
+          isInteracting: _isInteracting,
+          ...newDocument
+        }) => ({
           ...newDocument,
         }),
       );
@@ -116,7 +118,6 @@ export const CodeEditor = ({
         aiCopilotEndpoint,
         esLintSource,
         setIsAIChatOpen,
-        setAIChatMessage,
         handleSendMessage,
       });
 

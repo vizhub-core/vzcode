@@ -3,7 +3,6 @@ import {
   createContext,
   useReducer,
   useCallback,
-  useEffect,
 } from 'react';
 
 export type Side = 'left' | 'right';

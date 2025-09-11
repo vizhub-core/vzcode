@@ -9,7 +9,7 @@ const enableErrorDismiss = true;
 
 export const CodeErrorOverlay = ({
   errorMessage,
-  content,
+  content: _content,
 }: {
   errorMessage: string | null;
   content: VizContent;

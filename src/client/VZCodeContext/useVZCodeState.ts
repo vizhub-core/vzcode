@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
 } from 'react';
-import { VizContent } from '@vizhub/viz-types';
 import { defaultTheme, useDynamicTheme } from '../themes';
 import { useActions } from '../useActions';
 import { useEditorCache } from '../useEditorCache';
@@ -77,9 +76,10 @@ export const useVZCodeState = ({
   const sidebarRef = useRef(null);
 
   const codeEditorRef = useRef(null);
+  const internalIframeRef = useRef(null);
 
-  // Use external iframeRef if provided, otherwise create our own
-  const iframeRef = externalIframeRef || useRef(null);
+  // Use external iframeRef if provided, otherwise use internal one
+  const iframeRef = externalIframeRef || internalIframeRef;
 
   // The error message shows errors in order of priority:
   // * `runtimeError` - errors from runtime execution, highest priority
@@ -423,18 +423,31 @@ export const useVZCodeState = ({
             errorMessage ===
             'You do not have permission to use AI chat on this visualization. Only users with edit access can use this feature. Fork the viz to edit it.'
           ) {
-            // Trigger auto-fork instead of showing error
-            try {
-              await autoForkAndRetryAI?.(
-                currentPrompt,
-                aiChatMode,
-              );
-              // If we reach here, the fork was successful and redirect should happen
-              return;
-            } catch (forkError) {
-              console.error('Auto-fork failed:', forkError);
+            // For authenticated users, trigger auto-fork
+            if (autoForkAndRetryAI) {
+              try {
+                await autoForkAndRetryAI(
+                  currentPrompt,
+                  aiChatMode,
+                );
+                // If we reach here, the fork was successful and redirect should happen
+                return;
+              } catch (forkError) {
+                console.error(
+                  'Auto-fork failed:',
+                  forkError,
+                );
+                setAIErrorMessage(
+                  'Failed to fork visualization. Please try forking manually.',
+                );
+                return;
+              }
+            } else {
+              // For unauthenticated users, store the message and trigger login flow
+              // This will be handled by the external error handler
               setAIErrorMessage(
-                'Failed to fork visualization. Please try forking manually.',
+                errorMessage,
+                messageContent.trim(),
               );
               return;
             }
@@ -492,7 +505,7 @@ export const useVZCodeState = ({
     let newConfigData;
     try {
       newConfigData = JSON.parse(files[configFileId].text);
-    } catch (error) {
+    } catch {
       // If config is invalid JSON, we can't process changes
       return;
     }
@@ -543,10 +556,10 @@ export const useVZCodeState = ({
         iframeRef.current?.contentWindow?.postMessage(
           changedProperties,
         );
-      } catch (error) {
+      } catch (_error_) {
         console.error(
           'Failed to send config changes to iframe:',
-          error,
+          _error_,
         );
       }
     }

@@ -23,10 +23,10 @@ export const performAIChat = async ({
   shareDBDoc,
   llmFunction,
 }) => {
-  const preparedFiles = prepareFilesForPrompt(
+  const { files } = prepareFilesForPrompt(
     shareDBDoc.data.files,
   );
-  const filesContext = formatMarkdownFiles(preparedFiles);
+  const filesContext = formatMarkdownFiles(files);
 
   // 2. Assemble the final prompt for Q&A mode
   const fullPrompt = assembleFullPrompt({
@@ -65,10 +65,10 @@ export const performAIEditing = async ({
     shareDBDoc.data.files,
   );
 
-  const preparedFiles = prepareFilesForPrompt(
+  const { files } = prepareFilesForPrompt(
     shareDBDoc.data.files,
   );
-  const filesContext = formatMarkdownFiles(preparedFiles);
+  const filesContext = formatMarkdownFiles(files);
 
   // 2. Assemble the final prompt
   const fullPrompt = assembleFullPrompt({

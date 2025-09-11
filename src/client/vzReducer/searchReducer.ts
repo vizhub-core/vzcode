@@ -13,7 +13,7 @@ function searchPattern(
 ): SearchResult {
   const files = shareDBDoc.data.files;
   const fileIds = Object.keys(shareDBDoc.data.files);
-  let results: { [id: string]: SearchFile } = {};
+  const results: { [id: string]: SearchFile } = {};
 
   for (let i = 0; i < fileIds.length; i++) {
     const file = files[fileIds[i]];
@@ -142,7 +142,7 @@ export const setSearchLineVisibilityReducer = (
               matches: state.search.results[
                 action.id
               ].matches.filter(
-                (match, index) =>
+                (match, _index) =>
                   match.line !== action.line,
               ),
             },

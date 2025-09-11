@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { generateRunId } from '@vizhub/viz-utils';
 
 describe('runId triggering functionality', () => {
@@ -43,10 +43,7 @@ describe('runId triggering functionality', () => {
 
   it('should determine correct hot reloading settings', () => {
     // Simulate the hot reloading logic from VZRight
-    const getHotReloadingSetting = (
-      isInteracting,
-      runIdChanged,
-    ) => {
+    const getHotReloadingSetting = (isInteracting) => {
       // Enable hot reloading when interacting, disable when runId changed without interaction
       return isInteracting;
     };

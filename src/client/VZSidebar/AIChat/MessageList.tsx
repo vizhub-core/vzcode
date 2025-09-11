@@ -15,13 +15,11 @@ const MessageListComponent = ({
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
-  aiStatus, // Add aiStatus prop
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
-  aiStatus?: string; // Add aiStatus to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -154,6 +152,12 @@ const MessageListComponent = ({
     aiScratchpad && aiScratchpad.trim(),
   );
 
+  // Find the most recent assistant message index
+  const lastAssistantMessageIndex = messages
+    .map((m, i) => (m.role === 'assistant' ? i : -1))
+    .filter((i) => i !== -1)
+    .pop();
+
   return (
     <div
       className="ai-chat-messages"
@@ -161,6 +165,11 @@ const MessageListComponent = ({
       onScroll={handleScroll}
     >
       {messages.map((msg, index) => {
+        // Only show additionalWidgets for the most recent assistant message
+        const showAdditionalWidgets =
+          msg.role === 'assistant' &&
+          index === lastAssistantMessageIndex;
+
         return (
           <Message
             key={msg.id}
@@ -170,6 +179,7 @@ const MessageListComponent = ({
             timestamp={msg.timestamp}
             diffData={(msg as any).diffData}
             chatId={chatId}
+            showAdditionalWidgets={showAdditionalWidgets}
           />
         );
       })}

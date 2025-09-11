@@ -24,12 +24,7 @@ import {
 } from '@codemirror/lint';
 
 import { json1Presence, textUnicode } from '../../ot';
-import {
-  PaneId,
-  ShareDBDoc,
-  TabState,
-  Username,
-} from '../../types';
+import { PaneId, ShareDBDoc, Username } from '../../types';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
 import { json1PresenceBroadcast } from './json1PresenceBroadcast';
 import { json1PresenceDisplay } from './json1PresenceDisplay';
@@ -72,9 +67,6 @@ import {
 } from '@valtown/codemirror-ts';
 import { getFileExtension } from '../utils/fileExtension';
 import { SparklesSVG } from '../Icons/SparklesSVG';
-import { VZCodeContext } from '../VZCodeContext';
-import { useContext, useMemo } from 'react';
-import { handleAIChatMessage } from '../../server/aiChatHandler';
 
 const DEBUG = false;
 
@@ -83,7 +75,7 @@ const DEBUG = false;
 export const fileNameStateField = StateField.define<string>(
   {
     create: () => '', // Default initial value
-    update: (value, tr) => value, // Typically set once at creation for a given editor instance
+    update: (value, _tr) => value, // Typically set once at creation for a given editor instance
   },
 );
 
@@ -194,7 +186,6 @@ export const getOrCreateEditor = async ({
   esLintSource,
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
-  setAIChatMessage,
   handleSendMessage,
 }: {
   // TODO pass this in from the outside
@@ -232,7 +223,6 @@ export const getOrCreateEditor = async ({
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
-  setAIChatMessage: (message: string) => void;
   handleSendMessage: any; // TODO fix types
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
@@ -258,10 +248,10 @@ export const getOrCreateEditor = async ({
 
   // Create a compartment for the theme so that it can be changed dynamically.
   // Inspired by: https://github.com/craftzdog/cm6-themes/blob/main/example/index.ts
-  let themeCompartment = new Compartment();
+  const themeCompartment = new Compartment();
 
   // Create a compartment for rainbow brackets so that it can be enabled/disabled dynamically.
-  let rainbowBracketsCompartment = new Compartment();
+  const rainbowBracketsCompartment = new Compartment();
 
   // The CodeMirror extensions to use.
   // const extensions = [autocompletion(), html(htmlConfig)]
@@ -485,7 +475,7 @@ export const getOrCreateEditor = async ({
         super();
       }
 
-      eq(other: ToDoWidget) {
+      eq(_other: ToDoWidget) {
         return false;
       }
 

@@ -1,7 +1,4 @@
-import {
-  dateToTimestamp,
-  generateRunId,
-} from '@vizhub/viz-utils';
+import { dateToTimestamp } from '@vizhub/viz-utils';
 import { randomId } from '../../randomId.js';
 import { ShareDBDoc } from '../../types.js';
 import { diff } from '../../ot.js';

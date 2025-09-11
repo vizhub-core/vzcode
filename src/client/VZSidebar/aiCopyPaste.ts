@@ -12,7 +12,6 @@ import {
   vizFilesToFileCollection,
 } from '@vizhub/viz-utils';
 import JSZip from 'jszip';
-import { generate } from '@langchain/core/dist/utils/fast-json-patch';
 
 export const createAICopyPasteHandlers = (
   files: VizFiles,
@@ -113,7 +112,6 @@ export const createAICopyPasteHandlers = (
           runId: generateRunId(),
         }));
 
-        const fileCount = Object.keys(parsed.files).length;
         setPasteButtonText('Pasted!');
         setTimeout(
           () => setPasteButtonText('Paste for AI'),

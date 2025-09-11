@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { spawn } from 'child_process';
-import { promisify } from 'util';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

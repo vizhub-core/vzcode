@@ -19,20 +19,19 @@ import { createRunCodeFunction } from '../../runCode.js';
 import { ShareDBDoc } from '../../types.js';
 import { VizContent } from '@vizhub/viz-types';
 import { createSubmitOperation } from '../../submitOperation.js';
+import { getGenerationMetadata } from 'editcodewithai';
 
 const DEBUG = false;
 
 export const handleAIChatMessage =
   ({
     shareDBDoc,
-    createAIEditLocalPresence,
     onCreditDeduction,
     getCurrentCommitId,
     model,
     aiRequestOptions,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
-    createAIEditLocalPresence: () => any;
     onCreditDeduction?: any;
     getCurrentCommitId?: () => string | null;
     model?: string;
@@ -77,7 +76,6 @@ export const handleAIChatMessage =
         chatId,
         content,
         mode,
-        createAIEditLocalPresence,
         getCurrentCommitId,
         model,
         aiRequestOptions,
@@ -103,7 +101,6 @@ const processAIRequestAsync = async ({
   chatId,
   content,
   mode,
-  createAIEditLocalPresence,
   getCurrentCommitId,
   model,
   aiRequestOptions,
@@ -113,7 +110,6 @@ const processAIRequestAsync = async ({
   chatId: string;
   content: string;
   mode: string;
-  createAIEditLocalPresence: () => any;
   getCurrentCommitId?: () => string | null;
   model?: string;
   aiRequestOptions?: any;
@@ -128,7 +124,6 @@ const processAIRequestAsync = async ({
     // Create LLM function for streaming
     const llmFunction = createLLMFunction({
       shareDBDoc,
-      createAIEditLocalPresence,
       chatId,
       model,
       aiRequestOptions,
@@ -168,18 +163,14 @@ const processAIRequestAsync = async ({
     }
 
     // Handle credit deduction if callback is provided
-    if (
-      onCreditDeduction &&
-      (editResult as any).upstreamCostCents
-    ) {
+    if (onCreditDeduction && editResult.generationId) {
       try {
-        await onCreditDeduction({
-          upstreamCostCents: (editResult as any)
-            .upstreamCostCents,
-          provider: (editResult as any).provider,
-          inputTokens: (editResult as any).inputTokens,
-          outputTokens: (editResult as any).outputTokens,
-        });
+        await onCreditDeduction(
+          await getGenerationMetadata({
+            apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
+            generationId: editResult.generationId,
+          }),
+        );
       } catch (creditError) {
         console.error(
           'Credit deduction error:',

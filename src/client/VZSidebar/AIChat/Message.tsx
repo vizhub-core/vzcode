@@ -1,12 +1,7 @@
 import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import React, {
-  useMemo,
-  memo,
-  useState,
-  useContext,
-} from 'react';
+import React, { useMemo, memo, useContext } from 'react';
 import { DiffView } from './DiffView';
 import { UnifiedFilesDiff } from '../../../utils/fileDiff';
 import { enableDiffView } from '../../featureFlags';
@@ -20,6 +15,7 @@ interface MessageProps {
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
   chatId?: string;
+  showAdditionalWidgets?: boolean;
 }
 
 const MessageComponent = ({
@@ -30,6 +26,7 @@ const MessageComponent = ({
   isStreaming,
   diffData,
   chatId,
+  showAdditionalWidgets = false,
 }: MessageProps) => {
   const { additionalWidgets, handleSendMessage } =
     useContext(VZCodeContext);
@@ -61,7 +58,8 @@ const MessageComponent = ({
           Object.keys(diffData).length > 0 && (
             <DiffView diffData={diffData} />
           )}
-        {additionalWidgets &&
+        {showAdditionalWidgets &&
+          additionalWidgets &&
           chatId &&
           additionalWidgets({
             messageId: id,
