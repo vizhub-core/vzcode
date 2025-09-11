@@ -32,7 +32,7 @@ const slowMode = false;
 // MongoDB VizHub server got in fact overloaded with
 // too many updates from the AI streaming response, with
 // warning: "Replication Oplog Window has gone below 1 hour"
-const THROTTLE_INTERVAL_MS = 100;
+const THROTTLE_INTERVAL_MS = 500;
 
 // Feature flag to enable/disable streaming editing.
 // * If `true`, the AI streaming response will be used to
