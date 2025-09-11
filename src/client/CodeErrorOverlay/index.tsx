@@ -89,7 +89,11 @@ export const CodeErrorOverlay = ({
       <button
         className="icon-button icon-button-dark"
         //onClick={() => navigator.clipboard.writeText(errorMessage)}
-        onClick={() => handleSendMessage(errorMessage)}
+        onClick={() => {
+          console.log("Sending error to AI:", errorMessage);
+          handleSendMessage(errorMessage);
+          
+        }}
 
         title="Fix error with AI"
       >
