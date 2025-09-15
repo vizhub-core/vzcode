@@ -1,5 +1,6 @@
 import { TabState } from '../types';
 import { VizFileId, VizContent } from '@vizhub/viz-types';
+import { getFileId } from '@vizhub/viz-utils';
 
 // The delimiter used to separate file names in the `tabs` parameter.
 // We need a character that is both URL-safe (does not get escaped in URLs)
@@ -27,23 +28,6 @@ import { VizFileId, VizContent } from '@vizhub/viz-types';
 // - `~` is URL-safe (remains unescaped in URLs) and is not a standard character
 //   in file names for JavaScript and CSS files, making it a suitable choice for a delimiter.
 export const delimiter = '~';
-
-// Gets the file id of a file with the given name.
-// Returns null if not found.
-const getFileId = (
-  content: VizContent,
-  fileName: string,
-): string | null => {
-  if (content && content.files) {
-    for (const fileId of Object.keys(content.files)) {
-      const file = content.files[fileId];
-      if (file.name === fileName) {
-        return fileId;
-      }
-    }
-  }
-  return null;
-};
 
 // Gets the file name of a file with the given id,
 // guard against failure cases.

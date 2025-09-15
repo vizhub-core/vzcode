@@ -20,6 +20,7 @@ import {
   getHeaderOffset, 
   announceDiffSummary 
 } from '../../utils/scrollUtils';
+import { getFileId } from '@vizhub/viz-utils';
 
 interface DiffViewProps {
   diffData: UnifiedFilesDiff;
@@ -99,28 +100,12 @@ export const DiffView = forwardRef<DiffViewRef, DiffViewProps>(({
 
         console.log('Clicked file name:', fileName);
         if (fileName) {
-          const files: VizFiles = content?.files;
-          if (files) {
-            //             export type VizFiles = {
-            //     [fileId: VizFileId]: VizFile;
-            // };
-            // export type VizFileId = string;
-            // export type VizFile = {
-            //     name: string;
-            //     text: string;
-            // };
+          const fileId = getFileId(content, fileName);
 
-            // TODO get fileId from content.files
-            const fileId = Object.entries(files).find(
-              ([_id, file]) => file.name === fileName,
-            )?.[0];
-            console.log('Mapped file ID:', fileId);
-
-            if (fileId) {
-              // Open the file tab and switch to files view
-              openTab({ fileId, isTransient: false });
-              setIsAIChatOpen(false);
-            }
+          if (fileId) {
+            // Open the file tab and switch to files view
+            openTab({ fileId, isTransient: false });
+            setIsAIChatOpen(false);
           }
         }
       }
