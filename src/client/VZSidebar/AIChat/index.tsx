@@ -7,6 +7,7 @@ import {
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
+import { AIEditStatus } from './AIEditStatus';
 import './styles.scss';
 
 const DEBUG = false;
@@ -64,6 +65,7 @@ export const AIChat = () => {
     navigateMessageHistoryUp,
     navigateMessageHistoryDown,
     resetMessageHistoryNavigation,
+    enableMinimalEditFlow,
   } = useContext(VZCodeContext);
 
   // Get the active chat ID and chat data
@@ -96,6 +98,22 @@ export const AIChat = () => {
     (chat) => chat.messages.length > 0,
   );
   const hasExistingChats = existingChats.length > 0;
+
+  // For Phase 1: Create mock file statuses from current AI status
+  // TODO: Replace with actual structured status events from server in later phases
+  const mockFileStatuses = useMemo(() => {
+    if (!isLoading || !enableMinimalEditFlow) return [];
+    
+    // Create a simple mock status based on current loading state
+    // In the future, this will come from structured server events
+    return [
+      {
+        filename: 'Processing request...',
+        operation: 'editing' as const,
+        status: 'in-progress' as const,
+      }
+    ];
+  }, [isLoading, enableMinimalEditFlow]);
 
   // Generate title for a chat (first 50 characters of first user message)
   const getChatTitle = (chat) => {
@@ -295,12 +313,20 @@ export const AIChat = () => {
               )}
             </div>
           ) : (
-            <MessageList
-              messages={messages}
-              isLoading={isLoading}
-              chatId={selectedChatId || currentChatId}
-              aiScratchpad={aiScratchpad}
-            />
+            enableMinimalEditFlow ? (
+              <AIEditStatus
+                fileStatuses={mockFileStatuses}
+                isGenerating={isLoading}
+                aiStatus={aiStatus}
+              />
+            ) : (
+              <MessageList
+                messages={messages}
+                isLoading={isLoading}
+                chatId={selectedChatId || currentChatId}
+                aiScratchpad={aiScratchpad}
+              />
+            )
           )}
           {aiErrorMessage && (
             <div className="ai-chat-error">

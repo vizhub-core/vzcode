@@ -1,0 +1,123 @@
+.ai-edit-status {
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--color-background-default);
+  border: 1px solid var(--color-border-default);
+  margin-bottom: 16px;
+
+  .ai-edit-status-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .ai-edit-status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ai-edit-status-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--color-border-default);
+      border-top: 2px solid var(--color-accent-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .ai-edit-status-title {
+      font-weight: 500;
+      color: var(--color-text-primary);
+    }
+  }
+
+  .ai-edit-status-complete {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .ai-edit-status-icon {
+      font-size: 18px;
+    }
+
+    .ai-edit-status-message {
+      font-weight: 500;
+      color: var(--color-success);
+    }
+  }
+
+  .ai-edit-status-files {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-edit-status-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--color-background-subtle);
+    border-radius: 6px;
+    border: 1px solid var(--color-border-muted);
+
+    .ai-edit-status-file-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .ai-edit-status-file-text {
+      font-size: 14px;
+      color: var(--color-text-primary);
+
+      code {
+        background: var(--color-background-muted);
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--color-text-primary);
+      }
+    }
+  }
+
+  .ai-edit-status-message {
+    color: var(--color-text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 8px 0;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// Fallback CSS variables for basic styling if VZCode variables aren't available
+:root {
+  --color-background-default: #ffffff;
+  --color-background-subtle: #f6f8fa;
+  --color-background-muted: #f1f3f4;
+  --color-border-default: #d1d9e0;
+  --color-border-muted: #e1e8ed;
+  --color-text-primary: #24292f;
+  --color-text-secondary: #656d76;
+  --color-accent-primary: #0969da;
+  --color-success: #1a7f37;
+  --font-mono: 'SF Mono', Monaco, 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+}
+
+// Dark theme support
+[data-theme="dark"] {
+  --color-background-default: #0d1117;
+  --color-background-subtle: #161b22;
+  --color-background-muted: #21262d;
+  --color-border-default: #30363d;
+  --color-border-muted: #21262d;
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #7d8590;
+  --color-accent-primary: #58a6ff;
+  --color-success: #3fb950;
+}
