@@ -6,14 +6,13 @@ This document outlines a detailed implementation plan for creating a minimal AI 
 
 Current VZCode AI system streams markdown responses to a chat interface. The minimal AI UX will:
 - Replace streaming chat with concise file editing status
-- Auto-scroll to diff view upon completion
+- Auto-scroll to diff view starting point (topmost point) upon completion
 - Clear chat history on Accept
-- Show structured diff summary instead of prose
+- Show structured diff summary _only_, no prose
 - Handle errors gracefully in the minimal flow
 
 ## Phase 0 — Feature Flag Infrastructure
 
-**Labels:** `feat`, `ai-editing`, `infra`, `good-first-issue`  
 **Goal:** Add feature flag system for "Minimal Edit Flow" to safely test new UX
 
 ### Files to Change
@@ -151,6 +150,8 @@ export const scrollToFirstDiff = (diffContainer: HTMLElement) => {
   }
 };
 ```
+
+This should replace all existing auto-scroll logic, so let's disable all the existing auto-scrolling if the feature flag is enabled.
 
 ### Acceptance Criteria
 - After generation completes, viewport automatically scrolls to first diff hunk
