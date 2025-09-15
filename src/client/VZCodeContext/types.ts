@@ -207,6 +207,9 @@ export type VZCodeContextValue = {
       options?: Record<string, string>,
     ) => void;
   }) => React.ReactNode;
+
+  // Feature flags
+  enableMinimalEditFlow: boolean;
 };
 
 export interface VZCodeProviderProps {

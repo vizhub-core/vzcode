@@ -27,6 +27,7 @@ import {
   VZCodeContextValue,
   VZCodeProviderProps,
 } from './types';
+import { enableMinimalEditFlow } from '../featureFlags';
 
 export const useVZCodeState = ({
   content,
@@ -699,5 +700,8 @@ export const useVZCodeState = ({
 
     // Additional widgets that can be rendered in AI chat messages
     additionalWidgets,
+
+    // Feature flags
+    enableMinimalEditFlow,
   };
 };
