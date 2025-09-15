@@ -65,7 +65,6 @@ export const DiffView: React.FC<DiffViewProps> = ({
         console.log('Clicked file name:', fileName);
         if (fileName) {
           const fileId = getFileId(content, fileName);
-          console.log('Mapped file ID:', fileId);
 
           if (fileId) {
             // Open the file tab and switch to files view
