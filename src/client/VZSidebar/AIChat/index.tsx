@@ -3,11 +3,13 @@ import {
   useMemo,
   useEffect,
   useCallback,
+  useRef,
 } from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { AIEditStatus } from './AIEditStatus';
+import { scrollToFirstDiff, getHeaderOffset, announceDiffSummary } from '../../utils/scrollUtils';
 import './styles.scss';
 
 const DEBUG = false;
@@ -113,6 +115,30 @@ export const AIChat = () => {
         status: 'in-progress' as const,
       }
     ];
+  }, [isLoading, enableMinimalEditFlow]);
+
+  // Phase 2: Track loading state changes for auto-scroll behavior
+  const prevIsLoadingRef = useRef(isLoading);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to diff when generation completes in minimal flow
+  useEffect(() => {
+    const prevIsLoading = prevIsLoadingRef.current;
+    prevIsLoadingRef.current = isLoading;
+
+    // Only trigger auto-scroll in minimal edit flow when generation completes
+    if (enableMinimalEditFlow && prevIsLoading && !isLoading) {
+      // Small delay to ensure MessageList and DiffView have rendered
+      setTimeout(() => {
+        // Look for DiffView in the rendered content
+        const diffContainer = document.querySelector('.diff-files');
+        if (diffContainer) {
+          const headerOffset = getHeaderOffset();
+          scrollToFirstDiff(diffContainer as HTMLElement, headerOffset);
+          announceDiffSummary(diffContainer as HTMLElement);
+        }
+      }, 100);
+    }
   }, [isLoading, enableMinimalEditFlow]);
 
   // Generate title for a chat (first 50 characters of first user message)
@@ -313,7 +339,7 @@ export const AIChat = () => {
               )}
             </div>
           ) : (
-            enableMinimalEditFlow ? (
+            enableMinimalEditFlow && isLoading ? (
               <AIEditStatus
                 fileStatuses={mockFileStatuses}
                 isGenerating={isLoading}

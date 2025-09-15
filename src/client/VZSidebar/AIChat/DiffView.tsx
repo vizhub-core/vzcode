@@ -2,6 +2,8 @@ import React, {
   useContext,
   useEffect,
   useRef,
+  forwardRef,
+  useImperativeHandle,
 } from 'react';
 import {
   UnifiedFilesDiff,
@@ -13,14 +15,26 @@ import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 import { VZCodeContext } from '../../VZCodeContext';
 import { VizFiles } from '@vizhub/viz-types';
+import { 
+  scrollToFirstDiff, 
+  getHeaderOffset, 
+  announceDiffSummary 
+} from '../../utils/scrollUtils';
 
 interface DiffViewProps {
   diffData: UnifiedFilesDiff;
 }
 
-export const DiffView: React.FC<DiffViewProps> = ({
+// Methods that can be called on DiffView from parent components
+export interface DiffViewRef {
+  scrollToFirstHunk: () => void;
+  focusDiffContainer: () => void;
+  announceSummary: () => void;
+}
+
+export const DiffView = forwardRef<DiffViewRef, DiffViewProps>(({
   diffData,
-}) => {
+}, ref) => {
   const { content, openTab, setIsAIChatOpen } =
     useContext(VZCodeContext);
   const diffContainerRef = useRef<HTMLDivElement>(null);
@@ -47,6 +61,27 @@ export const DiffView: React.FC<DiffViewProps> = ({
     diffStyle: 'word',
     outputFormat: 'line-by-line',
   });
+
+  // Expose methods for parent components to control scrolling and focus
+  useImperativeHandle(ref, () => ({
+    scrollToFirstHunk: () => {
+      if (diffContainerRef.current) {
+        const headerOffset = getHeaderOffset();
+        scrollToFirstDiff(diffContainerRef.current, headerOffset);
+      }
+    },
+    focusDiffContainer: () => {
+      if (diffContainerRef.current) {
+        diffContainerRef.current.tabIndex = -1;
+        diffContainerRef.current.focus();
+      }
+    },
+    announceSummary: () => {
+      if (diffContainerRef.current) {
+        announceDiffSummary(diffContainerRef.current);
+      }
+    },
+  }), []);
 
   // Add click handlers to file names after HTML is rendered
   useEffect(() => {
@@ -125,7 +160,7 @@ export const DiffView: React.FC<DiffViewProps> = ({
 
   return (
     <div className="diff-view">
-      <div className="diff-summary">
+      <div className="diff-summary" id="diff-summary">
         <div className="diff-stats">
           <span className="files-changed">
             {unifiedDiffs.length} file
@@ -147,8 +182,15 @@ export const DiffView: React.FC<DiffViewProps> = ({
       <div
         className="diff-files"
         ref={diffContainerRef}
+        tabIndex={-1}
+        role="region"
+        aria-label="Code diff content"
+        aria-describedby="diff-summary"
         dangerouslySetInnerHTML={{ __html: diffHtml }}
       />
     </div>
   );
-};
+});
+
+// Add display name for debugging
+DiffView.displayName = 'DiffView';
