@@ -142,16 +142,6 @@
     justify-content: center;
   }
 
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--vscode-progressBar-background);
-    border-top: 2px solid
-      var(--vscode-progressBar-foreground);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
   .file-editing-text {
     color: var(--vscode-foreground);
     font-size: 0.9rem;
@@ -190,16 +180,6 @@
 
     .done-icon {
       font-size: 1rem;
-    }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--vscode-progressBar-background);
-      border-top: 2px solid
-        var(--vscode-progressBar-foreground);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
     }
   }
 

@@ -11,13 +11,10 @@ export const StatusIndicator: React.FC<
     <div className="status-indicator">
       <div className="status-content">
         <div className="status-icon">
-          {status === 'Done' ? (
-            <span className="done-icon">✅</span>
-          ) : (
-            <div className="spinner" />
+          {status === 'Done' && (
+            <span className="done-icon">✅ Done</span>
           )}
         </div>
-        <div className="status-text">{status}</div>
       </div>
     </div>
   );

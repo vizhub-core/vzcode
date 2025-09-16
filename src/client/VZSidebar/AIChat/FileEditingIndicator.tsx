@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spinner } from '../../AIAssist/Spinner';
 
 interface FileEditingIndicatorProps {
   fileName: string;
@@ -11,7 +12,7 @@ export const FileEditingIndicator: React.FC<
     <div className="file-editing-indicator">
       <div className="file-editing-header">
         <div className="file-editing-icon">
-          <div className="spinner" />
+          <Spinner height={16} fadeIn={false} />
         </div>
         <div className="file-editing-text">
           Editing <code>{fileName}</code>...

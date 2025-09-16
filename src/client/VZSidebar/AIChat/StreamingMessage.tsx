@@ -7,7 +7,7 @@ import { IndividualFileDiff } from './IndividualFileDiff';
 import { FileEditingIndicator } from './FileEditingIndicator';
 import { StatusIndicator } from './StatusIndicator';
 
-const DEBUG = true;
+const DEBUG = false;
 
 interface StreamingMessageProps {
   id: string;
@@ -28,14 +28,7 @@ interface FileEditState {
 
 export const StreamingMessage: React.FC<
   StreamingMessageProps
-> = ({
-  id,
-  timestamp,
-  events,
-  currentStatus,
-  isComplete,
-  isActive,
-}) => {
+> = ({ timestamp, events, currentStatus, isActive }) => {
   DEBUG &&
     console.log(
       'StreamingMessage: Rendered with events:',

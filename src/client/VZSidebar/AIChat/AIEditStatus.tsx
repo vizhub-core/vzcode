@@ -1,7 +1,7 @@
 import React from 'react';
 import './AIEditStatus.scss';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Define types for file status tracking
 export interface FileStatus {

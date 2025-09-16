@@ -3,23 +3,14 @@ import {
   useMemo,
   useEffect,
   useCallback,
-  useRef,
 } from 'react';
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import {
-  scrollToFirstDiff,
-  getHeaderOffset,
-  announceDiffSummary,
-} from '../../utils/scrollUtils';
-import {
-  ExtendedVizContent,
-  ExtendedVizChat,
-} from '../../../types.js';
+import { ExtendedVizChat } from '../../../types.js';
 import './styles.scss';
 
-const DEBUG = true;
+const DEBUG = false;
 
 const showSuggestedRequests = false;
 
