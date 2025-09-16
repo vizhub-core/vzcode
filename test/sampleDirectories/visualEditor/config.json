@@ -1,7 +1,7 @@
 {
   "xValue": "sepal_width",
   "yValue": "sepal_length",
-  "sizeValue": null,
+  "sizeValue": "petal_length",
   "pointRadiusValue": null,
   "margin": {
     "top": 20,

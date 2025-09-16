@@ -1,4 +1,4 @@
-import { scaleLinear, extent } from 'd3';
+import { scaleLinear, scaleSqrt, extent } from 'd3';
 import { renderMarks } from './renderMarks.js';
 import { renderAxes } from './renderAxes.js';
 import { renderTitle } from './renderTitle.js';
@@ -31,7 +31,7 @@ export const scatterPlot = (svg, options) => {
     .range([height - bottom, top]);
 
   const sizeScale = sizeValue
-    ? scaleLinear()
+    ? scaleSqrt() // Changed from scaleLinear to scaleSqrt
         .domain(extent(data, sizeValue))
         .range(sizeRange)
     : null;
