@@ -14,7 +14,6 @@ import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 import { VZCodeContext } from '../../VZCodeContext';
-import { VizFiles } from '@vizhub/viz-types';
 import {
   scrollToFirstDiff,
   getHeaderOffset,

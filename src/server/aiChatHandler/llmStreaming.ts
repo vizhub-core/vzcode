@@ -1,17 +1,13 @@
-import fs from 'fs';
 import OpenAI from 'openai';
 import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
 import { mergeFileChanges } from 'editcodewithai';
-import { VizChatId, VizContent } from '@vizhub/viz-types';
+import { VizChatId } from '@vizhub/viz-types';
 import { generateRunId } from '@vizhub/viz-utils';
 import {
   updateAIStatus,
-  createAIMessage,
-  updateAIMessageContent,
-  finalizeAIMessage,
   updateFiles,
   updateAIScratchpad,
   createStreamingAIMessage,
@@ -69,10 +65,7 @@ export const createLLMFunction = ({
     let currentFileContent = '';
 
     // Create streaming AI message
-    const aiMessageId = createStreamingAIMessage(
-      shareDBDoc,
-      chatId,
-    );
+    createStreamingAIMessage(shareDBDoc, chatId);
 
     // Set initial status
     DEBUG &&
@@ -90,7 +83,7 @@ export const createLLMFunction = ({
       fileName: string,
     ): string => {
       const files = shareDBDoc.data.files;
-      for (const [fileId, file] of Object.entries(files)) {
+      for (const file of Object.values(files)) {
         if ((file as any).name === fileName) {
           return (file as any).text || '';
         }

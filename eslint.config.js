@@ -57,7 +57,7 @@ export default defineConfig([
         'error',
         { argsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
 
       // React rules
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+

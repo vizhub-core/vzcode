@@ -9,7 +9,6 @@ import { diff } from '../../ot.js';
 import {
   VizChatId,
   VizContent,
-  VizFileId,
   VizFiles,
 } from '@vizhub/viz-types';
 

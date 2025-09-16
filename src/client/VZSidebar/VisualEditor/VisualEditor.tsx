@@ -228,12 +228,12 @@ export const VisualEditor = () => {
         try {
           const rgbColor = rgb(currentHex);
           hclFromRGB = hcl(rgbColor);
-        } catch (error) {
+        } catch {
           // Fallback to black if conversion fails
           hclFromRGB = hcl('black');
         }
 
-        let hclArray: number[] = [
+        const hclArray: number[] = [
           (localValues[`${property}_h`] as number) ??
             hclFromRGB.h,
           (localValues[`${property}_c`] as number) ??
@@ -262,7 +262,7 @@ export const VisualEditor = () => {
           } else {
             newHex = currentHex;
           }
-        } catch (error) {
+        } catch {
           // Fallback to current color if conversion fails
           newHex = currentHex;
         }
@@ -335,7 +335,7 @@ export const VisualEditor = () => {
                 lch.c;
               newLocalValues[`${widget.property}_l`] =
                 lch.l;
-            } catch (error) {
+            } catch {
               // Fallback values if conversion fails
               newLocalValues[`${widget.property}_l`] = 0;
               newLocalValues[`${widget.property}_c`] = 0;
@@ -488,7 +488,7 @@ export const VisualEditor = () => {
           try {
             const rgbColor = color(currentHex);
             hclColor = hcl(rgbColor);
-          } catch (error) {
+          } catch {
             hclColor = hcl('black');
           }
 
