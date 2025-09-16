@@ -405,69 +405,69 @@ export const createNewFile = (
   return newFileId;
 };
 
-/**
- * Ensures a file exists, creating it if necessary
- */
-export const ensureFileExists = (shareDBDoc, fileName) => {
-  let fileId = resolveFileId(fileName, shareDBDoc);
+// /**
+//  * Ensures a file exists, creating it if necessary
+//  */
+// export const ensureFileExists = (shareDBDoc, fileName) => {
+//   let fileId = resolveFileId(fileName, shareDBDoc);
 
-  if (!fileId) {
-    // File doesn't exist, create it
-    fileId = createNewFile(shareDBDoc, fileName);
-  }
+//   if (!fileId) {
+//     // File doesn't exist, create it
+//     fileId = createNewFile(shareDBDoc, fileName);
+//   }
 
-  return fileId;
-};
+//   return fileId;
+// };
 
-/**
- * Clears the content of a file
- */
-export const clearFileContent = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  fileId: VizFileId,
-) => {
-  const currentFile = shareDBDoc.data.files[fileId];
+// /**
+//  * Clears the content of a file
+//  */
+// export const clearFileContent = (
+//   shareDBDoc: ShareDBDoc<VizContent>,
+//   fileId: VizFileId,
+// ) => {
+//   const currentFile = shareDBDoc.data.files[fileId];
 
-  if (currentFile && currentFile.text) {
-    // Clear the file content
-    const newState = {
-      ...shareDBDoc.data,
-      files: {
-        ...shareDBDoc.data.files,
-        [fileId]: {
-          ...currentFile,
-          text: '',
-        },
-      },
-    };
+//   if (currentFile && currentFile.text) {
+//     // Clear the file content
+//     const newState = {
+//       ...shareDBDoc.data,
+//       files: {
+//         ...shareDBDoc.data.files,
+//         [fileId]: {
+//           ...currentFile,
+//           text: '',
+//         },
+//       },
+//     };
 
-    const op = diff(shareDBDoc.data, newState);
-    shareDBDoc.submitOp(op);
-  }
-};
+//     const op = diff(shareDBDoc.data, newState);
+//     shareDBDoc.submitOp(op);
+//   }
+// };
 
-/**
- * Appends a line to a file using OT operations
- */
-export const appendLineToFile = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  fileId: VizFileId,
-  line: string,
-) => {
-  const currentFile = shareDBDoc.data.files[fileId];
-  const currentContent = currentFile?.text || '';
-  const newContent = currentContent + line + '\n';
+// /**
+//  * Appends a line to a file using OT operations
+//  */
+// export const appendLineToFile = (
+//   shareDBDoc: ShareDBDoc<VizContent>,
+//   fileId: VizFileId,
+//   line: string,
+// ) => {
+//   const currentFile = shareDBDoc.data.files[fileId];
+//   const currentContent = currentFile?.text || '';
+//   const newContent = currentContent + line + '\n';
 
-  const newDocState = {
-    ...shareDBDoc.data,
-    files: {
-      ...shareDBDoc.data.files,
-      [fileId]: {
-        ...currentFile,
-        text: newContent,
-      },
-    },
-  };
+//   const newDocState = {
+//     ...shareDBDoc.data,
+//     files: {
+//       ...shareDBDoc.data.files,
+//       [fileId]: {
+//         ...currentFile,
+//         text: newContent,
+//       },
+//     },
+//   };
 
-  shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
-};
+//   shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
+// };

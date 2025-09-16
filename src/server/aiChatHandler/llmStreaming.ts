@@ -12,9 +12,6 @@ import {
   createAIMessage,
   updateAIMessageContent,
   finalizeAIMessage,
-  ensureFileExists,
-  clearFileContent,
-  appendLineToFile,
   updateFiles,
   updateAIScratchpad,
 } from './chatOperations.js';
@@ -33,21 +30,6 @@ const slowMode = false;
 // too many updates from the AI streaming response, with
 // warning: "Replication Oplog Window has gone below 1 hour"
 const THROTTLE_INTERVAL_MS = 500;
-
-// Feature flag to enable/disable streaming editing.
-// * If `true`, the AI streaming response will be used to
-//   edit files in real-time by submitting ShareDB ops.
-// * If `false`, the updates to code files will be applied
-// only after the AI has finished generating the entire response.
-//
-// Current status: there's a tricky bug with the streaming
-// where the AI edits sometimes don't apply correctly in CodeMirror.
-// It seems that sometimes the op that clears the file content
-// is not applied correctly in the front end, leading to
-// a situation where the AI streaming edits are concatenated into the middle
-// of the file instead of replacing it.
-// See https://github.com/codemirror/codemirror.next/issues/1234
-const enableStreamingEditing = false;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -83,7 +65,6 @@ export const createLLMFunction = ({
 
     let fullContent = '';
     let generationId = '';
-    let currentEditingFileId = null;
     let currentEditingFileName = null;
 
     // Create initial AI message for streaming
@@ -161,18 +142,8 @@ export const createLLMFunction = ({
             `File changed to: ${fileName} (${format})`,
           );
 
-        // Find existing file or create new one
-        currentEditingFileId = ensureFileExists(
-          shareDBDoc,
-          fileName,
-        );
-
         reportFileEdited();
         currentEditingFileName = fileName;
-
-        // Clear the file content to start fresh
-        // (AI will regenerate the entire file content)
-        clearFileContent(shareDBDoc, currentEditingFileId);
 
         // Update AI status
         updateAIStatus(
@@ -183,26 +154,14 @@ export const createLLMFunction = ({
       },
       onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
-
-        // If streaming is enabled, we apply the line immediately
-        if (currentEditingFileId) {
-          // Apply OT operation for this line immediately
-          appendLineToFile(
-            shareDBDoc,
-            currentEditingFileId,
-            line,
-          );
-        }
       },
       onNonCodeLine: async (line: string) => {
         // We want to report a file edited only if the line is not empty,
         // because sometimes the LLMs leave a newline between the file name
-        // declaration and th
+        // declaration and the first line of code.
         if (line.trim() !== '') {
           reportFileEdited();
         }
-        fullContent += line + '\n';
-        throttledUpdateAIMessageContent(fullContent);
       },
     };
 
@@ -277,12 +236,8 @@ export const createLLMFunction = ({
         const chunkContent = delta.content;
         chunks.push(chunkContent);
 
-        if (enableStreamingEditing) {
-          await parser.processChunk(chunkContent);
-        } else {
-          fullContent += chunkContent;
-          throttledUpdateAIMessageContent(fullContent);
-        }
+        await parser.processChunk(chunkContent);
+        fullContent += chunkContent;
       } else if (chunk.usage) {
         // Handle usage information
         DEBUG && console.log('Usage:', chunk.usage);
@@ -306,17 +261,14 @@ export const createLLMFunction = ({
     // Finalize the AI message by clearing temporary fields
     finalizeAIMessage(shareDBDoc, chatId);
 
-    // If streaming editing is not enabled, we need to
     // apply all the edits at once
-    if (!enableStreamingEditing) {
-      updateFiles(
-        shareDBDoc,
-        mergeFileChanges(
-          shareDBDoc.data.files,
-          parseMarkdownFiles(fullContent, 'bold').files,
-        ),
-      );
-    }
+    updateFiles(
+      shareDBDoc,
+      mergeFileChanges(
+        shareDBDoc.data.files,
+        parseMarkdownFiles(fullContent, 'bold').files,
+      ),
+    );
 
     // Generate a new runId to trigger a run when AI finishes editing
     // This will trigger a re-run without hot reloading
