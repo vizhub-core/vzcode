@@ -7,8 +7,8 @@ export const renderMarks = (
     xValue,
     yValue,
     pointRadius,
-    pointRadiusValue, // Add pointRadiusValue parameter
-    pointRadiusScale, // Add pointRadiusScale parameter
+    pointRadiusValue,
+    pointRadiusScale,
     sizeScale,
     sizeValue,
     colorScale,
@@ -26,34 +26,6 @@ export const renderMarks = (
       .attr('stdDeviation', blurRadius);
   }
 
-  // Add gradient definitions
-  const defs = svg.append('defs');
-
-  // Create gradients for each species
-  const speciesList = [
-    ...new Set(data.map((d) => d.species)),
-  ];
-  speciesList.forEach((species) => {
-    const gradient = defs
-      .append('radialGradient')
-      .attr('id', `gradient-${species}`)
-      .attr('cx', '50%')
-      .attr('cy', '50%')
-      .attr('r', '70%');
-
-    gradient
-      .append('stop')
-      .attr('offset', '0%')
-      .attr('stop-color', colorScale[species])
-      .attr('stop-opacity', pointOpacity);
-
-    gradient
-      .append('stop')
-      .attr('offset', '100%')
-      .attr('stop-color', colorScale[species])
-      .attr('stop-opacity', pointOpacity * 0.3);
-  });
-
   // Render the data points
   const points = svg
     .selectAll('circle.data-point')
@@ -68,8 +40,8 @@ export const renderMarks = (
         return pointRadiusScale(pointRadiusValue(d));
       return pointRadius;
     })
-    .attr('fill', (d) => `url(#gradient-${d.species})`)
-    .attr('opacity', 1);
+    .attr('fill', (d) => colorScale[d.species])
+    .attr('opacity', pointOpacity);
 
   // Apply blur filter if needed
   if (blurRadius > 0) {

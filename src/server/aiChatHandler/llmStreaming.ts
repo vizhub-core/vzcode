@@ -18,7 +18,7 @@ import {
 import { diff } from '../../ot.js';
 import { ShareDBDoc } from '../../types.js';
 
-const DEBUG = false;
+const DEBUG = true;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
@@ -69,6 +69,17 @@ export const createLLMFunction = ({
 
     // Create initial AI message for streaming
     const aiMessageId = createAIMessage(shareDBDoc, chatId);
+
+    // Set initial status
+    DEBUG &&
+      console.log(
+        'LLMStreaming: Setting initial status - Analyzing files...',
+      );
+    updateAIStatus(
+      shareDBDoc,
+      chatId,
+      'Analyzing files...',
+    );
 
     // --- throttle wrapper ---
     function makeThrottledUpdater() {
@@ -139,17 +150,21 @@ export const createLLMFunction = ({
       ) => {
         DEBUG &&
           console.log(
-            `File changed to: ${fileName} (${format})`,
+            `LLMStreaming: File changed to: ${fileName} (${format})`,
           );
 
         reportFileEdited();
         currentEditingFileName = fileName;
 
         // Update AI status
+        DEBUG &&
+          console.log(
+            `LLMStreaming: Updating AI status to "Editing ${fileName}..."`,
+          );
         updateAIStatus(
           shareDBDoc,
           chatId,
-          'Editing ' + fileName,
+          `Editing ${fileName}...`,
         );
       },
       onCodeLine: async (line: string) => {

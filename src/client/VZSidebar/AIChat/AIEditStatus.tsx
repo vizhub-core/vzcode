@@ -1,6 +1,8 @@
 import React from 'react';
 import './AIEditStatus.scss';
 
+const DEBUG = true;
+
 // Define types for file status tracking
 export interface FileStatus {
   filename: string;
@@ -21,22 +23,26 @@ export interface AIEditStatusProps {
 // Component to display live file editing status during AI generation
 export const AIEditStatus: React.FC<AIEditStatusProps> = ({
   fileStatuses,
-  isGenerating,
   aiStatus,
 }) => {
+  DEBUG &&
+    console.log('AIEditStatus: Rendered with props:', {
+      fileStatuses,
+      aiStatus,
+    });
   // If not generating, show completion message
-  if (!isGenerating) {
-    return (
-      <div className="ai-edit-status">
-        <div className="ai-edit-status-complete">
-          <div className="ai-edit-status-icon">✅</div>
-          <div className="ai-edit-status-message">
-            Ready to review changes
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // if (!isGenerating) {
+  //   return (
+  //     <div className="ai-edit-status">
+  //       <div className="ai-edit-status-complete">
+  //         <div className="ai-edit-status-icon">✅</div>
+  //         <div className="ai-edit-status-message">
+  //           Ready to review changes
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // During generation, show file statuses or general generating message
   return (
@@ -46,9 +52,7 @@ export const AIEditStatus: React.FC<AIEditStatusProps> = ({
           <div className="ai-edit-status-spinner" />
         </div>
         <div className="ai-edit-status-title">
-          {aiStatus === 'generating'
-            ? 'Generating changes...'
-            : 'Processing...'}
+          {aiStatus || 'Processing...'}
         </div>
       </div>
 

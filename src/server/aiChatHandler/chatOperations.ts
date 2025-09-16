@@ -80,6 +80,8 @@ export const addUserMessage = (
   return userMessage;
 };
 
+const DEBUG = true;
+
 /**
  * Updates AI status in the chat
  */
@@ -88,6 +90,11 @@ export const updateAIStatus = (
   chatId: VizChatId,
   status: string,
 ) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: updateAIStatus called with status: "${status}" for chatId: ${chatId}`,
+    );
+
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
     chats: {
@@ -98,7 +105,17 @@ export const updateAIStatus = (
       },
     },
   });
+
+  DEBUG &&
+    console.log(
+      `ChatOperations: Submitting operation for status update:`,
+      op,
+    );
   shareDBDoc.submitOp(op);
+  DEBUG &&
+    console.log(
+      `ChatOperations: Status update operation submitted successfully`,
+    );
 };
 
 /**

@@ -16,7 +16,7 @@ import {
 } from '../../utils/scrollUtils';
 import './styles.scss';
 
-const DEBUG = false;
+const DEBUG = true;
 
 const showSuggestedRequests = false;
 
@@ -57,13 +57,11 @@ export const AIChat = () => {
     content,
     aiChatMode,
     aiChatMessage,
-    isLoading,
     currentChatId,
     selectedChatId,
     setSelectedChatId,
     aiErrorMessage,
     setAIChatMode,
-    clearStoredAIPrompt,
     getStoredAIPrompt,
     setAIChatMessage,
     handleSendMessage,
@@ -83,6 +81,15 @@ export const AIChat = () => {
   const rawMessages = currentChat?.messages || [];
   const aiStatus = currentChat?.aiStatus;
   const aiScratchpad = currentChat?.aiScratchpad;
+
+  // Debug logging for AI status
+  DEBUG && console.log('AIChat: currentChat:', currentChat);
+  DEBUG && console.log('AIChat: aiStatus:', aiStatus);
+  DEBUG &&
+    console.log(
+      'AIChat: enableMinimalEditFlow:',
+      enableMinimalEditFlow,
+    );
 
   // Transform messages to ensure they have required id field - memoized to avoid recreation
   const messages = useMemo(
@@ -104,54 +111,6 @@ export const AIChat = () => {
     (chat) => chat.messages.length > 0,
   );
   const hasExistingChats = existingChats.length > 0;
-
-  // For Phase 1: Create mock file statuses from current AI status
-  // TODO: Replace with actual structured status events from server in later phases
-  const mockFileStatuses = useMemo(() => {
-    if (!isLoading || !enableMinimalEditFlow) return [];
-
-    // Create a simple mock status based on current loading state
-    // In the future, this will come from structured server events
-    return [
-      {
-        filename: 'Processing request...',
-        operation: 'editing' as const,
-        status: 'in-progress' as const,
-      },
-    ];
-  }, [isLoading, enableMinimalEditFlow]);
-
-  // Phase 2: Track loading state changes for auto-scroll behavior
-  const prevIsLoadingRef = useRef(isLoading);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to diff when generation completes in minimal flow
-  useEffect(() => {
-    const prevIsLoading = prevIsLoadingRef.current;
-    prevIsLoadingRef.current = isLoading;
-
-    // Only trigger auto-scroll in minimal edit flow when generation completes
-    if (
-      enableMinimalEditFlow &&
-      prevIsLoading &&
-      !isLoading
-    ) {
-      // Small delay to ensure MessageList and DiffView have rendered
-      setTimeout(() => {
-        // Look for DiffView in the rendered content
-        const diffContainer =
-          document.querySelector('.diff-files');
-        if (diffContainer) {
-          const headerOffset = getHeaderOffset();
-          scrollToFirstDiff(
-            diffContainer as HTMLElement,
-            headerOffset,
-          );
-          announceDiffSummary(diffContainer as HTMLElement);
-        }
-      }, 100);
-    }
-  }, [isLoading, enableMinimalEditFlow]);
 
   // Generate title for a chat (first 50 characters of first user message)
   const getChatTitle = (chat) => {
@@ -350,16 +309,23 @@ export const AIChat = () => {
                 </div>
               )}
             </div>
-          ) : enableMinimalEditFlow && isLoading ? (
-            <AIEditStatus
-              fileStatuses={mockFileStatuses}
-              isGenerating={isLoading}
-              aiStatus={aiStatus}
-            />
+          ) : enableMinimalEditFlow && aiStatus ? (
+            <>
+              {DEBUG &&
+                console.log(
+                  'AIChat: Rendering AIEditStatus with aiStatus:',
+                  aiStatus,
+                )}
+              <AIEditStatus
+                fileStatuses={[]}
+                isGenerating={true}
+                aiStatus={aiStatus}
+              />
+            </>
           ) : (
             <MessageList
               messages={messages}
-              isLoading={isLoading}
+              isLoading={false}
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
             />
@@ -390,7 +356,6 @@ export const AIChat = () => {
           aiChatMessage={aiChatMessage}
           setAIChatMessage={setAIChatMessage}
           onSendMessage={handleSendMessageWithSelection}
-          isLoading={isLoading}
           focused={aiChatFocused}
           aiChatMode={aiChatMode}
           setAIChatMode={setAIChatMode}
