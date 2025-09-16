@@ -6,20 +6,24 @@ import {
   useState,
 } from 'react';
 import { Message } from './Message';
+import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { VizChatMessage } from '@vizhub/viz-types';
+import { ExtendedVizChatMessage } from '../../../types.js';
 
 const MessageListComponent = ({
   messages,
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
+  currentStatus, // Add current status prop
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
+  currentStatus?: string; // Add current status to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -165,11 +169,38 @@ const MessageListComponent = ({
       onScroll={handleScroll}
     >
       {messages.map((msg, index) => {
+        // Cast to extended message to check for streaming events
+        const extendedMsg = msg as ExtendedVizChatMessage;
+
+        // Check if this is a streaming message
+        const isStreamingMessage =
+          extendedMsg.streamingEvents &&
+          extendedMsg.streamingEvents.length > 0;
+
         // Only show additionalWidgets for the most recent assistant message
         const showAdditionalWidgets =
           msg.role === 'assistant' &&
           index === lastAssistantMessageIndex;
 
+        // Use StreamingMessage for assistant messages with streaming events
+        if (
+          msg.role === 'assistant' &&
+          isStreamingMessage
+        ) {
+          return (
+            <StreamingMessage
+              key={msg.id}
+              id={msg.id}
+              timestamp={msg.timestamp}
+              events={extendedMsg.streamingEvents || []}
+              currentStatus={currentStatus}
+              isComplete={extendedMsg.isComplete}
+              isActive={index === lastAssistantMessageIndex}
+            />
+          );
+        }
+
+        // Use regular Message component for user messages and non-streaming assistant messages
         return (
           <Message
             key={msg.id}

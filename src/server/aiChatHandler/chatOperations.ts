@@ -1,6 +1,10 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
 import { randomId } from '../../randomId.js';
-import { ShareDBDoc } from '../../types.js';
+import {
+  ShareDBDoc,
+  StreamingEvent,
+  ExtendedVizContent,
+} from '../../types.js';
 import { diff } from '../../ot.js';
 import {
   VizChatId,
@@ -420,6 +424,167 @@ export const createNewFile = (
   const op = diff(shareDBDoc.data, newState);
   shareDBDoc.submitOp(op);
   return newFileId;
+};
+
+// ============================================================================
+// Streaming Chat Operations
+// ============================================================================
+
+/**
+ * Creates a streaming AI message with events array
+ */
+export const createStreamingAIMessage = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+) => {
+  const aiMessage = {
+    id: `assistant-${Date.now()}`,
+    role: 'assistant',
+    content: '',
+    timestamp: dateToTimestamp(new Date()),
+    streamingEvents: [],
+    isProgressive: true,
+  };
+
+  const messageOp = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        messages: [
+          ...shareDBDoc.data.chats[chatId].messages,
+          aiMessage,
+        ],
+        updatedAt: dateToTimestamp(new Date()),
+        isStreaming: true,
+      },
+    },
+  });
+  shareDBDoc.submitOp(messageOp);
+
+  return aiMessage.id;
+};
+
+/**
+ * Adds a streaming event to the most recent AI message
+ */
+export const addStreamingEvent = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  event: StreamingEvent,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Adding streaming event:`,
+      event,
+    );
+
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = [...chat.messages];
+  const lastMessageIndex = messages.length - 1;
+
+  if (
+    lastMessageIndex >= 0 &&
+    messages[lastMessageIndex].role === 'assistant'
+  ) {
+    const lastMessage = messages[lastMessageIndex] as any;
+    const updatedEvents = [
+      ...(lastMessage.streamingEvents || []),
+      event,
+    ];
+
+    messages[lastMessageIndex] = {
+      ...lastMessage,
+      streamingEvents: updatedEvents,
+    };
+
+    const messageOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [chatId]: {
+          ...chat,
+          messages,
+          updatedAt: dateToTimestamp(new Date()),
+        },
+      },
+    });
+    shareDBDoc.submitOp(messageOp);
+  }
+};
+
+/**
+ * Updates streaming status for a chat
+ */
+export const updateStreamingStatus = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  status: string,
+  isStreaming: boolean = true,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Updating streaming status: "${status}"`,
+    );
+
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        currentStatus: status,
+        isStreaming,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
+ * Finalizes streaming message and clears streaming state
+ */
+export const finalizeStreamingMessage = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Finalizing streaming message`,
+    );
+
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = [...chat.messages];
+  const lastMessageIndex = messages.length - 1;
+
+  if (
+    lastMessageIndex >= 0 &&
+    messages[lastMessageIndex].role === 'assistant'
+  ) {
+    const lastMessage = messages[lastMessageIndex] as any;
+
+    messages[lastMessageIndex] = {
+      ...lastMessage,
+      isComplete: true,
+    };
+
+    const messageOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [chatId]: {
+          ...chat,
+          messages,
+          currentStatus: 'Done',
+          isStreaming: false,
+          updatedAt: dateToTimestamp(new Date()),
+        },
+      },
+    });
+    shareDBDoc.submitOp(messageOp);
+  }
 };
 
 // /**

@@ -8,12 +8,15 @@ import {
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
-import { AIEditStatus } from './AIEditStatus';
 import {
   scrollToFirstDiff,
   getHeaderOffset,
   announceDiffSummary,
 } from '../../utils/scrollUtils';
+import {
+  ExtendedVizContent,
+  ExtendedVizChat,
+} from '../../../types.js';
 import './styles.scss';
 
 const DEBUG = true;
@@ -81,6 +84,8 @@ export const AIChat = () => {
   const rawMessages = currentChat?.messages || [];
   const aiStatus = currentChat?.aiStatus;
   const aiScratchpad = currentChat?.aiScratchpad;
+  const currentStatus = (currentChat as ExtendedVizChat)
+    ?.currentStatus;
 
   // Debug logging for AI status
   DEBUG && console.log('AIChat: currentChat:', currentChat);
@@ -309,25 +314,13 @@ export const AIChat = () => {
                 </div>
               )}
             </div>
-          ) : enableMinimalEditFlow && aiStatus ? (
-            <>
-              {DEBUG &&
-                console.log(
-                  'AIChat: Rendering AIEditStatus with aiStatus:',
-                  aiStatus,
-                )}
-              <AIEditStatus
-                fileStatuses={[]}
-                isGenerating={true}
-                aiStatus={aiStatus}
-              />
-            </>
           ) : (
             <MessageList
               messages={messages}
               isLoading={false}
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
+              currentStatus={currentStatus}
             />
           )}
           {aiErrorMessage && (
