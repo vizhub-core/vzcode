@@ -321,16 +321,16 @@ export const createLLMFunction = ({
     });
 
     // Write chunks file for debugging
-    if (DEBUG) {
-      const chunksFileJSONpath = `./ai-chunks-${chatId}.json`;
-      fs.writeFileSync(
-        chunksFileJSONpath,
-        JSON.stringify(chunks, null, 2),
-      );
-      console.log(
-        `AI chunks written to ${chunksFileJSONpath}`,
-      );
-    }
+    // if (DEBUG) {
+    //   const chunksFileJSONpath = `./ai-chunks-${chatId}.json`;
+    //   fs.writeFileSync(
+    //     chunksFileJSONpath,
+    //     JSON.stringify(chunks, null, 2),
+    //   );
+    //   console.log(
+    //     `AI chunks written to ${chunksFileJSONpath}`,
+    //   );
+    // }
 
     return {
       content: fullContent,

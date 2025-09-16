@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
+import './DiffView.scss';
 import { generateFileUnifiedDiff } from '../../../utils/fileDiff';
 
 interface IndividualFileDiffProps {
@@ -59,13 +60,10 @@ export const IndividualFileDiff: React.FC<
   }
 
   return (
-    <div
-      className="individual-file-diff"
-      data-file={fileName}
-    >
+    <div className="diff-view" data-file={fileName}>
       <div className="diff-summary">
         <div className="diff-stats">
-          <span className="file-name">{fileName}</span>
+          <span className="files-changed">{fileName}</span>
           {stats.additions > 0 && (
             <span className="additions">
               +{stats.additions}
@@ -80,7 +78,7 @@ export const IndividualFileDiff: React.FC<
       </div>
 
       <div
-        className="diff-content"
+        className="diff-files"
         dangerouslySetInnerHTML={{ __html: diffHtml }}
       />
     </div>
