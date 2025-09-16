@@ -1,6 +1,8 @@
 {
   "xValue": "sepal_width",
   "yValue": "sepal_length",
+  "sizeValue": null,
+  "pointRadiusValue": null,
   "margin": {
     "top": 20,
     "right": 67,
@@ -10,53 +12,45 @@
   "fontSize": "14px",
   "fontFamily": "cursive",
   "pointRadius": 18.5,
+  "pointRadiusRange": [1, 30],
   "pointFill": "black",
   "pointOpacity": 0.7,
+  "blurRadius": 0,
+  "sizeRange": [2, 30],
   "loadingFontSize": "24px",
   "loadingFontFamily": "sans-serif",
   "loadingMessage": "Loading...",
   "dataUrl": "iris.csv",
   "colorScale": {
-    "setosa": "#1f77b4",
-    "versicolor": "#ff7f0e",
-    "virginica": "#2ca02c"
+    "setosa": "#66c2a4",
+    "versicolor": "#41ae76",
+    "virginica": "#238b45"
   },
   "showAxis": true,
   "scatterPlotTitle": "My Scatter 2",
   "visualEditorWidgets": [
     {
       "type": "slider",
-      "label": "Point Radius",
+      "label": "Point Radius (when not using size)",
       "property": "pointRadius",
       "min": 1,
       "max": 30,
       "step": 2.5
     },
     {
-      "type": "checkbox",
-      "label": "Show Axis",
-      "property": "showAxis"
-    },
-    {
-      "type": "textInput",
-      "label": "Title",
-      "property": "scatterPlotTitle"
-    },
-    {
-      "type": "dropdown",
-      "label": "Font family",
-      "property": "fontFamily",
-      "options": [
-        "sans-serif",
-        "cursive",
-        "monospace"
-      ]
+      "type": "slider",
+      "label": "Blur Radius",
+      "property": "blurRadius",
+      "min": 0,
+      "max": 10,
+      "step": 0.5
     },
     {
       "type": "dropdown",
-      "label": "x variable",
-      "property": "xValue",
+      "label": "Size Variable",
+      "property": "sizeValue",
       "options": [
+        null,
         "sepal_length",
         "sepal_width",
         "petal_length",
@@ -65,20 +59,15 @@
     },
     {
       "type": "dropdown",
-      "label": "y variable",
-      "property": "yValue",
+      "label": "Point Radius Variable",
+      "property": "pointRadiusValue",
       "options": [
+        null,
         "sepal_length",
         "sepal_width",
         "petal_length",
         "petal_width"
       ]
-    },
-    {
-      "type": "color",
-      "label": "Axis Color",
-      "property": "axisColor"
     }
-  ],
-  "axisColor": "#a69851"
+  ]
 }

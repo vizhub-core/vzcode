@@ -11,21 +11,23 @@
  */
 export const scrollToFirstDiff = (
   diffContainer: HTMLElement,
-  headerOffset: number = 60
+  headerOffset: number = 60,
 ): void => {
   // Look for the first diff hunk row
-  const firstHunk = diffContainer.querySelector('.d2h-diff-tbody tr');
-  
+  const firstHunk = diffContainer.querySelector(
+    '.d2h-diff-tbody tr',
+  );
+
   if (firstHunk) {
     // Scroll to the first hunk with header offset
-    firstHunk.scrollIntoView({ 
+    firstHunk.scrollIntoView({
       behavior: 'smooth',
-      block: 'start' 
+      block: 'start',
     });
-    
+
     // Adjust for fixed headers
     window.scrollBy(0, -headerOffset);
-    
+
     // Set focus for keyboard navigation accessibility
     if (diffContainer.setAttribute) {
       diffContainer.tabIndex = -1;
@@ -40,23 +42,23 @@ export const scrollToFirstDiff = (
  * @returns The first diff element or null if not found
  */
 export const getFirstDiffAnchor = (
-  diffContainer: HTMLElement
+  diffContainer: HTMLElement,
 ): HTMLElement | null => {
   // Try different selectors for various diff formats
   const selectors = [
     '.d2h-diff-tbody tr:first-child', // diff2html format
-    '.diff-line:first-child',         // alternative format
-    '.hunk:first-child',              // git diff format
-    '.d2h-file-wrapper:first-child',  // file-level anchor
+    '.diff-line:first-child', // alternative format
+    '.hunk:first-child', // git diff format
+    '.d2h-file-wrapper:first-child', // file-level anchor
   ];
-  
+
   for (const selector of selectors) {
     const element = diffContainer.querySelector(selector);
     if (element) {
       return element as HTMLElement;
     }
   }
-  
+
   return null;
 };
 
@@ -69,13 +71,13 @@ export const getFirstDiffAnchor = (
 export const scrollToElementWithOffset = (
   element: HTMLElement,
   headerOffset: number = 60,
-  behavior: ScrollBehavior = 'smooth'
+  behavior: ScrollBehavior = 'smooth',
 ): void => {
-  element.scrollIntoView({ 
+  element.scrollIntoView({
     behavior,
-    block: 'start' 
+    block: 'start',
   });
-  
+
   // Adjust for fixed headers
   window.scrollBy(0, -headerOffset);
 };
@@ -86,16 +88,19 @@ export const scrollToElementWithOffset = (
  * @param defaultOffset - Default offset if header not found (default: 60px)
  * @returns The calculated header offset
  */
-export const getHeaderOffset = (defaultOffset: number = 60): number => {
+export const getHeaderOffset = (
+  defaultOffset: number = 60,
+): number => {
   // Try to find the actual header element
-  const header = document.querySelector('#appHeader') || 
-                document.querySelector('.app-header') ||
-                document.querySelector('header');
-  
+  const header =
+    document.querySelector('#appHeader') ||
+    document.querySelector('.app-header') ||
+    document.querySelector('header');
+
   if (header) {
     return header.getBoundingClientRect().height;
   }
-  
+
   return defaultOffset;
 };
 
@@ -104,16 +109,23 @@ export const getHeaderOffset = (defaultOffset: number = 60): number => {
  * @param diffContainer - The container element with diff content
  * @returns Object describing the diff state
  */
-export const analyzeDiffContent = (diffContainer: HTMLElement) => {
-  const fileWrappers = diffContainer.querySelectorAll('.d2h-file-wrapper');
-  const diffLines = diffContainer.querySelectorAll('.d2h-diff-tbody tr');
-  
+export const analyzeDiffContent = (
+  diffContainer: HTMLElement,
+) => {
+  const fileWrappers = diffContainer.querySelectorAll(
+    '.d2h-file-wrapper',
+  );
+  const diffLines = diffContainer.querySelectorAll(
+    '.d2h-diff-tbody tr',
+  );
+
   return {
     hasFiles: fileWrappers.length > 0,
     fileCount: fileWrappers.length,
     hasDiffLines: diffLines.length > 0,
     diffLineCount: diffLines.length,
-    isEmpty: fileWrappers.length === 0 && diffLines.length === 0,
+    isEmpty:
+      fileWrappers.length === 0 && diffLines.length === 0,
     isMultiFile: fileWrappers.length > 1,
   };
 };
@@ -122,11 +134,13 @@ export const analyzeDiffContent = (diffContainer: HTMLElement) => {
  * Announces diff summary for screen readers
  * @param diffContainer - The container element with diff content
  */
-export const announceDiffSummary = (diffContainer: HTMLElement): void => {
+export const announceDiffSummary = (
+  diffContainer: HTMLElement,
+): void => {
   const analysis = analyzeDiffContent(diffContainer);
-  
+
   let announcement = '';
-  
+
   if (analysis.isEmpty) {
     announcement = 'No changes to review';
   } else if (analysis.isMultiFile) {
@@ -134,9 +148,11 @@ export const announceDiffSummary = (diffContainer: HTMLElement): void => {
   } else {
     announcement = `1 file changed. Review diff content.`;
   }
-  
+
   // Create or update ARIA live region for announcements
-  let liveRegion = document.getElementById('diff-announcements');
+  let liveRegion = document.getElementById(
+    'diff-announcements',
+  );
   if (!liveRegion) {
     liveRegion = document.createElement('div');
     liveRegion.id = 'diff-announcements';
@@ -149,6 +165,6 @@ export const announceDiffSummary = (diffContainer: HTMLElement): void => {
     liveRegion.style.overflow = 'hidden';
     document.body.appendChild(liveRegion);
   }
-  
+
   liveRegion.textContent = announcement;
 };

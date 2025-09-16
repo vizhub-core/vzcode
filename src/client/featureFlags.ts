@@ -8,4 +8,4 @@ export const enableDiffView = true;
 export const enableAskMode = false;
 
 // Phase 0: Feature flag for minimal AI edit flow
-export const enableMinimalEditFlow = false;
+export const enableMinimalEditFlow = true;

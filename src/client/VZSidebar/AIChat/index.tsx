@@ -9,7 +9,11 @@ import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { AIEditStatus } from './AIEditStatus';
-import { scrollToFirstDiff, getHeaderOffset, announceDiffSummary } from '../../utils/scrollUtils';
+import {
+  scrollToFirstDiff,
+  getHeaderOffset,
+  announceDiffSummary,
+} from '../../utils/scrollUtils';
 import './styles.scss';
 
 const DEBUG = false;
@@ -105,7 +109,7 @@ export const AIChat = () => {
   // TODO: Replace with actual structured status events from server in later phases
   const mockFileStatuses = useMemo(() => {
     if (!isLoading || !enableMinimalEditFlow) return [];
-    
+
     // Create a simple mock status based on current loading state
     // In the future, this will come from structured server events
     return [
@@ -113,7 +117,7 @@ export const AIChat = () => {
         filename: 'Processing request...',
         operation: 'editing' as const,
         status: 'in-progress' as const,
-      }
+      },
     ];
   }, [isLoading, enableMinimalEditFlow]);
 
@@ -127,14 +131,22 @@ export const AIChat = () => {
     prevIsLoadingRef.current = isLoading;
 
     // Only trigger auto-scroll in minimal edit flow when generation completes
-    if (enableMinimalEditFlow && prevIsLoading && !isLoading) {
+    if (
+      enableMinimalEditFlow &&
+      prevIsLoading &&
+      !isLoading
+    ) {
       // Small delay to ensure MessageList and DiffView have rendered
       setTimeout(() => {
         // Look for DiffView in the rendered content
-        const diffContainer = document.querySelector('.diff-files');
+        const diffContainer =
+          document.querySelector('.diff-files');
         if (diffContainer) {
           const headerOffset = getHeaderOffset();
-          scrollToFirstDiff(diffContainer as HTMLElement, headerOffset);
+          scrollToFirstDiff(
+            diffContainer as HTMLElement,
+            headerOffset,
+          );
           announceDiffSummary(diffContainer as HTMLElement);
         }
       }, 100);
@@ -338,21 +350,19 @@ export const AIChat = () => {
                 </div>
               )}
             </div>
+          ) : enableMinimalEditFlow && isLoading ? (
+            <AIEditStatus
+              fileStatuses={mockFileStatuses}
+              isGenerating={isLoading}
+              aiStatus={aiStatus}
+            />
           ) : (
-            enableMinimalEditFlow && isLoading ? (
-              <AIEditStatus
-                fileStatuses={mockFileStatuses}
-                isGenerating={isLoading}
-                aiStatus={aiStatus}
-              />
-            ) : (
-              <MessageList
-                messages={messages}
-                isLoading={isLoading}
-                chatId={selectedChatId || currentChatId}
-                aiScratchpad={aiScratchpad}
-              />
-            )
+            <MessageList
+              messages={messages}
+              isLoading={isLoading}
+              chatId={selectedChatId || currentChatId}
+              aiScratchpad={aiScratchpad}
+            />
           )}
           {aiErrorMessage && (
             <div className="ai-chat-error">

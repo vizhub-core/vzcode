@@ -15,10 +15,10 @@ import 'diff2html/bundles/css/diff2html.min.css';
 import './DiffView.scss';
 import { VZCodeContext } from '../../VZCodeContext';
 import { VizFiles } from '@vizhub/viz-types';
-import { 
-  scrollToFirstDiff, 
-  getHeaderOffset, 
-  announceDiffSummary 
+import {
+  scrollToFirstDiff,
+  getHeaderOffset,
+  announceDiffSummary,
 } from '../../utils/scrollUtils';
 import { getFileId } from '@vizhub/viz-utils';
 
@@ -33,9 +33,10 @@ export interface DiffViewRef {
   announceSummary: () => void;
 }
 
-export const DiffView = forwardRef<DiffViewRef, DiffViewProps>(({
-  diffData,
-}, ref) => {
+export const DiffView = forwardRef<
+  DiffViewRef,
+  DiffViewProps
+>(({ diffData }, ref) => {
   const { content, openTab, setIsAIChatOpen } =
     useContext(VZCodeContext);
   const diffContainerRef = useRef<HTMLDivElement>(null);
@@ -64,25 +65,32 @@ export const DiffView = forwardRef<DiffViewRef, DiffViewProps>(({
   });
 
   // Expose methods for parent components to control scrolling and focus
-  useImperativeHandle(ref, () => ({
-    scrollToFirstHunk: () => {
-      if (diffContainerRef.current) {
-        const headerOffset = getHeaderOffset();
-        scrollToFirstDiff(diffContainerRef.current, headerOffset);
-      }
-    },
-    focusDiffContainer: () => {
-      if (diffContainerRef.current) {
-        diffContainerRef.current.tabIndex = -1;
-        diffContainerRef.current.focus();
-      }
-    },
-    announceSummary: () => {
-      if (diffContainerRef.current) {
-        announceDiffSummary(diffContainerRef.current);
-      }
-    },
-  }), []);
+  useImperativeHandle(
+    ref,
+    () => ({
+      scrollToFirstHunk: () => {
+        if (diffContainerRef.current) {
+          const headerOffset = getHeaderOffset();
+          scrollToFirstDiff(
+            diffContainerRef.current,
+            headerOffset,
+          );
+        }
+      },
+      focusDiffContainer: () => {
+        if (diffContainerRef.current) {
+          diffContainerRef.current.tabIndex = -1;
+          diffContainerRef.current.focus();
+        }
+      },
+      announceSummary: () => {
+        if (diffContainerRef.current) {
+          announceDiffSummary(diffContainerRef.current);
+        }
+      },
+    }),
+    [],
+  );
 
   // Add click handlers to file names after HTML is rendered
   useEffect(() => {

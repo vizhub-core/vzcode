@@ -4,7 +4,11 @@ import './AIEditStatus.scss';
 // Define types for file status tracking
 export interface FileStatus {
   filename: string;
-  operation: 'editing' | 'creating' | 'renaming' | 'deleting';
+  operation:
+    | 'editing'
+    | 'creating'
+    | 'renaming'
+    | 'deleting';
   status: 'in-progress' | 'completed' | 'error';
 }
 
@@ -15,10 +19,10 @@ export interface AIEditStatusProps {
 }
 
 // Component to display live file editing status during AI generation
-export const AIEditStatus: React.FC<AIEditStatusProps> = ({ 
-  fileStatuses, 
+export const AIEditStatus: React.FC<AIEditStatusProps> = ({
+  fileStatuses,
   isGenerating,
-  aiStatus 
+  aiStatus,
 }) => {
   // If not generating, show completion message
   if (!isGenerating) {
@@ -42,21 +46,31 @@ export const AIEditStatus: React.FC<AIEditStatusProps> = ({
           <div className="ai-edit-status-spinner" />
         </div>
         <div className="ai-edit-status-title">
-          {aiStatus === 'generating' ? 'Generating changes...' : 'Processing...'}
+          {aiStatus === 'generating'
+            ? 'Generating changes...'
+            : 'Processing...'}
         </div>
       </div>
-      
+
       {fileStatuses.length > 0 ? (
         <div className="ai-edit-status-files">
           {fileStatuses.map((fileStatus, index) => (
-            <div key={`${fileStatus.filename}-${index}`} className="ai-edit-status-file">
+            <div
+              key={`${fileStatus.filename}-${index}`}
+              className="ai-edit-status-file"
+            >
               <div className="ai-edit-status-file-icon">
-                {fileStatus.status === 'completed' ? '✅' : 
-                 fileStatus.status === 'error' ? '❌' : '⏳'}
+                {fileStatus.status === 'completed'
+                  ? '✅'
+                  : fileStatus.status === 'error'
+                    ? '❌'
+                    : '⏳'}
               </div>
               <div className="ai-edit-status-file-text">
-                {getOperationText(fileStatus.operation)} <code>{fileStatus.filename}</code>
-                {fileStatus.status === 'in-progress' && '...'}
+                {getOperationText(fileStatus.operation)}{' '}
+                <code>{fileStatus.filename}</code>
+                {fileStatus.status === 'in-progress' &&
+                  '...'}
               </div>
             </div>
           ))}
@@ -71,7 +85,9 @@ export const AIEditStatus: React.FC<AIEditStatusProps> = ({
 };
 
 // Helper function to get human-readable operation text
-function getOperationText(operation: FileStatus['operation']): string {
+function getOperationText(
+  operation: FileStatus['operation'],
+): string {
   switch (operation) {
     case 'editing':
       return 'Editing';
