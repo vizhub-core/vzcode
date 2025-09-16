@@ -30,14 +30,6 @@ const DEBUG = true;
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
 
-// Throttle the streaming updates, so that we don't
-// overwhelm the ShareDB server with too many updates.
-// It happened actually, before adding this.
-// MongoDB VizHub server got in fact overloaded with
-// too many updates from the AI streaming response, with
-// warning: "Replication Oplog Window has gone below 1 hour"
-const THROTTLE_INTERVAL_MS = 500;
-
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
  */

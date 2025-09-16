@@ -84,7 +84,7 @@ export const addUserMessage = (
   return userMessage;
 };
 
-const DEBUG = true;
+const DEBUG = false;
 
 /**
  * Updates AI status in the chat

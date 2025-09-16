@@ -18,14 +18,6 @@ interface StreamingMessageProps {
   isActive?: boolean; // Is this the currently streaming message?
 }
 
-interface FileEditState {
-  fileName: string;
-  isComplete: boolean;
-  beforeContent?: string;
-  afterContent?: string;
-  timestamp?: number;
-}
-
 export const StreamingMessage: React.FC<
   StreamingMessageProps
 > = ({ timestamp, events, currentStatus, isActive }) => {
@@ -46,71 +38,76 @@ export const StreamingMessage: React.FC<
     );
   }, [timestamp]);
 
-  // Process events to extract text chunks and file states
-  const { textChunks, fileStates } = useMemo(() => {
-    const chunks: string[] = [];
-    const files: Map<string, FileEditState> = new Map();
+  // Track file states for rendering file editing indicators
+  const fileStates = useMemo(() => {
+    const files: Map<
+      string,
+      {
+        isComplete: boolean;
+        beforeContent?: string;
+        afterContent?: string;
+      }
+    > = new Map();
 
     events.forEach((event) => {
-      switch (event.type) {
-        case 'text_chunk':
-          chunks.push(event.content);
-          break;
-        case 'file_start':
-          files.set(event.fileName, {
-            fileName: event.fileName,
-            isComplete: false,
-            timestamp: event.timestamp,
-          });
-          break;
-        case 'file_complete':
-          files.set(event.fileName, {
-            fileName: event.fileName,
-            isComplete: true,
-            beforeContent: event.beforeContent,
-            afterContent: event.afterContent,
-            timestamp: event.timestamp,
-          });
-          break;
+      if (event.type === 'file_start') {
+        files.set(event.fileName, { isComplete: false });
+      } else if (event.type === 'file_complete') {
+        files.set(event.fileName, {
+          isComplete: true,
+          beforeContent: event.beforeContent,
+          afterContent: event.afterContent,
+        });
       }
     });
 
-    return {
-      textChunks: chunks,
-      fileStates: Array.from(files.values()).sort(
-        (a, b) => (a.timestamp || 0) - (b.timestamp || 0),
-      ),
-    };
+    return files;
   }, [events]);
 
   return (
     <div className="ai-chat-message assistant streaming">
       <div className="ai-chat-message-content">
-        {/* Render text chunks */}
-        {textChunks.map((chunk, index) => (
-          <div key={`text-${index}`} className="text-chunk">
-            <Markdown remarkPlugins={[remarkGfm]}>
-              {chunk}
-            </Markdown>
-          </div>
-        ))}
-
-        {/* Render file editing states */}
-        {fileStates.map((fileState) =>
-          fileState.isComplete ? (
-            <IndividualFileDiff
-              key={fileState.fileName}
-              fileName={fileState.fileName}
-              beforeContent={fileState.beforeContent || ''}
-              afterContent={fileState.afterContent || ''}
-            />
-          ) : (
-            <FileEditingIndicator
-              key={fileState.fileName}
-              fileName={fileState.fileName}
-            />
-          ),
-        )}
+        {/* Render events in order */}
+        {events.map((event, index) => {
+          switch (event.type) {
+            case 'text_chunk':
+              return (
+                <div
+                  key={`text-${index}`}
+                  className="text-chunk"
+                >
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {event.content}
+                  </Markdown>
+                </div>
+              );
+            case 'file_complete':
+              return (
+                <IndividualFileDiff
+                  key={`file-${event.fileName}-${index}`}
+                  fileName={event.fileName}
+                  beforeContent={event.beforeContent || ''}
+                  afterContent={event.afterContent || ''}
+                />
+              );
+            case 'file_start':
+              // Only show file editing indicator if the file is not yet complete
+              const fileState = fileStates.get(
+                event.fileName,
+              );
+              if (!fileState?.isComplete) {
+                return (
+                  <FileEditingIndicator
+                    key={`file-editing-${event.fileName}-${index}`}
+                    fileName={event.fileName}
+                  />
+                );
+              }
+              return null;
+            default:
+              return null;
+          }
+        })}
 
         {/* Show status indicator if active and has status */}
         {isActive && currentStatus && (
