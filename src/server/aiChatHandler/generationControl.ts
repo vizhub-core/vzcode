@@ -2,7 +2,10 @@ import { VizChatId } from '@vizhub/viz-types';
 
 const controllers = new Map<VizChatId, AbortController>();
 
-export const registerController = (chatId: VizChatId, controller: AbortController) => {
+export const registerController = (
+  chatId: VizChatId,
+  controller: AbortController,
+) => {
   controllers.set(chatId, controller);
 };
 

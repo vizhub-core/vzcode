@@ -19,8 +19,14 @@ import {
   ShareDBDoc,
   ExtendedVizContent,
 } from '../../types.js';
-import { registerController, deregisterController } from './generationControl.js';
-import { setStopRequested, isStopRequested } from './chatStopFlag.js';
+import {
+  registerController,
+  deregisterController,
+} from './generationControl.js';
+import {
+  setStopRequested,
+  isStopRequested,
+} from './chatStopFlag.js';
 
 const DEBUG = false;
 
@@ -50,6 +56,25 @@ export const createLLMFunction = ({
   aiRequestOptions?: any;
 }) => {
   return async (fullPrompt: string) => {
+    // Reset any previous stop requests for this chat
+    setStopRequested(shareDBDoc, chatId, false);
+
+    const abortController = new AbortController();
+    registerController(chatId, abortController);
+
+    // Test mode for simulating streaming without API keys
+    const testMode =
+      process.env.VZCODE_TEST_MODE === 'true';
+
+    if (testMode) {
+      return simulateStreamingForTesting(
+        shareDBDoc,
+        chatId,
+        fullPrompt,
+        abortController,
+      );
+    }
+
     // Create OpenRouter client for reasoning token support
     const openRouterClient = new OpenAI({
       apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
@@ -61,12 +86,6 @@ export const createLLMFunction = ({
         'X-Title': 'VizHub',
       },
     });
-
-    // Reset any previous stop requests for this chat
-    setStopRequested(shareDBDoc, chatId, false);
-
-    const abortController = new AbortController();
-    registerController(chatId, abortController);
 
     let fullContent = '';
     let generationId = '';
@@ -249,120 +268,131 @@ export const createLLMFunction = ({
             setTimeout(resolve, 500),
           );
         }
-      const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
+        const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
-      if (delta?.reasoning && enableReasoningTokens) {
-        // Handle reasoning tokens (thinking) - only if enabled
-        if (!reasoningStarted) {
-          reasoningStarted = true;
-          updateStreamingStatus(
+        if (delta?.reasoning && enableReasoningTokens) {
+          // Handle reasoning tokens (thinking) - only if enabled
+          if (!reasoningStarted) {
+            reasoningStarted = true;
+            updateStreamingStatus(
+              shareDBDoc,
+              chatId,
+              'Thinking...',
+            );
+          }
+          reasoningContent += delta.reasoning;
+          updateAIScratchpad(
             shareDBDoc,
             chatId,
-            'Thinking...',
+            reasoningContent,
           );
+        } else if (delta?.content) {
+          // Handle regular content tokens
+          if (!contentStarted) {
+            contentStarted = true;
+            if (reasoningStarted) {
+              // Clear reasoning when content starts
+              updateAIScratchpad(shareDBDoc, chatId, '');
+            }
+            // // Set initial content generation status
+            // updateStreamingStatus(
+            //   shareDBDoc,
+            //   chatId,
+            //   'Formulating a plan...',
+            // );
+          }
+
+          const chunkContent = delta.content;
+          chunks.push(chunkContent);
+
+          await parser.processChunk(chunkContent);
+          fullContent += chunkContent;
+        } else if (chunk.usage) {
+          // Handle usage information
+          DEBUG && console.log('Usage:', chunk.usage);
         }
-        reasoningContent += delta.reasoning;
-        updateAIScratchpad(
+
+        if (!generationId && chunk.id) {
+          generationId = chunk.id;
+        }
+      }
+
+      // Flush any parser buffers if we didn't hard abort
+      if (!abortController.signal.aborted) {
+        await parser.flushRemaining();
+        await emitTextChunk();
+        if (currentEditingFileName) {
+          await completeFileEditing(currentEditingFileName);
+        }
+      }
+    } catch (err: any) {
+      // If stopped by user, OpenAI SDK throws an AbortError
+      if (err?.name === 'AbortError') {
+        stopped = true;
+      } else {
+        // Real error
+        updateStreamingStatus(
           shareDBDoc,
           chatId,
-          reasoningContent,
+          'Generation failed.',
         );
-      } else if (delta?.content) {
-        // Handle regular content tokens
-        if (!contentStarted) {
-          contentStarted = true;
-          if (reasoningStarted) {
-            // Clear reasoning when content starts
-            updateAIScratchpad(shareDBDoc, chatId, '');
-          }
-          // // Set initial content generation status
-          // updateStreamingStatus(
-          //   shareDBDoc,
-          //   chatId,
-          //   'Formulating a plan...',
-          // );
-        }
-
-        const chunkContent = delta.content;
-        chunks.push(chunkContent);
-
-        await parser.processChunk(chunkContent);
-        fullContent += chunkContent;
-      } else if (chunk.usage) {
-        // Handle usage information
-        DEBUG && console.log('Usage:', chunk.usage);
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'error',
+          message: String(err?.message || err),
+          timestamp: Date.now(),
+        });
+        // Ensure controller cleanup
+        deregisterController(chatId);
+        setStopRequested(shareDBDoc, chatId, false);
+        // Do not apply edits; finalize message as failed
+        await finalizeStreamingMessage(shareDBDoc, chatId);
+        throw err;
       }
-
-      if (!generationId && chunk.id) {
-        generationId = chunk.id;
-      }
-    }
-
-    // Flush any parser buffers if we didn't hard abort
-    if (!abortController.signal.aborted) {
-      await parser.flushRemaining();
-      await emitTextChunk();
-      if (currentEditingFileName) {
-        await completeFileEditing(currentEditingFileName);
-      }
-    }
-  } catch (err: any) {
-    // If stopped by user, OpenAI SDK throws an AbortError
-    if (err?.name === 'AbortError') {
-      stopped = true;
-    } else {
-      // Real error
-      updateStreamingStatus(shareDBDoc, chatId, 'Generation failed.');
-      await addStreamingEvent(shareDBDoc, chatId, {
-        type: 'error',
-        message: String(err?.message || err),
-        timestamp: Date.now(),
-      });
-      // Ensure controller cleanup
+    } finally {
+      // Always cleanup controller
       deregisterController(chatId);
       setStopRequested(shareDBDoc, chatId, false);
-      // Do not apply edits; finalize message as failed
-      await finalizeStreamingMessage(shareDBDoc, chatId);
-      throw err;
     }
-  } finally {
-    // Always cleanup controller
-    deregisterController(chatId);
-    setStopRequested(shareDBDoc, chatId, false);
-  }
 
-  // If user stopped: decide policy (apply partial or discard)
-  if (stopped) {
-    updateStreamingStatus(shareDBDoc, chatId, 'Stopped by user.');
-    await addStreamingEvent(shareDBDoc, chatId, {
-      type: 'stopped',
-      timestamp: Date.now(),
-    });
-
-    if (APPLY_PARTIAL_EDITS_ON_STOP && fullContent.trim()) {
-      // (optional) apply partial changes — your call
-      updateFiles(
+    // If user stopped: decide policy (apply partial or discard)
+    if (stopped) {
+      updateStreamingStatus(
         shareDBDoc,
-        mergeFileChanges(
-          shareDBDoc.data.files,
-          parseMarkdownFiles(fullContent, 'bold').files,
-        ),
+        chatId,
+        'Stopped by user.',
       );
+      await addStreamingEvent(shareDBDoc, chatId, {
+        type: 'stopped',
+        timestamp: Date.now(),
+      });
+
+      if (
+        APPLY_PARTIAL_EDITS_ON_STOP &&
+        fullContent.trim()
+      ) {
+        // (optional) apply partial changes — your call
+        updateFiles(
+          shareDBDoc,
+          mergeFileChanges(
+            shareDBDoc.data.files,
+            parseMarkdownFiles(fullContent, 'bold').files,
+          ),
+        );
+      }
+
+      await finalizeStreamingMessage(shareDBDoc, chatId);
+      return { content: fullContent, generationId };
     }
 
-    await finalizeStreamingMessage(shareDBDoc, chatId);
-    return { content: fullContent, generationId };
-  }
-
-  // Normal completion: apply edits, finalize, kick runId
-  // Normal completion: apply edits, finalize, kick runId
-  updateFiles(
-    shareDBDoc,
-    mergeFileChanges(
-      shareDBDoc.data.files,
-      parseMarkdownFiles(fullContent, 'bold').files,
-    ),
-  );
+    // Normal completion: apply edits, finalize, kick runId
+    // Normal completion: apply edits, finalize, kick runId
+    updateFiles(
+      shareDBDoc,
+      mergeFileChanges(
+        shareDBDoc.data.files,
+        parseMarkdownFiles(fullContent, 'bold').files,
+      ),
+    );
 
     // Finalize streaming message
     await finalizeStreamingMessage(shareDBDoc, chatId);
@@ -407,3 +437,125 @@ export const createLLMFunction = ({
     };
   };
 };
+
+/**
+ * Simulates streaming for testing purposes when no API key is available
+ */
+async function simulateStreamingForTesting(
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  fullPrompt: string,
+  abortController: AbortController,
+) {
+  let stopped = false;
+  let fullContent = '';
+
+  try {
+    createStreamingAIMessage(shareDBDoc, chatId);
+    updateStreamingStatus(
+      shareDBDoc,
+      chatId,
+      'Formulating a plan...',
+    );
+
+    // Simulate some thinking time (for testing only)
+    for (let i = 0; i < 10; i++) {
+      if (
+        isStopRequested(shareDBDoc, chatId) ||
+        abortController.signal.aborted
+      ) {
+        stopped = true;
+        break;
+      }
+      await new Promise((resolve) =>
+        setTimeout(resolve, 500),
+      );
+      updateStreamingStatus(
+        shareDBDoc,
+        chatId,
+        `Thinking... (${i + 1}/10)`,
+      );
+    }
+
+    if (!stopped) {
+      updateStreamingStatus(
+        shareDBDoc,
+        chatId,
+        'Generating response...',
+      );
+
+      // Simulate streaming text content
+      const simulatedResponse = `I'll help you add a console.log statement to the index.js file.
+
+\`\`\`js
+// index.js
+console.log('Hello from VZCode!');
+\`\`\`
+
+This adds a simple console.log statement at the beginning of your index.js file.`;
+
+      const words = simulatedResponse.split(' ');
+      for (let i = 0; i < words.length; i++) {
+        if (
+          isStopRequested(shareDBDoc, chatId) ||
+          abortController.signal.aborted
+        ) {
+          stopped = true;
+          break;
+        }
+
+        const word = words[i];
+        fullContent += word + ' ';
+
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'text_chunk',
+          content: word + ' ',
+          timestamp: Date.now(),
+        });
+
+        // Simulate typing delay (for testing only)
+        await new Promise((resolve) =>
+          setTimeout(resolve, 200),
+        );
+      }
+    }
+
+    if (stopped) {
+      updateStreamingStatus(
+        shareDBDoc,
+        chatId,
+        'Stopped by user.',
+      );
+      await addStreamingEvent(shareDBDoc, chatId, {
+        type: 'stopped',
+        timestamp: Date.now(),
+      });
+    } else {
+      updateStreamingStatus(shareDBDoc, chatId, 'Done');
+    }
+  } catch (err: any) {
+    if (err?.name === 'AbortError') {
+      stopped = true;
+    } else {
+      updateStreamingStatus(
+        shareDBDoc,
+        chatId,
+        'Generation failed.',
+      );
+      await addStreamingEvent(shareDBDoc, chatId, {
+        type: 'error',
+        message: String(err?.message || err),
+        timestamp: Date.now(),
+      });
+    }
+  } finally {
+    deregisterController(chatId);
+    setStopRequested(shareDBDoc, chatId, false);
+    await finalizeStreamingMessage(shareDBDoc, chatId);
+  }
+
+  return {
+    content: fullContent,
+    generationId: 'test-generation-id',
+  };
+}

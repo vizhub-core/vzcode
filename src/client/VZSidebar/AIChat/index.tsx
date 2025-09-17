@@ -106,12 +106,17 @@ export const AIChat = () => {
     !selectedChatId || rawMessages.length === 0;
 
   // Determine if streaming is active
-  const isStreaming = (currentChat as ExtendedVizChat)?.isStreaming || false;
+  const isStreaming =
+    (currentChat as ExtendedVizChat)?.isStreaming || false;
 
   // Get the last user message for restoration on stop
   const lastUserMessage = useMemo(() => {
-    const userMessages = rawMessages.filter(msg => msg.role === 'user');
-    return userMessages.length > 0 ? userMessages[userMessages.length - 1].content : '';
+    const userMessages = rawMessages.filter(
+      (msg) => msg.role === 'user',
+    );
+    return userMessages.length > 0
+      ? userMessages[userMessages.length - 1].content
+      : '';
   }, [rawMessages]);
 
   // Create stop handler for the current chat

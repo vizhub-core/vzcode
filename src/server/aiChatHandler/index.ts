@@ -161,21 +161,20 @@ export const handleStopGeneration =
     const { chatId } = req.body;
 
     if (DEBUG) {
-      console.log(
-        '[handleStopGeneration] chatId:',
-        chatId,
-      );
+      console.log('[handleStopGeneration] chatId:', chatId);
     }
 
     try {
       // Validate that chatId is provided
       if (!chatId) {
-        return res.status(400).json({ error: 'Missing chatId' });
+        return res
+          .status(400)
+          .json({ error: 'Missing chatId' });
       }
 
       // Set the stop flag in ShareDB
       setStopRequested(shareDBDoc, chatId, true);
-      
+
       // Abort the network request
       stopGenerationNow(chatId);
 
@@ -183,6 +182,8 @@ export const handleStopGeneration =
       res.status(200).json({ success: true });
     } catch (error) {
       console.error('Stop generation error:', error);
-      res.status(500).json({ error: 'Failed to stop generation' });
+      res
+        .status(500)
+        .json({ error: 'Failed to stop generation' });
     }
   };

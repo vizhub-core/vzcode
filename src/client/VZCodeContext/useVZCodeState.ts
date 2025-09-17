@@ -496,7 +496,10 @@ export const useVZCodeState = ({
         });
 
         if (!response.ok) {
-          console.error('Failed to stop generation:', response.statusText);
+          console.error(
+            'Failed to stop generation:',
+            response.statusText,
+          );
         }
       } catch (error) {
         console.error('Error stopping generation:', error);

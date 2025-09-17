@@ -13,7 +13,10 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
-import { handleAIChatMessage, handleStopGeneration } from './handleAIChatMessage.js';
+import {
+  handleAIChatMessage,
+  handleStopGeneration,
+} from './handleAIChatMessage.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
