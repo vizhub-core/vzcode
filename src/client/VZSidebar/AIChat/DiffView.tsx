@@ -106,7 +106,7 @@ export const DiffView = forwardRef<
         const fileName = target.textContent?.trim();
 
         console.log('Clicked file name:', fileName);
-        if (fileName) {
+        if (fileName && content) {
           const fileId = getFileId(content, fileName);
 
           if (fileId) {

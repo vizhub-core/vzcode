@@ -6,6 +6,7 @@ export const renderTitle = (
     margin: { top },
     fontSize = '16px',
     fontFamily = 'sans-serif',
+    titleColor = '#ffffff',
   },
 ) => {
   if (title && title.trim() !== '') {
@@ -22,6 +23,7 @@ export const renderTitle = (
       .style('font-size', fontSize)
       .style('font-family', fontFamily)
       .style('font-weight', 'bold')
+      .style('fill', titleColor)
       .text(title);
   } else {
     // Remove title when it's empty

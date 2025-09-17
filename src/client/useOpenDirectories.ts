@@ -45,6 +45,7 @@ export const useOpenDirectories = ({
     if (
       activePane.type === 'leafPane' &&
       activePane?.activeFileId &&
+      content.files &&
       content.files[activePane.activeFileId]
     ) {
       const activeFileId = activePane.activeFileId;
@@ -58,7 +59,7 @@ export const useOpenDirectories = ({
         return updated;
       });
     }
-  }, [activePane, content.files]);
+  }, [activePane, content?.files]);
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: VZPath) => boolean =

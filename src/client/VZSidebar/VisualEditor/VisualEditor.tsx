@@ -32,14 +32,19 @@ export const VisualEditor = () => {
   >(null);
 
   let configFileId: VizFileId | null = null;
-  for (const fileId in files) {
-    if (files[fileId].name === CONFIG_FILE_NAME) {
-      configFileId = fileId;
-      break;
+  if (files) {
+    for (const fileId in files) {
+      if (files[fileId].name === CONFIG_FILE_NAME) {
+        configFileId = fileId;
+        break;
+      }
     }
   }
 
   const configData = useMemo(() => {
+    if (!files || !configFileId) {
+      return null;
+    }
     try {
       return JSON.parse(files[configFileId].text);
     } catch (_error) {

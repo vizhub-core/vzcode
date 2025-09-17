@@ -1,6 +1,14 @@
 export const renderLoadingState = (
   svg,
-  { x, y, text, shouldShow, fontSize, fontFamily },
+  {
+    x,
+    y,
+    text,
+    shouldShow,
+    fontSize,
+    fontFamily,
+    loadingTextColor = '#bbbbbb',
+  },
 ) => {
   svg
     .selectAll('text.loading-text')
@@ -13,5 +21,6 @@ export const renderLoadingState = (
     .attr('dominant-baseline', 'middle')
     .attr('font-size', fontSize)
     .attr('font-family', fontFamily)
+    .attr('fill', loadingTextColor)
     .text(text);
 };

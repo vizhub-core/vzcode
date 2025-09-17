@@ -1,4 +1,18 @@
 #viz-container {
   position: fixed;
   inset: 0;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+svg {
+  background-color: #121212;
+}
+
+text {
+  fill: #e0e0e0;
+}
+
+circle.data-point {
+  stroke: rgba(255, 255, 255, 0.2);
 }

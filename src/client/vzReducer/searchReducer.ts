@@ -11,14 +11,17 @@ function searchPattern(
   shareDBDoc: ShareDBDoc<VizContent>,
   pattern: string,
 ): SearchResult {
-  const files = shareDBDoc.data.files;
-  const fileIds = Object.keys(shareDBDoc.data.files);
+  const files = shareDBDoc?.data?.files;
+  if (!files) {
+    return {};
+  }
+  const fileIds = Object.keys(files);
   const results: { [id: string]: SearchFile } = {};
 
   for (let i = 0; i < fileIds.length; i++) {
     const file = files[fileIds[i]];
 
-    if (files[fileIds[i]].text) {
+    if (file.text) {
       const fileName = file.name;
       const lines = file.text.split('\n');
       const matches = [];

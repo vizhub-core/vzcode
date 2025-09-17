@@ -28,9 +28,9 @@
   },
   "showAxis": true,
   "scatterPlotTitle": "My Scatter 2",
-  "axisColor": "#333333",
-  "titleColor": "#222222",
-  "loadingTextColor": "#444444",
+  "axisColor": "#e0e0e0",
+  "titleColor": "#ffffff",
+  "loadingTextColor": "#bbbbbb",
   "visualEditorWidgets": [
     {
       "type": "slider",
