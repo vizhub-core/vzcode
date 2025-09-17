@@ -9,6 +9,7 @@ import { Message } from './Message';
 import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
+import { StatusIndicator } from './StatusIndicator';
 import { VizChatMessage } from '@vizhub/viz-types';
 import { ExtendedVizChatMessage } from '../../../types.js';
 
@@ -156,6 +157,14 @@ const MessageListComponent = ({
     aiScratchpad && aiScratchpad.trim(),
   );
 
+  // Show status indicator when there's a current status but no active streaming message
+  const showStandaloneStatusIndicator =
+    currentStatus &&
+    currentStatus !== 'Done' &&
+    (!lastMessage ||
+      lastMessage.role !== 'assistant' ||
+      !lastMessage.content);
+
   // Find the most recent assistant message index
   const lastAssistantMessageIndex = messages
     .map((m, i) => (m.role === 'assistant' ? i : -1))
@@ -220,6 +229,10 @@ const MessageListComponent = ({
           content={aiScratchpad || ''}
           isVisible={showThinkingScratchpad}
         />
+      )}
+
+      {showStandaloneStatusIndicator && (
+        <StatusIndicator status={currentStatus || ''} />
       )}
 
       {showTypingIndicator && <TypingIndicator />}

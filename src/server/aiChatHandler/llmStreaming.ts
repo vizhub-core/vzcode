@@ -7,7 +7,6 @@ import { mergeFileChanges } from 'editcodewithai';
 import { VizChatId } from '@vizhub/viz-types';
 import { generateRunId } from '@vizhub/viz-utils';
 import {
-  updateAIStatus,
   updateFiles,
   updateAIScratchpad,
   createStreamingAIMessage,
@@ -67,16 +66,8 @@ export const createLLMFunction = ({
     // Create streaming AI message
     createStreamingAIMessage(shareDBDoc, chatId);
 
-    // Set initial status
-    DEBUG &&
-      console.log(
-        'LLMStreaming: Setting initial status - Analyzing request...',
-      );
-    updateStreamingStatus(
-      shareDBDoc,
-      chatId,
-      'Analyzing request...',
-    );
+    // Note: Initial "Analyzing request..." status is already set in the main handler
+    // We'll update it when the first content starts coming in
 
     // Helper to get original file content
     const getOriginalFileContent = (
@@ -175,6 +166,17 @@ export const createLLMFunction = ({
         // Accumulate non-code content as text chunk
         if (line.trim() !== '') {
           accumulatedTextChunk += line + '\n';
+
+          // Update status for subsequent non-code chunks
+          if (firstNonCodeChunkProcessed) {
+            updateStreamingStatus(
+              shareDBDoc,
+              chatId,
+              'Describing changes...',
+            );
+          } else {
+            firstNonCodeChunkProcessed = true;
+          }
         }
       },
     };
@@ -213,6 +215,7 @@ export const createLLMFunction = ({
 
     let reasoningStarted = false;
     let contentStarted = false;
+    let firstNonCodeChunkProcessed = false;
 
     for await (const chunk of stream) {
       if (slowMode) {
@@ -226,7 +229,11 @@ export const createLLMFunction = ({
         // Handle reasoning tokens (thinking) - only if enabled
         if (!reasoningStarted) {
           reasoningStarted = true;
-          updateAIStatus(shareDBDoc, chatId, 'Thinking...');
+          updateStreamingStatus(
+            shareDBDoc,
+            chatId,
+            'Thinking...',
+          );
         }
         reasoningContent += delta.reasoning;
         updateAIScratchpad(
@@ -236,14 +243,17 @@ export const createLLMFunction = ({
         );
       } else if (delta?.content) {
         // Handle regular content tokens
-        if (reasoningStarted && !contentStarted) {
-          // Clear reasoning when content starts
+        if (!contentStarted) {
           contentStarted = true;
-          updateAIScratchpad(shareDBDoc, chatId, '');
-          updateAIStatus(
+          if (reasoningStarted) {
+            // Clear reasoning when content starts
+            updateAIScratchpad(shareDBDoc, chatId, '');
+          }
+          // Set initial content generation status
+          updateStreamingStatus(
             shareDBDoc,
             chatId,
-            'Generating response...',
+            'Formulating a plan...',
           );
         }
 
@@ -271,9 +281,6 @@ export const createLLMFunction = ({
       await completeFileEditing(currentEditingFileName);
     }
 
-    // Finalize streaming message
-    await finalizeStreamingMessage(shareDBDoc, chatId);
-
     // Apply all the edits at once
     updateFiles(
       shareDBDoc,
@@ -282,6 +289,9 @@ export const createLLMFunction = ({
         parseMarkdownFiles(fullContent, 'bold').files,
       ),
     );
+
+    // Finalize streaming message
+    await finalizeStreamingMessage(shareDBDoc, chatId);
 
     // Generate a new runId to trigger a run when AI finishes editing
     // This will trigger a re-run without hot reloading
