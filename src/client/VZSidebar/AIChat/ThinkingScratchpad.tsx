@@ -7,6 +7,8 @@ import {
 } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { JumpToLatestButton } from './JumpToLatestButton';
+import { useAutoScroll } from '../../hooks/useAutoScroll';
 
 interface ThinkingScratchpadProps {
   content: string;
@@ -17,114 +19,44 @@ const ThinkingScratchpadComponent = ({
   content,
   isVisible,
 }: ThinkingScratchpadProps) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [isUserScrolled, setIsUserScrolled] =
-    useState(false);
-  const [autoScrollEnabled, setAutoScrollEnabled] =
-    useState(true);
-  const scrollTimeoutRef =
-    useRef<ReturnType<typeof setTimeout>>();
+  // Use the new simplified auto-scroll hook
+  const {
+    containerRef: contentRef,
+    autoScrollState,
+    showJumpButton,
+    onNewEvent,
+    onJumpToLatest,
+    beforeRender,
+    afterRender,
+  } = useAutoScroll({ threshold: 24 });
 
-  // Check if the user is scrolled to the bottom
-  const isScrolledToBottom = useCallback(() => {
-    const container = contentRef.current;
-    if (!container) return true;
-
-    const threshold = 10; // Allow 10px tolerance for "at bottom"
-    const { scrollTop, scrollHeight, clientHeight } =
-      container;
-    return (
-      scrollHeight - scrollTop - clientHeight < threshold
-    );
-  }, []);
-
-  // Smooth scroll to bottom
-  const scrollToBottom = useCallback(() => {
-    if (!autoScrollEnabled) return;
-
-    const container = contentRef.current;
-    if (container) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: 'smooth',
-      });
-    }
-  }, [autoScrollEnabled]);
-
-  // Handle scroll events to detect user manual scrolling
-  const handleScroll = useCallback(() => {
-    const container = contentRef.current;
-    if (!container) return;
-
-    const isAtBottom = isScrolledToBottom();
-
-    // Clear any existing timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-
-    // If user scrolled up from bottom, disable auto-scroll
-    if (!isAtBottom && !isUserScrolled) {
-      setIsUserScrolled(true);
-      setAutoScrollEnabled(false);
-    }
-
-    // If user scrolled back to bottom, re-enable auto-scroll after a brief delay
-    if (isAtBottom && isUserScrolled) {
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsUserScrolled(false);
-        setAutoScrollEnabled(true);
-      }, 300); // 300ms delay to prevent flickering
-    }
-  }, [isUserScrolled, isScrolledToBottom]);
-
-  // Auto-scroll when content changes, but only if auto-scroll is enabled
+  // Auto-scroll when content changes and component is visible
   useEffect(() => {
-    if (
-      autoScrollEnabled &&
-      !isUserScrolled &&
-      isVisible &&
-      content
-    ) {
-      // Use a short debounce to prevent multiple scroll calls during rapid updates
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+    if (isVisible && content) {
+      // Get scroll height before render for anchoring
+      const prevScrollHeight = beforeRender();
 
-      scrollTimeoutRef.current = setTimeout(() => {
-        scrollToBottom();
-      }, 50); // 50ms debounce
+      // Trigger auto-scroll if enabled
+      onNewEvent();
+
+      // Adjust scroll position after render for anchoring
+      afterRender(prevScrollHeight);
     }
-
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
   }, [
     content,
-    autoScrollEnabled,
-    isUserScrolled,
     isVisible,
-    scrollToBottom,
+    onNewEvent,
+    beforeRender,
+    afterRender,
   ]);
-
-  // Clean up timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Reset scroll state when component becomes visible
   useEffect(() => {
     if (isVisible) {
-      setIsUserScrolled(false);
-      setAutoScrollEnabled(true);
+      // Jump to latest when scratchpad becomes visible
+      onJumpToLatest();
     }
-  }, [isVisible]);
+  }, [isVisible, onJumpToLatest]);
 
   if (!isVisible || !content) {
     return null;
@@ -141,11 +73,20 @@ const ThinkingScratchpadComponent = ({
       <div
         className="thinking-scratchpad-content"
         ref={contentRef}
-        onScroll={handleScroll}
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        style={{ position: 'relative' }}
       >
         <Markdown remarkPlugins={[remarkGfm]}>
           {content}
         </Markdown>
+
+        {/* Jump to Latest Button */}
+        <JumpToLatestButton
+          visible={showJumpButton}
+          onClick={onJumpToLatest}
+        />
       </div>
     </div>
   );

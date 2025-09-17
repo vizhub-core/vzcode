@@ -10,8 +10,10 @@ import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { AIEditingStatusIndicator } from './FileEditingIndicator';
+import { JumpToLatestButton } from './JumpToLatestButton';
 import { VizChatMessage } from '@vizhub/viz-types';
 import { ExtendedVizChatMessage } from '../../../types.js';
+import { useAutoScroll } from '../../hooks/useAutoScroll';
 
 const MessageListComponent = ({
   messages,
@@ -27,120 +29,44 @@ const MessageListComponent = ({
   currentStatus?: string; // Add current status to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const [isUserScrolled, setIsUserScrolled] =
-    useState(false);
-  const [autoScrollEnabled, setAutoScrollEnabled] =
-    useState(true);
-  const scrollTimeoutRef =
-    useRef<ReturnType<typeof setTimeout>>();
 
-  // Check if the user is scrolled to the bottom
-  const isScrolledToBottom = useCallback(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return true;
-
-    const threshold = 50; // Allow 50px tolerance for "at bottom"
-    const { scrollTop, scrollHeight, clientHeight } =
-      container;
-    return (
-      scrollHeight - scrollTop - clientHeight < threshold
-    );
-  }, []);
-
-  // Smooth scroll to bottom with linear transition
-  const scrollToBottom = useCallback(() => {
-    if (!autoScrollEnabled) return;
-
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
-  }, [autoScrollEnabled]);
-
-  // Handle scroll events to detect user manual scrolling
-  const handleScroll = useCallback(() => {
-    const container = messagesContainerRef.current;
-    if (!container) return;
-
-    const isAtBottom = isScrolledToBottom();
-
-    // Clear any existing timeout
-    if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current);
-    }
-
-    // If user scrolled up from bottom, disable auto-scroll
-    if (!isAtBottom && !isUserScrolled) {
-      setIsUserScrolled(true);
-      setAutoScrollEnabled(false);
-    }
-
-    // If user scrolled back to bottom, re-enable auto-scroll after a brief delay
-    if (isAtBottom && isUserScrolled) {
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsUserScrolled(false);
-        setAutoScrollEnabled(true);
-      }, 500); // 500ms delay to prevent flickering
-    }
-  }, [isUserScrolled, isScrolledToBottom]);
-
-  // Auto-scroll when messages change, but only if auto-scroll is enabled
-  useEffect(() => {
-    if (autoScrollEnabled && !isUserScrolled) {
-      // Use a short debounce to prevent multiple scroll calls during rapid updates
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-
-      scrollTimeoutRef.current = setTimeout(() => {
-        scrollToBottom();
-      }, 100); // 100ms debounce
-    }
-
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, [
-    messages,
-    autoScrollEnabled,
-    isUserScrolled,
-    scrollToBottom,
-  ]);
+  // Use the new simplified auto-scroll hook
+  const {
+    containerRef: messagesContainerRef,
+    autoScrollState,
+    showJumpButton,
+    onNewEvent,
+    onJumpToLatest,
+    beforeRender,
+    afterRender,
+  } = useAutoScroll({ threshold: 24 });
 
   // Track previous loading state to detect when AI generation completes
   const [prevIsLoading, setPrevIsLoading] =
     useState(isLoading);
 
+  // Auto-scroll when messages change
+  useEffect(() => {
+    // Get scroll height before render for anchoring
+    const prevScrollHeight = beforeRender();
+
+    // Trigger auto-scroll if enabled
+    onNewEvent();
+
+    // Adjust scroll position after render for anchoring
+    afterRender(prevScrollHeight);
+  }, [messages, onNewEvent, beforeRender, afterRender]);
+
   // Scroll to bottom when AI generation completes (loading changes from true to false)
   useEffect(() => {
-    // If AI was generating and now it's finished, scroll to bottom
+    // If AI was generating and now it's finished, force scroll to bottom
     if (prevIsLoading && !isLoading) {
-      // Force scroll to bottom regardless of user scroll state
-      // This ensures we always scroll to bottom when generation completes
-      messagesEndRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
-      });
-
-      // Re-enable auto-scroll for future messages
-      setIsUserScrolled(false);
-      setAutoScrollEnabled(true);
+      // Force jump to latest regardless of current auto-scroll state
+      onJumpToLatest();
     }
 
     setPrevIsLoading(isLoading);
-  }, [isLoading, prevIsLoading]);
-
-  // Clean up timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [isLoading, prevIsLoading, onJumpToLatest]);
 
   // Check if AI generation has started (last message is from assistant)
   const lastMessage = messages[messages.length - 1];
@@ -217,7 +143,10 @@ const MessageListComponent = ({
     <div
       className="ai-chat-messages"
       ref={messagesContainerRef}
-      onScroll={handleScroll}
+      role="log"
+      aria-live="polite"
+      aria-relevant="additions"
+      style={{ position: 'relative' }}
     >
       {messages.map((msg, index) => {
         // Cast to extended message to check for streaming events
@@ -282,6 +211,12 @@ const MessageListComponent = ({
       })}
 
       <div ref={messagesEndRef} />
+
+      {/* Jump to Latest Button */}
+      <JumpToLatestButton
+        visible={showJumpButton}
+        onClick={onJumpToLatest}
+      />
     </div>
   );
 };
