@@ -3,14 +3,10 @@ import {
   ensureChatsExist,
   ensureChatExists,
   addUserMessage,
-  addDiffToAIMessage,
   setAIStatus,
 } from './chatOperations.js';
 import { createLLMFunction } from './llmStreaming.js';
-import {
-  performAIEditing,
-  performAIChat,
-} from './aiEditing.js';
+import { performAIEditing } from './aiEditing.js';
 import {
   handleError,
   handleBackgroundError,
@@ -27,18 +23,16 @@ export const handleAIChatMessage =
   ({
     shareDBDoc,
     onCreditDeduction,
-    getCurrentCommitId,
     model,
     aiRequestOptions,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
     onCreditDeduction?: any;
-    getCurrentCommitId?: () => string | null;
     model?: string;
     aiRequestOptions?: any;
   }) =>
   async (req: any, res: any) => {
-    const { content, chatId, mode = 'edit' } = req.body;
+    const { content, chatId } = req.body;
 
     if (DEBUG) {
       console.log(
@@ -79,8 +73,6 @@ export const handleAIChatMessage =
         shareDBDoc,
         chatId,
         content,
-        mode,
-        getCurrentCommitId,
         model,
         aiRequestOptions,
         onCreditDeduction,
@@ -104,8 +96,6 @@ const processAIRequestAsync = async ({
   shareDBDoc,
   chatId,
   content,
-  mode,
-  getCurrentCommitId,
   model,
   aiRequestOptions,
   onCreditDeduction,
@@ -113,18 +103,11 @@ const processAIRequestAsync = async ({
   shareDBDoc: ShareDBDoc<VizContent>;
   chatId: string;
   content: string;
-  mode: string;
-  getCurrentCommitId?: () => string | null;
   model?: string;
   aiRequestOptions?: any;
   onCreditDeduction?: any;
 }) => {
   try {
-    // Capture the current commit ID before making changes (for VizHub integration)
-    const beforeCommitId = getCurrentCommitId
-      ? getCurrentCommitId()
-      : null;
-
     // Create LLM function for streaming
     const llmFunction = createLLMFunction({
       shareDBDoc,
@@ -139,32 +122,12 @@ const processAIRequestAsync = async ({
     const runCode = createRunCodeFunction(submitOperation);
 
     // Perform AI editing or chat based on mode
-    const editResult =
-      // mode === 'ask'
-      //   ? await performAIChat({
-      //       prompt: content,
-      //       shareDBDoc,
-      //       llmFunction,
-      //     })
-      await performAIEditing({
-        prompt: content,
-        shareDBDoc,
-        llmFunction,
-        runCode,
-      });
-
-    // Add diff data to the AI message if there are changes
-    // if (
-    //   editResult.diffData &&
-    //   Object.keys(editResult.diffData).length > 0
-    // ) {
-    //   addDiffToAIMessage(
-    //     shareDBDoc,
-    //     chatId,
-    //     editResult.diffData,
-    //     beforeCommitId, // Pass the commit ID before AI changes (for VizHub integration)
-    //   );
-    // }
+    const editResult = await performAIEditing({
+      prompt: content,
+      shareDBDoc,
+      llmFunction,
+      runCode,
+    });
 
     // Handle credit deduction if callback is provided
     if (onCreditDeduction && editResult.generationId) {

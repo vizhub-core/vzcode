@@ -4,7 +4,7 @@ export const renderTitle = (
     title,
     dimensions: { width },
     margin: { top },
-    fontSize = '16px',
+    fontSize = '24px', // Increased from 16px
     fontFamily = 'sans-serif',
     titleColor = '#ffffff',
   },
