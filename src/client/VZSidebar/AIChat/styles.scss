@@ -10,6 +10,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .ai-chat-messages-container {
@@ -19,9 +20,21 @@
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
-  // Position the container relative for absolute positioning of children,
-  // namely the "Jump to Latest" button
-  position: relative;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--vh-color-neutral-02);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--vh-color-neutral-04);
+    border-radius: 3px;
+  }
 }
 
 .ai-chat-input-fixed {
@@ -217,24 +230,8 @@
 
 .ai-chat-messages {
   flex: 1;
-  overflow-y: auto;
   margin-bottom: 10px;
   padding-right: 5px;
-  scroll-behavior: smooth;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--vh-color-neutral-02);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--vh-color-neutral-04);
-    border-radius: 3px;
-  }
 }
 
 .ai-chat-message {
@@ -645,7 +642,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 12px;
+  bottom: 20px; // Position above the input area
   width: 44px;
   height: 44px;
   border-radius: 50%;

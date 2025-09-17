@@ -1,19 +1,15 @@
-import {
-  useRef,
-  useEffect,
-  useCallback,
-  memo,
-  useState,
-} from 'react';
+import { useRef, useEffect, memo, useState } from 'react';
 import { Message } from './Message';
 import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { AIEditingStatusIndicator } from './FileEditingIndicator';
-import { JumpToLatestButton } from './JumpToLatestButton';
 import { VizChatMessage } from '@vizhub/viz-types';
-import { ExtendedVizChatMessage } from '../../../types.js';
-import { useAutoScroll } from '../../hooks/useAutoScroll';
+import {
+  ExtendedVizChatMessage,
+  IndividualFileDiff,
+} from '../../../types.js';
+import { DiffViewRef } from './DiffView.js';
 
 const MessageListComponent = ({
   messages,
@@ -21,24 +17,23 @@ const MessageListComponent = ({
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
   currentStatus, // Add current status prop
+  onNewEvent,
+  onJumpToLatest,
+  beforeRender,
+  afterRender,
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
   currentStatus?: string; // Add current status to the type
+  onNewEvent: (targetElement?: HTMLElement) => void;
+  onJumpToLatest: (targetElement?: HTMLElement) => void;
+  beforeRender: () => number;
+  afterRender: (prevScrollHeight: number) => void;
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Use the new simplified auto-scroll hook
-  const {
-    containerRef: messagesContainerRef,
-    showJumpButton,
-    onNewEvent,
-    onJumpToLatest,
-    beforeRender,
-    afterRender,
-  } = useAutoScroll({ threshold: 24 });
+  const diffViewRef = useRef<DiffViewRef>(null);
 
   // Track previous loading state to detect when AI generation completes
   const [prevIsLoading, setPrevIsLoading] =
@@ -49,8 +44,19 @@ const MessageListComponent = ({
     // Get scroll height before render for anchoring
     const prevScrollHeight = beforeRender();
 
+    // Determine if we should scroll to a specific diff or to the bottom
+    const lastMessageHasDiff =
+      messages.length > 0 &&
+      (messages[messages.length - 1] as any).diffData;
+
+    let targetElement: HTMLElement | null = null;
+    if (lastMessageHasDiff && diffViewRef.current) {
+      targetElement =
+        diffViewRef.current.getFirstHunkElement();
+    }
+
     // Trigger auto-scroll if enabled
-    onNewEvent();
+    onNewEvent(targetElement);
 
     // Adjust scroll position after render for anchoring
     afterRender(prevScrollHeight);
@@ -139,87 +145,79 @@ const MessageListComponent = ({
     .pop();
 
   return (
-    <>
-      <div
-        className="ai-chat-messages"
-        ref={messagesContainerRef}
-        role="log"
-        aria-live="polite"
-        aria-relevant="additions"
-        style={{ position: 'relative' }}
-      >
-        {messages.map((msg, index) => {
-          // Cast to extended message to check for streaming events
-          const extendedMsg = msg as ExtendedVizChatMessage;
+    <div
+      className="ai-chat-messages"
+      role="log"
+      aria-live="polite"
+      aria-relevant="additions"
+    >
+      {messages.map((msg, index) => {
+        const isLastMessage = index === messages.length - 1;
+        // Cast to extended message to check for streaming events
+        const extendedMsg = msg as ExtendedVizChatMessage;
 
-          // Check if this is a streaming message
-          const isStreamingMessage =
-            !!extendedMsg.isProgressive;
+        // Check if this is a streaming message
+        const isStreamingMessage =
+          !!extendedMsg.isProgressive;
 
-          // Only show additionalWidgets for the most recent assistant message
-          const showAdditionalWidgets =
-            msg.role === 'assistant' &&
-            index === lastAssistantMessageIndex;
+        // Only show additionalWidgets for the most recent assistant message
+        const showAdditionalWidgets =
+          msg.role === 'assistant' &&
+          index === lastAssistantMessageIndex;
 
-          // Use StreamingMessage for assistant messages with streaming events
-          if (
-            msg.role === 'assistant' &&
-            isStreamingMessage
-          ) {
-            return (
-              <StreamingMessage
-                key={msg.id}
-                timestamp={msg.timestamp}
-                events={extendedMsg.streamingEvents || []}
-                isActive={
-                  index === lastAssistantMessageIndex
-                }
-              >
-                {showThinkingScratchpad && (
-                  <ThinkingScratchpad
-                    content={aiScratchpad || ''}
-                    isVisible={showThinkingScratchpad}
-                  />
-                )}
-
-                {showConsolidatedStatusIndicator && (
-                  <AIEditingStatusIndicator
-                    status={
-                      consolidatedStatus?.status || ''
-                    }
-                    fileName={consolidatedStatus?.fileName}
-                  />
-                )}
-
-                {showTypingIndicator && <TypingIndicator />}
-              </StreamingMessage>
-            );
-          }
-
-          // Use regular Message component for user messages and non-streaming assistant messages
+        // Use StreamingMessage for assistant messages with streaming events
+        if (
+          msg.role === 'assistant' &&
+          isStreamingMessage
+        ) {
           return (
-            <Message
+            <StreamingMessage
               key={msg.id}
-              id={msg.id}
-              role={msg.role}
-              content={msg.content}
               timestamp={msg.timestamp}
-              diffData={(msg as any).diffData}
-              chatId={chatId}
-              showAdditionalWidgets={showAdditionalWidgets}
-            />
+              events={extendedMsg.streamingEvents || []}
+              isActive={index === lastAssistantMessageIndex}
+            >
+              {showThinkingScratchpad && (
+                <ThinkingScratchpad
+                  content={aiScratchpad || ''}
+                  isVisible={showThinkingScratchpad}
+                />
+              )}
+
+              {showConsolidatedStatusIndicator && (
+                <AIEditingStatusIndicator
+                  status={consolidatedStatus?.status || ''}
+                  fileName={consolidatedStatus?.fileName}
+                />
+              )}
+
+              {showTypingIndicator && <TypingIndicator />}
+            </StreamingMessage>
           );
-        })}
+        }
 
-        <div ref={messagesEndRef} />
-      </div>
+        // Use regular Message component for user messages and non-streaming assistant messages
+        return (
+          <Message
+            key={msg.id}
+            id={msg.id}
+            role={msg.role}
+            content={msg.content}
+            timestamp={msg.timestamp}
+            diffData={(msg as any).diffData}
+            chatId={chatId}
+            showAdditionalWidgets={showAdditionalWidgets}
+            ref={
+              isLastMessage && (msg as any).diffData
+                ? diffViewRef
+                : null
+            }
+          />
+        );
+      })}
 
-      {/* Jump to Latest Button */}
-      <JumpToLatestButton
-        visible={showJumpButton}
-        onClick={onJumpToLatest}
-      />
-    </>
+      <div ref={messagesEndRef} />
+    </div>
   );
 };
 

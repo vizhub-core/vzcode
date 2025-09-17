@@ -30,6 +30,7 @@ export interface DiffViewRef {
   scrollToFirstHunk: () => void;
   focusDiffContainer: () => void;
   announceSummary: () => void;
+  getFirstHunkElement: () => HTMLElement | null;
 }
 
 export const DiffView = forwardRef<
@@ -86,6 +87,14 @@ export const DiffView = forwardRef<
         if (diffContainerRef.current) {
           announceDiffSummary(diffContainerRef.current);
         }
+      },
+      getFirstHunkElement: () => {
+        if (diffContainerRef.current) {
+          return diffContainerRef.current.querySelector(
+            '.d2h-diff-tbody tr',
+          );
+        }
+        return null;
       },
     }),
     [],

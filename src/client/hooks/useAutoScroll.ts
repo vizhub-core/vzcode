@@ -16,8 +16,6 @@ type AutoScrollState = 'AUTO_SCROLL_ON' | 'AUTO_SCROLL_OFF';
 interface UseAutoScrollOptions {
   /** Threshold for "at bottom" detection in pixels (default: 24) */
   threshold?: number;
-  /** Whether to respect prefers-reduced-motion for smooth scrolling */
-  respectMotionPreference?: boolean;
 }
 
 /**
@@ -31,9 +29,9 @@ interface UseAutoScrollReturn {
   /** Whether to show the "jump to latest" button */
   showJumpButton: boolean;
   /** Function to handle new content/events */
-  onNewEvent: () => void;
+  onNewEvent: (targetElement?: HTMLElement) => void;
   /** Function to handle user clicking jump to latest button */
-  onJumpToLatest: () => void;
+  onJumpToLatest: (targetElement?: HTMLElement) => void;
   /** Function to call before rendering new content (for anchoring) */
   beforeRender: () => number;
   /** Function to call after rendering new content (for anchoring) */
@@ -52,8 +50,7 @@ interface UseAutoScrollReturn {
 export const useAutoScroll = (
   options: UseAutoScrollOptions = {},
 ): UseAutoScrollReturn => {
-  const { threshold = 24, respectMotionPreference = true } =
-    options;
+  const { threshold = 24 } = options;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [autoScrollState, setAutoScrollState] =
@@ -93,29 +90,38 @@ export const useAutoScroll = (
   }, [autoScrollState, isAtBottom]);
 
   /**
-   * Scroll the container to bottom
+   * Scroll the container to a target element or to the bottom
    */
-  const scrollToBottom = useCallback(
-    (el: HTMLElement): void => {
-      // Check if user prefers reduced motion
-      const prefersReducedMotion =
-        respectMotionPreference &&
-        window.matchMedia(
-          '(prefers-reduced-motion: reduce)',
-        ).matches;
+  const scrollToTargetOrBottom = useCallback(
+    (
+      el: HTMLElement,
+      targetElement?: HTMLElement,
+    ): void => {
+      if (targetElement) {
+        // Scroll to a specific element within the container
+        const containerRect = el.getBoundingClientRect();
+        const targetRect =
+          targetElement.getBoundingClientRect();
+        const scrollTop =
+          targetRect.top - containerRect.top + el.scrollTop;
 
-      el.scrollTop = el.scrollHeight;
+        // We can add an offset if needed, e.g., for headers
+        const offset = 0;
 
-      // Note: We don't use smooth scrolling here as per the issue requirements
-      // The issue specifies using el.scrollTop = el.scrollHeight for immediate scroll
+        el.scrollTop = scrollTop - offset;
+      } else {
+        // Scroll to the bottom of the container
+        el.scrollTop = el.scrollHeight;
+      }
     },
-    [respectMotionPreference],
+    [],
   );
 
   /**
    * Handle scroll events to detect user manual scrolling
    */
   const handleScroll = useCallback(() => {
+    console.log('handleScroll called');
     const container = containerRef.current;
     if (!container) return;
 
@@ -154,34 +160,43 @@ export const useAutoScroll = (
   /**
    * Handle new event/message render
    */
-  const onNewEvent = useCallback(() => {
-    if (autoScrollState === 'AUTO_SCROLL_ON') {
-      // Use requestAnimationFrame for batched updates
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current);
-      }
-
-      rafIdRef.current = requestAnimationFrame(() => {
-        const container = containerRef.current;
-        if (container) {
-          scrollToBottom(container);
+  const onNewEvent = useCallback(
+    (targetElement?: HTMLElement) => {
+      if (autoScrollState === 'AUTO_SCROLL_ON') {
+        // Use requestAnimationFrame for batched updates
+        if (rafIdRef.current) {
+          cancelAnimationFrame(rafIdRef.current);
         }
-      });
-    }
-    // If AUTO_SCROLL_OFF, do nothing (no scroll)
-  }, [autoScrollState, scrollToBottom]);
+
+        rafIdRef.current = requestAnimationFrame(() => {
+          const container = containerRef.current;
+          if (container) {
+            scrollToTargetOrBottom(
+              container,
+              targetElement,
+            );
+          }
+        });
+      }
+      // If AUTO_SCROLL_OFF, do nothing (no scroll)
+    },
+    [autoScrollState, scrollToTargetOrBottom],
+  );
 
   /**
    * Handle jump to latest button click
    */
-  const onJumpToLatest = useCallback(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  const onJumpToLatest = useCallback(
+    (targetElement?: HTMLElement) => {
+      const container = containerRef.current;
+      if (!container) return;
 
-    // Set state to AUTO_SCROLL_ON and scroll to bottom
-    setAutoScrollState('AUTO_SCROLL_ON');
-    scrollToBottom(container);
-  }, [scrollToBottom]);
+      // Set state to AUTO_SCROLL_ON and scroll to target or bottom
+      setAutoScrollState('AUTO_SCROLL_ON');
+      scrollToTargetOrBottom(container, targetElement);
+    },
+    [scrollToTargetOrBottom],
+  );
 
   /**
    * Get scroll height before rendering (for anchoring)
