@@ -1,4 +1,10 @@
-import { VizContent, VizFileId } from '@vizhub/viz-types';
+import {
+  VizContent,
+  VizFileId,
+  VizChat,
+  VizChatMessage,
+  VizChatId,
+} from '@vizhub/viz-types';
 
 // ItemId
 //   * A unique ID for an item in the sidebar.
@@ -215,3 +221,77 @@ export type VisualEditorConfigEntry =
       options: string[];
     }
   | { type: 'color'; property: string; label: string };
+
+// ============================================================================
+// AI Chat Streaming Types
+// ============================================================================
+
+// Streaming Events for Progressive AI Chat
+export type StreamingEvent =
+  | {
+      type: 'text_chunk';
+      content: string;
+      timestamp: number;
+    }
+  | {
+      type: 'file_start';
+      fileName: string;
+      timestamp: number;
+    }
+  | {
+      type: 'file_complete';
+      fileName: string;
+      beforeContent: string;
+      afterContent: string;
+      timestamp: number;
+    }
+  | {
+      type: 'status_update';
+      status: string;
+      timestamp: number;
+    };
+
+// Extended VizChat with streaming capabilities
+export interface ExtendedVizChat extends VizChat {
+  streamingEvents?: StreamingEvent[];
+  currentStatus?: string;
+  isStreaming?: boolean;
+}
+
+// Extended VizChatMessage with progressive rendering support
+export interface ExtendedVizChatMessage
+  extends VizChatMessage {
+  streamingEvents?: StreamingEvent[];
+  isProgressive?: boolean; // Flag to indicate this message uses progressive rendering
+  isComplete?: boolean; // Flag to indicate if streaming is complete
+}
+
+// Extended VizContent that uses our extended chat types
+export interface ExtendedVizContent
+  extends Omit<VizContent, 'chats'> {
+  chats?: { [chatId: VizChatId]: ExtendedVizChat };
+}
+
+// File diff data for individual files (not the combined diff)
+export interface IndividualFileDiff {
+  fileName: string;
+  beforeContent: string;
+  afterContent: string;
+  unifiedDiff?: string; // Generated on demand
+  timestamp: number;
+}
+
+// Streaming Chat Message Format (simplified)
+export interface StreamingChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  timestamp: number;
+
+  // For user messages
+  content?: string;
+
+  // For assistant messages (streaming)
+  events?: StreamingEvent[];
+  currentStatus?: string;
+  isComplete?: boolean;
+}

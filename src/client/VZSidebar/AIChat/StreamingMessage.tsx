@@ -1,35 +1,87 @@
+import React, { useMemo } from 'react';
+import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { memo } from 'react';
+import { StreamingEvent } from '../../../types.js';
+import { IndividualFileDiff } from './IndividualFileDiff';
+
+const DEBUG = false;
 
 interface StreamingMessageProps {
-  content: string;
-  status?: string;
+  id: string;
+  timestamp: number;
+  events: StreamingEvent[];
+  currentStatus?: string;
+  isComplete?: boolean;
+  isActive?: boolean; // Is this the currently streaming message?
+  children?: React.ReactNode;
 }
 
-const StreamingMessageComponent = ({
-  content,
-  status,
-}: StreamingMessageProps) => {
-  // Don't render if there's no content and no status
-  if (!content.trim()) {
-    return null;
-  }
+export const StreamingMessage: React.FC<
+  StreamingMessageProps
+> = ({
+  timestamp,
+  events,
+  // TODO remove unused props
+  currentStatus: _currentStatus,
+  isActive,
+  children,
+}) => {
+  DEBUG &&
+    console.log(
+      'StreamingMessage: Rendered with events:',
+      events,
+    );
+
+  // Memoize date formatting to avoid repeated computation
+  const formattedTime = useMemo(() => {
+    return timestampToDate(timestamp).toLocaleTimeString(
+      [],
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+      },
+    );
+  }, [timestamp]);
 
   return (
     <div className="ai-chat-message assistant streaming">
-      {status && (
-        <div className="ai-chat-status">{status}</div>
-      )}
       <div className="ai-chat-message-content">
-        <Markdown remarkPlugins={[remarkGfm]}>
-          {content}
-        </Markdown>
+        {/* Render events in order */}
+        {events.map((event, index) => {
+          switch (event.type) {
+            case 'text_chunk':
+              return (
+                <div
+                  key={`text-${index}`}
+                  className="text-chunk"
+                >
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {event.content}
+                  </Markdown>
+                </div>
+              );
+            case 'file_complete':
+              return (
+                <IndividualFileDiff
+                  key={`file-${event.fileName}-${index}`}
+                  fileName={event.fileName}
+                  beforeContent={event.beforeContent || ''}
+                  afterContent={event.afterContent || ''}
+                />
+              );
+            case 'file_start':
+              // File start events are now handled by centralized status logic in MessageList
+              return null;
+            default:
+              return null;
+          }
+        })}
+        {isActive && children}
+      </div>
+      <div className="ai-chat-message-time">
+        {formattedTime}
       </div>
     </div>
   );
 };
-
-export const StreamingMessage = memo(
-  StreamingMessageComponent,
-);

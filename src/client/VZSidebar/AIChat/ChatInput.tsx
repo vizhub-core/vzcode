@@ -18,7 +18,6 @@ interface ChatInputProps {
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
   onSendMessage: () => void;
-  isLoading: boolean;
   focused: boolean;
   aiChatMode: 'ask' | 'edit';
   setAIChatMode: (mode: 'ask' | 'edit') => void;
@@ -31,7 +30,6 @@ const ChatInputComponent = ({
   aiChatMessage,
   setAIChatMessage,
   onSendMessage,
-  isLoading,
   focused,
   aiChatMode,
   setAIChatMode,
@@ -141,7 +139,6 @@ const ChatInputComponent = ({
               value="ask"
               checked={aiChatMode === 'ask'}
               onChange={() => setAIChatMode('ask')}
-              disabled={isLoading}
             >
               💬 Ask
             </ToggleButton>
@@ -157,7 +154,6 @@ const ChatInputComponent = ({
               value="edit"
               checked={aiChatMode === 'edit'}
               onChange={() => setAIChatMode('edit')}
-              disabled={isLoading}
             >
               ✏️ Edit
             </ToggleButton>
@@ -183,7 +179,6 @@ const ChatInputComponent = ({
               : 'Ask me anything about your code...'
           }
           spellCheck="false"
-          disabled={isLoading}
           aria-label="Chat message input"
         />
         <div className="ai-chat-input-footer">
@@ -197,7 +192,6 @@ const ChatInputComponent = ({
               }
               size="sm"
               onClick={toggleSpeechRecognition}
-              disabled={isLoading}
               aria-label={
                 isSpeaking
                   ? 'Stop voice typing'
@@ -226,7 +220,7 @@ const ChatInputComponent = ({
                   : 'outline-secondary'
               }
               onClick={handleSendClick}
-              disabled={!aiChatMessage.trim() || isLoading}
+              disabled={!aiChatMessage.trim()}
               className="ai-chat-send-button"
               aria-label="Send message"
               title="Send message (Enter)"

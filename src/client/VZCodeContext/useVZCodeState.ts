@@ -27,6 +27,7 @@ import {
   VZCodeContextValue,
   VZCodeProviderProps,
 } from './types';
+import { enableMinimalEditFlow } from '../featureFlags';
 
 export const useVZCodeState = ({
   content,
@@ -280,7 +281,6 @@ export const useVZCodeState = ({
   // Use selectedChatId if available, otherwise use currentChatId for backward compatibility
   const activeChatId = selectedChatId || currentChatId;
   const currentChat = content?.chats?.[activeChatId];
-  const isLoading = currentChat?.aiStatus === 'generating';
 
   // Message history for up/down arrow navigation - using ShareDB document data
   const messageHistory = useMemo(() => {
@@ -371,8 +371,7 @@ export const useVZCodeState = ({
       if (
         !messageContent ||
         typeof messageContent !== 'string' ||
-        !messageContent.trim() ||
-        isLoading
+        !messageContent.trim()
       ) {
         return;
       }
@@ -473,12 +472,13 @@ export const useVZCodeState = ({
     },
     [
       aiChatMessage,
-      isLoading,
       aiChatEndpoint,
       aiChatOptions,
       activeChatId,
       aiChatMode,
       autoForkAndRetryAI,
+      DEBUG,
+      setAIErrorMessage,
     ],
   );
 
@@ -679,7 +679,6 @@ export const useVZCodeState = ({
 
     aiChatMessage,
     setAIChatMessage,
-    isLoading,
     currentChatId,
     selectedChatId,
     setSelectedChatId,
@@ -699,5 +698,8 @@ export const useVZCodeState = ({
 
     // Additional widgets that can be rendered in AI chat messages
     additionalWidgets,
+
+    // Feature flags
+    enableMinimalEditFlow,
   };
 };

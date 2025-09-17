@@ -46,7 +46,7 @@ export const useFileCRUD = ({
         openTab({ fileId, isTransient: false });
       }
     },
-    [submitOperation],
+    [submitOperation, openTab],
   );
 
   const createDirectory = useCallback(
@@ -86,6 +86,9 @@ export const useFileCRUD = ({
         },
       }));
 
+      if (!content) {
+        return;
+      }
       const oldName = content.files[fileId].name;
       const oldExtension = getFileExtension(oldName);
 
@@ -125,7 +128,7 @@ export const useFileCRUD = ({
         }
       }
     },
-    [submitOperation],
+    [submitOperation, content, editorCache],
   );
 
   // Renames a directory

@@ -138,7 +138,7 @@ export const useShareDB = ({
       // shareDBDoc.destroy();
       // docPresence.destroy();
     };
-  }, []);
+  }, [connection]);
 
   // True for "Saving..."
   // False for "Saved"

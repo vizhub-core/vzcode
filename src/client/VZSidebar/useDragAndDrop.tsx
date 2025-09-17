@@ -394,7 +394,12 @@ export const useDragAndDrop = () => {
         setIsProcessing(false);
       }
     },
-    [createFile],
+    [
+      createFile,
+      processEntry,
+      readFileAsText,
+      readImageAsBase64,
+    ],
   );
 
   return {

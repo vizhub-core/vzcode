@@ -1,53 +1,29 @@
-import fs from 'fs';
 import OpenAI from 'openai';
 import {
   parseMarkdownFiles,
   StreamingMarkdownParser,
 } from 'llm-code-format';
 import { mergeFileChanges } from 'editcodewithai';
-import { VizChatId, VizContent } from '@vizhub/viz-types';
+import { VizChatId } from '@vizhub/viz-types';
 import { generateRunId } from '@vizhub/viz-utils';
 import {
-  updateAIStatus,
-  createAIMessage,
-  updateAIMessageContent,
-  finalizeAIMessage,
-  ensureFileExists,
-  clearFileContent,
-  appendLineToFile,
   updateFiles,
   updateAIScratchpad,
+  createStreamingAIMessage,
+  addStreamingEvent,
+  updateStreamingStatus,
+  finalizeStreamingMessage,
 } from './chatOperations.js';
 import { diff } from '../../ot.js';
-import { ShareDBDoc } from '../../types.js';
+import {
+  ShareDBDoc,
+  ExtendedVizContent,
+} from '../../types.js';
 
 const DEBUG = false;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
-
-// Throttle the streaming updates, so that we don't
-// overwhelm the ShareDB server with too many updates.
-// It happened actually, before adding this.
-// MongoDB VizHub server got in fact overloaded with
-// too many updates from the AI streaming response, with
-// warning: "Replication Oplog Window has gone below 1 hour"
-const THROTTLE_INTERVAL_MS = 500;
-
-// Feature flag to enable/disable streaming editing.
-// * If `true`, the AI streaming response will be used to
-//   edit files in real-time by submitting ShareDB ops.
-// * If `false`, the updates to code files will be applied
-// only after the AI has finished generating the entire response.
-//
-// Current status: there's a tricky bug with the streaming
-// where the AI edits sometimes don't apply correctly in CodeMirror.
-// It seems that sometimes the op that clears the file content
-// is not applied correctly in the front end, leading to
-// a situation where the AI streaming edits are concatenated into the middle
-// of the file instead of replacing it.
-// See https://github.com/codemirror/codemirror.next/issues/1234
-const enableStreamingEditing = false;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -62,7 +38,7 @@ export const createLLMFunction = ({
   model,
   aiRequestOptions,
 }: {
-  shareDBDoc: ShareDBDoc<VizContent>;
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>;
   chatId: VizChatId;
   enableReasoningTokens?: boolean;
   model?: string;
@@ -83,70 +59,67 @@ export const createLLMFunction = ({
 
     let fullContent = '';
     let generationId = '';
-    let currentEditingFileId = null;
     let currentEditingFileName = null;
+    let accumulatedTextChunk = '';
+    let currentFileContent = '';
 
-    // Create initial AI message for streaming
-    const aiMessageId = createAIMessage(shareDBDoc, chatId);
+    // Create streaming AI message
+    createStreamingAIMessage(shareDBDoc, chatId);
 
-    // --- throttle wrapper ---
-    function makeThrottledUpdater() {
-      let lastCall = 0;
-      let latestContent = '';
-      let timer: NodeJS.Timeout | null = null;
+    // Set initial content generation status
+    updateStreamingStatus(
+      shareDBDoc,
+      chatId,
+      'Formulating a plan...',
+    );
 
-      function invoke() {
-        updateAIMessageContent(
-          shareDBDoc,
-          chatId,
-          aiMessageId,
-          latestContent,
-        );
-        lastCall = Date.now();
+    // Helper to get original file content
+    const getOriginalFileContent = (
+      fileName: string,
+    ): string => {
+      const files = shareDBDoc.data.files;
+      for (const file of Object.values(files)) {
+        if ((file as any).name === fileName) {
+          return (file as any).text || '';
+        }
       }
+      return '';
+    };
 
-      const fn = (content: string) => {
-        latestContent = content;
-        const now = Date.now();
-
-        if (now - lastCall >= THROTTLE_INTERVAL_MS) {
-          // safe to call immediately
-          invoke();
-        } else if (!timer) {
-          // schedule for later
-          timer = setTimeout(
-            () => {
-              timer = null;
-              invoke();
-            },
-            THROTTLE_INTERVAL_MS - (now - lastCall),
+    // Helper to emit text chunk when accumulated
+    const emitTextChunk = async () => {
+      if (accumulatedTextChunk.trim()) {
+        DEBUG &&
+          console.log(
+            'LLMStreaming: Emitting text chunk:',
+            accumulatedTextChunk.substring(0, 100) + '...',
           );
-        }
-      };
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'text_chunk',
+          content: accumulatedTextChunk,
+          timestamp: Date.now(),
+        });
+        accumulatedTextChunk = '';
+      }
+    };
 
-      // expose a flush() helper to force an immediate write
-      fn.flush = () => {
-        if (timer) {
-          clearTimeout(timer);
-          timer = null;
-        }
-        invoke();
-      };
-
-      return fn;
-    }
-
-    const throttledUpdateAIMessageContent =
-      makeThrottledUpdater();
-
-    // Function to report file edited
-    // This is called when the AI has finished editing a file
-    // and we want to update the message content with the file name.
-    const reportFileEdited = () => {
-      if (currentEditingFileName) {
-        fullContent += ` * Edited ${currentEditingFileName}\n`;
-        throttledUpdateAIMessageContent(fullContent);
-        currentEditingFileName = null;
+    // Helper to complete file editing
+    const completeFileEditing = async (
+      fileName: string,
+    ) => {
+      if (fileName && currentFileContent) {
+        DEBUG &&
+          console.log(
+            `LLMStreaming: Completing file editing for ${fileName}`,
+          );
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'file_complete',
+          fileName,
+          beforeContent: getOriginalFileContent(fileName),
+          afterContent: currentFileContent,
+          timestamp: Date.now(),
+        });
+        currentFileContent = '';
       }
     };
 
@@ -158,51 +131,57 @@ export const createLLMFunction = ({
       ) => {
         DEBUG &&
           console.log(
-            `File changed to: ${fileName} (${format})`,
+            `LLMStreaming: File changed to: ${fileName} (${format})`,
           );
 
-        // Find existing file or create new one
-        currentEditingFileId = ensureFileExists(
-          shareDBDoc,
-          fileName,
-        );
+        // Emit any accumulated text chunk first
+        await emitTextChunk();
 
-        reportFileEdited();
+        // Complete previous file if any
+        if (currentEditingFileName) {
+          await completeFileEditing(currentEditingFileName);
+        }
+
+        // Start new file
         currentEditingFileName = fileName;
+        currentFileContent = '';
 
-        // Clear the file content to start fresh
-        // (AI will regenerate the entire file content)
-        clearFileContent(shareDBDoc, currentEditingFileId);
+        // Emit file start event
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'file_start',
+          fileName,
+          timestamp: Date.now(),
+        });
 
-        // Update AI status
-        updateAIStatus(
+        // Update status
+        updateStreamingStatus(
           shareDBDoc,
           chatId,
-          'Editing ' + fileName,
+          `Editing ${fileName}...`,
         );
       },
       onCodeLine: async (line: string) => {
         DEBUG && console.log(`Code line: ${line}`);
-
-        // If streaming is enabled, we apply the line immediately
-        if (currentEditingFileId) {
-          // Apply OT operation for this line immediately
-          appendLineToFile(
-            shareDBDoc,
-            currentEditingFileId,
-            line,
-          );
-        }
+        // Accumulate code content for the current file
+        currentFileContent += line + '\n';
       },
       onNonCodeLine: async (line: string) => {
-        // We want to report a file edited only if the line is not empty,
-        // because sometimes the LLMs leave a newline between the file name
-        // declaration and th
+        DEBUG && console.log(`Non-code line: ${line}`);
+        // Accumulate non-code content as text chunk
         if (line.trim() !== '') {
-          reportFileEdited();
+          accumulatedTextChunk += line + '\n';
+
+          // Update status for subsequent non-code chunks
+          if (firstNonCodeChunkProcessed) {
+            updateStreamingStatus(
+              shareDBDoc,
+              chatId,
+              'Describing changes...',
+            );
+          } else {
+            firstNonCodeChunkProcessed = true;
+          }
         }
-        fullContent += line + '\n';
-        throttledUpdateAIMessageContent(fullContent);
       },
     };
 
@@ -240,6 +219,7 @@ export const createLLMFunction = ({
 
     let reasoningStarted = false;
     let contentStarted = false;
+    let firstNonCodeChunkProcessed = false;
 
     for await (const chunk of stream) {
       if (slowMode) {
@@ -253,7 +233,11 @@ export const createLLMFunction = ({
         // Handle reasoning tokens (thinking) - only if enabled
         if (!reasoningStarted) {
           reasoningStarted = true;
-          updateAIStatus(shareDBDoc, chatId, 'Thinking...');
+          updateStreamingStatus(
+            shareDBDoc,
+            chatId,
+            'Thinking...',
+          );
         }
         reasoningContent += delta.reasoning;
         updateAIScratchpad(
@@ -263,26 +247,25 @@ export const createLLMFunction = ({
         );
       } else if (delta?.content) {
         // Handle regular content tokens
-        if (reasoningStarted && !contentStarted) {
-          // Clear reasoning when content starts
+        if (!contentStarted) {
           contentStarted = true;
-          updateAIScratchpad(shareDBDoc, chatId, '');
-          updateAIStatus(
-            shareDBDoc,
-            chatId,
-            'Generating response...',
-          );
+          if (reasoningStarted) {
+            // Clear reasoning when content starts
+            updateAIScratchpad(shareDBDoc, chatId, '');
+          }
+          // // Set initial content generation status
+          // updateStreamingStatus(
+          //   shareDBDoc,
+          //   chatId,
+          //   'Formulating a plan...',
+          // );
         }
 
         const chunkContent = delta.content;
         chunks.push(chunkContent);
 
-        if (enableStreamingEditing) {
-          await parser.processChunk(chunkContent);
-        } else {
-          fullContent += chunkContent;
-          throttledUpdateAIMessageContent(fullContent);
-        }
+        await parser.processChunk(chunkContent);
+        fullContent += chunkContent;
       } else if (chunk.usage) {
         // Handle usage information
         DEBUG && console.log('Usage:', chunk.usage);
@@ -293,30 +276,26 @@ export const createLLMFunction = ({
       }
     }
     await parser.flushRemaining();
-    reportFileEdited();
 
-    // Final cleanup - clear scratchpad and set final status
-    updateAIScratchpad(shareDBDoc, chatId, '');
-    updateAIStatus(shareDBDoc, chatId, 'Done editing.');
-    throttledUpdateAIMessageContent(fullContent);
+    // Emit any remaining text chunk
+    await emitTextChunk();
 
-    // Flush to ensure the final content is written immediately
-    throttledUpdateAIMessageContent.flush();
-
-    // Finalize the AI message by clearing temporary fields
-    finalizeAIMessage(shareDBDoc, chatId);
-
-    // If streaming editing is not enabled, we need to
-    // apply all the edits at once
-    if (!enableStreamingEditing) {
-      updateFiles(
-        shareDBDoc,
-        mergeFileChanges(
-          shareDBDoc.data.files,
-          parseMarkdownFiles(fullContent, 'bold').files,
-        ),
-      );
+    // Complete final file if any
+    if (currentEditingFileName) {
+      await completeFileEditing(currentEditingFileName);
     }
+
+    // Apply all the edits at once
+    updateFiles(
+      shareDBDoc,
+      mergeFileChanges(
+        shareDBDoc.data.files,
+        parseMarkdownFiles(fullContent, 'bold').files,
+      ),
+    );
+
+    // Finalize streaming message
+    await finalizeStreamingMessage(shareDBDoc, chatId);
 
     // Generate a new runId to trigger a run when AI finishes editing
     // This will trigger a re-run without hot reloading
@@ -341,16 +320,16 @@ export const createLLMFunction = ({
     });
 
     // Write chunks file for debugging
-    if (DEBUG) {
-      const chunksFileJSONpath = `./ai-chunks-${chatId}.json`;
-      fs.writeFileSync(
-        chunksFileJSONpath,
-        JSON.stringify(chunks, null, 2),
-      );
-      console.log(
-        `AI chunks written to ${chunksFileJSONpath}`,
-      );
-    }
+    // if (DEBUG) {
+    //   const chunksFileJSONpath = `./ai-chunks-${chatId}.json`;
+    //   fs.writeFileSync(
+    //     chunksFileJSONpath,
+    //     JSON.stringify(chunks, null, 2),
+    //   );
+    //   console.log(
+    //     `AI chunks written to ${chunksFileJSONpath}`,
+    //   );
+    // }
 
     return {
       content: fullContent,

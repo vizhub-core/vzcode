@@ -1,11 +1,14 @@
 import { dateToTimestamp } from '@vizhub/viz-utils';
 import { randomId } from '../../randomId.js';
-import { ShareDBDoc } from '../../types.js';
+import {
+  ShareDBDoc,
+  StreamingEvent,
+  ExtendedVizContent,
+} from '../../types.js';
 import { diff } from '../../ot.js';
 import {
   VizChatId,
   VizContent,
-  VizFileId,
   VizFiles,
 } from '@vizhub/viz-types';
 
@@ -80,6 +83,8 @@ export const addUserMessage = (
   return userMessage;
 };
 
+const DEBUG = false;
+
 /**
  * Updates AI status in the chat
  */
@@ -88,6 +93,11 @@ export const updateAIStatus = (
   chatId: VizChatId,
   status: string,
 ) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: updateAIStatus called with status: "${status}" for chatId: ${chatId}`,
+    );
+
   const op = diff(shareDBDoc.data, {
     ...shareDBDoc.data,
     chats: {
@@ -98,7 +108,17 @@ export const updateAIStatus = (
       },
     },
   });
+
+  DEBUG &&
+    console.log(
+      `ChatOperations: Submitting operation for status update:`,
+      op,
+    );
   shareDBDoc.submitOp(op);
+  DEBUG &&
+    console.log(
+      `ChatOperations: Status update operation submitted successfully`,
+    );
 };
 
 /**
@@ -405,69 +425,230 @@ export const createNewFile = (
   return newFileId;
 };
 
-/**
- * Ensures a file exists, creating it if necessary
- */
-export const ensureFileExists = (shareDBDoc, fileName) => {
-  let fileId = resolveFileId(fileName, shareDBDoc);
-
-  if (!fileId) {
-    // File doesn't exist, create it
-    fileId = createNewFile(shareDBDoc, fileName);
-  }
-
-  return fileId;
-};
+// ============================================================================
+// Streaming Chat Operations
+// ============================================================================
 
 /**
- * Clears the content of a file
+ * Creates a streaming AI message with events array
  */
-export const clearFileContent = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  fileId: VizFileId,
+export const createStreamingAIMessage = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
 ) => {
-  const currentFile = shareDBDoc.data.files[fileId];
-
-  if (currentFile && currentFile.text) {
-    // Clear the file content
-    const newState = {
-      ...shareDBDoc.data,
-      files: {
-        ...shareDBDoc.data.files,
-        [fileId]: {
-          ...currentFile,
-          text: '',
-        },
-      },
-    };
-
-    const op = diff(shareDBDoc.data, newState);
-    shareDBDoc.submitOp(op);
-  }
-};
-
-/**
- * Appends a line to a file using OT operations
- */
-export const appendLineToFile = (
-  shareDBDoc: ShareDBDoc<VizContent>,
-  fileId: VizFileId,
-  line: string,
-) => {
-  const currentFile = shareDBDoc.data.files[fileId];
-  const currentContent = currentFile?.text || '';
-  const newContent = currentContent + line + '\n';
-
-  const newDocState = {
-    ...shareDBDoc.data,
-    files: {
-      ...shareDBDoc.data.files,
-      [fileId]: {
-        ...currentFile,
-        text: newContent,
-      },
-    },
+  const aiMessage = {
+    id: `assistant-${Date.now()}`,
+    role: 'assistant',
+    content: '',
+    timestamp: dateToTimestamp(new Date()),
+    streamingEvents: [],
+    isProgressive: true,
   };
 
-  shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
+  const messageOp = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        messages: [
+          ...shareDBDoc.data.chats[chatId].messages,
+          aiMessage,
+        ],
+        updatedAt: dateToTimestamp(new Date()),
+        isStreaming: true,
+      },
+    },
+  });
+  shareDBDoc.submitOp(messageOp);
+
+  return aiMessage.id;
 };
+
+/**
+ * Adds a streaming event to the most recent AI message
+ */
+export const addStreamingEvent = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  event: StreamingEvent,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Adding streaming event:`,
+      event,
+    );
+
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = [...chat.messages];
+  const lastMessageIndex = messages.length - 1;
+
+  if (
+    lastMessageIndex >= 0 &&
+    messages[lastMessageIndex].role === 'assistant'
+  ) {
+    const lastMessage = messages[lastMessageIndex] as any;
+    const updatedEvents = [
+      ...(lastMessage.streamingEvents || []),
+      event,
+    ];
+
+    messages[lastMessageIndex] = {
+      ...lastMessage,
+      streamingEvents: updatedEvents,
+    };
+
+    const messageOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [chatId]: {
+          ...chat,
+          messages,
+          updatedAt: dateToTimestamp(new Date()),
+        },
+      },
+    });
+    shareDBDoc.submitOp(messageOp);
+  }
+};
+
+/**
+ * Updates streaming status for a chat
+ */
+export const updateStreamingStatus = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  status: string,
+  isStreaming: boolean = true,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Updating streaming status: "${status}"`,
+    );
+
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        currentStatus: status,
+        isStreaming,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
+ * Finalizes streaming message and clears streaming state
+ */
+export const finalizeStreamingMessage = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Finalizing streaming message`,
+    );
+
+  const chat = shareDBDoc.data.chats[chatId];
+  const messages = [...chat.messages];
+  const lastMessageIndex = messages.length - 1;
+
+  if (
+    lastMessageIndex >= 0 &&
+    messages[lastMessageIndex].role === 'assistant'
+  ) {
+    const lastMessage = messages[lastMessageIndex] as any;
+
+    messages[lastMessageIndex] = {
+      ...lastMessage,
+      isComplete: true,
+    };
+
+    const messageOp = diff(shareDBDoc.data, {
+      ...shareDBDoc.data,
+      chats: {
+        ...shareDBDoc.data.chats,
+        [chatId]: {
+          ...chat,
+          messages,
+          currentStatus: 'Done',
+          isStreaming: false,
+          updatedAt: dateToTimestamp(new Date()),
+        },
+      },
+    });
+    shareDBDoc.submitOp(messageOp);
+  }
+};
+
+// /**
+//  * Ensures a file exists, creating it if necessary
+//  */
+// export const ensureFileExists = (shareDBDoc, fileName) => {
+//   let fileId = resolveFileId(fileName, shareDBDoc);
+
+//   if (!fileId) {
+//     // File doesn't exist, create it
+//     fileId = createNewFile(shareDBDoc, fileName);
+//   }
+
+//   return fileId;
+// };
+
+// /**
+//  * Clears the content of a file
+//  */
+// export const clearFileContent = (
+//   shareDBDoc: ShareDBDoc<VizContent>,
+//   fileId: VizFileId,
+// ) => {
+//   const currentFile = shareDBDoc.data.files[fileId];
+
+//   if (currentFile && currentFile.text) {
+//     // Clear the file content
+//     const newState = {
+//       ...shareDBDoc.data,
+//       files: {
+//         ...shareDBDoc.data.files,
+//         [fileId]: {
+//           ...currentFile,
+//           text: '',
+//         },
+//       },
+//     };
+
+//     const op = diff(shareDBDoc.data, newState);
+//     shareDBDoc.submitOp(op);
+//   }
+// };
+
+// /**
+//  * Appends a line to a file using OT operations
+//  */
+// export const appendLineToFile = (
+//   shareDBDoc: ShareDBDoc<VizContent>,
+//   fileId: VizFileId,
+//   line: string,
+// ) => {
+//   const currentFile = shareDBDoc.data.files[fileId];
+//   const currentContent = currentFile?.text || '';
+//   const newContent = currentContent + line + '\n';
+
+//   const newDocState = {
+//     ...shareDBDoc.data,
+//     files: {
+//       ...shareDBDoc.data.files,
+//       [fileId]: {
+//         ...currentFile,
+//         text: newContent,
+//       },
+//     },
+//   };
+
+//   shareDBDoc.submitOp(diff(shareDBDoc.data, newDocState));
+// };

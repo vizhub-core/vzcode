@@ -6,20 +6,25 @@ import {
   useState,
 } from 'react';
 import { Message } from './Message';
+import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
+import { AIEditingStatusIndicator } from './FileEditingIndicator';
 import { VizChatMessage } from '@vizhub/viz-types';
+import { ExtendedVizChatMessage } from '../../../types.js';
 
 const MessageListComponent = ({
   messages,
   isLoading,
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
+  currentStatus, // Add current status prop
 }: {
   messages: VizChatMessage[];
   isLoading: boolean;
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
+  currentStatus?: string; // Add current status to the type
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -152,6 +157,56 @@ const MessageListComponent = ({
     aiScratchpad && aiScratchpad.trim(),
   );
 
+  // Determine the single, most relevant status to display with priority:
+  // 1. Active file editing status from streaming events
+  // 2. General AI status from currentStatus
+  const getConsolidatedStatus = () => {
+    // Check if there's an active streaming message with file editing
+    if (lastMessage && lastMessage.role === 'assistant') {
+      const extendedMsg =
+        lastMessage as ExtendedVizChatMessage;
+      if (
+        extendedMsg.streamingEvents &&
+        extendedMsg.streamingEvents.length > 0
+      ) {
+        // Look for active file editing (file_start without corresponding file_complete)
+        const fileStates = new Map<string, boolean>();
+
+        extendedMsg.streamingEvents.forEach((event) => {
+          if (event.type === 'file_start') {
+            fileStates.set(event.fileName, false); // Mark as editing
+          } else if (event.type === 'file_complete') {
+            fileStates.set(event.fileName, true); // Mark as complete
+          }
+        });
+
+        // Find the first file that's still being edited
+        for (const [fileName, isComplete] of fileStates) {
+          if (!isComplete) {
+            return {
+              status: `Editing ${fileName}...`,
+              fileName,
+            };
+          }
+        }
+      }
+    }
+
+    // Fall back to general AI status if no active file editing
+    if (currentStatus) {
+      return { status: currentStatus };
+    }
+
+    return null;
+  };
+
+  const consolidatedStatus = getConsolidatedStatus();
+
+  // Show consolidated status indicator when there's a status to display
+  const showConsolidatedStatusIndicator = Boolean(
+    consolidatedStatus,
+  );
+
   // Find the most recent assistant message index
   const lastAssistantMessageIndex = messages
     .map((m, i) => (m.role === 'assistant' ? i : -1))
@@ -165,11 +220,53 @@ const MessageListComponent = ({
       onScroll={handleScroll}
     >
       {messages.map((msg, index) => {
+        // Cast to extended message to check for streaming events
+        const extendedMsg = msg as ExtendedVizChatMessage;
+
+        // Check if this is a streaming message
+        const isStreamingMessage =
+          !!extendedMsg.isProgressive;
+
         // Only show additionalWidgets for the most recent assistant message
         const showAdditionalWidgets =
           msg.role === 'assistant' &&
           index === lastAssistantMessageIndex;
 
+        // Use StreamingMessage for assistant messages with streaming events
+        if (
+          msg.role === 'assistant' &&
+          isStreamingMessage
+        ) {
+          return (
+            <StreamingMessage
+              key={msg.id}
+              id={msg.id}
+              timestamp={msg.timestamp}
+              events={extendedMsg.streamingEvents || []}
+              currentStatus={currentStatus}
+              isComplete={extendedMsg.isComplete}
+              isActive={index === lastAssistantMessageIndex}
+            >
+              {showThinkingScratchpad && (
+                <ThinkingScratchpad
+                  content={aiScratchpad || ''}
+                  isVisible={showThinkingScratchpad}
+                />
+              )}
+
+              {showConsolidatedStatusIndicator && (
+                <AIEditingStatusIndicator
+                  status={consolidatedStatus?.status || ''}
+                  fileName={consolidatedStatus?.fileName}
+                />
+              )}
+
+              {showTypingIndicator && <TypingIndicator />}
+            </StreamingMessage>
+          );
+        }
+
+        // Use regular Message component for user messages and non-streaming assistant messages
         return (
           <Message
             key={msg.id}
@@ -184,14 +281,6 @@ const MessageListComponent = ({
         );
       })}
 
-      {showThinkingScratchpad && (
-        <ThinkingScratchpad
-          content={aiScratchpad || ''}
-          isVisible={showThinkingScratchpad}
-        />
-      )}
-
-      {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );

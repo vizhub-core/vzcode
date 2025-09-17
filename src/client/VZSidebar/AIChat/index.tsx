@@ -7,6 +7,7 @@ import {
 import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
+import { ExtendedVizChat } from '../../../types.js';
 import './styles.scss';
 
 const DEBUG = false;
@@ -50,13 +51,11 @@ export const AIChat = () => {
     content,
     aiChatMode,
     aiChatMessage,
-    isLoading,
     currentChatId,
     selectedChatId,
     setSelectedChatId,
     aiErrorMessage,
     setAIChatMode,
-    clearStoredAIPrompt,
     getStoredAIPrompt,
     setAIChatMessage,
     handleSendMessage,
@@ -64,6 +63,7 @@ export const AIChat = () => {
     navigateMessageHistoryUp,
     navigateMessageHistoryDown,
     resetMessageHistoryNavigation,
+    enableMinimalEditFlow,
   } = useContext(VZCodeContext);
 
   // Get the active chat ID and chat data
@@ -72,9 +72,23 @@ export const AIChat = () => {
   const currentChat = activeChatId
     ? content?.chats?.[activeChatId]
     : null;
-  const rawMessages = currentChat?.messages || [];
+  const rawMessages = useMemo(
+    () => currentChat?.messages || [],
+    [currentChat?.messages],
+  );
   const aiStatus = currentChat?.aiStatus;
   const aiScratchpad = currentChat?.aiScratchpad;
+  const currentStatus = (currentChat as ExtendedVizChat)
+    ?.currentStatus;
+
+  // Debug logging for AI status
+  DEBUG && console.log('AIChat: currentChat:', currentChat);
+  DEBUG && console.log('AIChat: aiStatus:', aiStatus);
+  DEBUG &&
+    console.log(
+      'AIChat: enableMinimalEditFlow:',
+      enableMinimalEditFlow,
+    );
 
   // Transform messages to ensure they have required id field - memoized to avoid recreation
   const messages = useMemo(
@@ -198,7 +212,7 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Explain how this works"
+                          &quot;Explain how this works&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -208,8 +222,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "How could I change it so that the
-                          circles are bigger?"
+                          &quot;How could I change it so
+                          that the circles are bigger?&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -219,7 +233,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "What does this function do?"
+                          &quot;What does this function
+                          do?&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -229,8 +244,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "How can I make this more
-                          accessible?"
+                          &quot;How can I make this more
+                          accessible?&quot;
                         </button>
                       </div>
                     </>
@@ -246,7 +261,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Change the circles to squares"
+                          &quot;Change the circles to
+                          squares&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -256,8 +272,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Add a button that toggles the
-                          animation"
+                          &quot;Add a button that toggles
+                          the animation&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -267,8 +283,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Fix the CSS so the layout is
-                          responsive"
+                          &quot;Fix the CSS so the layout is
+                          responsive&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -278,8 +294,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Refactor this function to use
-                          async/await"
+                          &quot;Refactor this function to
+                          use async/await&quot;
                         </button>
                       </div>
                     </>
@@ -297,9 +313,10 @@ export const AIChat = () => {
           ) : (
             <MessageList
               messages={messages}
-              isLoading={isLoading}
+              isLoading={false}
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
+              currentStatus={currentStatus}
             />
           )}
           {aiErrorMessage && (
@@ -328,7 +345,6 @@ export const AIChat = () => {
           aiChatMessage={aiChatMessage}
           setAIChatMessage={setAIChatMessage}
           onSendMessage={handleSendMessageWithSelection}
-          isLoading={isLoading}
           focused={aiChatFocused}
           aiChatMode={aiChatMode}
           setAIChatMode={setAIChatMode}

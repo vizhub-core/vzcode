@@ -170,7 +170,6 @@ export type VZCodeContextValue = {
   setVoiceChatModalOpen: (state: boolean) => void;
   aiChatMessage: string;
   setAIChatMessage: (message: string) => void;
-  isLoading: boolean;
   currentChatId: string;
   selectedChatId: string | null;
   setSelectedChatId: (chatId: string | null) => void;
@@ -207,6 +206,9 @@ export type VZCodeContextValue = {
       options?: Record<string, string>,
     ) => void;
   }) => React.ReactNode;
+
+  // Feature flags
+  enableMinimalEditFlow: boolean;
 };
 
 export interface VZCodeProviderProps {

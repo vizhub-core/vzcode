@@ -16,11 +16,7 @@ export const viz = (container, state, setState) => {
   // Set up postMessage event listener if not already set
   if (!state.eventListenerAttached) {
     window.addEventListener('message', (event) => {
-      // Verify the message contains config data
       if (event.data && typeof event.data === 'object') {
-
-
-        // Update the config with the received data
         setState((state) => ({
           ...state,
           config: {
@@ -31,7 +27,6 @@ export const viz = (container, state, setState) => {
       }
     });
 
-    // Mark that we've attached the event listener to avoid duplicates
     setState((prevState) => ({
       ...prevState,
       eventListenerAttached: true,
@@ -73,11 +68,21 @@ export const viz = (container, state, setState) => {
   });
 
   if (data) {
-    // Transform string properties in config to accessor functions
+    // Safely transform config properties to accessor functions
     const configWithAccessors = {
       ...config,
-      xValue: (d) => d[config.xValue],
-      yValue: (d) => d[config.yValue],
+      xValue: config.xValue
+        ? (d) => d[config.xValue]
+        : () => 0,
+      yValue: config.yValue
+        ? (d) => d[config.yValue]
+        : () => 0,
+      sizeValue: config.sizeValue
+        ? (d) => d[config.sizeValue]
+        : null,
+      pointRadiusValue: config.pointRadiusValue
+        ? (d) => d[config.pointRadiusValue]
+        : null,
     };
 
     scatterPlot(svg, {

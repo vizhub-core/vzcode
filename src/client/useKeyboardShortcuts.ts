@@ -451,5 +451,12 @@ export const useKeyboardShortcuts = ({
     activeFileId,
     setActiveFileLeft,
     setActiveFileRight,
+    activePaneId,
+    codeEditorRef,
+    editorCache,
+    runCodeRef,
+    runPrettierRef,
+    sidebarRef,
+    toggleSearchFocused,
   ]);
 };

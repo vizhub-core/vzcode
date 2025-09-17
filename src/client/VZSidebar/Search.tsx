@@ -98,7 +98,7 @@ export const Search = () => {
     } else {
       setIsMounted(true);
     }
-  }, [pattern]);
+  }, [pattern, isMounted, setSearchResults, shareDBDoc]);
 
   const flattenResult = useCallback(
     (fileId: string, file: SearchFile) => {
@@ -111,19 +111,26 @@ export const Search = () => {
           : 'open',
       );
     },
-    [focusedIndex, focusedChildIndex],
+    [
+      setSearchFileVisibility,
+      shareDBDoc,
+      focusedChildIndex,
+    ],
   );
 
-  const closeResult = useCallback((fileId: VizFileId) => {
-    setSearchFileVisibility(shareDBDoc, fileId, 'closed');
-  }, []);
+  const closeResult = useCallback(
+    (fileId: VizFileId) => {
+      setSearchFileVisibility(shareDBDoc, fileId, 'closed');
+    },
+    [setSearchFileVisibility, shareDBDoc],
+  );
 
   const focusFileElement = useCallback(
     (fileId: VizFileId, index: number) => {
       setActiveFileId(fileId);
       setSearchFocusedIndex(index, null);
     },
-    [],
+    [setActiveFileId, setSearchFocusedIndex],
   );
 
   const handleKeyDown = (event) => {

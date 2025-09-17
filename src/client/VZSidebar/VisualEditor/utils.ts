@@ -31,7 +31,7 @@ export const hclOk = (
   try {
     const color = hcl(h, c, l);
     return color.displayable();
-  } catch (e) {
+  } catch {
     return false;
   }
 };
