@@ -20,7 +20,7 @@ import {
   ExtendedVizContent,
 } from '../../types.js';
 
-const DEBUG = true;
+const DEBUG = false;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
