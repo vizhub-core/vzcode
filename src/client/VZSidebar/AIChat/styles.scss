@@ -10,6 +10,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .ai-chat-messages-container {
@@ -19,6 +20,21 @@
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--vh-color-neutral-02);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--vh-color-neutral-04);
+    border-radius: 3px;
+  }
 }
 
 .ai-chat-input-fixed {
@@ -214,24 +230,8 @@
 
 .ai-chat-messages {
   flex: 1;
-  overflow-y: auto;
   margin-bottom: 10px;
   padding-right: 5px;
-  scroll-behavior: smooth;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--vh-color-neutral-02);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--vh-color-neutral-04);
-    border-radius: 3px;
-  }
 }
 
 .ai-chat-message {
@@ -633,6 +633,61 @@
       border-color: var(--vh-color-neutral-03);
       color: var(--vh-color-neutral-02);
       cursor: not-allowed;
+    }
+  }
+}
+
+// Jump to latest button styles
+.jump-to-latest-button {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px; // Position above the input area
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--vh-color-primary-01);
+  border: none;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--vh-color-primary-02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  &:focus {
+    outline: 2px solid var(--vh-color-primary-01);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.95);
+  }
+
+  .jump-to-latest-icon {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  // Respect prefers-reduced-motion
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: translateX(-50%);
+    }
+
+    &:active {
+      transform: translateX(-50%);
     }
   }
 }

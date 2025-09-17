@@ -156,10 +156,10 @@ export const CodeEditor = ({
     if (!editorCacheValue) return; // Guard against null editorCacheValue
     // if (openSplitPane) return;
 
+    const codeEditorEl = codeEditorRef.current;
+
     // Add the editor and apply the prior scroll position to the DOM.
-    codeEditorRef.current.appendChild(
-      editorCacheValue.editor.dom,
-    );
+    codeEditorEl.appendChild(editorCacheValue.editor.dom);
     editorCacheValue.editor.scrollDOM.scrollTo({
       top: editorCacheValue.scrollPosition ?? 0,
     });
@@ -169,13 +169,11 @@ export const CodeEditor = ({
       // This happens every time `activeFileId` changes.
       if (
         editorCacheValue &&
-        codeEditorRef.current?.contains(
-          editorCacheValue.editor.dom,
-        )
+        codeEditorEl?.contains(editorCacheValue.editor.dom)
       ) {
         editorCacheValue.scrollPosition =
           editorCacheValue.editor.scrollDOM.scrollTop;
-        codeEditorRef.current.removeChild(
+        codeEditorEl.removeChild(
           editorCacheValue.editor.dom,
         );
       }

@@ -308,7 +308,10 @@ export const VisualEditor = () => {
   );
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
-    configData?.visualEditorWidgets ?? [];
+    useMemo(
+      () => configData?.visualEditorWidgets ?? [],
+      [configData],
+    );
 
   // Sync local values with config data when it changes (including remote updates)
   useEffect(() => {
