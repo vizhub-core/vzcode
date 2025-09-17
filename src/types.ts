@@ -249,6 +249,15 @@ export type StreamingEvent =
       type: 'status_update';
       status: string;
       timestamp: number;
+    }
+  | {
+      type: 'stopped';
+      timestamp: number;
+    }
+  | {
+      type: 'error';
+      message: string;
+      timestamp: number;
     };
 
 // Extended VizChat with streaming capabilities
@@ -256,6 +265,7 @@ export interface ExtendedVizChat extends VizChat {
   streamingEvents?: StreamingEvent[];
   currentStatus?: string;
   isStreaming?: boolean;
+  stopRequested?: boolean;
 }
 
 // Extended VizChatMessage with progressive rendering support

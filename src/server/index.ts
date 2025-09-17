@@ -13,7 +13,7 @@ import { json1Presence } from '../ot.js';
 import { computeInitialDocument } from './computeInitialDocument.js';
 import { handleAIAssist } from './handleAIAssist.js';
 import { handleAICopilot } from './handleAICopilot.js';
-import { handleAIChatMessage } from './handleAIChatMessage.js';
+import { handleAIChatMessage, handleStopGeneration } from './handleAIChatMessage.js';
 import { isDirectory } from './isDirectory.js';
 import { createToken } from './livekit.js';
 import './setupEnv.js';
@@ -122,6 +122,15 @@ app.post(
   handleAIChatMessage({
     shareDBDoc,
     onCreditDeduction: undefined,
+  }),
+);
+
+// Handle AI Chat Stop requests.
+app.post(
+  '/ai-chat-stop',
+  bodyParser.json(),
+  handleStopGeneration({
+    shareDBDoc,
   }),
 );
 

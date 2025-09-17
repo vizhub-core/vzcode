@@ -179,6 +179,7 @@ export type VZCodeContextValue = {
     messageToSend?: string,
     options?: Record<string, string>,
   ) => void;
+  handleStopGeneration: (chatId: string) => void;
 
   // Message history navigation
   navigateMessageHistoryUp: () => void;

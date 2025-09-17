@@ -482,6 +482,29 @@ export const useVZCodeState = ({
     ],
   );
 
+  const handleStopGeneration = useCallback(
+    async (chatId: string) => {
+      try {
+        const response = await fetch('/ai-chat-stop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chatId,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to stop generation:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error stopping generation:', error);
+      }
+    },
+    [],
+  );
+
   // Config.json change detection and iframe notification
   // This logic was moved from VisualEditor.tsx to ensure it runs
   // even when the visual editor is not open, fixing cross-client propagation
@@ -685,6 +708,7 @@ export const useVZCodeState = ({
     aiErrorMessage,
     setAIErrorMessage,
     handleSendMessage,
+    handleStopGeneration,
 
     // Message history navigation
     navigateMessageHistoryUp,

@@ -19,11 +19,16 @@ import {
   ShareDBDoc,
   ExtendedVizContent,
 } from '../../types.js';
+import { registerController, deregisterController } from './generationControl.js';
+import { setStopRequested, isStopRequested } from './chatStopFlag.js';
 
 const DEBUG = false;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
+
+// Policy: false = discard partial edits on stop, true = apply partial edits
+const APPLY_PARTIAL_EDITS_ON_STOP = false;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -57,11 +62,18 @@ export const createLLMFunction = ({
       },
     });
 
+    // Reset any previous stop requests for this chat
+    setStopRequested(shareDBDoc, chatId, false);
+
+    const abortController = new AbortController();
+    registerController(chatId, abortController);
+
     let fullContent = '';
     let generationId = '';
     let currentEditingFileName = null;
     let accumulatedTextChunk = '';
     let currentFileContent = '';
+    let stopped = false;
 
     // Create streaming AI message
     createStreamingAIMessage(shareDBDoc, chatId);
@@ -202,6 +214,8 @@ export const createLLMFunction = ({
       messages: [{ role: 'user', content: fullPrompt }],
       usage: { include: true },
       stream: true,
+      // IMPORTANT: pass abort signal so we can stop immediately
+      signal: abortController.signal,
       ...aiRequestOptions,
     };
 
@@ -221,12 +235,20 @@ export const createLLMFunction = ({
     let contentStarted = false;
     let firstNonCodeChunkProcessed = false;
 
-    for await (const chunk of stream) {
-      if (slowMode) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, 500),
-        );
-      }
+    try {
+      for await (const chunk of stream) {
+        // Early out if UI requested stop (cooperative cancel)
+        if (isStopRequested(shareDBDoc, chatId)) {
+          stopped = true;
+          abortController.abort(); // ensure the SDK/network stops too
+          break;
+        }
+
+        if (slowMode) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 500),
+          );
+        }
       const delta = chunk.choices[0]?.delta as any; // Type assertion for OpenRouter-specific reasoning fields
 
       if (delta?.reasoning && enableReasoningTokens) {
@@ -275,24 +297,72 @@ export const createLLMFunction = ({
         generationId = chunk.id;
       }
     }
-    await parser.flushRemaining();
 
-    // Emit any remaining text chunk
-    await emitTextChunk();
+    // Flush any parser buffers if we didn't hard abort
+    if (!abortController.signal.aborted) {
+      await parser.flushRemaining();
+      await emitTextChunk();
+      if (currentEditingFileName) {
+        await completeFileEditing(currentEditingFileName);
+      }
+    }
+  } catch (err: any) {
+    // If stopped by user, OpenAI SDK throws an AbortError
+    if (err?.name === 'AbortError') {
+      stopped = true;
+    } else {
+      // Real error
+      updateStreamingStatus(shareDBDoc, chatId, 'Generation failed.');
+      await addStreamingEvent(shareDBDoc, chatId, {
+        type: 'error',
+        message: String(err?.message || err),
+        timestamp: Date.now(),
+      });
+      // Ensure controller cleanup
+      deregisterController(chatId);
+      setStopRequested(shareDBDoc, chatId, false);
+      // Do not apply edits; finalize message as failed
+      await finalizeStreamingMessage(shareDBDoc, chatId);
+      throw err;
+    }
+  } finally {
+    // Always cleanup controller
+    deregisterController(chatId);
+    setStopRequested(shareDBDoc, chatId, false);
+  }
 
-    // Complete final file if any
-    if (currentEditingFileName) {
-      await completeFileEditing(currentEditingFileName);
+  // If user stopped: decide policy (apply partial or discard)
+  if (stopped) {
+    updateStreamingStatus(shareDBDoc, chatId, 'Stopped by user.');
+    await addStreamingEvent(shareDBDoc, chatId, {
+      type: 'stopped',
+      timestamp: Date.now(),
+    });
+
+    if (APPLY_PARTIAL_EDITS_ON_STOP && fullContent.trim()) {
+      // (optional) apply partial changes — your call
+      updateFiles(
+        shareDBDoc,
+        mergeFileChanges(
+          shareDBDoc.data.files,
+          parseMarkdownFiles(fullContent, 'bold').files,
+        ),
+      );
     }
 
-    // Apply all the edits at once
-    updateFiles(
-      shareDBDoc,
-      mergeFileChanges(
-        shareDBDoc.data.files,
-        parseMarkdownFiles(fullContent, 'bold').files,
-      ),
-    );
+    await finalizeStreamingMessage(shareDBDoc, chatId);
+    return { content: fullContent, generationId };
+  }
+
+  // Normal completion: apply edits, finalize, kick runId
+  // Normal completion: apply edits, finalize, kick runId
+  updateFiles(
+    shareDBDoc,
+    mergeFileChanges(
+      shareDBDoc.data.files,
+      parseMarkdownFiles(fullContent, 'bold').files,
+    ),
+  );
 
     // Finalize streaming message
     await finalizeStreamingMessage(shareDBDoc, chatId);

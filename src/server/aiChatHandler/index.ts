@@ -16,6 +16,8 @@ import { ShareDBDoc } from '../../types.js';
 import { VizContent } from '@vizhub/viz-types';
 import { createSubmitOperation } from '../../submitOperation.js';
 import { getGenerationMetadata } from 'editcodewithai';
+import { stopGenerationNow } from './generationControl.js';
+import { setStopRequested } from './chatStopFlag.js';
 
 const DEBUG = false;
 
@@ -148,3 +150,39 @@ const processAIRequestAsync = async ({
     handleBackgroundError(shareDBDoc, chatId, error);
   }
 };
+
+export const handleStopGeneration =
+  ({
+    shareDBDoc,
+  }: {
+    shareDBDoc: ShareDBDoc<VizContent>;
+  }) =>
+  async (req: any, res: any) => {
+    const { chatId } = req.body;
+
+    if (DEBUG) {
+      console.log(
+        '[handleStopGeneration] chatId:',
+        chatId,
+      );
+    }
+
+    try {
+      // Validate that chatId is provided
+      if (!chatId) {
+        return res.status(400).json({ error: 'Missing chatId' });
+      }
+
+      // Set the stop flag in ShareDB
+      setStopRequested(shareDBDoc, chatId, true);
+      
+      // Abort the network request
+      stopGenerationNow(chatId);
+
+      // Return success
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Stop generation error:', error);
+      res.status(500).json({ error: 'Failed to stop generation' });
+    }
+  };
