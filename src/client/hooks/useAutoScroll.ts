@@ -11,6 +11,57 @@ import {
 type AutoScrollState = 'AUTO_SCROLL_ON' | 'AUTO_SCROLL_OFF';
 
 /**
+ * Check if the container is at the bottom with optional slack
+ */
+function isAtBottom(el: HTMLElement, slack = 2): boolean {
+  return (
+    el.scrollTop + el.clientHeight >=
+    el.scrollHeight - slack
+  );
+}
+
+/**
+ * Wait for scroll position to settle after programmatic scrolling
+ */
+function waitForScrollSettle(
+  el: HTMLElement,
+  {
+    epsilon = 1, // px change to consider "no movement"
+    stableFrames = 3, // frames in a row with no movement
+    maxWaitMs = 1000, // safety timeout
+  } = {},
+): Promise<void> {
+  return new Promise<void>((resolve) => {
+    let lastY = el.scrollTop;
+    let stable = 0;
+    let rafId = 0;
+    const start = performance.now();
+
+    const tick = () => {
+      const nowY = el.scrollTop;
+      const moved = Math.abs(nowY - lastY) > epsilon;
+      if (!moved) stable += 1;
+      else stable = 0;
+      lastY = nowY;
+
+      const timedOut =
+        performance.now() - start > maxWaitMs;
+      if (
+        (stable >= stableFrames && isAtBottom(el)) ||
+        timedOut
+      ) {
+        cancelAnimationFrame(rafId);
+        resolve();
+        return;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+  });
+}
+
+/**
  * Hook options for customizing behavior
  */
 interface UseAutoScrollOptions {
@@ -58,6 +109,7 @@ export const useAutoScroll = (
   const [showJumpButton, setShowJumpButton] =
     useState(false);
   const rafIdRef = useRef<number>();
+  const isProgrammaticScrollRef = useRef(false);
 
   /**
    * Check if the container is at the bottom
@@ -90,37 +142,12 @@ export const useAutoScroll = (
   }, [autoScrollState, isAtBottom]);
 
   /**
-   * Scroll the container to a target element or to the bottom
-   */
-  const scrollToTargetOrBottom = useCallback(
-    (
-      el: HTMLElement,
-      targetElement?: HTMLElement,
-    ): void => {
-      if (targetElement) {
-        // Scroll to a specific element within the container
-        const containerRect = el.getBoundingClientRect();
-        const targetRect =
-          targetElement.getBoundingClientRect();
-        const scrollTop =
-          targetRect.top - containerRect.top + el.scrollTop;
-
-        // We can add an offset if needed, e.g., for headers
-        const offset = 0;
-
-        el.scrollTop = scrollTop - offset;
-      } else {
-        // Scroll to the bottom of the container
-        el.scrollTop = el.scrollHeight;
-      }
-    },
-    [],
-  );
-
-  /**
    * Handle scroll events to detect user manual scrolling
    */
   const handleScroll = useCallback(() => {
+    // Ignore scroll events during programmatic scrolling
+    if (isProgrammaticScrollRef.current) return;
+
     console.log('handleScroll called');
     const container = containerRef.current;
     if (!container) return;
@@ -168,34 +195,90 @@ export const useAutoScroll = (
           cancelAnimationFrame(rafIdRef.current);
         }
 
-        rafIdRef.current = requestAnimationFrame(() => {
-          const container = containerRef.current;
-          if (container) {
-            scrollToTargetOrBottom(
-              container,
-              targetElement,
-            );
-          }
-        });
+        rafIdRef.current = requestAnimationFrame(
+          async () => {
+            const container = containerRef.current;
+            if (container) {
+              // Set flag to ignore scroll events during programmatic scroll
+              isProgrammaticScrollRef.current = true;
+
+              // Perform smooth scroll
+              if (targetElement) {
+                // Scroll to specific element
+                const containerRect =
+                  container.getBoundingClientRect();
+                const targetRect =
+                  targetElement.getBoundingClientRect();
+                const scrollTop =
+                  targetRect.top -
+                  containerRect.top +
+                  container.scrollTop;
+                container.scrollTo({
+                  top: scrollTop,
+                  behavior: 'smooth',
+                });
+              } else {
+                // Scroll to bottom
+                container.scrollTo({
+                  top: container.scrollHeight,
+                  behavior: 'smooth',
+                });
+              }
+
+              // Wait for scroll to settle before re-enabling scroll listener
+              await waitForScrollSettle(container);
+              isProgrammaticScrollRef.current = false;
+            }
+          },
+        );
       }
       // If AUTO_SCROLL_OFF, do nothing (no scroll)
     },
-    [autoScrollState, scrollToTargetOrBottom],
+    [autoScrollState],
   );
 
   /**
    * Handle jump to latest button click
    */
   const onJumpToLatest = useCallback(
-    (targetElement?: HTMLElement) => {
+    async (targetElement?: HTMLElement) => {
       const container = containerRef.current;
       if (!container) return;
 
-      // Set state to AUTO_SCROLL_ON and scroll to target or bottom
+      // Set flag to ignore scroll events during programmatic scroll
+      isProgrammaticScrollRef.current = true;
+
+      // Set state to AUTO_SCROLL_ON
       setAutoScrollState('AUTO_SCROLL_ON');
-      scrollToTargetOrBottom(container, targetElement);
+
+      // Perform smooth scroll
+      if (targetElement) {
+        // Scroll to specific element
+        const containerRect =
+          container.getBoundingClientRect();
+        const targetRect =
+          targetElement.getBoundingClientRect();
+        const scrollTop =
+          targetRect.top -
+          containerRect.top +
+          container.scrollTop;
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth',
+        });
+      } else {
+        // Scroll to bottom
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+
+      // Wait for scroll to settle before re-enabling scroll listener
+      await waitForScrollSettle(container);
+      isProgrammaticScrollRef.current = false;
     },
-    [scrollToTargetOrBottom],
+    [],
   );
 
   /**
