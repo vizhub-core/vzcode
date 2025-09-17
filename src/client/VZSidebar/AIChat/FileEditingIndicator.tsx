@@ -1,4 +1,3 @@
-import React from 'react';
 import { Spinner } from '../../AIAssist/Spinner';
 
 interface AIEditingStatusIndicatorProps {
@@ -66,14 +65,14 @@ export const AIEditingStatusIndicator: React.FC<
   const showSpinner = status !== 'Done';
 
   return (
-    <div className="ai-editing-status-indicator">
-      <div className="ai-editing-status-header">
+    <div className="file-editing-indicator">
+      <div className="file-editing-header">
         {showSpinner && (
-          <div className="ai-editing-status-icon">
+          <div className="file-editing-icon">
             <Spinner height={16} fadeIn={false} />
           </div>
         )}
-        <div className="ai-editing-status-text">
+        <div className="file-editing-text">
           {getStatusDisplay(status)}
         </div>
       </div>
