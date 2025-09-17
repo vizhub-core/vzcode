@@ -8,6 +8,8 @@ import { VZCodeContext } from '../../VZCodeContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { ExtendedVizChat } from '../../../types.js';
+import { useAutoScroll } from '../../hooks/useAutoScroll';
+import { JumpToLatestButton } from './JumpToLatestButton';
 import './styles.scss';
 
 const DEBUG = false;
@@ -65,6 +67,19 @@ export const AIChat = () => {
     resetMessageHistoryNavigation,
     enableMinimalEditFlow,
   } = useContext(VZCodeContext);
+
+  // Use the new simplified auto-scroll hook
+  const {
+    containerRef: messagesContainerRef,
+    showJumpButton,
+    onNewEvent,
+    onJumpToLatest,
+    beforeRender,
+    afterRender,
+  } = useAutoScroll({ threshold: 24 });
+
+  // TODO fix this - currently always false
+  console.log('showJumpButton:', showJumpButton);
 
   // Get the active chat ID and chat data
   // If selectedChatId is set, use it; otherwise, if no chat selected, don't default to currentChatId
@@ -180,7 +195,10 @@ export const AIChat = () => {
   return (
     <div className="ai-chat-container">
       <div className="ai-chat-content">
-        <div className="ai-chat-messages-container">
+        <div
+          className="ai-chat-messages-container"
+          ref={messagesContainerRef}
+        >
           {isEmptyState ? (
             <div className="ai-chat-empty">
               <div className="ai-chat-empty-icon">✨</div>
@@ -317,6 +335,10 @@ export const AIChat = () => {
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
               currentStatus={currentStatus}
+              onNewEvent={onNewEvent}
+              onJumpToLatest={onJumpToLatest}
+              beforeRender={beforeRender}
+              afterRender={afterRender}
             />
           )}
           {aiErrorMessage && (
@@ -338,6 +360,11 @@ export const AIChat = () => {
               </div>
             </div>
           )}
+          {/* Jump to Latest Button */}
+          <JumpToLatestButton
+            visible={showJumpButton}
+            onClick={onJumpToLatest}
+          />
         </div>
       </div>
       <div className="ai-chat-input-fixed">
