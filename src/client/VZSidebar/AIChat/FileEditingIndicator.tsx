@@ -80,15 +80,3 @@ export const AIEditingStatusIndicator: React.FC<
     </div>
   );
 };
-
-// Keep the old component for backward compatibility during transition
-export const FileEditingIndicator: React.FC<{
-  fileName: string;
-}> = ({ fileName }) => {
-  return (
-    <AIEditingStatusIndicator
-      status={`Editing ${fileName}...`}
-      fileName={fileName}
-    />
-  );
-};

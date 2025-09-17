@@ -4,10 +4,6 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { StreamingEvent } from '../../../types.js';
 import { IndividualFileDiff } from './IndividualFileDiff';
-import {
-  AIEditingStatusIndicator,
-  FileEditingIndicator,
-} from './FileEditingIndicator';
 
 const DEBUG = false;
 
@@ -22,7 +18,12 @@ interface StreamingMessageProps {
 
 export const StreamingMessage: React.FC<
   StreamingMessageProps
-> = ({ timestamp, events, currentStatus, isActive }) => {
+> = ({
+  timestamp,
+  events,
+  currentStatus: _currentStatus,
+  isActive: _isActive,
+}) => {
   DEBUG &&
     console.log(
       'StreamingMessage: Rendered with events:',
@@ -39,32 +40,6 @@ export const StreamingMessage: React.FC<
       },
     );
   }, [timestamp]);
-
-  // Track file states for rendering file editing indicators
-  const fileStates = useMemo(() => {
-    const files: Map<
-      string,
-      {
-        isComplete: boolean;
-        beforeContent?: string;
-        afterContent?: string;
-      }
-    > = new Map();
-
-    events.forEach((event) => {
-      if (event.type === 'file_start') {
-        files.set(event.fileName, { isComplete: false });
-      } else if (event.type === 'file_complete') {
-        files.set(event.fileName, {
-          isComplete: true,
-          beforeContent: event.beforeContent,
-          afterContent: event.afterContent,
-        });
-      }
-    });
-
-    return files;
-  }, [events]);
 
   return (
     <div className="ai-chat-message assistant streaming">
@@ -93,30 +68,12 @@ export const StreamingMessage: React.FC<
                 />
               );
             case 'file_start':
-              // Only show file editing indicator if the file is not yet complete
-              const fileState = fileStates.get(
-                event.fileName,
-              );
-              if (!fileState?.isComplete) {
-                return (
-                  <FileEditingIndicator
-                    key={`file-editing-${event.fileName}-${index}`}
-                    fileName={event.fileName}
-                  />
-                );
-              }
+              // File start events are now handled by centralized status logic in MessageList
               return null;
             default:
               return null;
           }
         })}
-
-        {/* Show status indicator if active and has status */}
-        {isActive && currentStatus && (
-          <AIEditingStatusIndicator
-            status={currentStatus}
-          />
-        )}
       </div>
       <div className="ai-chat-message-time">
         {formattedTime}

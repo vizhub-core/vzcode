@@ -157,13 +157,55 @@ const MessageListComponent = ({
     aiScratchpad && aiScratchpad.trim(),
   );
 
-  // Show status indicator when there's a current status but no active streaming message
-  const showStandaloneStatusIndicator =
-    currentStatus &&
-    currentStatus !== 'Done' &&
-    (!lastMessage ||
-      lastMessage.role !== 'assistant' ||
-      !lastMessage.content);
+  // Determine the single, most relevant status to display with priority:
+  // 1. Active file editing status from streaming events
+  // 2. General AI status from currentStatus
+  const getConsolidatedStatus = () => {
+    // Check if there's an active streaming message with file editing
+    if (lastMessage && lastMessage.role === 'assistant') {
+      const extendedMsg =
+        lastMessage as ExtendedVizChatMessage;
+      if (
+        extendedMsg.streamingEvents &&
+        extendedMsg.streamingEvents.length > 0
+      ) {
+        // Look for active file editing (file_start without corresponding file_complete)
+        const fileStates = new Map<string, boolean>();
+
+        extendedMsg.streamingEvents.forEach((event) => {
+          if (event.type === 'file_start') {
+            fileStates.set(event.fileName, false); // Mark as editing
+          } else if (event.type === 'file_complete') {
+            fileStates.set(event.fileName, true); // Mark as complete
+          }
+        });
+
+        // Find the first file that's still being edited
+        for (const [fileName, isComplete] of fileStates) {
+          if (!isComplete) {
+            return {
+              status: `Editing ${fileName}...`,
+              fileName,
+            };
+          }
+        }
+      }
+    }
+
+    // Fall back to general AI status if no active file editing
+    if (currentStatus && currentStatus !== 'Done') {
+      return { status: currentStatus };
+    }
+
+    return null;
+  };
+
+  const consolidatedStatus = getConsolidatedStatus();
+
+  // Show consolidated status indicator when there's a status to display
+  const showConsolidatedStatusIndicator = Boolean(
+    consolidatedStatus,
+  );
 
   // Find the most recent assistant message index
   const lastAssistantMessageIndex = messages
@@ -231,9 +273,10 @@ const MessageListComponent = ({
         />
       )}
 
-      {showStandaloneStatusIndicator && (
+      {showConsolidatedStatusIndicator && (
         <AIEditingStatusIndicator
-          status={currentStatus || ''}
+          status={consolidatedStatus?.status || ''}
+          fileName={consolidatedStatus?.fileName}
         />
       )}
 

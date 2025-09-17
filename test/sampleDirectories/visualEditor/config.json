@@ -31,6 +31,8 @@
   "axisColor": "#e0e0e0",
   "titleColor": "#ffffff",
   "loadingTextColor": "#bbbbbb",
+  "xAxisLabel": "Sepal Width (cm)",
+  "yAxisLabel": "Sepal Length (cm)",
   "visualEditorWidgets": [
     {
       "type": "slider",
