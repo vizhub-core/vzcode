@@ -18,6 +18,44 @@ interface FileSystemDirectoryReader {
 
 const DEBUG = false;
 
+const isTextFile = (file: File): boolean => {
+  // Add more text file types as needed
+  const textTypes = [
+    'text/',
+    'application/json',
+    'application/javascript',
+    'application/typescript',
+    'application/xml',
+    'application/x-httpd-php',
+  ];
+  const isText =
+    textTypes.some((type) => file.type.startsWith(type)) ||
+    file.name.match(
+      /\.(txt|js|jsx|ts|tsx|md|css|scss|html|xml|json|php|py|rb|java|c|cpp|h|hpp)$/i,
+    ) !== null;
+
+  DEBUG &&
+    console.log(
+      `[useDragAndDrop] File ${file.name} is${isText ? '' : ' not'} a text file`,
+    );
+  return isText;
+};
+
+const isImageFile = (file: File): boolean => {
+  const imageTypes = ['image/'];
+  const isImage =
+    imageTypes.some((type) => file.type.startsWith(type)) ||
+    file.name.match(
+      /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
+    ) !== null;
+
+  DEBUG &&
+    console.log(
+      `[useDragAndDrop] File ${file.name} is${isImage ? '' : ' not'} an image file`,
+    );
+  return isImage;
+};
+
 export const useDragAndDrop = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -53,269 +91,237 @@ export const useDragAndDrop = () => {
     [],
   );
 
-  const isTextFile = (file: File): boolean => {
-    // Add more text file types as needed
-    const textTypes = [
-      'text/',
-      'application/json',
-      'application/javascript',
-      'application/typescript',
-      'application/xml',
-      'application/x-httpd-php',
-    ];
-    const isText =
-      textTypes.some((type) =>
-        file.type.startsWith(type),
-      ) ||
-      file.name.match(
-        /\.(txt|js|jsx|ts|tsx|md|css|scss|html|xml|json|php|py|rb|java|c|cpp|h|hpp)$/i,
-      ) !== null;
-
-    DEBUG &&
-      console.log(
-        `[useDragAndDrop] File ${file.name} is${isText ? '' : ' not'} a text file`,
-      );
-    return isText;
-  };
-
-  const isImageFile = (file: File): boolean => {
-    const imageTypes = ['image/'];
-    const isImage =
-      imageTypes.some((type) =>
-        file.type.startsWith(type),
-      ) ||
-      file.name.match(
-        /\.(png|jpg|jpeg|gif|bmp|svg|webp)$/i,
-      ) !== null;
-
-    DEBUG &&
-      console.log(
-        `[useDragAndDrop] File ${file.name} is${isImage ? '' : ' not'} an image file`,
-      );
-    return isImage;
-  };
-
-  const readFileAsText = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      DEBUG &&
-        console.log(
-          `[useDragAndDrop] Reading file: ${file.name}`,
-        );
-
-      if (!isTextFile(file)) {
+  const readFileAsText = useCallback(
+    (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
         DEBUG &&
           console.log(
-            `[useDragAndDrop] Rejected non-text file: ${file.name}`,
+            `[useDragAndDrop] Reading file: ${file.name}`,
           );
-        reject(
-          new Error(`File ${file.name} is not a text file`),
-        );
-        return;
-      }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
+        if (!isTextFile(file)) {
           DEBUG &&
             console.log(
-              `[useDragAndDrop] Successfully read file: ${file.name}`,
-            );
-          resolve(e.target.result as string);
-        } else {
-          DEBUG &&
-            console.log(
-              `[useDragAndDrop] Failed to read file: ${file.name}`,
+              `[useDragAndDrop] Rejected non-text file: ${file.name}`,
             );
           reject(
-            new Error(`Failed to read file ${file.name}`),
+            new Error(
+              `File ${file.name} is not a text file`,
+            ),
           );
+          return;
         }
-      };
-      reader.onerror = () => {
-        DEBUG &&
-          console.log(
-            `[useDragAndDrop] Error reading file: ${file.name}`,
-          );
-        reject(
-          new Error(`Error reading file ${file.name}`),
-        );
-      };
-      reader.readAsText(file);
-    });
-  };
 
-  const readImageAsBase64 = (
-    file: File,
-  ): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      DEBUG &&
-        console.log(
-          `[useDragAndDrop] Reading image file: ${file.name}`,
-        );
-
-      if (!isImageFile(file)) {
-        DEBUG &&
-          console.log(
-            `[useDragAndDrop] Rejected non-image file: ${file.name}`,
-          );
-        reject(
-          new Error(
-            `File ${file.name} is not an image file`,
-          ),
-        );
-        return;
-      }
-
-      // For SVG files, read as text if they're text-based
-      if (
-        file.type === 'image/svg+xml' ||
-        file.name.toLowerCase().endsWith('.svg')
-      ) {
-        const textReader = new FileReader();
-        textReader.onload = (e) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
           if (e.target?.result) {
             DEBUG &&
               console.log(
-                `[useDragAndDrop] Successfully read SVG file as text: ${file.name}`,
+                `[useDragAndDrop] Successfully read file: ${file.name}`,
               );
             resolve(e.target.result as string);
           } else {
+            DEBUG &&
+              console.log(
+                `[useDragAndDrop] Failed to read file: ${file.name}`,
+              );
+            reject(
+              new Error(`Failed to read file ${file.name}`),
+            );
+          }
+        };
+        reader.onerror = () => {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Error reading file: ${file.name}`,
+            );
+          reject(
+            new Error(`Error reading file ${file.name}`),
+          );
+        };
+        reader.readAsText(file);
+      });
+    },
+    [],
+  );
+
+  const readImageAsBase64 = useCallback(
+    (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        DEBUG &&
+          console.log(
+            `[useDragAndDrop] Reading image file: ${file.name}`,
+          );
+
+        if (!isImageFile(file)) {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Rejected non-image file: ${file.name}`,
+            );
+          reject(
+            new Error(
+              `File ${file.name} is not an image file`,
+            ),
+          );
+          return;
+        }
+
+        // For SVG files, read as text if they're text-based
+        if (
+          file.type === 'image/svg+xml' ||
+          file.name.toLowerCase().endsWith('.svg')
+        ) {
+          const textReader = new FileReader();
+          textReader.onload = (e) => {
+            if (e.target?.result) {
+              DEBUG &&
+                console.log(
+                  `[useDragAndDrop] Successfully read SVG file as text: ${file.name}`,
+                );
+              resolve(e.target.result as string);
+            } else {
+              reject(
+                new Error(
+                  `Failed to read SVG file ${file.name}`,
+                ),
+              );
+            }
+          };
+          textReader.onerror = () =>
             reject(
               new Error(
-                `Failed to read SVG file ${file.name}`,
+                `Error reading SVG file ${file.name}`,
+              ),
+            );
+          textReader.readAsText(file);
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            DEBUG &&
+              console.log(
+                `[useDragAndDrop] Successfully read image file: ${file.name}`,
+              );
+            // Return just the base64 part without the data URL prefix
+            const base64 = (
+              e.target.result as string
+            ).split(',')[1];
+            resolve(base64);
+          } else {
+            DEBUG &&
+              console.log(
+                `[useDragAndDrop] Failed to read image file: ${file.name}`,
+              );
+            reject(
+              new Error(
+                `Failed to read image file ${file.name}`,
               ),
             );
           }
         };
-        textReader.onerror = () =>
-          reject(
-            new Error(
-              `Error reading SVG file ${file.name}`,
-            ),
-          );
-        textReader.readAsText(file);
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
+        reader.onerror = () => {
           DEBUG &&
             console.log(
-              `[useDragAndDrop] Successfully read image file: ${file.name}`,
-            );
-          // Return just the base64 part without the data URL prefix
-          const base64 = (e.target.result as string).split(
-            ',',
-          )[1];
-          resolve(base64);
-        } else {
-          DEBUG &&
-            console.log(
-              `[useDragAndDrop] Failed to read image file: ${file.name}`,
+              `[useDragAndDrop] Error reading image file: ${file.name}`,
             );
           reject(
             new Error(
-              `Failed to read image file ${file.name}`,
+              `Error reading image file ${file.name}`,
             ),
           );
-        }
-      };
-      reader.onerror = () => {
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    [],
+  );
+
+  const processEntry = useCallback(
+    async (
+      entry: FileSystemEntry,
+      path: string,
+    ): Promise<void> => {
+      try {
         DEBUG &&
           console.log(
-            `[useDragAndDrop] Error reading image file: ${file.name}`,
+            `[useDragAndDrop] Processing entry: ${entry.name} at path: ${path}`,
           );
-        reject(
-          new Error(
-            `Error reading image file ${file.name}`,
-          ),
-        );
-      };
-      reader.readAsDataURL(file);
-    });
-  };
 
-  const processEntry = async (
-    entry: FileSystemEntry,
-    path: string,
-  ): Promise<void> => {
-    try {
-      DEBUG &&
-        console.log(
-          `[useDragAndDrop] Processing entry: ${entry.name} at path: ${path}`,
-        );
-
-      if (entry.isFile) {
-        DEBUG &&
-          console.log(
-            `[useDragAndDrop] Processing file: ${entry.name}`,
-          );
-        entry.file(async (file) => {
-          try {
-            if (isImageFile(file)) {
-              const content = await readImageAsBase64(file);
-              DEBUG &&
-                console.log(
-                  `[useDragAndDrop] Creating image file: ${path}${file.name}`,
-                );
-              createFile(`${path}${file.name}`, content);
-            } else {
-              const content = await readFileAsText(file);
-              DEBUG &&
-                console.log(
-                  `[useDragAndDrop] Creating text file: ${path}${file.name}`,
-                );
-              createFile(`${path}${file.name}`, content);
-            }
-          } catch (error) {
-            console.error(
-              `Error processing file ${file.name}:`,
-              error,
+        if (entry.isFile) {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Processing file: ${entry.name}`,
             );
-          }
-        });
-      } else if (entry.isDirectory) {
-        DEBUG &&
-          console.log(
-            `[useDragAndDrop] Processing directory: ${entry.name}`,
-          );
-        return new Promise<void>((resolve) => {
-          const dirReader = entry.createReader();
-          const readEntries = () => {
-            dirReader.readEntries(async (entries) => {
-              if (entries.length === 0) {
+          entry.file(async (file) => {
+            try {
+              if (isImageFile(file)) {
+                const content =
+                  await readImageAsBase64(file);
                 DEBUG &&
                   console.log(
-                    `[useDragAndDrop] Finished reading directory: ${entry.name}`,
+                    `[useDragAndDrop] Creating image file: ${path}${file.name}`,
                   );
-                resolve();
-                return;
+                createFile(`${path}${file.name}`, content);
+              } else {
+                const content = await readFileAsText(file);
+                DEBUG &&
+                  console.log(
+                    `[useDragAndDrop] Creating text file: ${path}${file.name}`,
+                  );
+                createFile(`${path}${file.name}`, content);
               }
-
-              const newPath = `${path}${entry.name}/`;
-              DEBUG &&
-                console.log(
-                  `[useDragAndDrop] Reading ${entries.length} entries in directory: ${newPath}`,
-                );
-              await Promise.all(
-                entries.map((entry) =>
-                  processEntry(entry, newPath),
-                ),
+            } catch (error) {
+              console.error(
+                `Error processing file ${file.name}:`,
+                error,
               );
-              readEntries(); // Continue reading if there are more entries
-            });
-          };
-          readEntries();
-        });
+            }
+          });
+        } else if (entry.isDirectory) {
+          DEBUG &&
+            console.log(
+              `[useDragAndDrop] Processing directory: ${entry.name}`,
+            );
+          return new Promise<void>((resolve) => {
+            const dirReader = entry.createReader();
+            const readEntries = () => {
+              dirReader.readEntries(async (entries) => {
+                if (entries.length === 0) {
+                  DEBUG &&
+                    console.log(
+                      `[useDragAndDrop] Finished reading directory: ${entry.name}`,
+                    );
+                  resolve();
+                  return;
+                }
+
+                const newPath = `${path}${entry.name}/`;
+                DEBUG &&
+                  console.log(
+                    `[useDragAndDrop] Reading ${entries.length} entries in directory: ${newPath}`,
+                  );
+                await Promise.all(
+                  entries.map((entry) =>
+                    processEntry(entry, newPath),
+                  ),
+                );
+                readEntries(); // Continue reading if there are more entries
+              });
+            };
+            readEntries();
+          });
+        }
+      } catch (error) {
+        console.error(
+          `Error processing entry ${entry.name}:`,
+          error,
+        );
       }
-    } catch (error) {
-      console.error(
-        `Error processing entry ${entry.name}:`,
-        error,
-      );
-    }
-  };
+    },
+    [createFile, readFileAsText, readImageAsBase64],
+  );
 
   const handleDrop = useCallback(
     async (event: React.DragEvent<HTMLDivElement>) => {
