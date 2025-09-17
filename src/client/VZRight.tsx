@@ -42,7 +42,7 @@ export const VZRight = () => {
       content
         ? vizFilesToFileCollection(content.files)
         : null,
-    [content?.files],
+    [content],
   );
 
   const isInteracting = content?.isInteracting || false;
@@ -101,7 +101,15 @@ export const VZRight = () => {
     //   runtime.cleanup();
     //   worker.terminate();
     // };
-  }, [files, isInteracting, runIdChanged, hardRerun]);
+  }, [
+    files,
+    isInteracting,
+    runIdChanged,
+    hardRerun,
+    clearRuntimeError,
+    handleRuntimeError,
+    iframeRef,
+  ]);
 
   return (
     <div className="right">

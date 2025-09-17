@@ -167,10 +167,10 @@ export const VZSidebar = ({
   );
   const handleQuestionMarkClick = useCallback(() => {
     setIsDocOpen(true);
-  }, []);
+  }, [setIsDocOpen]);
   const handleSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
-  }, []);
+  }, [setIsSettingsOpen]);
 
   // State for AI operation feedback
   const [copyButtonText, setCopyButtonText] =
@@ -253,7 +253,7 @@ export const VZSidebar = ({
   // so that they can be displayed in the sidebar.
   useEffect(() => {
     docPresence;
-  }, []);
+  }, [docPresence]);
 
   // Track the presence indicators for display in sidebar
   useEffect(() => {
@@ -281,7 +281,7 @@ export const VZSidebar = ({
         docPresence.off('receive', handleReceive);
       };
     }
-  }, [docPresence]);
+  }, [docPresence, updatePresenceIndicator]);
 
   const [saved, setSaved] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -579,9 +579,10 @@ export const VZSidebar = ({
               {isDragOver ? (
                 <div className="empty drag-over">
                   <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
+                    It looks like you don&apos;t have any
+                    files yet! Click the &quot;Create
+                    file&quot; button above to create your
+                    first file.
                   </div>
                   <div className="empty-text">
                     Drop files here!
@@ -606,9 +607,10 @@ export const VZSidebar = ({
               ) : (
                 <div className="empty">
                   <div className="empty-text">
-                    It looks like you don't have any files
-                    yet! Click the "Create file" button
-                    above to create your first file.
+                    It looks like you don&apos;t have any
+                    files yet! Click the &quot;Create
+                    file&quot; button above to create your
+                    first file.
                   </div>
                   <div className="empty-text">
                     Drop files here!

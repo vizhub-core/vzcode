@@ -101,7 +101,18 @@ export const AIAssistWidget = ({
           : currentAIStreamId,
       );
     }
-  }, [activeFileId, paneId, aiStreamId]);
+  }, [
+    activeFileId,
+    paneId,
+    aiStreamId,
+    aiAssistEndpoint,
+    aiAssistOptions,
+    editorCache,
+    runCodeRef,
+    runPrettierRef,
+    shareDBDoc,
+    tabList,
+  ]);
 
   const showWidget = enableStopGeneration
     ? true

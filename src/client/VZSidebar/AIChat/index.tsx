@@ -72,7 +72,10 @@ export const AIChat = () => {
   const currentChat = activeChatId
     ? content?.chats?.[activeChatId]
     : null;
-  const rawMessages = currentChat?.messages || [];
+  const rawMessages = useMemo(
+    () => currentChat?.messages || [],
+    [currentChat?.messages],
+  );
   const aiStatus = currentChat?.aiStatus;
   const aiScratchpad = currentChat?.aiScratchpad;
   const currentStatus = (currentChat as ExtendedVizChat)
@@ -209,7 +212,7 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Explain how this works"
+                          &quot;Explain how this works&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -219,8 +222,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "How could I change it so that the
-                          circles are bigger?"
+                          &quot;How could I change it so
+                          that the circles are bigger?&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -230,7 +233,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "What does this function do?"
+                          &quot;What does this function
+                          do?&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -240,8 +244,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "How can I make this more
-                          accessible?"
+                          &quot;How can I make this more
+                          accessible?&quot;
                         </button>
                       </div>
                     </>
@@ -257,7 +261,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Change the circles to squares"
+                          &quot;Change the circles to
+                          squares&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -267,8 +272,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Add a button that toggles the
-                          animation"
+                          &quot;Add a button that toggles
+                          the animation&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -278,8 +283,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Fix the CSS so the layout is
-                          responsive"
+                          &quot;Fix the CSS so the layout is
+                          responsive&quot;
                         </button>
                         <button
                           className="ai-chat-suggested-prompt"
@@ -289,8 +294,8 @@ export const AIChat = () => {
                             )
                           }
                         >
-                          "Refactor this function to use
-                          async/await"
+                          &quot;Refactor this function to
+                          use async/await&quot;
                         </button>
                       </div>
                     </>

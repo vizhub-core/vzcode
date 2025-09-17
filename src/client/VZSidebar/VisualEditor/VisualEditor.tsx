@@ -46,7 +46,7 @@ export const VisualEditor = () => {
       console.error('Error parsing config.json:', _error);
       return null;
     }
-  }, [files?.[configFileId]?.text]);
+  }, [configFileId, files]);
 
   const onSliderChange = useCallback(
     (property: string) =>
@@ -78,7 +78,7 @@ export const VisualEditor = () => {
           },
         }));
       },
-    [configData, files, configFileId, setLocalValues],
+    [configData, files, configFileId, submitOperation],
   );
 
   const onCheckboxChange = useCallback(
@@ -109,7 +109,7 @@ export const VisualEditor = () => {
           },
         }));
       },
-    [configData, files, configFileId, setLocalValues],
+    [configData, files, configFileId, submitOperation],
   );
 
   const onTextInputChange = useCallback(
@@ -140,7 +140,7 @@ export const VisualEditor = () => {
           },
         }));
       },
-    [configData, files, configFileId, setLocalValues],
+    [configData, files, configFileId, submitOperation],
   );
 
   const onDropdownChange = useCallback(
@@ -168,7 +168,7 @@ export const VisualEditor = () => {
         },
       }));
     },
-    [configData, files, configFileId, setLocalValues],
+    [configData, files, configFileId, submitOperation],
   );
 
   // Custom dropdown handlers
@@ -293,7 +293,13 @@ export const VisualEditor = () => {
           },
         }));
       },
-    [configData, files, configFileId, setLocalValues],
+    [
+      configData,
+      files,
+      configFileId,
+      submitOperation,
+      localValues,
+    ],
   );
 
   const visualEditorWidgets: VisualEditorConfigEntry[] =
@@ -346,7 +352,7 @@ export const VisualEditor = () => {
       }
     });
     setLocalValues(newLocalValues);
-  }, [configData]);
+  }, [configData, localValues, visualEditorWidgets]);
 
   if (configFileId === null) {
     return (
@@ -372,8 +378,9 @@ export const VisualEditor = () => {
     return (
       <EmptyState>
         To begin using the visual editor, make sure your
-        config.json has a key called "visualEditorWidgets",
-        whose value is the config for the visual editor.
+        config.json has a key called
+        &quot;visualEditorWidgets&quot;, whose value is the
+        config for the visual editor.
       </EmptyState>
     );
   }
@@ -384,10 +391,11 @@ export const VisualEditor = () => {
   ) {
     return (
       <EmptyState>
-        Your config.json file has "visualEditorWidgets" but
-        it is not an array. Please make sure
-        "visualEditorWidgets" is an array of widget
-        configurations.
+        Your config.json file has
+        &quot;visualEditorWidgets&quot; but it is not an
+        array. Please make sure
+        &quot;visualEditorWidgets&quot; is an array of
+        widget configurations.
       </EmptyState>
     );
   }

@@ -58,7 +58,7 @@ export const useOpenDirectories = ({
         return updated;
       });
     }
-  }, [activePane]);
+  }, [activePane, content.files]);
 
   // Whether a directory is open.
   const isDirectoryOpen: (path: VZPath) => boolean =

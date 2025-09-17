@@ -134,15 +134,16 @@ export const CodeEditor = ({
   }, [
     activePane,
     shareDBDoc,
-    filesPath,
     localPresence,
     docPresence,
     theme,
     onInteract,
     editorCache,
-    usernameRef,
+    customInteractRules,
     aiCopilotEndpoint,
     esLintSource,
+    setIsAIChatOpen,
+    handleSendMessage,
   ]);
 
   // Every time the active file switches from one file to another,
@@ -179,7 +180,7 @@ export const CodeEditor = ({
         );
       }
     };
-  }, [shareDBDoc, editorCacheValue]);
+  }, [codeEditorRef, content, editorCacheValue]);
 
   // Focus the editor
   useEffect(() => {

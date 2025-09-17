@@ -68,6 +68,7 @@ export const useURLSync = ({
     setActiveFileId,
     openTab,
     isInitialized,
+    tabStateParams,
   ]);
 
   // Track content in a ref so that we can use it in the

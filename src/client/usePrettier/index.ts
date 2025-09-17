@@ -170,7 +170,7 @@ export const usePrettier = ({
 
       shareDBDoc.removeListener('op batch', handleOpBatch);
     };
-  }, [shareDBDoc]);
+  }, [shareDBDoc, prettierWorker, submitOperation]);
 
   // Return the errors and run prettier function ref
   // for use elsewhere.

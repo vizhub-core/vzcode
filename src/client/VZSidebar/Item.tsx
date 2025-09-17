@@ -140,11 +140,11 @@ export const Item = ({
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
-  }, []);
+  }, [setIsHovered]);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
-  }, []);
+  }, [setIsHovered]);
 
   const onChange = useCallback(() => {
     setRenameValue(renameInputRef.current.value);
