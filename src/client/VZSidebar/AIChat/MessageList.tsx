@@ -33,7 +33,6 @@ const MessageListComponent = ({
   // Use the new simplified auto-scroll hook
   const {
     containerRef: messagesContainerRef,
-    autoScrollState,
     showJumpButton,
     onNewEvent,
     onJumpToLatest,
@@ -140,81 +139,87 @@ const MessageListComponent = ({
     .pop();
 
   return (
-    <div
-      className="ai-chat-messages"
-      ref={messagesContainerRef}
-      role="log"
-      aria-live="polite"
-      aria-relevant="additions"
-      style={{ position: 'relative' }}
-    >
-      {messages.map((msg, index) => {
-        // Cast to extended message to check for streaming events
-        const extendedMsg = msg as ExtendedVizChatMessage;
+    <>
+      <div
+        className="ai-chat-messages"
+        ref={messagesContainerRef}
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        style={{ position: 'relative' }}
+      >
+        {messages.map((msg, index) => {
+          // Cast to extended message to check for streaming events
+          const extendedMsg = msg as ExtendedVizChatMessage;
 
-        // Check if this is a streaming message
-        const isStreamingMessage =
-          !!extendedMsg.isProgressive;
+          // Check if this is a streaming message
+          const isStreamingMessage =
+            !!extendedMsg.isProgressive;
 
-        // Only show additionalWidgets for the most recent assistant message
-        const showAdditionalWidgets =
-          msg.role === 'assistant' &&
-          index === lastAssistantMessageIndex;
+          // Only show additionalWidgets for the most recent assistant message
+          const showAdditionalWidgets =
+            msg.role === 'assistant' &&
+            index === lastAssistantMessageIndex;
 
-        // Use StreamingMessage for assistant messages with streaming events
-        if (
-          msg.role === 'assistant' &&
-          isStreamingMessage
-        ) {
+          // Use StreamingMessage for assistant messages with streaming events
+          if (
+            msg.role === 'assistant' &&
+            isStreamingMessage
+          ) {
+            return (
+              <StreamingMessage
+                key={msg.id}
+                timestamp={msg.timestamp}
+                events={extendedMsg.streamingEvents || []}
+                isActive={
+                  index === lastAssistantMessageIndex
+                }
+              >
+                {showThinkingScratchpad && (
+                  <ThinkingScratchpad
+                    content={aiScratchpad || ''}
+                    isVisible={showThinkingScratchpad}
+                  />
+                )}
+
+                {showConsolidatedStatusIndicator && (
+                  <AIEditingStatusIndicator
+                    status={
+                      consolidatedStatus?.status || ''
+                    }
+                    fileName={consolidatedStatus?.fileName}
+                  />
+                )}
+
+                {showTypingIndicator && <TypingIndicator />}
+              </StreamingMessage>
+            );
+          }
+
+          // Use regular Message component for user messages and non-streaming assistant messages
           return (
-            <StreamingMessage
+            <Message
               key={msg.id}
+              id={msg.id}
+              role={msg.role}
+              content={msg.content}
               timestamp={msg.timestamp}
-              events={extendedMsg.streamingEvents || []}
-              isActive={index === lastAssistantMessageIndex}
-            >
-              {showThinkingScratchpad && (
-                <ThinkingScratchpad
-                  content={aiScratchpad || ''}
-                  isVisible={showThinkingScratchpad}
-                />
-              )}
-
-              {showConsolidatedStatusIndicator && (
-                <AIEditingStatusIndicator
-                  status={consolidatedStatus?.status || ''}
-                  fileName={consolidatedStatus?.fileName}
-                />
-              )}
-
-              {showTypingIndicator && <TypingIndicator />}
-            </StreamingMessage>
+              diffData={(msg as any).diffData}
+              chatId={chatId}
+              showAdditionalWidgets={showAdditionalWidgets}
+            />
           );
-        }
+        })}
 
-        // Use regular Message component for user messages and non-streaming assistant messages
-        return (
-          <Message
-            key={msg.id}
-            id={msg.id}
-            role={msg.role}
-            content={msg.content}
-            timestamp={msg.timestamp}
-            diffData={(msg as any).diffData}
-            chatId={chatId}
-            showAdditionalWidgets={showAdditionalWidgets}
-          />
-        );
-      })}
-
-      <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} />
+      </div>
 
       {/* Jump to Latest Button */}
       <JumpToLatestButton
         visible={showJumpButton}
         onClick={onJumpToLatest}
       />
-    </div>
+    </>
   );
 };
 

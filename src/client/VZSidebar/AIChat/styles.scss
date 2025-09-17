@@ -19,6 +19,9 @@
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
+  // Position the container relative for absolute positioning of children,
+  // namely the "Jump to Latest" button
+  position: relative;
 }
 
 .ai-chat-input-fixed {
