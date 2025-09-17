@@ -247,7 +247,23 @@ const MessageListComponent = ({
               currentStatus={currentStatus}
               isComplete={extendedMsg.isComplete}
               isActive={index === lastAssistantMessageIndex}
-            />
+            >
+              {showThinkingScratchpad && (
+                <ThinkingScratchpad
+                  content={aiScratchpad || ''}
+                  isVisible={showThinkingScratchpad}
+                />
+              )}
+
+              {showConsolidatedStatusIndicator && (
+                <AIEditingStatusIndicator
+                  status={consolidatedStatus?.status || ''}
+                  fileName={consolidatedStatus?.fileName}
+                />
+              )}
+
+              {showTypingIndicator && <TypingIndicator />}
+            </StreamingMessage>
           );
         }
 
@@ -266,21 +282,6 @@ const MessageListComponent = ({
         );
       })}
 
-      {showThinkingScratchpad && (
-        <ThinkingScratchpad
-          content={aiScratchpad || ''}
-          isVisible={showThinkingScratchpad}
-        />
-      )}
-
-      {showConsolidatedStatusIndicator && (
-        <AIEditingStatusIndicator
-          status={consolidatedStatus?.status || ''}
-          fileName={consolidatedStatus?.fileName}
-        />
-      )}
-
-      {showTypingIndicator && <TypingIndicator />}
       <div ref={messagesEndRef} />
     </div>
   );

@@ -14,6 +14,7 @@ interface StreamingMessageProps {
   currentStatus?: string;
   isComplete?: boolean;
   isActive?: boolean; // Is this the currently streaming message?
+  children?: React.ReactNode;
 }
 
 export const StreamingMessage: React.FC<
@@ -21,8 +22,10 @@ export const StreamingMessage: React.FC<
 > = ({
   timestamp,
   events,
+  // TODO remove unused props
   currentStatus: _currentStatus,
   isActive: _isActive,
+  children,
 }) => {
   DEBUG &&
     console.log(
@@ -74,6 +77,7 @@ export const StreamingMessage: React.FC<
               return null;
           }
         })}
+        {children}
       </div>
       <div className="ai-chat-message-time">
         {formattedTime}

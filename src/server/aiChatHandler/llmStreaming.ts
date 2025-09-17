@@ -66,8 +66,12 @@ export const createLLMFunction = ({
     // Create streaming AI message
     createStreamingAIMessage(shareDBDoc, chatId);
 
-    // Note: Initial "Analyzing request..." status is already set in the main handler
-    // We'll update it when the first content starts coming in
+    // Set initial content generation status
+    updateStreamingStatus(
+      shareDBDoc,
+      chatId,
+      'Formulating a plan...',
+    );
 
     // Helper to get original file content
     const getOriginalFileContent = (
@@ -249,12 +253,12 @@ export const createLLMFunction = ({
             // Clear reasoning when content starts
             updateAIScratchpad(shareDBDoc, chatId, '');
           }
-          // Set initial content generation status
-          updateStreamingStatus(
-            shareDBDoc,
-            chatId,
-            'Formulating a plan...',
-          );
+          // // Set initial content generation status
+          // updateStreamingStatus(
+          //   shareDBDoc,
+          //   chatId,
+          //   'Formulating a plan...',
+          // );
         }
 
         const chunkContent = delta.content;

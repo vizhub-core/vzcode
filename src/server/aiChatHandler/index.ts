@@ -140,31 +140,31 @@ const processAIRequestAsync = async ({
 
     // Perform AI editing or chat based on mode
     const editResult =
-      mode === 'ask'
-        ? await performAIChat({
-            prompt: content,
-            shareDBDoc,
-            llmFunction,
-          })
-        : await performAIEditing({
-            prompt: content,
-            shareDBDoc,
-            llmFunction,
-            runCode,
-          });
+      // mode === 'ask'
+      //   ? await performAIChat({
+      //       prompt: content,
+      //       shareDBDoc,
+      //       llmFunction,
+      //     })
+      await performAIEditing({
+        prompt: content,
+        shareDBDoc,
+        llmFunction,
+        runCode,
+      });
 
     // Add diff data to the AI message if there are changes
-    if (
-      editResult.diffData &&
-      Object.keys(editResult.diffData).length > 0
-    ) {
-      addDiffToAIMessage(
-        shareDBDoc,
-        chatId,
-        editResult.diffData,
-        beforeCommitId, // Pass the commit ID before AI changes (for VizHub integration)
-      );
-    }
+    // if (
+    //   editResult.diffData &&
+    //   Object.keys(editResult.diffData).length > 0
+    // ) {
+    //   addDiffToAIMessage(
+    //     shareDBDoc,
+    //     chatId,
+    //     editResult.diffData,
+    //     beforeCommitId, // Pass the commit ID before AI changes (for VizHub integration)
+    //   );
+    // }
 
     // Handle credit deduction if callback is provided
     if (onCreditDeduction && editResult.generationId) {
