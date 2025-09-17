@@ -8,25 +8,15 @@ import { IndividualFileDiff } from './IndividualFileDiff';
 const DEBUG = false;
 
 interface StreamingMessageProps {
-  id: string;
   timestamp: number;
   events: StreamingEvent[];
-  currentStatus?: string;
-  isComplete?: boolean;
   isActive?: boolean; // Is this the currently streaming message?
   children?: React.ReactNode;
 }
 
 export const StreamingMessage: React.FC<
   StreamingMessageProps
-> = ({
-  timestamp,
-  events,
-  // TODO remove unused props
-  currentStatus: _currentStatus,
-  isActive,
-  children,
-}) => {
+> = ({ timestamp, events, isActive, children }) => {
   DEBUG &&
     console.log(
       'StreamingMessage: Rendered with events:',
