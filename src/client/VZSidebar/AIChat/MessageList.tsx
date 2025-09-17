@@ -193,7 +193,7 @@ const MessageListComponent = ({
     }
 
     // Fall back to general AI status if no active file editing
-    if (currentStatus && currentStatus !== 'Done') {
+    if (currentStatus) {
       return { status: currentStatus };
     }
 
@@ -225,8 +225,7 @@ const MessageListComponent = ({
 
         // Check if this is a streaming message
         const isStreamingMessage =
-          extendedMsg.streamingEvents &&
-          extendedMsg.streamingEvents.length > 0;
+          !!extendedMsg.isProgressive;
 
         // Only show additionalWidgets for the most recent assistant message
         const showAdditionalWidgets =

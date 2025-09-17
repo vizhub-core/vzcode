@@ -61,13 +61,6 @@ export const handleAIChatMessage =
       // Return success immediately - AI generation continues in background
       res.status(200).json('success');
 
-      // Set initial AI status to indicate request analysis is starting
-      setAIStatus(
-        shareDBDoc,
-        chatId,
-        'Analyzing request...',
-      );
-
       // Continue AI processing in background (don't await)
       processAIRequestAsync({
         shareDBDoc,

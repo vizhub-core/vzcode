@@ -24,7 +24,7 @@ export const StreamingMessage: React.FC<
   events,
   // TODO remove unused props
   currentStatus: _currentStatus,
-  isActive: _isActive,
+  isActive,
   children,
 }) => {
   DEBUG &&
@@ -77,7 +77,7 @@ export const StreamingMessage: React.FC<
               return null;
           }
         })}
-        {children}
+        {isActive && children}
       </div>
       <div className="ai-chat-message-time">
         {formattedTime}
