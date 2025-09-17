@@ -9,7 +9,7 @@ import { Message } from './Message';
 import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
-import { StatusIndicator } from './StatusIndicator';
+import { AIEditingStatusIndicator } from './FileEditingIndicator';
 import { VizChatMessage } from '@vizhub/viz-types';
 import { ExtendedVizChatMessage } from '../../../types.js';
 
@@ -232,7 +232,9 @@ const MessageListComponent = ({
       )}
 
       {showStandaloneStatusIndicator && (
-        <StatusIndicator status={currentStatus || ''} />
+        <AIEditingStatusIndicator
+          status={currentStatus || ''}
+        />
       )}
 
       {showTypingIndicator && <TypingIndicator />}

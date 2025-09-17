@@ -4,8 +4,10 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { StreamingEvent } from '../../../types.js';
 import { IndividualFileDiff } from './IndividualFileDiff';
-import { FileEditingIndicator } from './FileEditingIndicator';
-import { StatusIndicator } from './StatusIndicator';
+import {
+  AIEditingStatusIndicator,
+  FileEditingIndicator,
+} from './FileEditingIndicator';
 
 const DEBUG = false;
 
@@ -111,7 +113,9 @@ export const StreamingMessage: React.FC<
 
         {/* Show status indicator if active and has status */}
         {isActive && currentStatus && (
-          <StatusIndicator status={currentStatus} />
+          <AIEditingStatusIndicator
+            status={currentStatus}
+          />
         )}
       </div>
       <div className="ai-chat-message-time">
