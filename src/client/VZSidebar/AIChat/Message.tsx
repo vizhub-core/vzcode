@@ -59,15 +59,6 @@ const MessageComponent = forwardRef<
       return `ai-chat-message ${role}${isStreaming ? ' streaming' : ''}`;
     }, [role, isStreaming]);
 
-    // console.log(showAdditionalWidgets &&
-    //         additionalWidgets &&
-    //         chatId &&)
-    console.log({
-      showAdditionalWidgets,
-      hasAdditionalWidgets: !!additionalWidgets,
-      hasChatId: !!chatId,
-    });
-
     return (
       <div className={messageClassName}>
         <div className="ai-chat-message-content">

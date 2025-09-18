@@ -1,22 +1,37 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext } from 'react';
 import { timestampToDate } from '@vizhub/viz-utils';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { StreamingEvent } from '../../../types.js';
 import { IndividualFileDiff } from './IndividualFileDiff';
+import { VZCodeContext } from '../../VZCodeContext';
 
 const DEBUG = false;
 
 interface StreamingMessageProps {
+  id: string;
   timestamp: number;
   events: StreamingEvent[];
   isActive?: boolean; // Is this the currently streaming message?
   children?: React.ReactNode;
+  chatId?: string;
+  showAdditionalWidgets?: boolean;
 }
 
 export const StreamingMessage: React.FC<
   StreamingMessageProps
-> = ({ timestamp, events, isActive, children }) => {
+> = ({
+  id,
+  timestamp,
+  events,
+  isActive,
+  children,
+  chatId,
+  showAdditionalWidgets = false,
+}) => {
+  const { additionalWidgets, handleSendMessage } =
+    useContext(VZCodeContext);
+
   DEBUG &&
     console.log(
       'StreamingMessage: Rendered with events:',
@@ -67,6 +82,14 @@ export const StreamingMessage: React.FC<
               return null;
           }
         })}
+        {showAdditionalWidgets &&
+          additionalWidgets &&
+          chatId &&
+          additionalWidgets({
+            messageId: id,
+            chatId: chatId,
+            handleSendMessage,
+          })}
         {isActive && children}
       </div>
       <div className="ai-chat-message-time">

@@ -170,9 +170,12 @@ const MessageListComponent = ({
           return (
             <StreamingMessage
               key={msg.id}
+              id={msg.id}
               timestamp={msg.timestamp}
               events={extendedMsg.streamingEvents || []}
               isActive={index === lastAssistantMessageIndex}
+              chatId={chatId}
+              showAdditionalWidgets={showAdditionalWidgets}
             >
               {showThinkingScratchpad && (
                 <ThinkingScratchpad
