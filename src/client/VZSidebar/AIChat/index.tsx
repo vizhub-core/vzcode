@@ -78,9 +78,6 @@ export const AIChat = () => {
     afterRender,
   } = useAutoScroll({ threshold: 24 });
 
-  // TODO fix this - currently always false
-  console.log('showJumpButton:', showJumpButton);
-
   // Get the active chat ID and chat data
   // If selectedChatId is set, use it; otherwise, if no chat selected, don't default to currentChatId
   const activeChatId = selectedChatId;
