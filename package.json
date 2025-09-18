@@ -120,8 +120,8 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.3",
     "@codemirror/view": "^6.38.2",
-    "@langchain/core": "^0.3.75",
-    "@langchain/openai": "^0.6.11",
+    "@langchain/core": "^0.3.77",
+    "@langchain/openai": "^0.6.13",
     "@lezer/highlight": "^1.2.1",
     "@livekit/components-react": "^2.9.14",
     "@replit/codemirror-indentation-markers": "^6.5.3",
@@ -172,7 +172,7 @@
     "react-bootstrap": "^2.10.10",
     "react-dom": "^18",
     "react-markdown": "^10.1.0",
-    "react-router-dom": "^7.8.2",
+    "react-router-dom": "^7.9.1",
     "remark-gfm": "^4.0.1",
     "sharedb": "^5.2.2",
     "sharedb-client-browser": "^5.2.2",
@@ -186,9 +186,9 @@
     "@types/d3-color": "^3.1.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.43.0",
-    "@vitejs/plugin-react": "^5.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "@vitejs/plugin-react": "^5.0.3",
     "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
     "eslint": "^9.35.0",
@@ -196,16 +196,16 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^16.4.0",
-    "npm-check-updates": "^18.1.0",
+    "npm-check-updates": "^18.1.1",
     "prettier": "^3.6.2",
     "sass": "^1.92.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5",
+    "vite": "^7.1.6",
     "vitest": "^3.2.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-darwin-arm64": "^4.50.1",
-    "@rollup/rollup-win32-x64-msvc": "^4.50.1"
+    "@rollup/rollup-darwin-arm64": "^4.50.2",
+    "@rollup/rollup-win32-x64-msvc": "^4.50.2"
   }
 }
