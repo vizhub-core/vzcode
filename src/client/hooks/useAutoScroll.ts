@@ -11,16 +11,6 @@ import {
 type AutoScrollState = 'AUTO_SCROLL_ON' | 'AUTO_SCROLL_OFF';
 
 /**
- * Check if the container is at the bottom with optional slack
- */
-function isAtBottom(el: HTMLElement, slack = 2): boolean {
-  return (
-    el.scrollTop + el.clientHeight >=
-    el.scrollHeight - slack
-  );
-}
-
-/**
  * Wait for scroll position to settle after programmatic scrolling
  */
 function waitForScrollSettle(
@@ -46,10 +36,7 @@ function waitForScrollSettle(
 
       const timedOut =
         performance.now() - start > maxWaitMs;
-      if (
-        (stable >= stableFrames && isAtBottom(el)) ||
-        timedOut
-      ) {
+      if (stable >= stableFrames || timedOut) {
         cancelAnimationFrame(rafId);
         resolve();
         return;
@@ -204,21 +191,14 @@ export const useAutoScroll = (
 
               // Perform smooth scroll
               if (targetElement) {
-                // Scroll to specific element
-                const containerRect =
-                  container.getBoundingClientRect();
-                const targetRect =
-                  targetElement.getBoundingClientRect();
-                const scrollTop =
-                  targetRect.top -
-                  containerRect.top +
-                  container.scrollTop;
+                // Scroll to position target element at the top of the container
+                const scrollTop = targetElement.offsetTop;
                 container.scrollTo({
                   top: scrollTop,
                   behavior: 'smooth',
                 });
               } else {
-                // Scroll to bottom
+                // Scroll to bottom when no specific target
                 container.scrollTo({
                   top: container.scrollHeight,
                   behavior: 'smooth',
@@ -253,21 +233,14 @@ export const useAutoScroll = (
 
       // Perform smooth scroll
       if (targetElement) {
-        // Scroll to specific element
-        const containerRect =
-          container.getBoundingClientRect();
-        const targetRect =
-          targetElement.getBoundingClientRect();
-        const scrollTop =
-          targetRect.top -
-          containerRect.top +
-          container.scrollTop;
+        // Scroll to position target element at the top of the container
+        const scrollTop = targetElement.offsetTop;
         container.scrollTo({
           top: scrollTop,
           behavior: 'smooth',
         });
       } else {
-        // Scroll to bottom
+        // Scroll to bottom when no specific target
         container.scrollTo({
           top: container.scrollHeight,
           behavior: 'smooth',
