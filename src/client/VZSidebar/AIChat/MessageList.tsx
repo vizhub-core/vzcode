@@ -5,10 +5,7 @@ import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { AIEditingStatusIndicator } from './FileEditingIndicator';
 import { VizChatMessage } from '@vizhub/viz-types';
-import {
-  ExtendedVizChatMessage,
-  IndividualFileDiff,
-} from '../../../types.js';
+import { ExtendedVizChatMessage } from '../../../types.js';
 import { DiffViewRef } from './DiffView.js';
 
 const MessageListComponent = ({

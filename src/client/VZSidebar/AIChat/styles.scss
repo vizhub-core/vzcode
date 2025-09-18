@@ -646,7 +646,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--vh-color-primary-01);
+  background-color: rgba(76, 104, 152, 0.4);
   border: none;
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -658,7 +658,7 @@
   transition: all 0.2s ease;
 
   &:hover {
-    background: var(--vh-color-primary-02);
+    background-color: rgba(76, 104, 152, 0.6);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     transform: translateX(-50%) scale(1.05);
   }
