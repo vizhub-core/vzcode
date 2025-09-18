@@ -150,6 +150,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .file-editing-icon {
@@ -161,6 +162,7 @@
   .file-editing-text {
     color: var(--vscode-foreground);
     font-size: 0.9rem;
+    flex: 1;
 
     code {
       background-color: var(
@@ -169,6 +171,27 @@
       padding: 0.2rem 0.4rem;
       border-radius: 3px;
       font-family: var(--vscode-editor-font-family);
+    }
+
+    .file-editing-done-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    .file-editing-done-status {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .file-editing-done-widgets {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
     }
   }
 }

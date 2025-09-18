@@ -122,9 +122,11 @@ export const Message = forwardRef<
                 return null;
             }
           })}
+          {/* Additional widgets are now shown within the "Done" status indicator */}
           {showAdditionalWidgets &&
             additionalWidgets &&
             chatId &&
+            !isStreaming && // Only show here for non-streaming messages (completed messages)
             additionalWidgets({
               messageId: id,
               chatId: chatId,

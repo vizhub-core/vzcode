@@ -1,4 +1,10 @@
-import { useRef, useEffect, memo, useState } from 'react';
+import {
+  useRef,
+  useEffect,
+  memo,
+  useState,
+  useContext,
+} from 'react';
 import { Message } from './Message';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
@@ -6,6 +12,7 @@ import { AIEditingStatusIndicator } from './FileEditingIndicator';
 import { VizChatMessage } from '@vizhub/viz-types';
 import { ExtendedVizChatMessage } from '../../../types.js';
 import { DiffViewRef } from './DiffView.js';
+import { VZCodeContext } from '../../VZCodeContext';
 
 const MessageListComponent = ({
   messages,
@@ -30,6 +37,10 @@ const MessageListComponent = ({
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const diffViewRef = useRef<DiffViewRef>(null);
+
+  // Get additional widgets from context
+  const { additionalWidgets, handleSendMessage } =
+    useContext(VZCodeContext);
 
   // Track previous loading state to detect when AI generation completes
   const [prevIsLoading, setPrevIsLoading] =
@@ -200,6 +211,18 @@ const MessageListComponent = ({
                 <AIEditingStatusIndicator
                   status={consolidatedStatus?.status || ''}
                   fileName={consolidatedStatus?.fileName}
+                  additionalWidgets={
+                    consolidatedStatus?.status === 'Done' &&
+                    showAdditionalWidgets &&
+                    additionalWidgets &&
+                    chatId
+                      ? additionalWidgets({
+                          messageId: msg.id,
+                          chatId: chatId,
+                          handleSendMessage,
+                        })
+                      : undefined
+                  }
                 />
               )}
 

@@ -3,11 +3,12 @@ import { Spinner } from '../../AIAssist/Spinner';
 interface AIEditingStatusIndicatorProps {
   status: string;
   fileName?: string;
+  additionalWidgets?: React.ReactNode;
 }
 
 export const AIEditingStatusIndicator: React.FC<
   AIEditingStatusIndicatorProps
-> = ({ status, fileName }) => {
+> = ({ status, fileName, additionalWidgets }) => {
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'Analyzing request...':
@@ -36,9 +37,16 @@ export const AIEditingStatusIndicator: React.FC<
         );
       case 'Done':
         return (
-          <>
-            ✅ <span>Done</span>
-          </>
+          <div className="file-editing-done-container">
+            <div className="file-editing-done-status">
+              ✅ <span>Done</span>
+            </div>
+            {additionalWidgets && (
+              <div className="file-editing-done-widgets">
+                {additionalWidgets}
+              </div>
+            )}
+          </div>
         );
       default:
         // Handle file editing status (e.g., "Editing filename.js...")
