@@ -148,7 +148,6 @@ export const useAutoScroll = (
     // Ignore scroll events during programmatic scrolling
     if (isProgrammaticScrollRef.current) return;
 
-    console.log('handleScroll called');
     const container = containerRef.current;
     if (!container) return;
 

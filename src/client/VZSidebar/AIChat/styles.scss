@@ -140,8 +140,7 @@
 .file-editing-indicator {
   display: flex;
   align-items: center;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
   background-color: var(--vscode-editor-background);
   border: 1px solid var(--vscode-panel-border);
   border-radius: 4px;
@@ -150,6 +149,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .file-editing-icon {
@@ -161,6 +161,7 @@
   .file-editing-text {
     color: var(--vscode-foreground);
     font-size: 0.9rem;
+    flex: 1;
 
     code {
       background-color: var(
@@ -169,6 +170,36 @@
       padding: 0.2rem 0.4rem;
       border-radius: 3px;
       font-family: var(--vscode-editor-font-family);
+    }
+
+    .file-editing-done-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    .file-editing-done-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .file-editing-done-widgets {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+
+      // // Override the margin-top for undo-button-container when inside file editing indicator
+      // .undo-button-container {
+      //   margin-top: 0;
+      //   margin-bottom: 0;
+      // }
     }
   }
 }
@@ -287,33 +318,6 @@
   font-size: 14px;
   line-height: 1.4;
   word-wrap: break-word;
-
-  .undo-button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 16px;
-  }
-
-  .undo-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover:not(:disabled) {
-      background-color: #c82333;
-    }
-
-    &:disabled {
-      background-color: #6c757d;
-      cursor: not-allowed;
-    }
-  }
 
   // Markdown styling for dark backgrounds
   pre {
