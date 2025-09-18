@@ -1,31 +1,36 @@
-import { timestampToDate } from '@vizhub/viz-utils';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import React, {
   useMemo,
-  memo,
   useContext,
   forwardRef,
 } from 'react';
+import { timestampToDate } from '@vizhub/viz-utils';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { StreamingEvent } from '../../../types.js';
+import { IndividualFileDiff } from './IndividualFileDiff';
+import { VZCodeContext } from '../../VZCodeContext';
 import { DiffView, DiffViewRef } from './DiffView';
 import { UnifiedFilesDiff } from '../../../utils/fileDiff';
 import { enableDiffView } from '../../featureFlags';
-import { VZCodeContext } from '../../VZCodeContext';
+
+const DEBUG = false;
 
 interface MessageProps {
   id: string;
   role: 'user' | 'assistant';
-  content: string;
+  content?: string; // For non-streaming messages
   timestamp: number;
-  isStreaming?: boolean;
-  diffData?: UnifiedFilesDiff;
+  events?: StreamingEvent[]; // For streaming messages
+  isActive?: boolean; // Is this the currently streaming message?
   chatId?: string;
   showAdditionalWidgets?: boolean;
+  isStreaming?: boolean;
+  diffData?: UnifiedFilesDiff;
 }
 
-const MessageComponent = forwardRef<
+export const Message = forwardRef<
   DiffViewRef,
-  MessageProps
+  React.PropsWithChildren<MessageProps>
 >(
   (
     {
@@ -33,15 +38,24 @@ const MessageComponent = forwardRef<
       role,
       content,
       timestamp,
-      isStreaming,
-      diffData,
+      events = [],
+      isActive,
+      children,
       chatId,
       showAdditionalWidgets = false,
+      isStreaming = false,
+      diffData,
     },
     ref,
   ) => {
     const { additionalWidgets, handleSendMessage } =
       useContext(VZCodeContext);
+
+    DEBUG &&
+      console.log(
+        'StreamingMessage: Rendered with events:',
+        events,
+      );
 
     // Memoize date formatting to avoid repeated computation
     const formattedTime = useMemo(() => {
@@ -62,14 +76,52 @@ const MessageComponent = forwardRef<
     return (
       <div className={messageClassName}>
         <div className="ai-chat-message-content">
-          <Markdown remarkPlugins={[remarkGfm]}>
-            {content}
-          </Markdown>
+          {/* Render regular content for non-streaming messages */}
+          {content && (
+            <Markdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </Markdown>
+          )}
+
+          {/* Render diff view if present */}
           {enableDiffView &&
             diffData &&
             Object.keys(diffData).length > 0 && (
               <DiffView diffData={diffData} ref={ref} />
             )}
+
+          {/* Render events in order for streaming messages */}
+          {events.map((event, index) => {
+            switch (event.type) {
+              case 'text_chunk':
+                return (
+                  <div
+                    key={`text-${index}`}
+                    className="text-chunk"
+                  >
+                    <Markdown remarkPlugins={[remarkGfm]}>
+                      {event.content}
+                    </Markdown>
+                  </div>
+                );
+              case 'file_complete':
+                return (
+                  <IndividualFileDiff
+                    key={`file-${event.fileName}-${index}`}
+                    fileName={event.fileName}
+                    beforeContent={
+                      event.beforeContent || ''
+                    }
+                    afterContent={event.afterContent || ''}
+                  />
+                );
+              case 'file_start':
+                // File start events are now handled by centralized status logic in MessageList
+                return null;
+              default:
+                return null;
+            }
+          })}
           {showAdditionalWidgets &&
             additionalWidgets &&
             chatId &&
@@ -78,6 +130,7 @@ const MessageComponent = forwardRef<
               chatId: chatId,
               handleSendMessage,
             })}
+          {isActive && children}
         </div>
         <div className="ai-chat-message-time">
           {formattedTime}
@@ -87,6 +140,4 @@ const MessageComponent = forwardRef<
   },
 );
 
-MessageComponent.displayName = 'MessageComponent';
-
-export const Message = memo(MessageComponent);
+Message.displayName = 'Message';

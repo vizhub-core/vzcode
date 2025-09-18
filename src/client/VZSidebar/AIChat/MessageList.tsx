@@ -1,6 +1,5 @@
 import { useRef, useEffect, memo, useState } from 'react';
 import { Message } from './Message';
-import { StreamingMessage } from './StreamingMessage';
 import { TypingIndicator } from './TypingIndicator';
 import { ThinkingScratchpad } from './ThinkingScratchpad';
 import { AIEditingStatusIndicator } from './FileEditingIndicator';
@@ -162,57 +161,52 @@ const MessageListComponent = ({
           msg.role === 'assistant' &&
           index === lastAssistantMessageIndex;
 
-        // Use StreamingMessage for assistant messages with streaming events
-        if (
-          msg.role === 'assistant' &&
-          isStreamingMessage
-        ) {
-          return (
-            <StreamingMessage
-              key={msg.id}
-              id={msg.id}
-              timestamp={msg.timestamp}
-              events={extendedMsg.streamingEvents || []}
-              isActive={index === lastAssistantMessageIndex}
-              chatId={chatId}
-              showAdditionalWidgets={showAdditionalWidgets}
-            >
-              {showThinkingScratchpad && (
+        // Use Message for all messages now
+        return (
+          <Message
+            key={msg.id}
+            id={msg.id}
+            role={msg.role}
+            content={
+              isStreamingMessage ? undefined : msg.content
+            }
+            timestamp={msg.timestamp}
+            events={
+              isStreamingMessage
+                ? extendedMsg.streamingEvents || []
+                : []
+            }
+            isActive={index === lastAssistantMessageIndex}
+            chatId={chatId}
+            showAdditionalWidgets={showAdditionalWidgets}
+            isStreaming={isStreamingMessage}
+            diffData={(msg as any).diffData}
+            ref={
+              isLastMessage && (msg as any).diffData
+                ? diffViewRef
+                : null
+            }
+          >
+            {isStreamingMessage &&
+              showThinkingScratchpad && (
                 <ThinkingScratchpad
                   content={aiScratchpad || ''}
                   isVisible={showThinkingScratchpad}
                 />
               )}
 
-              {showConsolidatedStatusIndicator && (
+            {isStreamingMessage &&
+              showConsolidatedStatusIndicator && (
                 <AIEditingStatusIndicator
                   status={consolidatedStatus?.status || ''}
                   fileName={consolidatedStatus?.fileName}
                 />
               )}
 
-              {showTypingIndicator && <TypingIndicator />}
-            </StreamingMessage>
-          );
-        }
-
-        // Use regular Message component for user messages and non-streaming assistant messages
-        return (
-          <Message
-            key={msg.id}
-            id={msg.id}
-            role={msg.role}
-            content={msg.content}
-            timestamp={msg.timestamp}
-            diffData={(msg as any).diffData}
-            chatId={chatId}
-            showAdditionalWidgets={showAdditionalWidgets}
-            ref={
-              isLastMessage && (msg as any).diffData
-                ? diffViewRef
-                : null
-            }
-          />
+            {isStreamingMessage && showTypingIndicator && (
+              <TypingIndicator />
+            )}
+          </Message>
         );
       })}
 
