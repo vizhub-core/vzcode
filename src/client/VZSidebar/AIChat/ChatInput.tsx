@@ -12,7 +12,7 @@ import {
 } from '../../bootstrap';
 import { enableAskMode } from '../../featureFlags';
 import { useSpeechRecognition } from './useSpeechRecognition';
-import { MicSVG, MicOffSVG } from '../../Icons';
+import { MicSVG, MicOffSVG, StopSVG } from '../../Icons';
 
 interface ChatInputProps {
   aiChatMessage: string;
@@ -24,6 +24,9 @@ interface ChatInputProps {
   navigateMessageHistoryUp: () => void;
   navigateMessageHistoryDown: () => void;
   resetMessageHistoryNavigation: () => void;
+  isStreaming?: boolean;
+  onStopGeneration?: () => void;
+  lastUserMessage?: string;
 }
 
 const ChatInputComponent = ({
@@ -36,6 +39,9 @@ const ChatInputComponent = ({
   navigateMessageHistoryUp,
   navigateMessageHistoryDown,
   resetMessageHistoryNavigation,
+  isStreaming = false,
+  onStopGeneration,
+  lastUserMessage,
 }: ChatInputProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -109,6 +115,16 @@ const ChatInputComponent = ({
     }
     onSendMessage();
   }, [onSendMessage, isSpeaking, stopSpeaking]);
+
+  const handleStopClick = useCallback(() => {
+    if (onStopGeneration) {
+      // Restore the last user message to the input field for refinement
+      if (lastUserMessage) {
+        setAIChatMessage(lastUserMessage);
+      }
+      onStopGeneration();
+    }
+  }, [onStopGeneration, lastUserMessage, setAIChatMessage]);
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -213,20 +229,33 @@ const ChatInputComponent = ({
             >
               {isSpeaking ? <MicOffSVG /> : <MicSVG />}
             </Button>
-            <Button
-              variant={
-                aiChatMessage.trim()
-                  ? 'primary'
-                  : 'outline-secondary'
-              }
-              onClick={handleSendClick}
-              disabled={!aiChatMessage.trim()}
-              className="ai-chat-send-button"
-              aria-label="Send message"
-              title="Send message (Enter)"
-            >
-              Send
-            </Button>
+            {isStreaming ? (
+              <Button
+                variant="danger"
+                onClick={handleStopClick}
+                className="ai-chat-stop-button"
+                aria-label="Stop generation"
+                title="Stop generation"
+              >
+                <StopSVG />
+                Stop
+              </Button>
+            ) : (
+              <Button
+                variant={
+                  aiChatMessage.trim()
+                    ? 'primary'
+                    : 'outline-secondary'
+                }
+                onClick={handleSendClick}
+                disabled={!aiChatMessage.trim()}
+                className="ai-chat-send-button"
+                aria-label="Send message"
+                title="Send message (Enter)"
+              >
+                Send
+              </Button>
+            )}
           </div>
         </div>
       </Form.Group>

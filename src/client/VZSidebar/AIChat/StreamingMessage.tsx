@@ -63,6 +63,24 @@ export const StreamingMessage: React.FC<
             case 'file_start':
               // File start events are now handled by centralized status logic in MessageList
               return null;
+            case 'stopped':
+              return (
+                <div
+                  key={`stopped-${index}`}
+                  className="text-chunk stopped-message"
+                >
+                  <em>Generation stopped by user.</em>
+                </div>
+              );
+            case 'error':
+              return (
+                <div
+                  key={`error-${index}`}
+                  className="text-chunk error-message"
+                >
+                  <em>Error: {event.message}</em>
+                </div>
+              );
             default:
               return null;
           }

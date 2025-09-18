@@ -61,6 +61,7 @@ export const AIChat = () => {
     getStoredAIPrompt,
     setAIChatMessage,
     handleSendMessage,
+    handleStopGeneration,
     setAIErrorMessage,
     navigateMessageHistoryUp,
     navigateMessageHistoryDown,
@@ -118,6 +119,27 @@ export const AIChat = () => {
   // Check if this is the first time opening the chat (no messages) or no chat selected
   const isEmptyState =
     !selectedChatId || rawMessages.length === 0;
+
+  // Determine if streaming is active
+  const isStreaming =
+    (currentChat as ExtendedVizChat)?.isStreaming || false;
+
+  // Get the last user message for restoration on stop
+  const lastUserMessage = useMemo(() => {
+    const userMessages = rawMessages.filter(
+      (msg) => msg.role === 'user',
+    );
+    return userMessages.length > 0
+      ? userMessages[userMessages.length - 1].content
+      : '';
+  }, [rawMessages]);
+
+  // Create stop handler for the current chat
+  const handleStopCurrentGeneration = useCallback(() => {
+    if (activeChatId) {
+      handleStopGeneration(activeChatId);
+    }
+  }, [activeChatId, handleStopGeneration]);
 
   // Get all existing chats
   const allChats = content?.chats || {};
@@ -384,6 +406,9 @@ export const AIChat = () => {
           resetMessageHistoryNavigation={
             resetMessageHistoryNavigation
           }
+          isStreaming={isStreaming}
+          onStopGeneration={handleStopCurrentGeneration}
+          lastUserMessage={lastUserMessage}
         />
       </div>
     </div>
