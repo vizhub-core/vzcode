@@ -5,7 +5,10 @@ import * as prettierPluginHtml from 'prettier/plugins/html';
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown';
 import * as prettierPluginCSS from 'prettier/plugins/postcss';
 import * as prettierPluginTypescript from 'prettier/plugins/typescript';
-import { VizFiles, VizFileId } from '@vizhub/viz-types';
+import {
+  VizFileId,
+  FileCollection,
+} from '@vizhub/viz-types';
 
 // Parser mappings - matches client-side implementation
 const parsers = {
@@ -88,23 +91,36 @@ export const formatFile = async (
  * Returns a map of fileId -> formatted text for successfully formatted files
  */
 export const formatFiles = async (
-  files: VizFiles,
-  fileIds?: VizFileId[],
+  fileCollection:
+    | FileCollection
+    | { [key: string]: { name: string; text: string } },
 ): Promise<{ [fileId: VizFileId]: string }> => {
   const results: { [fileId: VizFileId]: string } = {};
-  const targetFileIds = fileIds || Object.keys(files);
+  const targetFileIds = Object.keys(fileCollection);
 
   // Process files in parallel for better performance
   const formatPromises = targetFileIds.map(
     async (fileId) => {
-      const file = files[fileId];
-      if (!file) return;
+      const fileData = fileCollection[fileId];
+      if (!fileData) return;
+
+      // Handle both FileCollection format and test format
+      const fileName =
+        typeof fileData === 'string'
+          ? fileId
+          : fileData.name;
+      const fileText =
+        typeof fileData === 'string'
+          ? fileData
+          : fileData.text;
+
+      if (!fileText) return;
 
       const formatted = await formatFile(
-        file.text,
-        file.name,
+        fileText,
+        fileName,
       );
-      if (formatted !== null && formatted !== file.text) {
+      if (formatted !== null && formatted !== fileText) {
         results[fileId] = formatted;
       }
     },
