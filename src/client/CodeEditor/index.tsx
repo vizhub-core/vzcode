@@ -152,9 +152,7 @@ export const CodeEditor = ({
   useLayoutEffect(() => {
     // Guard against cases where page is still loading.
     if (!codeEditorRef.current) return;
-    if (!content) return;
     if (!editorCacheValue) return; // Guard against null editorCacheValue
-    // if (openSplitPane) return;
 
     const codeEditorEl = codeEditorRef.current;
 
@@ -178,7 +176,7 @@ export const CodeEditor = ({
         );
       }
     };
-  }, [codeEditorRef, content, editorCacheValue]);
+  }, [codeEditorRef, editorCacheValue]);
 
   // Focus the editor
   useEffect(() => {
