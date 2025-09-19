@@ -4,8 +4,10 @@ import {
   StreamingMarkdownParser,
 } from 'llm-code-format';
 import { mergeFileChanges } from 'editcodewithai';
-import { VizChatId } from '@vizhub/viz-types';
-import { generateRunId } from '@vizhub/viz-utils';
+import {
+  FileCollection,
+  VizChatId,
+} from '@vizhub/viz-types';
 import {
   updateFiles,
   updateAIScratchpad,
@@ -14,11 +16,11 @@ import {
   updateStreamingStatus,
   finalizeStreamingMessage,
 } from './chatOperations.js';
-import { diff } from '../../ot.js';
 import {
   ShareDBDoc,
   ExtendedVizContent,
 } from '../../types.js';
+import { formatFiles } from '../prettier.js';
 
 const DEBUG = false;
 
@@ -285,39 +287,100 @@ export const createLLMFunction = ({
       await completeFileEditing(currentEditingFileName);
     }
 
-    // Apply all the edits at once
-    updateFiles(
-      shareDBDoc,
-      mergeFileChanges(
-        shareDBDoc.data.files,
-        parseMarkdownFiles(fullContent, 'bold').files,
-      ),
+    // // Capture the current state of files before applying changes
+    // const beforeFiles = createFilesSnapshot(
+    //   shareDBDoc.data.files,
+    // );
+
+    // Parse the full content to extract file changes
+    // export type FileCollection = Record<string, string>;
+    const newFilesUnformatted: FileCollection =
+      parseMarkdownFiles(fullContent, 'bold').files;
+
+    // Run Prettier on `newFiles` before applying them
+    const newFilesFormatted = await formatFiles(
+      newFilesUnformatted,
     );
 
+    // Apply all the edits at once
+    const mergedChanges = mergeFileChanges(
+      shareDBDoc.data.files,
+      newFilesFormatted,
+    );
+    updateFiles(shareDBDoc, mergedChanges);
+
+    // // Run Prettier on changed files after applying LLM changes
+    // const afterLLMFiles = createFilesSnapshot(
+    //   shareDBDoc.data.files,
+    // );
+
+    // // Find files that were changed by the AI
+    // const changedFileIds = Object.keys(
+    //   afterLLMFiles,
+    // ).filter(
+    //   (fileId) =>
+    //     beforeFiles[fileId]?.text !==
+    //     afterLLMFiles[fileId]?.text,
+    // );
+
+    // if (changedFileIds.length > 0) {
+    //   // Format the changed files
+    //   const formattedFiles = await formatFiles(
+    //     shareDBDoc.data.files,
+    //     changedFileIds,
+    //   );
+
+    //   // Apply formatted versions to shareDBDoc if formatting succeeded
+    //   if (Object.keys(formattedFiles).length > 0) {
+    //     const submitOperation =
+    //       createSubmitOperation(shareDBDoc);
+    //     submitOperation((document: VizContent) => {
+    //       const updatedFiles = { ...document.files };
+
+    //       // Apply each formatted file
+    //       Object.entries(formattedFiles).forEach(
+    //         ([fileId, formattedText]) => {
+    //           if (updatedFiles[fileId]) {
+    //             updatedFiles[fileId] = {
+    //               ...updatedFiles[fileId],
+    //               text: formattedText,
+    //             };
+    //           }
+    //         },
+    //       );
+
+    //       return {
+    //         ...document,
+    //         files: updatedFiles,
+    //       };
+    //     });
+    //   }
+    // }
+
     // Finalize streaming message
-    await finalizeStreamingMessage(shareDBDoc, chatId);
+    finalizeStreamingMessage(shareDBDoc, chatId);
 
     // Generate a new runId to trigger a run when AI finishes editing
     // This will trigger a re-run without hot reloading
-    const newRunId = generateRunId();
-    const runIdOp = diff(shareDBDoc.data, {
-      ...shareDBDoc.data,
-      runId: newRunId,
-    });
-    shareDBDoc.submitOp(runIdOp, (error) => {
-      if (error) {
-        console.warn(
-          'Error setting runId after AI editing:',
-          error,
-        );
-      } else {
-        DEBUG &&
-          console.log(
-            'Set new runId after AI editing:',
-            newRunId,
-          );
-      }
-    });
+    // const newRunId = generateRunId();
+    // const runIdOp = diff(shareDBDoc.data, {
+    //   ...shareDBDoc.data,
+    //   runId: newRunId,
+    // });
+    // shareDBDoc.submitOp(runIdOp, (error) => {
+    //   if (error) {
+    //     console.warn(
+    //       'Error setting runId after AI editing:',
+    //       error,
+    //     );
+    //   } else {
+    //     DEBUG &&
+    //       console.log(
+    //         'Set new runId after AI editing:',
+    //         newRunId,
+    //       );
+    //   }
+    // });
 
     // Write chunks file for debugging
     // if (DEBUG) {
