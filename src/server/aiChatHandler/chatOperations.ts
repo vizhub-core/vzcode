@@ -376,6 +376,8 @@ export const updateFiles = (
     ...shareDBDoc.data,
     files,
   });
+  DEBUG && console.log('updateFiles op:');
+  DEBUG && console.log(JSON.stringify(filesOp, null, 2));
   shareDBDoc.submitOp(filesOp);
 };
 

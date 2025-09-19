@@ -32,7 +32,6 @@ export const CodeEditor = ({
   const {
     activePane,
     shareDBDoc,
-    content,
     submitOperation,
     localPresence,
     docPresence,
