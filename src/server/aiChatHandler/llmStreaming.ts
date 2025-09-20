@@ -7,6 +7,7 @@ import { mergeFileChanges } from 'editcodewithai';
 import {
   FileCollection,
   VizChatId,
+  VizFiles,
 } from '@vizhub/viz-types';
 import {
   updateFiles,
@@ -116,7 +117,7 @@ export const createLLMFunction = ({
     const completeFileEditing = async (
       fileName: string,
     ) => {
-      if (fileName && currentFileContent) {
+      if (fileName) {
         DEBUG &&
           console.log(
             `LLMStreaming: Completing file editing for ${fileName}`,
@@ -191,6 +192,38 @@ export const createLLMFunction = ({
             firstNonCodeChunkProcessed = true;
           }
         }
+      },
+      onFileDelete: async (fileName: string) => {
+        DEBUG &&
+          console.log(
+            `LLMStreaming: File marked for deletion: ${fileName}`,
+          );
+
+        // Emit any accumulated text chunk first
+        await emitTextChunk();
+
+        // Complete previous file if any
+        if (currentEditingFileName) {
+          await completeFileEditing(currentEditingFileName);
+        }
+
+        // Reset current editing state
+        currentEditingFileName = null;
+        currentFileContent = '';
+
+        // Emit file delete event
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'file_delete',
+          fileName,
+          timestamp: Date.now(),
+        });
+
+        // Update status
+        updateStreamingStatus(
+          shareDBDoc,
+          chatId,
+          `Deleting ${fileName}...`,
+        );
       },
     };
 
@@ -304,16 +337,26 @@ export const createLLMFunction = ({
     const newFilesUnformatted: FileCollection =
       parseMarkdownFiles(fullContent, 'bold').files;
 
-    // Run Prettier on `newFiles` before applying them
+    // Run Prettier on `newFiles` before applying them,
+    // preserving empty files as empty
+    // since that is the cue to delete a file.
     const newFilesFormatted = await formatFiles(
       newFilesUnformatted,
     );
+
+    // Apply all the edits at once
+    const mergedChanges: VizFiles = mergeFileChanges(
+      shareDBDoc.data.files,
+      newFilesFormatted,
+    );
+    const filesOp = updateFiles(shareDBDoc, mergedChanges);
 
     if (EMIT_FIXTURES) {
       const fs = await import('fs');
       const path = await import('path');
       const testCasesDir = path.resolve(
         process.cwd(),
+        '../',
         'fixtures',
       );
       if (!fs.existsSync(testCasesDir)) {
@@ -329,6 +372,7 @@ export const createLLMFunction = ({
       const testCaseData = {
         before: shareDBDoc.data.files,
         after: newFilesFormatted,
+        filesOp,
       };
       fs.writeFileSync(
         testCasePath,
@@ -338,13 +382,6 @@ export const createLLMFunction = ({
         `AI chat test case written to ${testCasePath}`,
       );
     }
-
-    // Apply all the edits at once
-    const mergedChanges = mergeFileChanges(
-      shareDBDoc.data.files,
-      newFilesFormatted,
-    );
-    updateFiles(shareDBDoc, mergedChanges);
 
     // Finalize streaming message
     finalizeStreamingMessage(shareDBDoc, chatId);
