@@ -70,6 +70,11 @@ import { SparklesSVG } from '../Icons/SparklesSVG';
 
 const DEBUG = false;
 
+// TODO Introduce and use `MINIMAL_EXTENSIONS`
+// If true, only include the minimal set of extensions,
+// namely only the JSON1 OT extension and that's it.
+// const MINIMAL_EXTENSIONS = true;
+
 // Define a StateField to store the file name.
 // This should be defined at the module level if it's to be imported by other modules.
 export const fileNameStateField = StateField.define<string>(

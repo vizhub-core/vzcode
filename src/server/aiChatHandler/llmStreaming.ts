@@ -33,7 +33,7 @@ const slowMode = false;
 // then an output file in the `test/fixtures` folder
 // with the before and after file states for testing purposes.
 // This feeds into tests in codemirror-ot.
-const EMIT_FIXTURES = true;
+const EMIT_FIXTURES = false;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -344,12 +344,21 @@ export const createLLMFunction = ({
       newFilesUnformatted,
     );
 
+    // Capture the current state of files before applying changes
+    let vizFilesBefore: VizFiles;
+    if (EMIT_FIXTURES) {
+      vizFilesBefore = JSON.parse(
+        JSON.stringify(shareDBDoc.data.files),
+      );
+    }
+
     // Apply all the edits at once
-    const mergedChanges: VizFiles = mergeFileChanges(
+    const vizFilesAfter: VizFiles = mergeFileChanges(
       shareDBDoc.data.files,
       newFilesFormatted,
     );
-    const filesOp = updateFiles(shareDBDoc, mergedChanges);
+
+    const filesOp = updateFiles(shareDBDoc, vizFilesAfter);
 
     if (EMIT_FIXTURES) {
       const fs = await import('fs');
@@ -370,8 +379,8 @@ export const createLLMFunction = ({
         `ai-chat-${timestamp}.json`,
       );
       const testCaseData = {
-        before: shareDBDoc.data.files,
-        after: mergedChanges,
+        vizFilesBefore,
+        vizFilesAfter,
         filesOp,
       };
       fs.writeFileSync(
