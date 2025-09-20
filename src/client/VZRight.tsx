@@ -92,6 +92,10 @@ export const VZRight = () => {
         enableHotReloading: isInteracting,
         enableSourcemap: true,
         vizId: 'example-viz',
+
+        // Don't clear the console here in VZCode, since
+        // we often want to see debug logs across multiple runs.
+        clearConsole: false,
       });
       isFirstRunRef.current = false;
     }

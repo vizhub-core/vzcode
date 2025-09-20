@@ -67,6 +67,7 @@ import {
 } from '@valtown/codemirror-ts';
 import { getFileExtension } from '../utils/fileExtension';
 import { SparklesSVG } from '../Icons/SparklesSVG';
+import { MINIMAL_EXTENSIONS } from '../featureFlags';
 
 const DEBUG = false;
 
@@ -253,8 +254,10 @@ export const getOrCreateEditor = async ({
   // Create a compartment for rainbow brackets so that it can be enabled/disabled dynamically.
   const rainbowBracketsCompartment = new Compartment();
 
+  // Create a compartment for language so that it can be changed dynamically.
+  const languageCompartment = new Compartment();
+
   // The CodeMirror extensions to use.
-  // const extensions = [autocompletion(), html(htmlConfig)]
   const extensions = [];
 
   // Initialize the fileNameStateField with the actual file name
@@ -273,26 +276,29 @@ export const getOrCreateEditor = async ({
       }),
     );
 
-    // Deals with broadcasting changes in cursor location and selection.
-    if (localPresence) {
-      extensions.push(
-        json1PresenceBroadcast({
-          path: textPath,
-          localPresence,
-          usernameRef,
-        }),
-      );
-    }
+    // Only add presence extensions if MINIMAL_EXTENSIONS is false
+    if (!MINIMAL_EXTENSIONS) {
+      // Deals with broadcasting changes in cursor location and selection.
+      if (localPresence) {
+        extensions.push(
+          json1PresenceBroadcast({
+            path: textPath,
+            localPresence,
+            usernameRef,
+          }),
+        );
+      }
 
-    // Deals with receiving the broadcast from other clients and displaying them.
-    if (docPresence) {
-      extensions.push(
-        json1PresenceDisplay({
-          path: textPath,
-          docPresence,
-          enableAutoFollowRef,
-        }),
-      );
+      // Deals with receiving the broadcast from other clients and displaying them.
+      if (docPresence) {
+        extensions.push(
+          json1PresenceDisplay({
+            path: textPath,
+            docPresence,
+            enableAutoFollowRef,
+          }),
+        );
+      }
     }
   } else {
     // If the ShareDB document is not provided,
@@ -300,44 +306,7 @@ export const getOrCreateEditor = async ({
     extensions.push(EditorView.editable.of(false));
   }
 
-  extensions.push(colorsInTextPlugin);
-
-  // This is the "basic setup" for CodeMirror,
-  // which actually adds a ton on functionality.
-  // TODO vet this functionality, and determine how much
-  // we want to replace with
-  // https://github.com/vizhub-core/vzcode/issues/134
-  extensions.push(basicSetup);
-
-  if (esLintSource) {
-    extensions.push(lintGutter()); // Show lint icons in the gutter
-    extensions.push(
-      linter(esLintSource, {
-        // You can configure linter options here, e.g., delay
-        delay: 750,
-      }),
-    );
-  }
-
-  // This supports dynamic changing of the theme.
-  extensions.push(
-    themeCompartment.of(themeOptionsByLabel[theme].value),
-  );
-
-  // Adds compartment for rainbow brackets with initial toggle state.
-  extensions.push(
-    rainbowBracketsCompartment.of(
-      rainbowBracketsEnabled ? rainbowBrackets() : [],
-    ),
-  );
-
-  // TODO handle dynamic changing of the file extension.
-  // TODO handle dynamic file extensions by making
-  // the CodeMirror language extension dynamic
-  // using a Compartment.
-  const languageCompartment = new Compartment();
-  // See https://github.com/vizhub-core/vzcode/issues/55
-
+  // Add language extension (needed for both minimal and full modes)
   const languageExtension =
     getLanguageExtension(fileExtension);
   if (languageExtension) {
@@ -345,232 +314,267 @@ export const getOrCreateEditor = async ({
       languageCompartment.of(languageExtension),
     );
   } else {
-    // Not sure if this case even works.
-    // TODO manually test this case by creating a file
-    // that has no extension, opening it up,
-    // and then adding an extension.
-    // console.warn(
-    //   `No language extension for file extension: ${fileExtension}`,
-    // );
-    // We still need to push the compartment,
-    // otherwise the compartment won't work when
-    // a file extension _is_ added later on.
     extensions.push(languageCompartment.of([]));
   }
 
-  // Enable line wrapping for Markdown files
-  if (fileExtension === 'md') {
-    extensions.push(EditorView.lineWrapping);
-  }
+  // If MINIMAL_EXTENSIONS is true, only include the JSON1 OT extension and essential functionality
+  if (MINIMAL_EXTENSIONS) {
+    // Only the most basic extensions are added
+    // The JSON1 OT extension and language extension are already added above
+  } else {
+    // Full feature set - include all extensions
+    extensions.push(colorsInTextPlugin);
 
-  // Add interactive widgets.
-  // Includes the Alt+drag functionality for numbers.
-  // Calls `onInteract` when one of those widgets is interacted with.
-  // This can be used to trigger a transition to throttled mode
-  // for hot reloading.
-  // TODO consider leveraging the new `dragEnd` event handler.
-  // and removing the `onInteract` callback, replacing it with
-  // `onInteractStart` and `onInteractEnd`.
-  // That may be tricky for one-off interactions though, like
-  // the boolean checkboxes. The color pickers are also tricky,
-  // as they would also need to be able to handle `onInteractEnd`.
-  // See https://github.com/replit/codemirror-interact/issues/14
-  extensions.push(
-    widgets({ onInteract, customInteractRules }),
-  );
+    // This is the "basic setup" for CodeMirror,
+    // which actually adds a ton on functionality.
+    // TODO vet this functionality, and determine how much
+    // we want to replace with
+    // https://github.com/vizhub-core/vzcode/issues/134
+    extensions.push(basicSetup);
 
-  // TODO fix the bugginess in this one where
-  // the highlight persists after the mouse leaves.
-  // extensions.push(highlightWidgets);
-
-  extensions.push(rotationIndicator);
-
-  // extensions.push(
-  //   AIAssistCodeMirrorKeyMap({
-  //     shareDBDoc,
-  //     fileId,
-  //     tabList,
-  //     aiAssistEndpoint,
-  //     aiAssistOptions,
-  //   }),
-  // );
-
-  // Add the extension that provides indentation markers.
-  extensions.push(
-    indentationMarkers({
-      // thickness: 2,
-      colors: {
-        light: '#4d586b',
-        dark: '#4d586b',
-        activeLight: '#8e949f',
-        activeDark: '#8e949f',
-      },
-    }),
-  );
-
-  if (name.endsWith('ts') || name.endsWith('tsx')) {
-    // Initialize worker if needed
-    const tsWorker = await initializeWorker();
-
-    extensions.push(
-      ...[
-        tsFacetWorker.of({ worker: tsWorker, path: name }),
-        tsSyncWorker(),
-        tsLinterWorker(),
-        autocompletion({
-          override: [tsAutocompleteWorker()],
+    if (esLintSource) {
+      extensions.push(lintGutter()); // Show lint icons in the gutter
+      extensions.push(
+        linter(esLintSource, {
+          // You can configure linter options here, e.g., delay
+          delay: 750,
         }),
-        tsHoverWorker(),
-      ],
+      );
+    }
+
+    // This supports dynamic changing of the theme.
+    extensions.push(
+      themeCompartment.of(themeOptionsByLabel[theme].value),
     );
-  }
 
-  // Show the minimap
-  // See https://github.com/replit/codemirror-minimap#usage
-  // This extension has poor performance, so it's disabled for now.
-  // extensions.push(
-  //   showMinimap.compute(['doc'], () => ({
-  //     create: () => ({
-  //       dom: document.createElement('div'),
-  //     }),
-  //     // Without this, performance is terrible.
-  //     displayText: 'blocks',
-  //   })),
-  // );
+    // Adds compartment for rainbow brackets with initial toggle state.
+    extensions.push(
+      rainbowBracketsCompartment.of(
+        rainbowBracketsEnabled ? rainbowBrackets() : [],
+      ),
+    );
 
-  // VSCode keybindings
-  // See https://github.com/replit/codemirror-vscode-keymap#usage
-  // extensions.push(keymap.of(vscodeKeymap));
-  extensions.push(
-    keymap.of(
-      vscodeKeymap.map((binding) => {
-        // Here we override the Shift+Enter behavior specifically,
-        // as that can be used to trigger a manual save/Prettier,
-        // and the default behavior from the keymap interferes.
-        if (binding.key === 'Enter') {
-          delete binding.shift;
-        }
-        return binding;
+    // Enable line wrapping for Markdown files
+    if (fileExtension === 'md') {
+      extensions.push(EditorView.lineWrapping);
+    }
+
+    // Add interactive widgets.
+    // Includes the Alt+drag functionality for numbers.
+    // Calls `onInteract` when one of those widgets is interacted with.
+    // This can be used to trigger a transition to throttled mode
+    // for hot reloading.
+    // TODO consider leveraging the new `dragEnd` event handler.
+    // and removing the `onInteract` callback, replacing it with
+    // `onInteractStart` and `onInteractEnd`.
+    // That may be tricky for one-off interactions though, like
+    // the boolean checkboxes. The color pickers are also tricky,
+    // as they would also need to be able to handle `onInteractEnd`.
+    // See https://github.com/replit/codemirror-interact/issues/14
+    extensions.push(
+      widgets({ onInteract, customInteractRules }),
+    );
+
+    // TODO fix the bugginess in this one where
+    // the highlight persists after the mouse leaves.
+    // extensions.push(highlightWidgets);
+
+    extensions.push(rotationIndicator);
+
+    // extensions.push(
+    //   AIAssistCodeMirrorKeyMap({
+    //     shareDBDoc,
+    //     fileId,
+    //     tabList,
+    //     aiAssistEndpoint,
+    //     aiAssistOptions,
+    //   }),
+    // );
+
+    // Add the extension that provides indentation markers.
+    extensions.push(
+      indentationMarkers({
+        // thickness: 2,
+        colors: {
+          light: '#4d586b',
+          dark: '#4d586b',
+          activeLight: '#8e949f',
+          activeDark: '#8e949f',
+        },
       }),
-    ),
-  );
-
-  // Adds copilot completions
-  DEBUG &&
-    console.log(
-      '[getOrCreateEditor] aiCopilotEndpoint: ',
-      aiCopilotEndpoint,
     );
-  if (aiCopilotEndpoint) {
-    extensions.push(copilot({ aiCopilotEndpoint }));
-  }
 
-  // const { setIsAIChatOpen } = useContext(VZCodeContext);
+    if (name.endsWith('ts') || name.endsWith('tsx')) {
+      // Initialize worker if needed
+      const tsWorker = await initializeWorker();
 
-  // Widget appears after instances of "todo" in code editor, allowing AI to implement todo tasks when clicked
-  function createToDoPlugin() {
-    // setIsAIChatOpen: (open: boolean) => void,
-    class ToDoWidget extends WidgetType {
-      constructor() {
-        super();
-      }
-
-      eq(_other: ToDoWidget) {
-        return false;
-      }
-
-      toDOM() {
-        const wrap = document.createElement('i');
-        wrap.style.display = 'inline-flex'; // prevent block expansion
-        wrap.style.alignItems = 'center';
-        wrap.style.justifyContent = 'center';
-        wrap.className = 'icon-button icon-button-dark';
-        const reactContainer =
-          document.createElement('div');
-        wrap.appendChild(reactContainer);
-
-        const root = createRoot(reactContainer);
-        root.render(
-          <div
-            onClick={() => {
-              setIsAIChatOpen(true);
-              // setAIChatMessage('Implement the TODO');
-              handleSendMessage('Implement the TODO');
-            }}
-          >
-            <SparklesSVG width={14} height={14} />
-          </div>,
-        );
-        return wrap;
-      }
-
-      ignoreEvent() {
-        return false;
-      }
+      extensions.push(
+        ...[
+          tsFacetWorker.of({
+            worker: tsWorker,
+            path: name,
+          }),
+          tsSyncWorker(),
+          tsLinterWorker(),
+          autocompletion({
+            override: [tsAutocompleteWorker()],
+          }),
+          tsHoverWorker(),
+        ],
+      );
     }
 
-    function toDoWidgets(editor: EditorView) {
-      const { state } = editor;
-      const tree = syntaxTree(state);
-      const findToDo = new RegExpCursor(state.doc, 'todo', {
-        ignoreCase: true,
-      });
-      const widgets: Range<Decoration>[] = [];
+    // Show the minimap
+    // See https://github.com/replit/codemirror-minimap#usage
+    // This extension has poor performance, so it's disabled for now.
+    // extensions.push(
+    //   showMinimap.compute(['doc'], () => ({
+    //     create: () => ({
+    //       dom: document.createElement('div'),
+    //     }),
+    //     // Without this, performance is terrible.
+    //     displayText: 'blocks',
+    //   })),
+    // );
 
-      while (!findToDo.next().done) {
-        const { from, to } = findToDo.value;
-        const node = tree.resolve(from);
-        let inComment = false;
-
-        // Walk up the parents until we hit the root, looking for a comment node
-        for (let cur: any = node; cur; cur = cur.parent) {
-          if (
-            cur.type.is('Comment') || // grammars that group comments
-            cur.type.is('comment') || // generic lowercase group
-            /Comment$/.test(cur.type.name) // fallback for e.g. LineComment
-          ) {
-            inComment = true;
-            break;
+    // VSCode keybindings
+    // See https://github.com/replit/codemirror-vscode-keymap#usage
+    // extensions.push(keymap.of(vscodeKeymap));
+    extensions.push(
+      keymap.of(
+        vscodeKeymap.map((binding) => {
+          // Here we override the Shift+Enter behavior specifically,
+          // as that can be used to trigger a manual save/Prettier,
+          // and the default behavior from the keymap interferes.
+          if (binding.key === 'Enter') {
+            delete binding.shift;
           }
-        }
-        if (!inComment) continue; // skip non-comment TODOs
-
-        const deco = Decoration.widget({
-          widget: new ToDoWidget(),
-          side: 1,
-        }).range(to);
-        widgets.push(deco);
-      }
-      return Decoration.set(widgets);
-    }
-
-    const todoPlugin = ViewPlugin.fromClass(
-      class {
-        decorations: DecorationSet;
-
-        constructor(view: EditorView) {
-          this.decorations = toDoWidgets(view);
-        }
-
-        update(update: ViewUpdate) {
-          if (
-            update.docChanged ||
-            update.viewportChanged ||
-            syntaxTree(update.startState) !==
-              syntaxTree(update.state)
-          )
-            this.decorations = toDoWidgets(update.view);
-        }
-      },
-      {
-        decorations: (v) => v.decorations,
-      },
+          return binding;
+        }),
+      ),
     );
 
-    return todoPlugin;
-  }
+    // Adds copilot completions
+    DEBUG &&
+      console.log(
+        '[getOrCreateEditor] aiCopilotEndpoint: ',
+        aiCopilotEndpoint,
+      );
+    if (aiCopilotEndpoint) {
+      extensions.push(copilot({ aiCopilotEndpoint }));
+    }
 
-  extensions.push(createToDoPlugin());
+    // const { setIsAIChatOpen } = useContext(VZCodeContext);
+
+    // Widget appears after instances of "todo" in code editor, allowing AI to implement todo tasks when clicked
+    function createToDoPlugin() {
+      // setIsAIChatOpen: (open: boolean) => void,
+      class ToDoWidget extends WidgetType {
+        constructor() {
+          super();
+        }
+
+        eq(_other: ToDoWidget) {
+          return false;
+        }
+
+        toDOM() {
+          const wrap = document.createElement('i');
+          wrap.style.display = 'inline-flex'; // prevent block expansion
+          wrap.style.alignItems = 'center';
+          wrap.style.justifyContent = 'center';
+          wrap.className = 'icon-button icon-button-dark';
+          const reactContainer =
+            document.createElement('div');
+          wrap.appendChild(reactContainer);
+
+          const root = createRoot(reactContainer);
+          root.render(
+            <div
+              onClick={() => {
+                setIsAIChatOpen(true);
+                // setAIChatMessage('Implement the TODO');
+                handleSendMessage('Implement the TODO');
+              }}
+            >
+              <SparklesSVG width={14} height={14} />
+            </div>,
+          );
+          return wrap;
+        }
+
+        ignoreEvent() {
+          return false;
+        }
+      }
+
+      function toDoWidgets(editor: EditorView) {
+        const { state } = editor;
+        const tree = syntaxTree(state);
+        const findToDo = new RegExpCursor(
+          state.doc,
+          'todo',
+          {
+            ignoreCase: true,
+          },
+        );
+        const widgets: Range<Decoration>[] = [];
+
+        while (!findToDo.next().done) {
+          const { from, to } = findToDo.value;
+          const node = tree.resolve(from);
+          let inComment = false;
+
+          // Walk up the parents until we hit the root, looking for a comment node
+          for (let cur: any = node; cur; cur = cur.parent) {
+            if (
+              cur.type.is('Comment') || // grammars that group comments
+              cur.type.is('comment') || // generic lowercase group
+              /Comment$/.test(cur.type.name) // fallback for e.g. LineComment
+            ) {
+              inComment = true;
+              break;
+            }
+          }
+          if (!inComment) continue; // skip non-comment TODOs
+
+          const deco = Decoration.widget({
+            widget: new ToDoWidget(),
+            side: 1,
+          }).range(to);
+          widgets.push(deco);
+        }
+        return Decoration.set(widgets);
+      }
+
+      const todoPlugin = ViewPlugin.fromClass(
+        class {
+          decorations: DecorationSet;
+
+          constructor(view: EditorView) {
+            this.decorations = toDoWidgets(view);
+          }
+
+          update(update: ViewUpdate) {
+            if (
+              update.docChanged ||
+              update.viewportChanged ||
+              syntaxTree(update.startState) !==
+                syntaxTree(update.state)
+            )
+              this.decorations = toDoWidgets(update.view);
+          }
+        },
+        {
+          decorations: (v) => v.decorations,
+        },
+      );
+
+      return todoPlugin;
+    }
+
+    extensions.push(createToDoPlugin());
+  }
 
   const editor = new EditorView({
     state: EditorState.create({

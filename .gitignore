@@ -6,3 +6,4 @@ dist-ssr
 .DS_Store
 .history
 .aider*
+test/sampleDirectories/fixtures/

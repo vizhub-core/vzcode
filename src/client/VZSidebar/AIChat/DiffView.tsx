@@ -9,6 +9,8 @@ import {
   UnifiedFilesDiff,
   parseUnifiedDiffStats,
   combineUnifiedDiffs,
+  isFileDeletion,
+  getDeletedFileName,
 } from '../../../utils/fileDiff';
 import * as Diff2Html from 'diff2html';
 import 'diff2html/bundles/css/diff2html.min.css';
@@ -41,21 +43,33 @@ export const DiffView = forwardRef<
     useContext(VZCodeContext);
   const diffContainerRef = useRef<HTMLDivElement>(null);
 
-  const unifiedDiffs = Object.values(diffData).filter(
+  const allDiffs = Object.values(diffData).filter(
     (diff) => diff.length > 0,
   );
 
-  // Calculate statistics from all unified diffs
+  // Separate deleted files from regular diffs
+  const deletedFiles: string[] = [];
+  const regularDiffs: string[] = [];
+
+  for (const diff of allDiffs) {
+    if (isFileDeletion(diff)) {
+      deletedFiles.push(diff);
+    } else {
+      regularDiffs.push(diff);
+    }
+  }
+
+  // Calculate statistics from regular unified diffs only
   let totalAdditions = 0;
   let totalDeletions = 0;
 
-  for (const unifiedDiff of unifiedDiffs) {
+  for (const unifiedDiff of regularDiffs) {
     const stats = parseUnifiedDiffStats(unifiedDiff);
     totalAdditions += stats.additions;
     totalDeletions += stats.deletions;
   }
 
-  // Combine all unified diffs and convert to HTML using diff2html
+  // Combine regular unified diffs and convert to HTML using diff2html
   const combinedUnifiedDiff = combineUnifiedDiffs(diffData);
   const diffHtml = Diff2Html.html(combinedUnifiedDiff, {
     drawFileList: false,
@@ -155,7 +169,7 @@ export const DiffView = forwardRef<
     };
   }, [diffHtml, content, openTab, setIsAIChatOpen]);
 
-  if (unifiedDiffs.length === 0) {
+  if (allDiffs.length === 0) {
     return null;
   }
 
@@ -164,8 +178,8 @@ export const DiffView = forwardRef<
       <div className="diff-summary" id="diff-summary">
         <div className="diff-stats">
           <span className="files-changed">
-            {unifiedDiffs.length} file
-            {unifiedDiffs.length !== 1 ? 's' : ''} changed
+            {allDiffs.length} file
+            {allDiffs.length !== 1 ? 's' : ''} changed
           </span>
           {totalAdditions > 0 && (
             <span className="additions">
@@ -177,18 +191,43 @@ export const DiffView = forwardRef<
               -{totalDeletions}
             </span>
           )}
+          {deletedFiles.length > 0 && (
+            <span className="deletions">
+              {deletedFiles.length} deleted
+            </span>
+          )}
         </div>
       </div>
 
-      <div
-        className="diff-files"
-        ref={diffContainerRef}
-        tabIndex={-1}
-        role="region"
-        aria-label="Code diff content"
-        aria-describedby="diff-summary"
-        dangerouslySetInnerHTML={{ __html: diffHtml }}
-      />
+      {/* Render deleted files */}
+      {deletedFiles.map((deletionMarker, index) => {
+        const fileName = getDeletedFileName(deletionMarker);
+        return (
+          <div key={index} className="deleted-file">
+            <div className="deleted-file-header">
+              <span className="deleted-file-name">
+                {fileName}
+              </span>
+              <span className="deleted-file-status">
+                File deleted
+              </span>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Render regular diffs */}
+      {regularDiffs.length > 0 && (
+        <div
+          className="diff-files"
+          ref={diffContainerRef}
+          tabIndex={-1}
+          role="region"
+          aria-label="Code diff content"
+          aria-describedby="diff-summary"
+          dangerouslySetInnerHTML={{ __html: diffHtml }}
+        />
+      )}
     </div>
   );
 });

@@ -7,6 +7,7 @@ import { mergeFileChanges } from 'editcodewithai';
 import {
   FileCollection,
   VizChatId,
+  VizFiles,
 } from '@vizhub/viz-types';
 import {
   updateFiles,
@@ -22,10 +23,17 @@ import {
 } from '../../types.js';
 import { formatFiles } from '../prettier.js';
 
+// Verbose logs
 const DEBUG = false;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
+
+// If the `EMIT_FIXTURES` variable is true,
+// then an output file in the `test/fixtures` folder
+// with the before and after file states for testing purposes.
+// This feeds into tests in codemirror-ot.
+const EMIT_FIXTURES = true;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -109,7 +117,7 @@ export const createLLMFunction = ({
     const completeFileEditing = async (
       fileName: string,
     ) => {
-      if (fileName && currentFileContent) {
+      if (fileName) {
         DEBUG &&
           console.log(
             `LLMStreaming: Completing file editing for ${fileName}`,
@@ -184,6 +192,38 @@ export const createLLMFunction = ({
             firstNonCodeChunkProcessed = true;
           }
         }
+      },
+      onFileDelete: async (fileName: string) => {
+        DEBUG &&
+          console.log(
+            `LLMStreaming: File marked for deletion: ${fileName}`,
+          );
+
+        // Emit any accumulated text chunk first
+        await emitTextChunk();
+
+        // Complete previous file if any
+        if (currentEditingFileName) {
+          await completeFileEditing(currentEditingFileName);
+        }
+
+        // Reset current editing state
+        currentEditingFileName = null;
+        currentFileContent = '';
+
+        // Emit file delete event
+        await addStreamingEvent(shareDBDoc, chatId, {
+          type: 'file_delete',
+          fileName,
+          timestamp: Date.now(),
+        });
+
+        // Update status
+        updateStreamingStatus(
+          shareDBDoc,
+          chatId,
+          `Deleting ${fileName}...`,
+        );
       },
     };
 
@@ -297,17 +337,60 @@ export const createLLMFunction = ({
     const newFilesUnformatted: FileCollection =
       parseMarkdownFiles(fullContent, 'bold').files;
 
-    // Run Prettier on `newFiles` before applying them
+    // Run Prettier on `newFiles` before applying them,
+    // preserving empty files as empty
+    // since that is the cue to delete a file.
     const newFilesFormatted = await formatFiles(
       newFilesUnformatted,
     );
 
+    // Capture the current state of files before applying changes
+    let vizFilesBefore: VizFiles;
+    if (EMIT_FIXTURES) {
+      vizFilesBefore = JSON.parse(
+        JSON.stringify(shareDBDoc.data.files),
+      );
+    }
+
     // Apply all the edits at once
-    const mergedChanges = mergeFileChanges(
+    const vizFilesAfter: VizFiles = mergeFileChanges(
       shareDBDoc.data.files,
       newFilesFormatted,
     );
-    updateFiles(shareDBDoc, mergedChanges);
+
+    const filesOp = updateFiles(shareDBDoc, vizFilesAfter);
+
+    if (EMIT_FIXTURES) {
+      const fs = await import('fs');
+      const path = await import('path');
+      const testCasesDir = path.resolve(
+        process.cwd(),
+        '../',
+        'fixtures',
+      );
+      if (!fs.existsSync(testCasesDir)) {
+        fs.mkdirSync(testCasesDir, { recursive: true });
+      }
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, '-');
+      const testCasePath = path.join(
+        testCasesDir,
+        `ai-chat-${timestamp}.json`,
+      );
+      const testCaseData = {
+        vizFilesBefore,
+        vizFilesAfter,
+        filesOp,
+      };
+      fs.writeFileSync(
+        testCasePath,
+        JSON.stringify(testCaseData, null, 2),
+      );
+      console.log(
+        `AI chat test case written to ${testCasePath}`,
+      );
+    }
 
     // Finalize streaming message
     finalizeStreamingMessage(shareDBDoc, chatId);
