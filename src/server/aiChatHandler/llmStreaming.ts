@@ -22,10 +22,17 @@ import {
 } from '../../types.js';
 import { formatFiles } from '../prettier.js';
 
+// Verbose logs
 const DEBUG = false;
 
 // Useful for testing/debugging the streaming behavior
 const slowMode = false;
+
+// If the `EMIT_FIXTURES` variable is true,
+// then an output file in the `test/fixtures` folder
+// with the before and after file states for testing purposes.
+// This feeds into tests in codemirror-ot.
+const EMIT_FIXTURES = true;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
@@ -301,6 +308,36 @@ export const createLLMFunction = ({
     const newFilesFormatted = await formatFiles(
       newFilesUnformatted,
     );
+
+    if (EMIT_FIXTURES) {
+      const fs = await import('fs');
+      const path = await import('path');
+      const testCasesDir = path.resolve(
+        process.cwd(),
+        'fixtures',
+      );
+      if (!fs.existsSync(testCasesDir)) {
+        fs.mkdirSync(testCasesDir, { recursive: true });
+      }
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, '-');
+      const testCasePath = path.join(
+        testCasesDir,
+        `ai-chat-${timestamp}.json`,
+      );
+      const testCaseData = {
+        before: shareDBDoc.data.files,
+        after: newFilesFormatted,
+      };
+      fs.writeFileSync(
+        testCasePath,
+        JSON.stringify(testCaseData, null, 2),
+      );
+      console.log(
+        `AI chat test case written to ${testCasePath}`,
+      );
+    }
 
     // Apply all the edits at once
     const mergedChanges = mergeFileChanges(
