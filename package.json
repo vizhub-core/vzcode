@@ -147,7 +147,7 @@
     "bootstrap-icons": "^1.13.1",
     "codemirror": "^6.0.2",
     "codemirror-copilot": "^0.0.7",
-    "codemirror-ot": "^5.6.0",
+    "codemirror-ot": "^5.7.0",
     "color-hash": "^2.0.2",
     "comlink": "^4.4.2",
     "d3-array": "^3.2.4",
