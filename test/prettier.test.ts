@@ -54,26 +54,17 @@ describe('Server-side Prettier Integration', () => {
 
   it('should format multiple files correctly', async () => {
     const files = {
-      file1: {
-        name: 'script.js',
-        text: `const x=1;let y=2;`,
-      },
-      file2: {
-        name: 'style.css',
-        text: `.test{color:red;margin:0;}`,
-      },
-      file3: {
-        name: 'data.txt',
-        text: 'some text',
-      },
+      'script.js': `const x=1;let y=2;`,
+      'style.css': `.test{color:red;margin:0;}`,
+      'data.txt': 'some text',
     };
 
     const results = await formatFiles(files);
 
-    expect(results['file1']).toBeTruthy();
-    expect(results['file1']).toContain('const x = 1;');
-    expect(results['file2']).toBeTruthy();
-    expect(results['file2']).toContain('.test {');
-    expect(results['file3']).toBeUndefined(); // No formatter for .txt files
+    expect(results['script.js']).toBeTruthy();
+    expect(results['script.js']).toContain('const x = 1;');
+    expect(results['style.css']).toBeTruthy();
+    expect(results['style.css']).toContain('.test {');
+    expect(results['data.txt']).toBe('some text'); // Unsupported files are preserved as-is
   });
 });

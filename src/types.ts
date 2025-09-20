@@ -246,6 +246,11 @@ export type StreamingEvent =
       timestamp: number;
     }
   | {
+      type: 'file_delete';
+      fileName: string;
+      timestamp: number;
+    }
+  | {
       type: 'status_update';
       status: string;
       timestamp: number;

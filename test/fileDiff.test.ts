@@ -5,6 +5,9 @@ import {
   createFilesSnapshot,
   parseUnifiedDiffStats,
   combineUnifiedDiffs,
+  isFileDeletion,
+  getDeletedFileName,
+  FILE_DELETION_MARKER,
 } from '../src/utils/fileDiff';
 import { VizFiles } from '@vizhub/viz-types';
 
@@ -63,6 +66,20 @@ describe('fileDiff', () => {
       expect(diff).toContain(
         ' console.log("Hello, World!");',
       );
+    });
+
+    it('should return deletion marker for file deletions', () => {
+      const beforeContent = 'console.log("Hello, World!");';
+      const afterContent = '';
+
+      const diff = generateFileUnifiedDiff(
+        'file1',
+        'index.js',
+        beforeContent,
+        afterContent,
+      );
+
+      expect(diff).toBe(`${FILE_DELETION_MARKER}:index.js`);
     });
   });
 
@@ -132,7 +149,7 @@ describe('fileDiff', () => {
       );
     });
 
-    it('should handle deleted files', () => {
+    it('should handle deleted files with deletion marker', () => {
       const beforeFiles: VizFiles = {
         file1: {
           name: 'index.js',
@@ -157,9 +174,8 @@ describe('fileDiff', () => {
       );
 
       expect(Object.keys(diffs)).toEqual(['file2']);
-      expect(diffs['file2']).toContain('Index: old.js');
-      expect(diffs['file2']).toContain(
-        '-console.log("Old file");',
+      expect(diffs['file2']).toBe(
+        `${FILE_DELETION_MARKER}:old.js`,
       );
     });
   });
@@ -257,6 +273,72 @@ index 0000000..1111111 100644
     it('should handle empty diffs object', () => {
       const combined = combineUnifiedDiffs({});
       expect(combined).toBe('');
+    });
+
+    it('should exclude file deletion markers from combination', () => {
+      const unifiedDiffs = {
+        file1: `diff --git a/file1.js b/file1.js
+--- a/file1.js
++++ b/file1.js
+@@ -1,1 +1,2 @@
++// Comment
+ console.log("file1");`,
+        file2: `${FILE_DELETION_MARKER}:deleted.js`,
+      };
+
+      const combined = combineUnifiedDiffs(unifiedDiffs);
+
+      expect(combined).toContain(
+        'diff --git a/file1.js b/file1.js',
+      );
+      expect(combined).not.toContain(FILE_DELETION_MARKER);
+      expect(combined).not.toContain('deleted.js');
+    });
+  });
+
+  describe('isFileDeletion', () => {
+    it('should return true for deletion markers', () => {
+      const deletionMarker = `${FILE_DELETION_MARKER}:test.js`;
+      expect(isFileDeletion(deletionMarker)).toBe(true);
+    });
+
+    it('should return false for regular diffs', () => {
+      const regularDiff = `diff --git a/test.js b/test.js
+--- a/test.js
++++ b/test.js
+@@ -1,1 +1,2 @@
++// Comment
+ console.log("test");`;
+      expect(isFileDeletion(regularDiff)).toBe(false);
+    });
+
+    it('should return false for empty strings', () => {
+      expect(isFileDeletion('')).toBe(false);
+    });
+  });
+
+  describe('getDeletedFileName', () => {
+    it('should extract file name from deletion marker', () => {
+      const deletionMarker = `${FILE_DELETION_MARKER}:test.js`;
+      expect(getDeletedFileName(deletionMarker)).toBe(
+        'test.js',
+      );
+    });
+
+    it('should handle file names with paths', () => {
+      const deletionMarker = `${FILE_DELETION_MARKER}:src/components/Test.tsx`;
+      expect(getDeletedFileName(deletionMarker)).toBe(
+        'src/components/Test.tsx',
+      );
+    });
+
+    it('should return empty string for non-deletion strings', () => {
+      const regularDiff = `diff --git a/test.js b/test.js`;
+      expect(getDeletedFileName(regularDiff)).toBe('');
+    });
+
+    it('should return empty string for empty strings', () => {
+      expect(getDeletedFileName('')).toBe('');
     });
   });
 });

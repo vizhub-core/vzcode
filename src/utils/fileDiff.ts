@@ -2,7 +2,33 @@ import { createTwoFilesPatch } from 'diff';
 import { VizFiles, VizFileId } from '@vizhub/viz-types';
 
 export interface UnifiedFilesDiff {
-  [fileId: VizFileId]: string; // Unified diff string
+  [fileId: VizFileId]: string; // Unified diff string or deletion marker
+}
+
+// Special marker to indicate a file deletion
+export const FILE_DELETION_MARKER = '__FILE_DELETED__';
+
+/**
+ * Check if a diff string represents a file deletion
+ */
+export function isFileDeletion(
+  diffString: string,
+): boolean {
+  return diffString.startsWith(FILE_DELETION_MARKER);
+}
+
+/**
+ * Extract file name from a deletion marker
+ */
+export function getDeletedFileName(
+  diffString: string,
+): string {
+  if (!isFileDeletion(diffString)) {
+    return '';
+  }
+  return diffString.substring(
+    FILE_DELETION_MARKER.length + 1,
+  );
 }
 
 /**
@@ -17,6 +43,11 @@ export function generateFileUnifiedDiff(
   // Only generate diff if there are actual changes
   if (beforeContent === afterContent) {
     return '';
+  }
+
+  // Handle file deletion case - when file existed before but is now empty/deleted
+  if (beforeContent && !afterContent) {
+    return `${FILE_DELETION_MARKER}:${fileName}`;
   }
 
   // Use the diff library's createTwoFilesPatch function to generate unified diff
@@ -109,9 +140,12 @@ export function parseUnifiedDiffStats(
 
 /**
  * Combine multiple unified diffs into a single diff string
+ * Note: File deletion markers are excluded from combination
  */
 export function combineUnifiedDiffs(
   unifiedDiffs: UnifiedFilesDiff,
 ): string {
-  return Object.values(unifiedDiffs).join('\n');
+  return Object.values(unifiedDiffs)
+    .filter((diff) => !isFileDeletion(diff))
+    .join('\n');
 }
