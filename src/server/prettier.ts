@@ -82,6 +82,9 @@ export const formatFile = async (
   }
 };
 
+// Keys are file names, values are file text contents
+//export type FileCollection = Record<string, string>;
+
 /**
  * Formats multiple files using Prettier
  * Only formats files that have supported extensions

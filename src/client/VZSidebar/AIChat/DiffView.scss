@@ -134,4 +134,40 @@
       background-color: var(--d2h-bg-color);
     }
   }
+
+  .deleted-file {
+    margin-bottom: 8px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background-color: rgb(41, 44, 52);
+    overflow: hidden;
+
+    .deleted-file-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: #161b22;
+      border-bottom: 1px solid #30363d;
+
+      .deleted-file-name {
+        color: #e6edf3;
+        font-weight: 600;
+        font-family:
+          'SFMono-Regular', Consolas, 'Liberation Mono',
+          Menlo, monospace;
+        font-size: 14px;
+      }
+
+      .deleted-file-status {
+        color: #f85149;
+        font-weight: 600;
+        font-size: 14px;
+        background-color: rgba(248, 81, 73, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(248, 81, 73, 0.4);
+      }
+    }
+  }
 }

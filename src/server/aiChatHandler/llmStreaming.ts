@@ -371,7 +371,7 @@ export const createLLMFunction = ({
       );
       const testCaseData = {
         before: shareDBDoc.data.files,
-        after: newFilesFormatted,
+        after: mergedChanges,
         filesOp,
       };
       fs.writeFileSync(
