@@ -100,7 +100,7 @@ export const DiffView = forwardRef<
     [],
   );
 
-  // Add click handlers to file names after HTML is rendered
+  // Add click handlers to file names and files-changed summary after HTML is rendered
   useEffect(() => {
     if (!diffContainerRef.current) return;
 
@@ -127,12 +127,35 @@ export const DiffView = forwardRef<
       }
     };
 
+    const handleFilesChangedClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('files-changed')) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log('Files changed summary clicked');
+
+        // Get all changed file IDs from diffData
+        const changedFileIds = Object.keys(diffData);
+
+        if (changedFileIds.length > 0) {
+          // Open the first changed file
+          const firstFileId = changedFileIds[0];
+          openTab({
+            fileId: firstFileId,
+            isTransient: false,
+          });
+          setIsAIChatOpen(false);
+        }
+      }
+    };
+
     const container = diffContainerRef.current;
     const fileNameElements = container.querySelectorAll(
       '.d2h-file-name',
     );
 
-    // Add click event listeners and cursor pointer style
+    // Add click event listeners and cursor pointer style to file names
     fileNameElements.forEach((element) => {
       element.addEventListener(
         'click',
@@ -144,6 +167,21 @@ export const DiffView = forwardRef<
       (element as HTMLElement).style.color = '#58a6ff'; // GitHub blue link color
     });
 
+    // Add click event listener and styling to files-changed element
+    const filesChangedElement = document.querySelector(
+      '.files-changed',
+    ) as HTMLElement;
+    if (filesChangedElement) {
+      filesChangedElement.addEventListener(
+        'click',
+        handleFilesChangedClick,
+      );
+      filesChangedElement.style.cursor = 'pointer';
+      filesChangedElement.style.textDecoration =
+        'underline';
+      filesChangedElement.style.color = '#58a6ff'; // GitHub blue link color
+    }
+
     return () => {
       // Cleanup event listeners
       fileNameElements.forEach((element) => {
@@ -152,8 +190,21 @@ export const DiffView = forwardRef<
           handleFileNameClick,
         );
       });
+
+      if (filesChangedElement) {
+        filesChangedElement.removeEventListener(
+          'click',
+          handleFilesChangedClick,
+        );
+      }
     };
-  }, [diffHtml, content, openTab, setIsAIChatOpen]);
+  }, [
+    diffHtml,
+    content,
+    openTab,
+    setIsAIChatOpen,
+    diffData,
+  ]);
 
   if (unifiedDiffs.length === 0) {
     return null;

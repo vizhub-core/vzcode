@@ -17,6 +17,11 @@
       .files-changed {
         color: white;
         font-weight: 600;
+
+        &:hover {
+          text-decoration: underline !important;
+          opacity: 0.8;
+        }
       }
 
       .additions {
