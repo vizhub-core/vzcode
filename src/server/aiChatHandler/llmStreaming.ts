@@ -33,7 +33,7 @@ const slowMode = false;
 // then an output file in the `test/fixtures` folder
 // with the before and after file states for testing purposes.
 // This feeds into tests in codemirror-ot.
-const EMIT_FIXTURES = true;
+const EMIT_FIXTURES = false;
 
 /**
  * Creates and configures the LLM function for streaming with reasoning tokens
