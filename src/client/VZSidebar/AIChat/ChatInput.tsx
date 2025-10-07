@@ -168,7 +168,7 @@ const ChatInputComponent = ({
       <Form.Group className="ai-chat-input-group">
         <Form.Control
           as="textarea"
-          rows={5}
+          rows={10}
           value={aiChatMessage}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
