@@ -209,6 +209,10 @@ export type VZCodeContextValue = {
 
   // Feature flags
   enableMinimalEditFlow: boolean;
+
+  // AI Chat text entry control
+  enableAIChatTextEntry?: boolean;
+  clearChatHistory?: () => void;
 };
 
 export interface VZCodeProviderProps {
@@ -254,4 +258,6 @@ export interface VZCodeProviderProps {
     error: string,
     message?: string,
   ) => void;
+  enableAIChatTextEntry?: boolean;
+  clearChatHistory?: () => void;
 }

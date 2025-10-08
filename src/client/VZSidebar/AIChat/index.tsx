@@ -66,6 +66,7 @@ export const AIChat = () => {
     navigateMessageHistoryDown,
     resetMessageHistoryNavigation,
     enableMinimalEditFlow,
+    enableAIChatTextEntry = true, // Default to true if not provided
   } = useContext(VZCodeContext);
 
   // Use the new simplified auto-scroll hook
@@ -381,6 +382,7 @@ export const AIChat = () => {
           resetMessageHistoryNavigation={
             resetMessageHistoryNavigation
           }
+          enableTextEntry={enableAIChatTextEntry}
         />
       </div>
     </div>

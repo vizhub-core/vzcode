@@ -24,6 +24,7 @@ interface ChatInputProps {
   navigateMessageHistoryUp: () => void;
   navigateMessageHistoryDown: () => void;
   resetMessageHistoryNavigation: () => void;
+  enableTextEntry?: boolean;
 }
 
 const ChatInputComponent = ({
@@ -36,6 +37,7 @@ const ChatInputComponent = ({
   navigateMessageHistoryUp,
   navigateMessageHistoryDown,
   resetMessageHistoryNavigation,
+  enableTextEntry = true, // Default to true if not provided
 }: ChatInputProps) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -180,6 +182,7 @@ const ChatInputComponent = ({
           }
           spellCheck="false"
           aria-label="Chat message input"
+          disabled={!enableTextEntry}
         />
         <div className="ai-chat-input-footer">
           <span className="ai-chat-hint">
@@ -220,7 +223,9 @@ const ChatInputComponent = ({
                   : 'outline-secondary'
               }
               onClick={handleSendClick}
-              disabled={!aiChatMessage.trim()}
+              disabled={
+                !aiChatMessage.trim() || !enableTextEntry
+              }
               className="ai-chat-send-button"
               aria-label="Send message"
               title="Send message (Enter)"

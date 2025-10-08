@@ -54,6 +54,8 @@ export const useVZCodeState = ({
   additionalWidgets,
   iframeRef: externalIframeRef,
   handleChatError,
+  enableAIChatTextEntry,
+  clearChatHistory,
 }: Omit<
   VZCodeProviderProps,
   'children'
@@ -701,5 +703,9 @@ export const useVZCodeState = ({
 
     // Feature flags
     enableMinimalEditFlow,
+
+    // AI Chat text entry control
+    enableAIChatTextEntry,
+    clearChatHistory,
   };
 };
