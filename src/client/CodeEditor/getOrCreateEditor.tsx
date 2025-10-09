@@ -70,6 +70,7 @@ import { SparklesSVG } from '../Icons/SparklesSVG';
 import { MINIMAL_EXTENSIONS } from '../featureFlags';
 
 const DEBUG = false;
+const enableToDoPlugin = false;
 
 // Define a StateField to store the file name.
 // This should be defined at the module level if it's to be imported by other modules.
@@ -573,7 +574,9 @@ export const getOrCreateEditor = async ({
       return todoPlugin;
     }
 
-    extensions.push(createToDoPlugin());
+    if (enableToDoPlugin) {
+      extensions.push(createToDoPlugin());
+    }
   }
 
   const editor = new EditorView({
