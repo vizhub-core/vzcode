@@ -32,13 +32,18 @@ test('addUserMessage should replace old messages with new user message', () => {
   };
 
   // Add a new user message
-  addUserMessage(mockShareDBDoc as any, 'testChat', 'Second message');
+  addUserMessage(
+    mockShareDBDoc as any,
+    'testChat',
+    'Second message',
+  );
 
   // Verify that submitOp was called
   expect(mockShareDBDoc.submitOp).toHaveBeenCalled();
 
   // Get the operation that was submitted
-  const submittedOp = mockShareDBDoc.submitOp.mock.calls[0][0];
+  const submittedOp =
+    mockShareDBDoc.submitOp.mock.calls[0][0];
 
   // Verify the operation replaces messages with only the new message
   // The diff should show that the old messages array is being replaced with a new array containing only one message
@@ -65,8 +70,12 @@ test('addUserMessage should replace old messages with new user message', () => {
   };
 
   // Verify that the expected state would have only one message
-  expect(expectedNewState.chats.testChat.messages).toHaveLength(1);
-  expect(expectedNewState.chats.testChat.messages[0].content).toBe('Second message');
+  expect(
+    expectedNewState.chats.testChat.messages,
+  ).toHaveLength(1);
+  expect(
+    expectedNewState.chats.testChat.messages[0].content,
+  ).toBe('Second message');
 });
 
 test('addUserMessage with empty chat creates only one message', () => {
@@ -86,7 +95,11 @@ test('addUserMessage with empty chat creates only one message', () => {
   };
 
   // Add a new user message to the empty chat
-  addUserMessage(mockShareDBDoc as any, 'emptyChat', 'First message');
+  addUserMessage(
+    mockShareDBDoc as any,
+    'emptyChat',
+    'First message',
+  );
 
   // Verify that submitOp was called
   expect(mockShareDBDoc.submitOp).toHaveBeenCalled();
@@ -112,8 +125,12 @@ test('addUserMessage with empty chat creates only one message', () => {
   };
 
   // Verify that only one message would be present
-  expect(expectedNewState.chats.emptyChat.messages).toHaveLength(1);
-  expect(expectedNewState.chats.emptyChat.messages[0].content).toBe('First message');
+  expect(
+    expectedNewState.chats.emptyChat.messages,
+  ).toHaveLength(1);
+  expect(
+    expectedNewState.chats.emptyChat.messages[0].content,
+  ).toBe('First message');
 });
 
 test('addUserMessage behavior: clears old messages instead of appending', () => {
@@ -124,8 +141,18 @@ test('addUserMessage behavior: clears old messages instead of appending', () => 
   const chatWithHistory = {
     id: 'testChat',
     messages: [
-      { id: 'user-1', role: 'user', content: 'Old message', timestamp: 1000 },
-      { id: 'ai-1', role: 'assistant', content: 'Old response', timestamp: 2000 },
+      {
+        id: 'user-1',
+        role: 'user',
+        content: 'Old message',
+        timestamp: 1000,
+      },
+      {
+        id: 'ai-1',
+        role: 'assistant',
+        content: 'Old response',
+        timestamp: 2000,
+      },
     ],
     createdAt: 1000,
     updatedAt: 2000,
@@ -136,15 +163,20 @@ test('addUserMessage behavior: clears old messages instead of appending', () => 
     submitOp: vi.fn(),
   };
 
-  addUserMessage(mockShareDBDoc as any, 'testChat', 'New message');
+  addUserMessage(
+    mockShareDBDoc as any,
+    'testChat',
+    'New message',
+  );
 
   // The key difference: The operation should replace the entire messages array
   // not append to it. We can verify this by checking that the diff creates
   // a new array with only 1 element, not an array with 3 elements.
-  
-  const submittedOp = mockShareDBDoc.submitOp.mock.calls[0][0];
+
+  const submittedOp =
+    mockShareDBDoc.submitOp.mock.calls[0][0];
   expect(submittedOp).toBeDefined();
-  
+
   // The operation should represent replacing messages array entirely
   // This is the behavior change: clear old messages, don't append
 });
