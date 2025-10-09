@@ -51,6 +51,7 @@ export const ensureChatExists = (
 
 /**
  * Adds a user message to the chat
+ * Clears old messages to reflect that each prompt is a self-contained code transformation
  */
 export const addUserMessage = (
   shareDBDoc: ShareDBDoc<VizContent>,
@@ -70,10 +71,7 @@ export const addUserMessage = (
       ...shareDBDoc.data.chats,
       [chatId]: {
         ...shareDBDoc.data.chats[chatId],
-        messages: [
-          ...shareDBDoc.data.chats[chatId].messages,
-          userMessage,
-        ],
+        messages: [userMessage], // Replace old messages with just the new user message
         updatedAt: dateToTimestamp(new Date()),
       },
     },
