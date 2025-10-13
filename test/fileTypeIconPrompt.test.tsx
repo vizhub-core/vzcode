@@ -7,7 +7,7 @@ describe('FileTypeIcon for .prompt files', () => {
     const icon = getExtensionIcon('test.prompt');
     // Both md and prompt should return the same icon type
     const mdIcon = getExtensionIcon('test.md');
-    
+
     // Check that both return the same type of element
     expect(icon.type).toBe(MarkdownSVG);
     expect(mdIcon.type).toBe(MarkdownSVG);
