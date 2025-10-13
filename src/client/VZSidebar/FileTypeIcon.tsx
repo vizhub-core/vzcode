@@ -25,6 +25,7 @@ export function getExtensionIcon(fileName: string) {
     case 'json':
       return <JsonSVG />;
     case 'md':
+    case 'prompt':
       return <MarkdownSVG />;
     case 'html':
       return <HtmlSVG />;

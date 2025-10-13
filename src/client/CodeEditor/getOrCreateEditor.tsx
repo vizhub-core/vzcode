@@ -138,6 +138,7 @@ const languageExtensions = {
   html: () => html(htmlConfig),
   css,
   md: markdown,
+  prompt: markdown,
   svelte,
 };
 
@@ -356,7 +357,10 @@ export const getOrCreateEditor = async ({
     );
 
     // Enable line wrapping for Markdown files
-    if (fileExtension === 'md') {
+    if (
+      fileExtension === 'md' ||
+      fileExtension === 'prompt'
+    ) {
       extensions.push(EditorView.lineWrapping);
     }
 
