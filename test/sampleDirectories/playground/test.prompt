@@ -1,0 +1,25 @@
+# Test Prompt File
+
+This is a test `.prompt` file to verify that it:
+- Gets Markdown syntax highlighting
+- Shows the Markdown icon in the file tree
+- Has line wrapping enabled
+
+## Features
+
+* **Bold text**
+* *Italic text*
+* `Code blocks`
+
+```javascript
+// Code blocks should be highlighted
+console.log('Hello, world!');
+```
+
+## Lists
+
+1. First item
+2. Second item
+3. Third item
+
+This file should be treated exactly like a `.md` file in the CodeMirror editor.
