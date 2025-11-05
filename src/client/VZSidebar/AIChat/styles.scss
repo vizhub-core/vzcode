@@ -362,6 +362,25 @@
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     color: inherit;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: 1.25rem; // 20px at 16px base
+  }
+
+  h2 {
+    font-size: 1.125rem; // 18px at 16px base
+  }
+
+  h3 {
+    font-size: 1rem; // 16px at 16px base
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: 0.875rem; // 14px at 16px base
   }
 
   ul,
@@ -784,10 +803,29 @@
     h6 {
       margin: 8px 0 6px 0;
       color: var(--vh-color-neutral-04);
+      font-weight: 600;
 
       &:first-child {
         margin-top: 0;
       }
+    }
+
+    h1 {
+      font-size: 1.125rem; // 18px at 16px base
+    }
+
+    h2 {
+      font-size: 1rem; // 16px at 16px base
+    }
+
+    h3 {
+      font-size: 0.9375rem; // 15px at 16px base
+    }
+
+    h4,
+    h5,
+    h6 {
+      font-size: 0.8125rem; // 13px at 16px base
     }
   }
 }
