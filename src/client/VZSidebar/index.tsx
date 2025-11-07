@@ -32,7 +32,7 @@ import { MicSVG } from '../Icons/MicSVG';
 import { sortFileTree } from '../sortFileTree';
 import { SplitPaneResizeContext } from '../SplitPaneResizeContext';
 import { VZCodeContext } from '../VZCodeContext';
-import { AIChat } from './AIChat';
+import { AIChat } from '../../llm-streaming-ui/components/index.js';
 import { Listing } from './Listing';
 import { Search } from './Search';
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';

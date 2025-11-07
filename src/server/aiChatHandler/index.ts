@@ -1,16 +1,16 @@
-import { validateRequest } from './validation.js';
+import { validateRequest } from '../../llm-streaming-server/validation.js';
 import {
   ensureChatsExist,
   ensureChatExists,
   addUserMessage,
   setAIStatus,
-} from './chatOperations.js';
-import { createLLMFunction } from './llmStreaming.js';
-import { performAIEditing } from './aiEditing.js';
+} from '../../llm-streaming-server/chatOperations.js';
+import { createLLMFunction } from '../../llm-streaming-server/llmStreaming.js';
+import { performAIEditing } from '../../llm-streaming-server/aiEditing.js';
 import {
   handleError,
   handleBackgroundError,
-} from './errorHandling.js';
+} from '../../llm-streaming-server/errorHandling.js';
 import { createRunCodeFunction } from '../../runCode.js';
 import { ShareDBDoc } from '../../types.js';
 import { VizContent } from '@vizhub/viz-types';
