@@ -1,0 +1,173 @@
+.diff-view {
+  margin: 12px 0;
+
+  .diff-summary {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .diff-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--bs-secondary-color);
+
+      .files-changed {
+        color: white;
+        font-weight: 600;
+      }
+
+      .additions {
+        color: #28a745;
+        font-weight: 600;
+      }
+
+      .deletions {
+        color: #dc3545;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .diff-files {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    // Fix diff2html styling issues for dark theme and layout
+    .d2h-wrapper {
+      // Override diff2html variables for dark theme
+      --d2h-bg-color: rgb(41, 44, 52);
+      --d2h-color: #e6edf3;
+      --d2h-border-color: #30363d;
+      --d2h-dim-color: #6e7681;
+      --d2h-info-bg-color: #161b22;
+      --d2h-file-header-bg-color: #161b22;
+      --d2h-file-header-border-color: #30363d;
+      --d2h-line-border-color: #21262d;
+      --d2h-ins-bg-color: rgba(46, 160, 67, 0.15);
+      --d2h-ins-border-color: rgba(46, 160, 67, 0.4);
+      --d2h-ins-highlight-bg-color: rgba(46, 160, 67, 0.4);
+      --d2h-ins-label-color: #3fb950;
+      --d2h-del-bg-color: rgba(248, 81, 73, 0.1);
+      --d2h-del-border-color: rgba(248, 81, 73, 0.4);
+      --d2h-del-highlight-bg-color: rgba(248, 81, 73, 0.4);
+      --d2h-del-label-color: #f85149;
+
+      background-color: var(--d2h-bg-color);
+      color: var(--d2h-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    // Fix layout issues with line numbers
+    .d2h-diff-table {
+      position: relative;
+      background-color: var(--d2h-bg-color);
+    }
+
+    .d2h-code-linenumber {
+      position: relative !important;
+      float: none !important;
+      display: table-cell !important;
+      width: auto !important;
+      background-color: var(--d2h-bg-color) !important;
+      border-color: var(--d2h-line-border-color) !important;
+      color: var(--d2h-dim-color) !important;
+    }
+
+    .d2h-code-side-linenumber {
+      position: relative !important;
+      float: none !important;
+      display: table-cell !important;
+      width: auto !important;
+      background-color: var(--d2h-bg-color) !important;
+      border-color: var(--d2h-line-border-color) !important;
+      color: var(--d2h-dim-color) !important;
+    }
+
+    // Ensure proper table layout
+    .d2h-diff-tbody tr {
+      display: table-row;
+    }
+
+    .d2h-diff-tbody td {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    // Fix file header styling
+    .d2h-file-header {
+      display: none !important;
+      background-color: var(
+        --d2h-file-header-bg-color
+      ) !important;
+      border-bottom: 1px solid
+        var(--d2h-file-header-border-color) !important;
+      color: var(--d2h-color);
+    }
+
+    // Ensure proper line styling
+    .d2h-del {
+      background-color: var(--d2h-del-bg-color) !important;
+      border-color: var(--d2h-del-border-color) !important;
+    }
+
+    .d2h-ins {
+      background-color: var(--d2h-ins-bg-color) !important;
+      border-color: var(--d2h-ins-border-color) !important;
+    }
+
+    // Style clickable file names
+    .d2h-file-name {
+      &:hover {
+        text-decoration: underline !important;
+        opacity: 0.8;
+      }
+    }
+
+    // Fix wrapper border
+    .d2h-file-wrapper {
+      border: 1px solid var(--d2h-border-color) !important;
+      background-color: var(--d2h-bg-color);
+    }
+  }
+
+  .deleted-file {
+    margin-bottom: 8px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    background-color: rgb(41, 44, 52);
+    overflow: hidden;
+
+    .deleted-file-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: #161b22;
+      border-bottom: 1px solid #30363d;
+
+      .deleted-file-name {
+        color: #e6edf3;
+        font-weight: 600;
+        font-family:
+          'SFMono-Regular', Consolas, 'Liberation Mono',
+          Menlo, monospace;
+        font-size: 14px;
+      }
+
+      .deleted-file-status {
+        color: #f85149;
+        font-weight: 600;
+        font-size: 14px;
+        background-color: rgba(248, 81, 73, 0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(248, 81, 73, 0.4);
+      }
+    }
+  }
+}
