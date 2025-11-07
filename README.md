@@ -10,6 +10,7 @@ VZCode offers a multiplayer code editing environment that caters to a real-time 
 - [Development](#development)
 - [Features](#features)
 - [Use Cases](#use-cases)
+- [Visual Editor](#visual-editor)
 - [Stack](#stack)
 - [Goals](#goals)
 - [Prior Work](#prior-work)
@@ -119,6 +120,364 @@ You can also use [npm link](https://docs.npmjs.com/cli/v8/commands/npm-link) to 
 
 - **Staging Site Editor (Experimental)**:
   Use VZCode on a persistent server, making code changes with multiplayer mode remotely, reflecting instantly on a staging site.
+
+## Visual Editor
+
+VZCode includes a visual editor feature that allows you to create interactive widgets (like sliders and color pickers) for tweaking configuration parameters in real-time. This is particularly useful for data visualizations where you want to adjust visual properties dynamically without editing code.
+
+### Overview
+
+The visual editor works by:
+
+1. Loading a `config.json` file that defines configuration parameters
+2. Defining interactive widgets in the `visualEditorWidgets` array
+3. Listening for configuration updates via `postMessage`
+4. Re-rendering the visualization when configuration changes
+
+### Configuration Structure
+
+Your project should include a `config.json` file with the following structure:
+
+```json
+{
+  "xValue": "sepal_length",
+  "yValue": "sepal_width",
+  "margin": {
+    "top": 20,
+    "right": 67,
+    "bottom": 60,
+    "left": 60
+  },
+  "fontSize": "14px",
+  "fontFamily": "sans-serif",
+  "pointRadius": 17.2675034867503,
+  "pointFill": "black",
+  "pointOpacity": 0.7,
+  "loadingFontSize": "24px",
+  "loadingFontFamily": "sans-serif",
+  "loadingMessage": "Loading...",
+  "dataUrl": "iris.csv",
+  "colorScale": {
+    "setosa": "#1f77b4",
+    "versicolor": "#ff7f0e",
+    "virginica": "#2ca02c"
+  },
+  "visualEditorWidgets": [
+    {
+      "type": "slider",
+      "label": "Point Radius",
+      "property": "pointRadius",
+      "min": 1,
+      "max": 30
+    },
+    {
+      "type": "slider",
+      "label": "Left Margin",
+      "property": "margin.left",
+      "min": 0,
+      "max": 200
+    }
+  ]
+}
+```
+
+### Widget Configuration
+
+The `visualEditorWidgets` array defines the interactive controls that will be available in the visual editor. Each widget has the following properties:
+
+- **type**: The type of widget. Supported types are:
+  - `"slider"` - A slider control for numeric values
+  - `"checkbox"` - A checkbox for boolean values
+  - `"textInput"` - A text input field for string values
+  - `"dropdown"` - A dropdown selector with predefined options
+  - `"color"` - A color picker with HCL (Hue, Chroma, Lightness) sliders
+- **label**: Human-readable label displayed in the UI
+- **property**: The configuration property to modify (supports nested properties using dot notation like `"margin.left"`)
+- **min**: Minimum value (required for `slider` widgets)
+- **max**: Maximum value (required for `slider` widgets)
+- **step**: Step increment for `slider` widgets (optional, defaults to 1 if not specified)
+- **options**: Array of string options (required for `dropdown` widgets)
+
+### Setting Up Your Visualization
+
+To make your visualization work with the visual editor, you need to:
+
+#### 1. Load the Configuration
+
+Use d3-rosetta's state management to load the configuration file:
+
+```javascript
+import { createStateField } from 'd3-rosetta';
+import { json } from 'd3';
+
+export const viz = (container, state, setState) => {
+  const stateField = createStateField(state, setState);
+  const [config, setConfig] = stateField('config');
+
+  // Load config first if not already loaded
+  if (!config) {
+    json('config.json')
+      .then((loadedConfig) => {
+        setConfig(loadedConfig);
+      })
+      .catch((error) => {
+        console.error('Failed to load config:', error);
+      });
+    return;
+  }
+
+  // ... rest of your visualization code
+};
+```
+
+#### 2. Set Up postMessage Event Listener
+
+Add an event listener to receive configuration updates from the visual editor:
+
+```javascript
+export const viz = (container, state, setState) => {
+  // ... other code ...
+
+  // Set up postMessage event listener if not already set
+  if (!state.eventListenerAttached) {
+    window.addEventListener('message', (event) => {
+      // Verify the message contains config data
+      if (event.data && typeof event.data === 'object') {
+        // Update the config with the received data
+        setState((state) => ({
+          ...state,
+          config: {
+            ...state.config,
+            ...event.data,
+          },
+        }));
+      }
+    });
+
+    // Mark that we've attached the event listener to avoid duplicates
+    setState((prevState) => ({
+      ...prevState,
+      eventListenerAttached: true,
+    }));
+  }
+
+  // ... rest of your visualization code
+};
+```
+
+#### 3. Use Configuration in Your Rendering
+
+Use the configuration values when rendering your visualization:
+
+```javascript
+// Example: Rendering data points with configurable properties
+export const renderMarks = (
+  svg,
+  {
+    data,
+    xScale,
+    yScale,
+    xValue,
+    yValue,
+    pointRadius,
+    colorScale,
+    pointOpacity,
+  },
+) =>
+  svg
+    .selectAll('circle.data-point')
+    .data(data)
+    .join('circle')
+    .attr('class', 'data-point')
+    .attr('cx', (d) => xScale(xValue(d)))
+    .attr('cy', (d) => yScale(yValue(d)))
+    .attr('r', pointRadius) // Uses config value
+    .attr('fill', (d) => colorScale[d.species])
+    .attr('opacity', pointOpacity); // Uses config value
+```
+
+#### 4. Handle Loading States
+
+Display loading states while data is being fetched:
+
+```javascript
+export const renderLoadingState = (
+  svg,
+  { x, y, text, shouldShow, fontSize, fontFamily },
+) => {
+  svg
+    .selectAll('text.loading-text')
+    .data(shouldShow ? [null] : [])
+    .join('text')
+    .attr('class', 'loading-text')
+    .attr('x', x)
+    .attr('y', y)
+    .attr('text-anchor', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .attr('font-size', fontSize) // Uses config value
+    .attr('font-family', fontFamily) // Uses config value
+    .text(text);
+};
+```
+
+#### 5. Manage Asynchronous Data Loading
+
+Handle asynchronous data requests with proper state management:
+
+```javascript
+export const asyncRequest = (
+  setDataRequest,
+  loadAndParseData,
+) => {
+  setDataRequest({ status: 'Loading' });
+  loadAndParseData()
+    .then((data) => {
+      setDataRequest({ status: 'Succeeded', data });
+    })
+    .catch((error) => {
+      setDataRequest({ status: 'Failed', error });
+    });
+};
+```
+
+### Complete Example
+
+Here's how everything fits together in your main visualization file:
+
+```javascript
+import { createStateField } from 'd3-rosetta';
+import { setupSVG } from './setupSVG.js';
+import { renderLoadingState } from './renderLoadingState.js';
+import { asyncRequest } from './asyncRequest.js';
+import { loadAndParseData } from './loadAndParseData.js';
+import { scatterPlot } from './scatterPlot.js';
+import { measureDimensions } from './measureDimensions.js';
+import { json } from 'd3';
+
+export const viz = (container, state, setState) => {
+  const stateField = createStateField(state, setState);
+  const [dataRequest, setDataRequest] =
+    stateField('dataRequest');
+  const [config, setConfig] = stateField('config');
+
+  // Set up postMessage event listener if not already set
+  if (!state.eventListenerAttached) {
+    window.addEventListener('message', (event) => {
+      if (event.data && typeof event.data === 'object') {
+        setState((state) => ({
+          ...state,
+          config: {
+            ...state.config,
+            ...event.data,
+          },
+        }));
+      }
+    });
+
+    setState((prevState) => ({
+      ...prevState,
+      eventListenerAttached: true,
+    }));
+  }
+
+  // Load config first if not already loaded
+  if (!config) {
+    json('config.json')
+      .then((loadedConfig) => {
+        setConfig(loadedConfig);
+      })
+      .catch((error) => {
+        console.error('Failed to load config:', error);
+      });
+    return;
+  }
+
+  // After config is loaded, load the data
+  if (!dataRequest) {
+    return asyncRequest(setDataRequest, () =>
+      loadAndParseData(config.dataUrl),
+    );
+  }
+
+  const { data, error } = dataRequest;
+  const dimensions = measureDimensions(container);
+  const svg = setupSVG(container, dimensions);
+
+  renderLoadingState(svg, {
+    shouldShow: !data,
+    text: error
+      ? `Error: ${error.message}`
+      : config.loadingMessage,
+    x: dimensions.width / 2,
+    y: dimensions.height / 2,
+    fontSize: config.loadingFontSize,
+    fontFamily: config.loadingFontFamily,
+  });
+
+  if (data) {
+    // Transform string properties in config to accessor functions
+    const configWithAccessors = {
+      ...config,
+      xValue: (d) => d[config.xValue],
+      yValue: (d) => d[config.yValue],
+    };
+
+    scatterPlot(svg, {
+      ...configWithAccessors,
+      data,
+      dimensions,
+    });
+  }
+};
+```
+
+### Required HTML Structure
+
+Your `index.html` should include a container element and proper script imports:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Visual Editor Example</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "d3": "https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm",
+          "d3-rosetta": "https://cdn.jsdelivr.net/npm/d3-rosetta@3.0.0/+esm"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="viz-container"></div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
+```
+
+### Styling
+
+Use CSS to ensure your visualization container fills the viewport:
+
+```css
+#viz-container {
+  position: fixed;
+  inset: 0;
+}
+```
+
+### Best Practices
+
+1. **Use d3-rosetta**: The visual editor is designed to work with d3-rosetta's unidirectional data flow pattern
+2. **Modular Code**: Separate your rendering logic into small, focused functions
+3. **Configuration-Driven**: Make visual properties configurable through `config.json`
+4. **Nested Properties**: Use dot notation (e.g., `"margin.left"`) to modify nested configuration values
+5. **Hot Reloading**: The visual editor works seamlessly with VZCode's throttled auto-save for hot reloading environments
+
+For a complete working example, see the [visualEditor sample directory](test/sampleDirectories/visualEditor) in this repository.
 
 ## Stack
 
