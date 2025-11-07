@@ -164,14 +164,14 @@ Your project should include a `config.json` file with the following structure:
   },
   "visualEditorWidgets": [
     {
-      "type": "number",
+      "type": "slider",
       "label": "Point Radius",
       "property": "pointRadius",
       "min": 1,
       "max": 30
     },
     {
-      "type": "number",
+      "type": "slider",
       "label": "Left Margin",
       "property": "margin.left",
       "min": 0,
@@ -185,12 +185,18 @@ Your project should include a `config.json` file with the following structure:
 
 The `visualEditorWidgets` array defines the interactive controls that will be available in the visual editor. Each widget has the following properties:
 
-- **type**: The type of widget (`"number"`, `"slider"`, `"color"`, etc.)
+- **type**: The type of widget. Supported types are:
+  - `"slider"` - A slider control for numeric values
+  - `"checkbox"` - A checkbox for boolean values
+  - `"textInput"` - A text input field for string values
+  - `"dropdown"` - A dropdown selector with predefined options
+  - `"color"` - A color picker with HCL (Hue, Chroma, Lightness) sliders
 - **label**: Human-readable label displayed in the UI
 - **property**: The configuration property to modify (supports nested properties using dot notation like `"margin.left"`)
-- **min**: Minimum value (for number/slider widgets)
-- **max**: Maximum value (for number/slider widgets)
-- **step**: Step increment (optional, for number/slider widgets)
+- **min**: Minimum value (required for `slider` widgets)
+- **max**: Maximum value (required for `slider` widgets)
+- **step**: Step increment for `slider` widgets (optional, defaults to 1 if not specified)
+- **options**: Array of string options (required for `dropdown` widgets)
 
 ### Setting Up Your Visualization
 
