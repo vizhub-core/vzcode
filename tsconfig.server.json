@@ -17,10 +17,13 @@
   "include": [
     "src/cli.ts",
     "src/server/**/*.ts",
+    "src/llm-streaming-server/**/*.ts",
     "src/types.ts",
     "src/randomId.ts",
     "src/ot.ts",
-    "src/utils/**/*.ts"
+    "src/utils/**/*.ts",
+    "src/runCode.ts",
+    "src/submitOperation.ts"
   ],
   "exclude": [
     "src/client/**/*",
