@@ -70,7 +70,7 @@ import { SparklesSVG } from '../Icons/SparklesSVG';
 import { MINIMAL_EXTENSIONS } from '../featureFlags';
 
 const DEBUG = false;
-const enableToDoPlugin = false;
+const enableToDoPlugin = true;
 
 // Define a StateField to store the file name.
 // This should be defined at the module level if it's to be imported by other modules.
@@ -189,7 +189,7 @@ export const getOrCreateEditor = async ({
   esLintSource,
   rainbowBracketsEnabled = true,
   setIsAIChatOpen,
-  handleSendMessage,
+  setAIChatMessage,
 }: {
   // TODO pass this in from the outside
   paneId?: PaneId;
@@ -226,7 +226,7 @@ export const getOrCreateEditor = async ({
   ) => Promise<readonly Diagnostic[]>;
   rainbowBracketsEnabled?: boolean; // New parameter type
   setIsAIChatOpen: (isAIChatOpen: boolean) => void;
-  handleSendMessage: any; // TODO fix types
+  setAIChatMessage: (message: string) => void;
 }): Promise<ExtendedEditorCacheValue> => {
   // Cache hit
 
@@ -489,22 +489,25 @@ export const getOrCreateEditor = async ({
           wrap.style.alignItems = 'center';
           wrap.style.justifyContent = 'center';
           wrap.className = 'icon-button icon-button-dark';
+          wrap.style.cursor = 'pointer';
+
+          // Handle click directly on the wrapper element
+          wrap.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setAIChatMessage('Implement the TODO');
+            setIsAIChatOpen(true);
+          });
+
           const reactContainer =
             document.createElement('div');
           wrap.appendChild(reactContainer);
 
           const root = createRoot(reactContainer);
           root.render(
-            <div
-              onClick={() => {
-                setIsAIChatOpen(true);
-                // setAIChatMessage('Implement the TODO');
-                handleSendMessage('Implement the TODO');
-              }}
-            >
-              <SparklesSVG width={14} height={14} />
-            </div>,
+            <SparklesSVG width={14} height={14} />,
           );
+
           return wrap;
         }
 
