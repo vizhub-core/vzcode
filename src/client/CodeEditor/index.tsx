@@ -43,7 +43,7 @@ export const CodeEditor = ({
     codeEditorRef,
     enableAutoFollow,
     setIsAIChatOpen,
-    handleSendMessage,
+    setAIChatMessage,
   } = useContext(VZCodeContext);
 
   // Set `doc.data.isInteracting` to `true` when the user is interacting
@@ -117,7 +117,7 @@ export const CodeEditor = ({
         aiCopilotEndpoint,
         esLintSource,
         setIsAIChatOpen,
-        handleSendMessage,
+        setAIChatMessage,
       });
 
       if (isMounted) {
@@ -142,7 +142,7 @@ export const CodeEditor = ({
     aiCopilotEndpoint,
     esLintSource,
     setIsAIChatOpen,
-    handleSendMessage,
+    setAIChatMessage,
   ]);
 
   // Every time the active file switches from one file to another,

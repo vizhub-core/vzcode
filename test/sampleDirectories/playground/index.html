@@ -10,9 +10,16 @@
     </style>
   </head>
   <body>
-    <div class="message">Hello HTML!</div>
+    <div class="message">0</div>
     <script>
-      console.log('hello world');
+      let seconds = 0;
+      const messageElement =
+        document.querySelector('.message');
+
+      setInterval(() => {
+        seconds++;
+        messageElement.textContent = seconds;
+      }, 1000);
     </script>
   </body>
 </html>
