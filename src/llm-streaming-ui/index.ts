@@ -24,7 +24,7 @@ export { IndividualFileDiff } from './components/IndividualFileDiff.js';
 // Status and indicator components
 export { TypingIndicator } from './components/TypingIndicator.js';
 export { ThinkingScratchpad } from './components/ThinkingScratchpad.js';
-export { FileEditingIndicator } from './components/FileEditingIndicator.js';
+export { AIEditingStatusIndicator as FileEditingIndicator } from './components/FileEditingIndicator';
 export { JumpToLatestButton } from './components/JumpToLatestButton.js';
 
 // Input components
