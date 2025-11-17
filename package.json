@@ -153,7 +153,7 @@
     "d3-array": "^3.2.4",
     "d3-color": "^3.1.0",
     "diff": "^8.0.2",
-    "diff-match-patch": "^1.0.5",
+    "@dmsnell/diff-match-patch": "^1.1.0",
     "diff2html": "^3.4.52",
     "dotenv": "^17.2.3",
     "editcodewithai": "^2.4.0",
