@@ -183,7 +183,7 @@ const ChatInputComponent = ({
         />
         <div className="ai-chat-input-footer">
           <span className="ai-chat-hint">
-            {aiChatMessage ? 'Press Enter to send' : ''}
+            model: Claude 4.5 Haiku
           </span>
           <div style={{ display: 'flex', gap: '8px' }}>
             <Button
