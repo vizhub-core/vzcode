@@ -250,7 +250,7 @@ export const createLLMFunction = ({
     // Only include reasoning configuration if reasoning tokens are enabled
     if (enableReasoningTokens) {
       requestConfig.reasoning = {
-        effort: 'low',
+        effort: 'minimal',
         exclude: false,
       };
     }

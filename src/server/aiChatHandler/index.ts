@@ -105,6 +105,7 @@ const processAIRequestAsync = async ({
     const llmFunction = createLLMFunction({
       shareDBDoc,
       chatId,
+      enableReasoningTokens: true,
       model,
       aiRequestOptions,
     });

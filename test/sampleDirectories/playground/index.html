@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>HTML Starter</title>
-    <style>
-      .message {
-        font-size: 12em;
-        text-align: center;
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Timer</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div class="message">0</div>
-    <script>
-      let seconds = 0;
-      const messageElement =
-        document.querySelector('.message');
-
-      setInterval(() => {
-        seconds++;
-        messageElement.textContent = seconds;
-      }, 1000);
-    </script>
+    <div class="card">
+      <h2>Timer</h2>
+      <div class="message">0</div>
+      <p class="caption">seconds elapsed</p>
+      <canvas id="chart" width="600" height="100"></canvas>
+      <div class="controls">
+        <button id="start-btn">Start</button>
+        <button id="stop-btn">Stop</button>
+      </div>
+    </div>
+    <script type="module" src="main.js"></script>
   </body>
 </html>
