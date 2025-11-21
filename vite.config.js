@@ -26,6 +26,9 @@ export default defineConfig({
         target: 'http://localhost:3030',
       },
     },
+    watch: {
+      ignored: ['**/test/sampleDirectories/**'],
+    },
   },
 
   // Required to have Vite properly handle these CommonJS imports
