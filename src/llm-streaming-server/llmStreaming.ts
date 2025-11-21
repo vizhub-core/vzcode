@@ -242,7 +242,6 @@ export const createLLMFunction = ({
     const requestConfig: any = {
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
-      usage: { include: true },
       stream: true,
       ...aiRequestOptions,
     };
