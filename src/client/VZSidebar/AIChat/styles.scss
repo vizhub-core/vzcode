@@ -145,16 +145,6 @@
   border: 1px solid var(--vscode-panel-border);
   border-radius: 4px;
 
-  .model-indicator {
-    opacity: 0.5;
-    font-size: 0.75rem;
-    color: var(--vscode-descriptionForeground);
-    padding: 0.25rem 0.5rem;
-    font-family: var(--vscode-editor-font-family);
-    letter-spacing: 0.3px;
-    border-bottom: 1px solid var(--vscode-panel-border);
-  }
-
   .file-editing-header {
     display: flex;
     align-items: center;
@@ -322,6 +312,16 @@
 
   .d2h-code-line {
     padding: 0 1em;
+  }
+
+  .model-indicator {
+    opacity: 0.6;
+    font-size: 0.7rem;
+    color: var(--vscode-descriptionForeground);
+    padding: 0.25rem 0.5rem;
+    font-family: var(--vscode-editor-font-family);
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
   }
 
   padding: 10px 12px;

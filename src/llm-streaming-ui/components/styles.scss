@@ -314,6 +314,16 @@
     padding: 0 1em;
   }
 
+  .model-indicator {
+    opacity: 0.6;
+    font-size: 0.7rem;
+    color: var(--vscode-descriptionForeground);
+    padding: 0.25rem 0.5rem;
+    font-family: var(--vscode-editor-font-family);
+    letter-spacing: 0.3px;
+    margin-bottom: 0.5rem;
+  }
+
   padding: 10px 12px;
   font-size: 14px;
   line-height: 1.4;

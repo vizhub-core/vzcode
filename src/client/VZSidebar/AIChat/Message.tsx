@@ -75,9 +75,16 @@ export const Message = forwardRef<
       return `ai-chat-message ${role}${isStreaming ? ' streaming' : ''}`;
     }, [role, isStreaming]);
 
+    console.log({ role, model });
+
     return (
       <div className={messageClassName}>
         <div className="ai-chat-message-content">
+          {/* Model indicator for assistant messages */}
+          {role === 'assistant' && model && (
+            <div className="model-indicator">{model}</div>
+          )}
+
           {/* Render regular content for non-streaming messages */}
           {content && (
             <Markdown remarkPlugins={[remarkGfm]}>

@@ -222,7 +222,6 @@ const MessageListComponent = ({
                 <AIEditingStatusIndicator
                   status={consolidatedStatus?.status || ''}
                   fileName={consolidatedStatus?.fileName}
-                  model={model}
                   additionalWidgets={
                     consolidatedStatus?.status === 'Done' &&
                     showAdditionalWidgets &&
