@@ -413,13 +413,14 @@
   }
 }
 
-.ai-chat-message-metadata {
+.ai-chat-model-header {
   display: flex;
   align-items: center;
-  padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
   font-size: 0.75rem;
   line-height: 1;
+  border-bottom: 1px solid var(--vh-color-neutral-03);
 }
 
 .model-badge {

@@ -160,6 +160,12 @@ const MessageListComponent = ({
       aria-live="polite"
       aria-relevant="additions"
     >
+      {/* Model indicator at top of messages container */}
+      {model && messages.length > 0 && (
+        <div className="ai-chat-model-header">
+          <div className="model-badge">{model}</div>
+        </div>
+      )}
       {messages.map((msg, index) => {
         const isLastMessage = index === messages.length - 1;
         // Cast to extended message to check for streaming events

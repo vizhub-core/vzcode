@@ -77,12 +77,6 @@ export const Message = forwardRef<
 
     return (
       <div className={messageClassName}>
-        {/* Model badge for assistant messages */}
-        {role === 'assistant' && model && (
-          <div className="ai-chat-message-metadata">
-            <div className="model-badge">{model}</div>
-          </div>
-        )}
         <div className="ai-chat-message-content">
           {/* Render regular content for non-streaming messages */}
           {content && (

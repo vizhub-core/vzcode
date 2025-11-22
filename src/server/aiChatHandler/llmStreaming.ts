@@ -58,12 +58,7 @@ export const createLLMFunction = ({
   return async (fullPrompt: string) => {
     // Create OpenRouter client for reasoning token support
     const apiKey = process.env.VZCODE_EDIT_WITH_AI_API_KEY;
-    if (apiKey) {
-      const last4Chars = apiKey.slice(-4);
-      console.log(
-        `[LLMStreaming] OpenRouter API Key loaded (ends with: ...${last4Chars})`,
-      );
-    } else {
+    if (!apiKey) {
       console.warn(
         '[LLMStreaming] OpenRouter API Key (VZCODE_EDIT_WITH_AI_API_KEY) not found',
       );

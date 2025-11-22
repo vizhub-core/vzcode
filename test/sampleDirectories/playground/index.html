@@ -15,18 +15,68 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-color: #f0f0f0;
+        background-color: #1a1a1a;
         font-family: Arial, sans-serif;
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-mode {
+        background-color: #f0f0f0;
       }
 
       #myCanvas {
-        border: 2px solid #333;
+        border: 2px solid #444;
+        background-color: #2a2a2a;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+        transition:
+          background-color 0.3s ease,
+          border-color 0.3s ease;
+      }
+
+      body.light-mode #myCanvas {
+        border-color: #333;
         background-color: white;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .controls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+      }
+
+      button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        background-color: #444;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #555;
+      }
+
+      body.light-mode button {
+        background-color: #ddd;
+        color: #000;
+      }
+
+      body.light-mode button:hover {
+        background-color: #ccc;
       }
     </style>
   </head>
   <body>
+    <div class="controls">
+      <button id="toggleDarkMode">☀️ Light Mode</button>
+    </div>
+
     <canvas id="myCanvas" width="800" height="600">
       Your browser does not support the canvas element.
     </canvas>
@@ -35,6 +85,34 @@
       // Get the canvas element and its 2D context
       const canvas = document.getElementById('myCanvas');
       const ctx = canvas.getContext('2d');
+      const toggleButton = document.getElementById(
+        'toggleDarkMode',
+      );
+
+      // Dark mode toggle
+      function initDarkMode() {
+        const isDarkMode =
+          localStorage.getItem('darkMode') !== 'false';
+        if (isDarkMode) {
+          document.body.classList.remove('light-mode');
+          toggleButton.textContent = '☀️ Light Mode';
+        } else {
+          document.body.classList.add('light-mode');
+          toggleButton.textContent = '🌙 Dark Mode';
+        }
+      }
+
+      toggleButton.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isDarkMode =
+          !document.body.classList.contains('light-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+        toggleButton.textContent = isDarkMode
+          ? '☀️ Light Mode'
+          : '🌙 Dark Mode';
+      });
+
+      initDarkMode();
 
       // Gravity constant
       const gravity = 0.2;
@@ -42,7 +120,13 @@
       // Damping factor for bounce (energy loss)
       const damping = 0.8;
 
-      // Store all lines as objects with their properties and velocities
+        // Circle boundary properties
+      const circleX = canvas.width / 2;
+      const circleY = canvas.height / 2;
+      const circleRadius =
+        Math.min(canvas.width, canvas.height) / 2.5;
+
+    // Store all lines as objects with their properties and velocities
       const lines = [];
 
       // Create 100 lines with random properties and velocities
@@ -61,16 +145,63 @@
         });
       }
 
-      // Animation function
+      // AnHelper function to check if point is outside circle and bounce
+      function bouncePointInCircle(
+        x,
+        y,
+        velocityX,
+        velocityY,
+      ) {
+        const dx = x - circleX;
+        const dy = y - circleY
+       //const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > circleRadius) {
+          // Calculate normal vector (pointing outward)
+          const normalX = dx / distance;
+          const normalY = dy / distance  
+        li// Reflect velocity: v_reflected = v - 2(v·n)n
+          const dotProduct =
+            velocityX * normalX + velocityY * normalY;
+          const reflectedX =
+            (velocityX - 2 * dotProduct * normalX) *
+            damping;
+          const reflectedY =
+            (velocityY - 2 * dotProduct * normalY) *
+            damping;
+
+          // Position point on circle boundary         liconst new+=licircleX + normalX * circleRadius          liconst new+=licircleY + normalY * circleRadius;
+
+          return {
+            x: newX,         if  y: newY,           livx: reflectedX,
+            vy: reflectedY,
+          };         }
+
+  li    return {
+          x: x,         ) y: y,           vx: locityX1 ,
+          vy: velocityY,
+        }        }
+
+    li// Animation function
       function animate() {
         // Clear the canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Draw the circle boundary
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 2;
+        ctx.beginPath(
+          ctx.arc(         ifcircleX,           circleY,
+          circleRadius,
+          0,
+          Math.PI * 2,         );
+  li    ctx.stroke();
+
         // Update and draw each line
         lines.forEach((line) => {
           // Apply gravity to Y velocities
-          line.velocityY1 += gravity;
-          line.velocityY2 += gravity;
+          ne.velocityY1 * += gravity;
+        line.stvelocityY2 += gravity;
 
           // Update start position
           line.startX += line.velocityX1;
@@ -80,45 +211,27 @@
           line.endX += line.velocityX2;
           line.endY += line.velocityY2;
 
-          // Bounce off walls for start point
-          if (
-            line.startX < 0 ||
-            line.startX > canvas.width
-          ) {
-            line.velocityX1 = -line.velocityX1 * damping;
-            line.startX = Math.max(
-              0,
-              Math.min(canvas.width, line.startX),
-            );
-          }
-          if (
-            line.startY < 0 ||
-            line.startY > canvas.height
-          ) {
-            line.velocityY1 = -line.velocityY1 * damping;
-            line.startY = Math.max(
-              0,
-              Math.min(canvas.height, line.startY),
-            );
-          }
+          // Bounce start point in circle
+          const bounced1 = bouncePointInCircle(         if  ne.enstartX,
+            line.startY,
+            line.velocityX1,
+            line.velocityY1,
+          );
+          line.startX = bounced1.x;
+          line.startY = bounced1.y;
+          line.velocityX1 = bounced1.vx;
+          line.velocityY1 = bounced1.vy;
 
-          // Bounce off walls for end point
-          if (line.endX < 0 || line.endX > canvas.width) {
-            line.velocityX2 = -line.velocityX2 * damping;
-            line.endX = Math.max(
-              0,
-              Math.min(canvas.width, line.endX),
-            );
-          }
-          if (line.endY < 0 || line.endY > canvas.height) {
-            line.velocityY2 = -line.velocityY2 * damping;
-            line.endY = Math.max(
-              0,
-              Math.min(canvas.height, line.endY),
-            );
-          }
-
-          // Draw the line
+          // Bounce end point in circle
+          const bounced2 = bouncePointInCircle(         if  ne.endY X,
+            line.endY,
+            line.velocityX2,
+            line.velocityY2,
+          );
+        line.endY X = bounced2.x;
+          line.endY = bounced2.y;
+          line.velocityX2 = bounced2.vx;
+          line.velocityY2 = bounced2.vy;          // Draw the line
           ctx.strokeStyle = line.color;
           ctx.lineWidth = line.width;
           ctx.beginPath();
