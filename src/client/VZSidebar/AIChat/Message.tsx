@@ -26,6 +26,7 @@ interface MessageProps {
   showAdditionalWidgets?: boolean;
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
+  model?: string; // The LLM model used for this message (assistant only)
 }
 
 export const Message = forwardRef<
@@ -45,6 +46,7 @@ export const Message = forwardRef<
       showAdditionalWidgets = false,
       isStreaming = false,
       diffData,
+      model,
     },
     ref,
   ) => {
@@ -75,6 +77,12 @@ export const Message = forwardRef<
 
     return (
       <div className={messageClassName}>
+        {/* Model badge for assistant messages */}
+        {role === 'assistant' && model && (
+          <div className="ai-chat-message-metadata">
+            <div className="model-badge">{model}</div>
+          </div>
+        )}
         <div className="ai-chat-message-content">
           {/* Render regular content for non-streaming messages */}
           {content && (

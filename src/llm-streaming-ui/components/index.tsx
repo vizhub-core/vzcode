@@ -92,6 +92,7 @@ export const AIChat = () => {
   const aiScratchpad = currentChat?.aiScratchpad;
   const currentStatus = (currentChat as ExtendedVizChat)
     ?.currentStatus;
+  const model = (currentChat as ExtendedVizChat)?.model;
 
   // Debug logging for AI status
   DEBUG && console.log('AIChat: currentChat:', currentChat);
@@ -332,6 +333,7 @@ export const AIChat = () => {
               chatId={selectedChatId || currentChatId}
               aiScratchpad={aiScratchpad}
               currentStatus={currentStatus}
+              model={model}
               onNewEvent={onNewEvent}
               onJumpToLatest={onJumpToLatest}
               beforeRender={beforeRender}

@@ -544,6 +544,33 @@ export const updateStreamingStatus = (
 };
 
 /**
+ * Sets the model for a chat when AI generation starts
+ */
+export const setChatModel = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  model: string,
+) => {
+  DEBUG &&
+    console.log(
+      `ChatOperations: Setting model: "${model}" for chatId: ${chatId}`,
+    );
+
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        model: model,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
  * Finalizes streaming message and clears streaming state
  */
 export const finalizeStreamingMessage = (

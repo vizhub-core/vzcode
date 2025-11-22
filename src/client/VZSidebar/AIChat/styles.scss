@@ -139,11 +139,21 @@
 
 .file-editing-indicator {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   margin: 0.25rem 0;
   background-color: var(--vscode-editor-background);
   border: 1px solid var(--vscode-panel-border);
   border-radius: 4px;
+
+  .model-indicator {
+    opacity: 0.5;
+    font-size: 0.75rem;
+    color: var(--vscode-descriptionForeground);
+    padding: 0.25rem 0.5rem;
+    font-family: var(--vscode-editor-font-family);
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+  }
 
   .file-editing-header {
     display: flex;
@@ -401,6 +411,29 @@
   .ai-chat-message.user & {
     color: white;
   }
+}
+
+.ai-chat-message-metadata {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.model-badge {
+  opacity: 0.55;
+  color: var(--vscode-descriptionForeground);
+  font-family: var(--vscode-editor-font-family);
+  letter-spacing: 0.3px;
+  padding: 0;
+  margin: 0;
+  text-transform: lowercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .ai-chat-message-time {

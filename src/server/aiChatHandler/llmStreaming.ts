@@ -16,6 +16,7 @@ import {
   addStreamingEvent,
   updateStreamingStatus,
   finalizeStreamingMessage,
+  setChatModel,
 } from './chatOperations.js';
 import {
   ShareDBDoc,
@@ -56,8 +57,20 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     // Create OpenRouter client for reasoning token support
+    const apiKey = process.env.VZCODE_EDIT_WITH_AI_API_KEY;
+    if (apiKey) {
+      const last4Chars = apiKey.slice(-4);
+      console.log(
+        `[LLMStreaming] OpenRouter API Key loaded (ends with: ...${last4Chars})`,
+      );
+    } else {
+      console.warn(
+        '[LLMStreaming] OpenRouter API Key (VZCODE_EDIT_WITH_AI_API_KEY) not found',
+      );
+    }
+
     const openRouterClient = new OpenAI({
-      apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
+      apiKey: apiKey,
       baseURL:
         process.env.VZCODE_EDIT_WITH_AI_BASE_URL ||
         'https://openrouter.ai/api/v1',
@@ -237,6 +250,9 @@ export const createLLMFunction = ({
       model ||
       process.env.VZCODE_EDIT_WITH_AI_MODEL_NAME ||
       'anthropic/claude-3.5-sonnet';
+
+    // Set the model being used for this chat
+    setChatModel(shareDBDoc, chatId, modelName);
 
     // Configure reasoning tokens based on enableReasoningTokens flag
     const requestConfig: any = {

@@ -544,6 +544,28 @@ export const updateStreamingStatus = (
 };
 
 /**
+ * Sets the model being used for this chat
+ */
+export const setChatModel = (
+  shareDBDoc: ShareDBDoc<ExtendedVizContent>,
+  chatId: VizChatId,
+  model: string,
+) => {
+  const op = diff(shareDBDoc.data, {
+    ...shareDBDoc.data,
+    chats: {
+      ...shareDBDoc.data.chats,
+      [chatId]: {
+        ...shareDBDoc.data.chats[chatId],
+        model: model,
+        updatedAt: dateToTimestamp(new Date()),
+      },
+    },
+  });
+  shareDBDoc.submitOp(op);
+};
+
+/**
  * Finalizes streaming message and clears streaming state
  */
 export const finalizeStreamingMessage = (

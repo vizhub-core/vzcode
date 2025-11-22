@@ -4,11 +4,12 @@ interface AIEditingStatusIndicatorProps {
   status: string;
   fileName?: string;
   additionalWidgets?: React.ReactNode;
+  model?: string;
 }
 
 export const AIEditingStatusIndicator: React.FC<
   AIEditingStatusIndicatorProps
-> = ({ status, fileName, additionalWidgets }) => {
+> = ({ status, fileName, additionalWidgets, model }) => {
   const getStatusDisplay = (status: string) => {
     switch (status) {
       case 'Analyzing request...':
@@ -74,6 +75,9 @@ export const AIEditingStatusIndicator: React.FC<
 
   return (
     <div className="file-editing-indicator">
+      {model && (
+        <div className="model-indicator">{model}</div>
+      )}
       <div className="file-editing-header">
         {showSpinner && (
           <div className="file-editing-icon">

@@ -20,6 +20,7 @@ const MessageListComponent = ({
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
   currentStatus, // Add current status prop
+  model, // Add model prop
   onNewEvent,
   onJumpToLatest,
   beforeRender,
@@ -30,6 +31,7 @@ const MessageListComponent = ({
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
   currentStatus?: string; // Add current status to the type
+  model?: string; // Add model to the type
   onNewEvent: (targetElement?: HTMLElement) => void;
   onJumpToLatest: (targetElement?: HTMLElement) => void;
   beforeRender: () => number;
@@ -211,6 +213,7 @@ const MessageListComponent = ({
                 <AIEditingStatusIndicator
                   status={consolidatedStatus?.status || ''}
                   fileName={consolidatedStatus?.fileName}
+                  model={model}
                   additionalWidgets={
                     consolidatedStatus?.status === 'Done' &&
                     showAdditionalWidgets &&
