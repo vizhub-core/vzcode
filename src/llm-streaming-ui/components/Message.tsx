@@ -13,7 +13,7 @@ import { DiffView, DiffViewRef } from './DiffView';
 import { UnifiedFilesDiff } from '../../utils/fileDiff';
 import { enableDiffView } from '../../client/featureFlags';
 
-const DEBUG = false;
+const DEBUG = true;
 
 interface MessageProps {
   id: string;

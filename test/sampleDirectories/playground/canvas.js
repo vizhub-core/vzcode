@@ -9,31 +9,62 @@ let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
 
-// Set canvas size
+// Set canvas size with proper DPI handling
 function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
   const containerWidth = canvas.parentElement.offsetWidth;
-  canvas.width = containerWidth - 6; // Account for border
-  canvas.height = 500;
-  // Redraw after resize if needed
+
+  // Set CSS size
+  canvas.style.width = containerWidth - 6 + 'px';
+  canvas.style.height = '500px';
+
+  // Set actual drawing surface size
+  canvas.width = (containerWidth - 6) * dpr;
+  canvas.height = 500 * dpr;
+
+  // Scale context to match device pixel ratio
+  ctx.scale(dpr, dpr);
 }
 
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
+// Get correct cursor position accounting for DPI and scroll
+function getCursorPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  const x = (e.clientX - rect.left) / dpr;
+  const y = (e.clientY - rect.top) / dpr;
+
+  return { x, y };
+}
+
+// Get correct touch position accounting for DPI and scroll
+function getTouchPos(touch) {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+
+  const x = (touch.clientX - rect.left) / dpr;
+  const y = (touch.clientY - rect.top) / dpr;
+
+  return { x, y };
+}
+
 // Drawing functions
 function startDrawing(e) {
   isDrawing = true;
-  const rect = canvas.getBoundingClientRect();
-  lastX = e.clientX - rect.left;
-  lastY = e.clientY - rect.top;
+  const pos = getCursorPos(e);
+  lastX = pos.x;
+  lastY = pos.y;
 }
 
 function draw(e) {
   if (!isDrawing) return;
 
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  const pos = getCursorPos(e);
+  const x = pos.x;
+  const y = pos.y;
 
   ctx.strokeStyle = colorPicker.value;
   ctx.lineWidth = brushSize.value;
@@ -57,10 +88,10 @@ function stopDrawing() {
 // Touch support for mobile
 function startDrawingTouch(e) {
   e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
-  lastX = touch.clientX - rect.left;
-  lastY = touch.clientY - rect.top;
+  const pos = getTouchPos(touch);
+  lastX = pos.x;
+  lastY = pos.y;
   isDrawing = true;
 }
 
@@ -68,10 +99,10 @@ function drawTouch(e) {
   e.preventDefault();
   if (!isDrawing) return;
 
-  const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
+  const pos = getTouchPos(touch);
+  const x = pos.x;
+  const y = pos.y;
 
   ctx.strokeStyle = colorPicker.value;
   ctx.lineWidth = brushSize.value;
@@ -106,7 +137,13 @@ canvas.addEventListener('touchcancel', stopDrawingTouch);
 
 // Clear canvas
 clearBtn.addEventListener('click', () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width / dpr,
+    canvas.height / dpr,
+  );
 });
 
 // Update brush size display
