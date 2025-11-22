@@ -7,7 +7,7 @@
 - **Tests**: `npm test` (all tests) or `npx vitest run test/filename.test.ts` (single test)
 - **Lint**: `npm run lint` or `npm run lint:fix`
 - **Format**: `npm run prettier` (ALWAYS run after making a series of code changes)
-- **Dev Server**: `npm run test-interactive` (port 3030) or `npm run dev` (port 5173 with hot reload)
+- **Dev Server**: `npm run test-interactive` (port 3030) or `npm run dev` (port 5173 with hot reload) - DO NOT RUN THIS EVER, it will crash the process, always ask for manual testing
 
 DO NOT run `git commit`, that will be done manually.
 

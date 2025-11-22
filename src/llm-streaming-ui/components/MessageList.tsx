@@ -44,6 +44,9 @@ const MessageListComponent = ({
   const { additionalWidgets, handleSendMessage } =
     useContext(VZCodeContext);
 
+  // Debug: Log the model prop received
+  console.log('MessageList received model prop:', model);
+
   // Track previous loading state to detect when AI generation completes
   const [prevIsLoading, setPrevIsLoading] =
     useState(isLoading);
@@ -194,6 +197,9 @@ const MessageListComponent = ({
             showAdditionalWidgets={showAdditionalWidgets}
             isStreaming={isStreamingMessage}
             diffData={(msg as any).diffData}
+            model={
+              msg.role === 'assistant' ? model : undefined
+            }
             ref={
               isLastMessage && (msg as any).diffData
                 ? diffViewRef
