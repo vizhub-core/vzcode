@@ -12,7 +12,7 @@ let lastY = 0;
 // Set canvas size
 function resizeCanvas() {
   const containerWidth = canvas.parentElement.offsetWidth;
-  canvas.width = containerWidth - 4; // Account for border
+  canvas.width = containerWidth - 6; // Account for border
   canvas.height = 500;
   // Redraw after resize if needed
 }
