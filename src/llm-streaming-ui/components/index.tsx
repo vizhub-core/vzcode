@@ -94,9 +94,6 @@ export const AIChat = () => {
     ?.currentStatus;
   const model = (currentChat as ExtendedVizChat)?.model;
 
-  // Debug logging for AI status
-  console.log('AIChat: model from currentChat:', model);
-  console.log('AIChat: currentChat:', currentChat);
   DEBUG && console.log('AIChat: aiStatus:', aiStatus);
   DEBUG &&
     console.log(
