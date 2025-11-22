@@ -20,6 +20,7 @@ const MessageListComponent = ({
   chatId, // Add chatId prop
   aiScratchpad, // Add aiScratchpad prop
   currentStatus, // Add current status prop
+  model, // Add model prop
   onNewEvent,
   onJumpToLatest,
   beforeRender,
@@ -30,6 +31,7 @@ const MessageListComponent = ({
   chatId?: string; // Add chatId to the type
   aiScratchpad?: string; // Add aiScratchpad to the type
   currentStatus?: string; // Add current status to the type
+  model?: string; // Add model to the type
   onNewEvent: (targetElement?: HTMLElement) => void;
   onJumpToLatest: (targetElement?: HTMLElement) => void;
   beforeRender: () => number;
@@ -41,6 +43,9 @@ const MessageListComponent = ({
   // Get additional widgets from context
   const { additionalWidgets, handleSendMessage } =
     useContext(VZCodeContext);
+
+  // Debug: Log the model prop received
+  console.log('MessageList received model prop:', model);
 
   // Track previous loading state to detect when AI generation completes
   const [prevIsLoading, setPrevIsLoading] =
@@ -192,6 +197,9 @@ const MessageListComponent = ({
             showAdditionalWidgets={showAdditionalWidgets}
             isStreaming={isStreamingMessage}
             diffData={(msg as any).diffData}
+            model={
+              msg.role === 'assistant' ? model : undefined
+            }
             ref={
               isLastMessage && (msg as any).diffData
                 ? diffViewRef

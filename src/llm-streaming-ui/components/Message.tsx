@@ -13,7 +13,7 @@ import { DiffView, DiffViewRef } from './DiffView';
 import { UnifiedFilesDiff } from '../../utils/fileDiff';
 import { enableDiffView } from '../../client/featureFlags';
 
-const DEBUG = false;
+const DEBUG = true;
 
 interface MessageProps {
   id: string;
@@ -26,6 +26,7 @@ interface MessageProps {
   showAdditionalWidgets?: boolean;
   isStreaming?: boolean;
   diffData?: UnifiedFilesDiff;
+  model?: string; // The LLM model used for this message (assistant only)
 }
 
 export const Message = forwardRef<
@@ -45,11 +46,21 @@ export const Message = forwardRef<
       showAdditionalWidgets = false,
       isStreaming = false,
       diffData,
+      model,
     },
     ref,
   ) => {
     const { additionalWidgets, handleSendMessage } =
       useContext(VZCodeContext);
+
+    console.log('Message component rendered:', {
+      id,
+      role,
+      model,
+      isStreaming,
+      hasContent: !!content,
+      hasEvents: events?.length || 0,
+    });
 
     DEBUG &&
       console.log(
@@ -76,6 +87,11 @@ export const Message = forwardRef<
     return (
       <div className={messageClassName}>
         <div className="ai-chat-message-content">
+          {/* Model indicator for assistant messages */}
+          {role === 'assistant' && model && (
+            <div className="model-indicator">{model}</div>
+          )}
+
           {/* Render regular content for non-streaming messages */}
           {content && (
             <Markdown remarkPlugins={[remarkGfm]}>

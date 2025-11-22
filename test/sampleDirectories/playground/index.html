@@ -6,133 +6,37 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0"
     />
-    <title>Canvas Demo</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background-color: #f0f0f0;
-        font-family: Arial, sans-serif;
-      }
-
-      #myCanvas {
-        border: 2px solid #333;
-        background-color: white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-    </style>
+    <title>Medieval Canvas Drawing</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <canvas id="myCanvas" width="800" height="600">
-      Your browser does not support the canvas element.
-    </canvas>
-
-    <script>
-      // Get the canvas element and its 2D context
-      const canvas = document.getElementById('myCanvas');
-      const ctx = canvas.getContext('2d');
-
-      // Gravity constant
-      const gravity = 0.2;
-
-      // Damping factor for bounce (energy loss)
-      const damping = 0.8;
-
-      // Store all lines as objects with their properties and velocities
-      const lines = [];
-
-      // Create 100 lines with random properties and velocities
-      for (let i = 0; i < 100; i++) {
-        lines.push({
-          startX: Math.random() * canvas.width,
-          startY: Math.random() * canvas.height,
-          endX: Math.random() * canvas.width,
-          endY: Math.random() * canvas.height,
-          velocityX1: (Math.random() - 0.5) * 2,
-          velocityY1: (Math.random() - 0.5) * 2,
-          velocityX2: (Math.random() - 0.5) * 2,
-          velocityY2: (Math.random() - 0.5) * 2,
-          color: `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.7)`,
-          width: Math.random() * 3 + 1,
-        });
-      }
-
-      // Animation function
-      function animate() {
-        // Clear the canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Update and draw each line
-        lines.forEach((line) => {
-          // Apply gravity to Y velocities
-          line.velocityY1 += gravity;
-          line.velocityY2 += gravity;
-
-          // Update start position
-          line.startX += line.velocityX1;
-          line.startY += line.velocityY1;
-
-          // Update end position
-          line.endX += line.velocityX2;
-          line.endY += line.velocityY2;
-
-          // Bounce off walls for start point
-          if (
-            line.startX < 0 ||
-            line.startX > canvas.width
-          ) {
-            line.velocityX1 = -line.velocityX1 * damping;
-            line.startX = Math.max(
-              0,
-              Math.min(canvas.width, line.startX),
-            );
-          }
-          if (
-            line.startY < 0 ||
-            line.startY > canvas.height
-          ) {
-            line.velocityY1 = -line.velocityY1 * damping;
-            line.startY = Math.max(
-              0,
-              Math.min(canvas.height, line.startY),
-            );
-          }
-
-          // Bounce off walls for end point
-          if (line.endX < 0 || line.endX > canvas.width) {
-            line.velocityX2 = -line.velocityX2 * damping;
-            line.endX = Math.max(
-              0,
-              Math.min(canvas.width, line.endX),
-            );
-          }
-          if (line.endY < 0 || line.endY > canvas.height) {
-            line.velocityY2 = -line.velocityY2 * damping;
-            line.endY = Math.max(
-              0,
-              Math.min(canvas.height, line.endY),
-            );
-          }
-
-          // Draw the line
-          ctx.strokeStyle = line.color;
-          ctx.lineWidth = line.width;
-          ctx.beginPath();
-          ctx.moveTo(line.startX, line.startY);
-          ctx.lineTo(line.endX, line.endY);
-          ctx.stroke();
-        });
-
-        // Request next frame
-        requestAnimationFrame(animate);
-      }
-
-      // Start animation
-      animate();
-    </script>
+    <div class="container">
+      <h1>Scribe's Canvas</h1>
+      <div class="controls">
+        <button id="clearBtn" class="btn">
+          Clear Parchment
+        </button>
+        <label for="colorPicker">Ink: </label>
+        <input
+          type="color"
+          id="colorPicker"
+          value="#000000"
+        />
+        <label for="brushSize">Quill Size: </label>
+        <input
+          type="range"
+          id="brushSize"
+          min="1"
+          max="50"
+          value="5"
+        />
+        <span id="sizeDisplay">5</span>
+      </div>
+      <canvas id="drawingCanvas"></canvas>
+      <p class="instruction">
+        Click and drag thy quill upon the parchment
+      </p>
+    </div>
+    <script src="canvas.js"></script>
   </body>
 </html>

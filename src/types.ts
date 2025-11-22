@@ -261,6 +261,7 @@ export interface ExtendedVizChat extends VizChat {
   streamingEvents?: StreamingEvent[];
   currentStatus?: string;
   isStreaming?: boolean;
+  model?: string; // The LLM model used for this chat
 }
 
 // Extended VizChatMessage with progressive rendering support

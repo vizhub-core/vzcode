@@ -16,6 +16,7 @@ import {
   addStreamingEvent,
   updateStreamingStatus,
   finalizeStreamingMessage,
+  setChatModel,
 } from './chatOperations.js';
 import {
   ShareDBDoc,
@@ -56,8 +57,15 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     // Create OpenRouter client for reasoning token support
+    const apiKey = process.env.VZCODE_EDIT_WITH_AI_API_KEY;
+    if (!apiKey) {
+      console.warn(
+        '[LLMStreaming] OpenRouter API Key (VZCODE_EDIT_WITH_AI_API_KEY) not found',
+      );
+    }
+
     const openRouterClient = new OpenAI({
-      apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
+      apiKey: apiKey,
       baseURL:
         process.env.VZCODE_EDIT_WITH_AI_BASE_URL ||
         'https://openrouter.ai/api/v1',
@@ -73,8 +81,17 @@ export const createLLMFunction = ({
     let accumulatedTextChunk = '';
     let currentFileContent = '';
 
+    // Stream the response with reasoning tokens
+    const modelName =
+      model ||
+      process.env.VZCODE_EDIT_WITH_AI_MODEL_NAME ||
+      'anthropic/claude-haiku-4.5';
+
     // Create streaming AI message
     createStreamingAIMessage(shareDBDoc, chatId);
+
+    // Set the model being used for this chat
+    setChatModel(shareDBDoc, chatId, modelName);
 
     // Set initial content generation status
     updateStreamingStatus(
@@ -232,12 +249,6 @@ export const createLLMFunction = ({
     const chunks = [];
     let reasoningContent = '';
 
-    // Stream the response with reasoning tokens
-    const modelName =
-      model ||
-      process.env.VZCODE_EDIT_WITH_AI_MODEL_NAME ||
-      'anthropic/claude-3.5-sonnet';
-
     // Configure reasoning tokens based on enableReasoningTokens flag
     const requestConfig: any = {
       model: modelName,
@@ -247,12 +258,12 @@ export const createLLMFunction = ({
     };
 
     // Only include reasoning configuration if reasoning tokens are enabled
-    if (enableReasoningTokens) {
-      requestConfig.reasoning = {
-        effort: 'low',
-        exclude: false,
-      };
-    }
+    // if (enableReasoningTokens) {
+    //   requestConfig.reasoning = {
+    //     effort: 'low',
+    //     exclude: false,
+    //   };
+    // }
 
     const stream = await (
       openRouterClient.chat.completions.create as any
