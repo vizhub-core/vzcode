@@ -53,21 +53,6 @@ export const Message = forwardRef<
     const { additionalWidgets, handleSendMessage } =
       useContext(VZCodeContext);
 
-    console.log('Message component rendered:', {
-      id,
-      role,
-      model,
-      isStreaming,
-      hasContent: !!content,
-      hasEvents: events?.length || 0,
-    });
-
-    DEBUG &&
-      console.log(
-        'StreamingMessage: Rendered with events:',
-        events,
-      );
-
     // Memoize date formatting to avoid repeated computation
     const formattedTime = useMemo(() => {
       return timestampToDate(timestamp).toLocaleTimeString(

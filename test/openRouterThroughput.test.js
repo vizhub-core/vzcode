@@ -37,8 +37,11 @@ describe('OpenRouter Throughput Routing', () => {
   test('generateAIResponse should include provider.sort=throughput parameter', async () => {
     // Mock the OpenAI import
     vi.doMock('openai', () => {
+      const OpenAIConstructor = class {
+        chat = mockOpenAI.chat;
+      };
       return {
-        default: vi.fn(() => mockOpenAI),
+        default: OpenAIConstructor,
       };
     });
 
@@ -91,23 +94,28 @@ describe('OpenRouter Throughput Routing', () => {
     };
 
     vi.doMock('@langchain/openai', () => ({
-      ChatOpenAI: vi.fn((options) => {
-        // Verify the options include additionalParameters with provider
-        expect(options).toMatchObject({
-          additionalParameters: {
-            provider: { sort: 'throughput' },
-          },
-        });
-        return mockChatOpenAI;
-      }),
+      ChatOpenAI: class {
+        constructor(options) {
+          // Verify the options include additionalParameters with provider
+          expect(options).toMatchObject({
+            additionalParameters: {
+              provider: { sort: 'throughput' },
+            },
+          });
+        }
+
+        invoke() {
+          return mockChatOpenAI.invoke();
+        }
+      },
     }));
 
     vi.doMock('@langchain/core/output_parsers', () => ({
-      StringOutputParser: vi.fn(() => ({
-        invoke: vi
-          .fn()
-          .mockResolvedValue('parsed response'),
-      })),
+      StringOutputParser: class {
+        invoke() {
+          return Promise.resolve('parsed response');
+        }
+      },
     }));
 
     // Import and test the handler

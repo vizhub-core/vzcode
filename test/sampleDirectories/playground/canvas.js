@@ -12,14 +12,15 @@ let lastY = 0;
 // Set canvas size with proper DPI handling
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
-  const containerWidth = canvas.parentElement.offsetWidth;
+  const rect = canvas.getBoundingClientRect();
+  const containerWidth = rect.width;
 
   // Set CSS size
-  canvas.style.width = containerWidth - 6 + 'px';
+  canvas.style.width = '100%';
   canvas.style.height = '500px';
 
   // Set actual drawing surface size
-  canvas.width = (containerWidth - 6) * dpr;
+  canvas.width = containerWidth * dpr;
   canvas.height = 500 * dpr;
 
   // Scale context to match device pixel ratio

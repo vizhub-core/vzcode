@@ -198,6 +198,8 @@ h1::after {
   );
   cursor: crosshair;
   width: 100%;
+  max-width: 100%;
+  height: auto;
   box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.6),
     inset 0 0 10px rgba(212, 175, 55, 0.1);
