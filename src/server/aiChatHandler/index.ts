@@ -133,7 +133,9 @@ const processAIRequestAsync = async ({
       try {
         await onCreditDeduction(
           await getGenerationMetadata({
-            apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
+            apiKey:
+              aiRequestOptions?.apiKey ||
+              process.env.VZCODE_EDIT_WITH_AI_API_KEY,
             generationId: editResult.generationId,
           }),
         );

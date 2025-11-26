@@ -57,16 +57,19 @@ export const createLLMFunction = ({
 }) => {
   return async (fullPrompt: string) => {
     // Create OpenRouter client for reasoning token support
-    const apiKey = process.env.VZCODE_EDIT_WITH_AI_API_KEY;
+    const apiKey =
+      aiRequestOptions?.apiKey ||
+      process.env.VZCODE_EDIT_WITH_AI_API_KEY;
     if (!apiKey) {
       console.warn(
-        '[LLMStreaming] OpenRouter API Key (VZCODE_EDIT_WITH_AI_API_KEY) not found',
+        '[LLMStreaming] OpenAI API Key not found',
       );
     }
 
     const openRouterClient = new OpenAI({
       apiKey: apiKey,
       baseURL:
+        aiRequestOptions?.baseURL ||
         process.env.VZCODE_EDIT_WITH_AI_BASE_URL ||
         'https://openrouter.ai/api/v1',
       defaultHeaders: {
