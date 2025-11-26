@@ -26,6 +26,9 @@ export default defineConfig({
         target: 'http://localhost:3030',
       },
     },
+    watch: {
+      ignored: ['**/test/sampleDirectories/**'],
+    },
   },
 
   // Required to have Vite properly handle these CommonJS imports
@@ -39,6 +42,8 @@ export default defineConfig({
       // because it messes up the WASM part of the build.
       '@rollup/browser',
     ],
+    // Don't scan test sample directories for dependencies
+    entries: ['src/**/*.{js,ts,jsx,tsx}', 'index.html'],
   },
 
   // Fix CSS warnings

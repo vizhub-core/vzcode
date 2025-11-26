@@ -25,11 +25,13 @@ export const handleAIChatMessage =
     onCreditDeduction,
     model,
     aiRequestOptions,
+    enableReasoningTokens,
   }: {
     shareDBDoc: ShareDBDoc<VizContent>;
     onCreditDeduction?: any;
     model?: string;
     aiRequestOptions?: any;
+    enableReasoningTokens?: boolean;
   }) =>
   async (req: any, res: any) => {
     const { content, chatId } = req.body;
@@ -68,6 +70,7 @@ export const handleAIChatMessage =
         content,
         model,
         aiRequestOptions,
+        enableReasoningTokens,
         onCreditDeduction,
       }).catch((error) => {
         console.error(
@@ -91,6 +94,7 @@ const processAIRequestAsync = async ({
   content,
   model,
   aiRequestOptions,
+  enableReasoningTokens,
   onCreditDeduction,
 }: {
   shareDBDoc: ShareDBDoc<VizContent>;
@@ -98,6 +102,7 @@ const processAIRequestAsync = async ({
   content: string;
   model?: string;
   aiRequestOptions?: any;
+  enableReasoningTokens?: boolean;
   onCreditDeduction?: any;
 }) => {
   try {
@@ -105,6 +110,7 @@ const processAIRequestAsync = async ({
     const llmFunction = createLLMFunction({
       shareDBDoc,
       chatId,
+      enableReasoningTokens: enableReasoningTokens ?? true,
       model,
       aiRequestOptions,
     });
@@ -127,7 +133,9 @@ const processAIRequestAsync = async ({
       try {
         await onCreditDeduction(
           await getGenerationMetadata({
-            apiKey: process.env.VZCODE_EDIT_WITH_AI_API_KEY,
+            apiKey:
+              aiRequestOptions?.apiKey ||
+              process.env.VZCODE_EDIT_WITH_AI_API_KEY,
             generationId: editResult.generationId,
           }),
         );

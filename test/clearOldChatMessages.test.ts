@@ -1,5 +1,5 @@
 import { expect, test, vi } from 'vitest';
-import { addUserMessage } from '../src/server/aiChatHandler/chatOperations.js';
+import { addUserMessage } from '../src/llm-streaming-server/chatOperations.js';
 import { diff } from '../src/ot.js';
 
 test('addUserMessage should replace old messages with new user message', () => {
