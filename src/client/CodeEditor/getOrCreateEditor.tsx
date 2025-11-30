@@ -162,8 +162,7 @@ const getAtPath = (obj, path) => {
 };
 
 // Extend the EditorCacheValue type to include the compartments and the updateRainbowBrackets method
-interface ExtendedEditorCacheValue
-  extends EditorCacheValue {
+interface ExtendedEditorCacheValue extends EditorCacheValue {
   themeCompartment: Compartment;
   languageCompartment: Compartment;
   rainbowBracketsCompartment: Compartment;
