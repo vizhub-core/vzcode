@@ -273,7 +273,10 @@ export const useVZCodeState = ({
   const DEBUG = false;
 
   // Compute isLoading based on the current chat's aiStatus
-  const [currentChatId] = useState(() => uuidv4());
+  // Chat ID changes with each new user message (but not for retry/undo)
+  const [currentChatId, setCurrentChatId] = useState(() =>
+    uuidv4(),
+  );
   const [selectedChatId, setSelectedChatId] = useState<
     string | null
   >(null);
@@ -385,6 +388,33 @@ export const useVZCodeState = ({
 
       setAIErrorMessage(null); // Clear any previous errors
 
+      // Generate new chat ID only for fresh user messages
+      // Keep existing chat ID for retries (Try Harder) and undos
+      const isRetryOrUndo =
+        options?.isRetry === 'true' ||
+        options?.isUndo === 'true';
+
+      let chatIdForRequest: string;
+      if (isRetryOrUndo) {
+        // Use existing chat ID for retry/undo operations
+        chatIdForRequest = activeChatId;
+        DEBUG &&
+          console.log(
+            'Using existing chatId for retry/undo:',
+            chatIdForRequest,
+          );
+      } else {
+        // Generate NEW chat ID for fresh user message
+        const newChatId = uuidv4();
+        setCurrentChatId(newChatId);
+        chatIdForRequest = newChatId;
+        DEBUG &&
+          console.log(
+            'Generated new chatId for fresh message:',
+            chatIdForRequest,
+          );
+      }
+
       // Call backend endpoint for AI response
       try {
         const response = await fetch(aiChatEndpoint, {
@@ -395,7 +425,7 @@ export const useVZCodeState = ({
           body: JSON.stringify({
             ...aiChatOptions,
             content: messageContent.trim(),
-            chatId: activeChatId,
+            chatId: chatIdForRequest,
             mode: aiChatMode,
             ...options,
           }),
