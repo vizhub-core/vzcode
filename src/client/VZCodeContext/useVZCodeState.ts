@@ -407,6 +407,7 @@ export const useVZCodeState = ({
         // Generate NEW chat ID for fresh user message
         const newChatId = uuidv4();
         setCurrentChatId(newChatId);
+        setSelectedChatId(newChatId);
         chatIdForRequest = newChatId;
         DEBUG &&
           console.log(
