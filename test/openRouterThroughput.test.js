@@ -46,9 +46,8 @@ describe('OpenRouter Throughput Routing', () => {
     });
 
     // Import the module after mocking
-    const { generateAIResponse } = await import(
-      '../src/server/generateAIResponse.ts'
-    );
+    const { generateAIResponse } =
+      await import('../src/server/generateAIResponse.ts');
 
     // Create a mock ShareDB document
     const mockShareDBDoc = {
@@ -119,9 +118,8 @@ describe('OpenRouter Throughput Routing', () => {
     }));
 
     // Import and test the handler
-    const { handleAICopilot } = await import(
-      '../src/server/handleAICopilot.ts'
-    );
+    const { handleAICopilot } =
+      await import('../src/server/handleAICopilot.ts');
     const handler = handleAICopilot();
 
     // Mock request and response

@@ -2,12 +2,12 @@ import {
   formatMarkdownFiles,
   parseMarkdownFiles,
 } from 'llm-code-format';
-import { mergeFileChanges } from 'editcodewithai';
-import { VizFiles } from '@vizhub/viz-types';
 import {
-  generateRunId,
-  vizFilesToFileCollection,
-} from '@vizhub/viz-utils';
+  mergeFileChanges,
+  prepareFilesForPrompt,
+} from 'editcodewithai';
+import { VizFiles } from '@vizhub/viz-types';
+import { generateRunId } from '@vizhub/viz-utils';
 import JSZip from 'jszip';
 
 export const createAICopyPasteHandlers = (
@@ -29,15 +29,25 @@ export const createAICopyPasteHandlers = (
     }
 
     try {
-      const fileCollection =
-        vizFilesToFileCollection(files);
+      // Apply truncation logic to reduce token usage
+      const { files: truncatedFiles, imageFiles } =
+        prepareFilesForPrompt(files);
 
-      // Format files for AI consumption
+      // Format truncated files for markdown
       const formattedFiles =
-        formatMarkdownFiles(fileCollection);
+        formatMarkdownFiles(truncatedFiles);
+
+      // Add metadata about skipped image files
+      let finalContent = formattedFiles;
+      if (imageFiles.length > 0) {
+        finalContent +=
+          '\n\n<!-- Image files (not included): ' +
+          imageFiles.join(', ') +
+          ' -->';
+      }
 
       // Copy to clipboard
-      await navigator.clipboard.writeText(formattedFiles);
+      await navigator.clipboard.writeText(finalContent);
 
       // Show success feedback
       setCopyButtonText('Copied!');
