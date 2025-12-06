@@ -265,17 +265,16 @@ export interface ExtendedVizChat extends VizChat {
 }
 
 // Extended VizChatMessage with progressive rendering support
-export interface ExtendedVizChatMessage extends VizChatMessage {
+export interface ExtendedVizChatMessage
+  extends VizChatMessage {
   streamingEvents?: StreamingEvent[];
   isProgressive?: boolean; // Flag to indicate this message uses progressive rendering
   isComplete?: boolean; // Flag to indicate if streaming is complete
 }
 
 // Extended VizContent that uses our extended chat types
-export interface ExtendedVizContent extends Omit<
-  VizContent,
-  'chats'
-> {
+export interface ExtendedVizContent
+  extends Omit<VizContent, 'chats'> {
   chats?: { [chatId: VizChatId]: ExtendedVizChat };
 }
 

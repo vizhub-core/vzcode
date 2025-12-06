@@ -2,10 +2,7 @@ import {
   formatMarkdownFiles,
   parseMarkdownFiles,
 } from 'llm-code-format';
-import {
-  FORMAT_INSTRUCTIONS,
-  mergeFileChanges,
-} from 'editcodewithai';
+import { mergeFileChanges } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
 import {
   generateRunId,
@@ -37,9 +34,7 @@ export const createAICopyPasteHandlers = (
 
       // Format files for AI consumption
       const formattedFiles =
-        formatMarkdownFiles(fileCollection) +
-        '\n\n' +
-        FORMAT_INSTRUCTIONS.whole;
+        formatMarkdownFiles(fileCollection);
 
       // Copy to clipboard
       await navigator.clipboard.writeText(formattedFiles);
@@ -84,16 +79,8 @@ export const createAICopyPasteHandlers = (
         return;
       }
 
-      // Preprocess to remove formatting instructions section to avoid creating extra files
-      const preprocessed = normalized
-        .split('## Formatting Instructions')[0]
-        .trim();
-
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(
-        preprocessed,
-        'bold',
-      );
+      const parsed = parseMarkdownFiles(normalized, 'bold');
 
       if (
         parsed.files &&

@@ -2,72 +2,21 @@ import { describe, test, expect } from 'vitest';
 import { parseMarkdownFiles } from 'llm-code-format';
 
 describe('AI Paste Edge Cases', () => {
-  test('should handle multiple "## Formatting Instructions" markers by taking the first', () => {
+  test('should handle single file correctly', () => {
     const content = `**file1.js**
 
 \`\`\`javascript
 console.log('file1');
-\`\`\`
-
-## Formatting Instructions
-
-First formatting section
-
-## Formatting Instructions  
-
-Second formatting section
-
-**fileA.js**
-
-\`\`\`js
-console.log('should be ignored');
 \`\`\``;
 
-    const preprocessed = content
-      .split('## Formatting Instructions')[0]
-      .trim();
-    const parsed = parseMarkdownFiles(preprocessed, 'bold');
+    const parsed = parseMarkdownFiles(content, 'bold');
 
     expect(Object.keys(parsed.files || {})).toEqual([
       'file1.js',
     ]);
-    expect(Object.keys(parsed.files || {})).not.toContain(
-      'fileA.js',
-    );
   });
 
-  test('should handle case-insensitive variations', () => {
-    const content = `**file1.js**
-
-\`\`\`javascript
-console.log('file1');
-\`\`\`
-
-## formatting instructions
-
-**fileA.js**
-
-\`\`\`js
-console.log('should NOT be ignored - different case');
-\`\`\``;
-
-    // Our current implementation is case-sensitive, which is correct
-    // since the FORMAT_INSTRUCTIONS.whole uses exact case
-    const preprocessed = content
-      .split('## Formatting Instructions')[0]
-      .trim();
-    const parsed = parseMarkdownFiles(preprocessed, 'bold');
-
-    // Should include both files since case doesn't match
-    expect(Object.keys(parsed.files || {})).toContain(
-      'file1.js',
-    );
-    expect(Object.keys(parsed.files || {})).toContain(
-      'fileA.js',
-    );
-  });
-
-  test('should handle content with no formatting instructions normally', () => {
+  test('should handle multiple files correctly', () => {
     const content = `**file1.js**
 
 \`\`\`javascript
@@ -80,10 +29,7 @@ console.log('file1');
 console.log('file2');
 \`\`\``;
 
-    const preprocessed = content
-      .split('## Formatting Instructions')[0]
-      .trim();
-    const parsed = parseMarkdownFiles(preprocessed, 'bold');
+    const parsed = parseMarkdownFiles(content, 'bold');
 
     expect(Object.keys(parsed.files || {})).toContain(
       'file1.js',
@@ -94,41 +40,59 @@ console.log('file2');
     expect(Object.keys(parsed.files || {}).length).toBe(2);
   });
 
-  test('should handle empty content after formatting instructions', () => {
+  test('should handle files with different languages', () => {
     const content = `**file1.js**
 
 \`\`\`javascript
 console.log('file1');
 \`\`\`
 
-## Formatting Instructions`;
+**file2.ts**
 
-    const preprocessed = content
-      .split('## Formatting Instructions')[0]
-      .trim();
-    const parsed = parseMarkdownFiles(preprocessed, 'bold');
+\`\`\`typescript
+console.log('file2');
+\`\`\`
 
+**file3.css**
+
+\`\`\`css
+body { color: red; }
+\`\`\``;
+
+    const parsed = parseMarkdownFiles(content, 'bold');
+
+    expect(Object.keys(parsed.files || {}).length).toBe(3);
     expect(Object.keys(parsed.files || {})).toContain(
       'file1.js',
     );
-    expect(Object.keys(parsed.files || {}).length).toBe(1);
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file2.ts',
+    );
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file3.css',
+    );
   });
 
-  test('should handle formatting instructions at the beginning', () => {
-    const content = `## Formatting Instructions
+  test('should handle files with various line endings', () => {
+    const content = `**file1.js**\r\n\r\n\`\`\`javascript\r\nconsole.log('file1');\r\n\`\`\`\r\n\r\n**file2.js**\r\n\r\n\`\`\`javascript\r\nconsole.log('file2');\r\n\`\`\``;
 
-**fileA.js**
+    // Normalize line endings as the paste handler does
+    const normalized = content.replace(/\r\n?/g, '\n');
+    const parsed = parseMarkdownFiles(normalized, 'bold');
 
-\`\`\`js
-console.log('should be ignored');
-\`\`\``;
+    expect(Object.keys(parsed.files || {}).length).toBe(2);
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file1.js',
+    );
+    expect(Object.keys(parsed.files || {})).toContain(
+      'file2.js',
+    );
+  });
 
-    const preprocessed = content
-      .split('## Formatting Instructions')[0]
-      .trim();
-    const parsed = parseMarkdownFiles(preprocessed, 'bold');
+  test('should handle empty content', () => {
+    const content = '';
+    const parsed = parseMarkdownFiles(content, 'bold');
 
-    // Should result in empty content, no files
     expect(Object.keys(parsed.files || {}).length).toBe(0);
   });
 });
