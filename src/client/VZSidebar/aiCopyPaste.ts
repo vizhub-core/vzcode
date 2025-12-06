@@ -3,14 +3,11 @@ import {
   parseMarkdownFiles,
 } from 'llm-code-format';
 import {
-  FORMAT_INSTRUCTIONS,
   mergeFileChanges,
+  prepareFilesForPrompt,
 } from 'editcodewithai';
 import { VizFiles } from '@vizhub/viz-types';
-import {
-  generateRunId,
-  vizFilesToFileCollection,
-} from '@vizhub/viz-utils';
+import { generateRunId } from '@vizhub/viz-utils';
 import JSZip from 'jszip';
 
 export const createAICopyPasteHandlers = (
@@ -32,17 +29,25 @@ export const createAICopyPasteHandlers = (
     }
 
     try {
-      const fileCollection =
-        vizFilesToFileCollection(files);
+      // Apply truncation logic to reduce token usage
+      const { files: truncatedFiles, imageFiles } =
+        prepareFilesForPrompt(files);
 
-      // Format files for AI consumption
+      // Format truncated files for markdown
       const formattedFiles =
-        formatMarkdownFiles(fileCollection) +
-        '\n\n' +
-        FORMAT_INSTRUCTIONS.whole;
+        formatMarkdownFiles(truncatedFiles);
+
+      // Add metadata about skipped image files
+      let finalContent = formattedFiles;
+      if (imageFiles.length > 0) {
+        finalContent +=
+          '\n\n<!-- Image files (not included): ' +
+          imageFiles.join(', ') +
+          ' -->';
+      }
 
       // Copy to clipboard
-      await navigator.clipboard.writeText(formattedFiles);
+      await navigator.clipboard.writeText(finalContent);
 
       // Show success feedback
       setCopyButtonText('Copied!');
@@ -84,16 +89,8 @@ export const createAICopyPasteHandlers = (
         return;
       }
 
-      // Preprocess to remove formatting instructions section to avoid creating extra files
-      const preprocessed = normalized
-        .split('## Formatting Instructions')[0]
-        .trim();
-
       // Parse the markdown files format
-      const parsed = parseMarkdownFiles(
-        preprocessed,
-        'bold',
-      );
+      const parsed = parseMarkdownFiles(normalized, 'bold');
 
       if (
         parsed.files &&
