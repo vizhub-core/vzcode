@@ -209,6 +209,13 @@ export type VZCodeContextValue = {
 
   // Feature flags
   enableMinimalEditFlow: boolean;
+
+  // Analytics callback for chat message submissions
+  onAIChatMessageSubmitted?: (params: {
+    messageLength: number;
+    isRetry?: boolean;
+    isUndo?: boolean;
+  }) => void;
 };
 
 export interface VZCodeProviderProps {
@@ -254,4 +261,9 @@ export interface VZCodeProviderProps {
     error: string,
     message?: string,
   ) => void;
+  onAIChatMessageSubmitted?: (params: {
+    messageLength: number;
+    isRetry?: boolean;
+    isUndo?: boolean;
+  }) => void;
 }
