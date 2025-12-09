@@ -54,6 +54,7 @@ export const useVZCodeState = ({
   additionalWidgets,
   iframeRef: externalIframeRef,
   handleChatError,
+  onAIChatMessageSubmitted,
 }: Omit<
   VZCodeProviderProps,
   'children'
@@ -387,6 +388,21 @@ export const useVZCodeState = ({
       setCurrentDraft('');
 
       setAIErrorMessage(null); // Clear any previous errors
+
+      // Track AI chat message submission
+      const isRetry = options?.isRetry === 'true';
+      const isUndo = options?.isUndo === 'true';
+      if (
+        !DEBUG &&
+        onAIChatMessageSubmitted &&
+        aiChatOptions?.vizId
+      ) {
+        onAIChatMessageSubmitted({
+          messageLength: messageContent.trim().length,
+          isRetry,
+          isUndo,
+        });
+      }
 
       // Generate new chat ID only for fresh user messages
       // Keep existing chat ID for retries (Try Harder) and undos
@@ -732,5 +748,8 @@ export const useVZCodeState = ({
 
     // Feature flags
     enableMinimalEditFlow,
+
+    // Analytics callback for chat message submissions
+    onAIChatMessageSubmitted,
   };
 };
