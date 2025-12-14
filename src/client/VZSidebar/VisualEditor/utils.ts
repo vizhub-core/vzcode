@@ -102,30 +102,32 @@ export const renderSliderBackground = (
 };
 
 // Helper function to get nested property value using dot notation
-export const getNestedProperty = (
-  obj: any,
+export const getNestedProperty = <T = unknown>(
+  obj: Record<string, unknown>,
   path: string,
-): any => {
+): T | undefined => {
   const keys = path.split('.');
-  let value = obj;
+  let value: unknown = obj;
   for (const key of keys) {
     if (value === null || value === undefined) {
       return undefined;
     }
-    value = value[key];
+    value = (value as Record<string, unknown>)[key];
   }
-  return value;
+  return value as T | undefined;
 };
 
 // Helper function to set nested property value using dot notation
-export const setNestedProperty = (
-  obj: any,
+export const setNestedProperty = <
+  T extends Record<string, unknown>,
+>(
+  obj: T,
   path: string,
-  value: any,
-): any => {
+  value: unknown,
+): T => {
   const keys = path.split('.');
   const newObj = { ...obj };
-  let current = newObj;
+  let current: Record<string, unknown> = newObj;
 
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
@@ -138,9 +140,11 @@ export const setNestedProperty = (
       current[key] = {};
     } else {
       // Clone the nested object to avoid mutation
-      current[key] = { ...current[key] };
+      current[key] = {
+        ...(current[key] as Record<string, unknown>),
+      };
     }
-    current = current[key];
+    current = current[key] as Record<string, unknown>;
   }
 
   // Set the final value
