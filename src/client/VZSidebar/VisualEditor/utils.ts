@@ -133,8 +133,23 @@ export const setNestedProperty = <
   const newObj = { ...obj };
   let current: Record<string, unknown> = newObj;
 
+  // List of dangerous keys that could lead to prototype pollution
+  const dangerousKeys = [
+    '__proto__',
+    'constructor',
+    'prototype',
+  ];
+
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i];
+
+    // Guard against prototype pollution
+    if (dangerousKeys.includes(key)) {
+      throw new Error(
+        `Cannot set property "${key}" - potential prototype pollution`,
+      );
+    }
+
     // Create nested object if it doesn't exist
     if (
       !current[key] ||
@@ -151,8 +166,16 @@ export const setNestedProperty = <
     current = current[key] as Record<string, unknown>;
   }
 
+  // Guard against prototype pollution for the final key
+  const finalKey = keys[keys.length - 1];
+  if (dangerousKeys.includes(finalKey)) {
+    throw new Error(
+      `Cannot set property "${finalKey}" - potential prototype pollution`,
+    );
+  }
+
   // Set the final value
-  current[keys[keys.length - 1]] = value;
+  current[finalKey] = value;
 
   return newObj;
 };
