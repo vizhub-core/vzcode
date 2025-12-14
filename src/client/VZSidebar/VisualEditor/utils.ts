@@ -184,9 +184,9 @@ export const setNestedProperty = <
       );
     }
 
-    // Create nested object if it doesn't exist
+    // Create nested object if it doesn't exist or isn't a plain object
     if (
-      !current[key] ||
+      current[key] == null ||
       typeof current[key] !== 'object' ||
       Array.isArray(current[key])
     ) {
