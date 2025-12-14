@@ -112,6 +112,10 @@ export const getNestedProperty = <T = unknown>(
     if (value === null || value === undefined) {
       return undefined;
     }
+    // Type guard to ensure value is an object before accessing property
+    if (typeof value !== 'object') {
+      return undefined;
+    }
     value = (value as Record<string, unknown>)[key];
   }
   return value as T | undefined;

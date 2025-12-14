@@ -233,10 +233,9 @@ export const VisualEditor = () => {
         );
 
         // Get current hex color from config using nested property access
-        const currentHex = (getNestedProperty<string>(
-          configData,
-          property,
-        ) || '#000000') as string;
+        const currentHex =
+          getNestedProperty<string>(configData, property) ??
+          '#000000';
 
         // Convert current hex to LCH
         let hclFromRGB: HCLColor;
@@ -437,13 +436,15 @@ export const VisualEditor = () => {
       {visualEditorWidgets.map((widgetConfig, _index) => {
         if (widgetConfig.type === 'slider') {
           // Use local value if available, otherwise fall back to config value
-          const currentValue = (localValues[
-            widgetConfig.property
-          ] ??
+          const currentValue =
+            (localValues[
+              widgetConfig.property
+            ] as number) ??
             getNestedProperty<number>(
               configData,
               widgetConfig.property,
-            )) as number;
+            ) ??
+            widgetConfig.min;
 
           return (
             <SliderWidget
@@ -461,13 +462,15 @@ export const VisualEditor = () => {
           );
         } else if (widgetConfig.type === 'checkbox') {
           // Use local value if available, otherwise fall back to config value
-          const currentValue = (localValues[
-            widgetConfig.property
-          ] ??
+          const currentValue =
+            (localValues[
+              widgetConfig.property
+            ] as boolean) ??
             getNestedProperty<boolean>(
               configData,
               widgetConfig.property,
-            )) as boolean;
+            ) ??
+            false;
 
           return (
             <CheckboxWidget
@@ -482,13 +485,15 @@ export const VisualEditor = () => {
           );
         } else if (widgetConfig.type === 'textInput') {
           // Use local value if available, otherwise fall back to config value
-          const currentValue = (localValues[
-            widgetConfig.property
-          ] ??
+          const currentValue =
+            (localValues[
+              widgetConfig.property
+            ] as string) ??
             getNestedProperty<string>(
               configData,
               widgetConfig.property,
-            )) as string;
+            ) ??
+            '';
 
           return (
             <TextInputWidget
@@ -503,13 +508,16 @@ export const VisualEditor = () => {
           );
         } else if (widgetConfig.type === 'dropdown') {
           // Use local value if available, otherwise fall back to config value
-          const currentValue = (localValues[
-            widgetConfig.property
-          ] ??
+          const currentValue =
+            (localValues[
+              widgetConfig.property
+            ] as string) ??
             getNestedProperty<string>(
               configData,
               widgetConfig.property,
-            )) as string;
+            ) ??
+            widgetConfig.options?.[0] ??
+            '';
           const isOpen =
             openDropdown === widgetConfig.property;
 
@@ -534,14 +542,15 @@ export const VisualEditor = () => {
           );
         } else if (widgetConfig.type === 'color') {
           // Use local value if available, otherwise fall back to config value
-          const currentHex = (localValues[
-            widgetConfig.property
-          ] ??
+          const currentHex =
+            (localValues[
+              widgetConfig.property
+            ] as string) ??
             getNestedProperty<string>(
               configData,
               widgetConfig.property,
             ) ??
-            '#000000') as string;
+            '#000000';
 
           // Convert hex to LCH for slider values
           let hclColor;
