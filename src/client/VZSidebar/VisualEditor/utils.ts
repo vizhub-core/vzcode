@@ -106,9 +106,23 @@ export const getNestedProperty = <T = unknown>(
   obj: Record<string, unknown>,
   path: string,
 ): T | undefined => {
+  // Validate path to prevent empty strings, consecutive dots, or leading/trailing dots
+  if (
+    !path ||
+    path.includes('..') ||
+    path.startsWith('.') ||
+    path.endsWith('.')
+  ) {
+    return undefined;
+  }
+
   const keys = path.split('.');
   let value: unknown = obj;
   for (const key of keys) {
+    // Skip empty keys that might result from splitting
+    if (!key) {
+      return undefined;
+    }
     if (value === null || value === undefined) {
       return undefined;
     }
@@ -129,7 +143,27 @@ export const setNestedProperty = <
   path: string,
   value: unknown,
 ): T => {
+  // Validate path to prevent empty strings, consecutive dots, or leading/trailing dots
+  if (
+    !path ||
+    path.includes('..') ||
+    path.startsWith('.') ||
+    path.endsWith('.')
+  ) {
+    throw new Error(
+      `Invalid property path "${path}" - path cannot be empty, contain consecutive dots, or have leading/trailing dots`,
+    );
+  }
+
   const keys = path.split('.');
+
+  // Check for empty keys
+  if (keys.some((key) => !key)) {
+    throw new Error(
+      `Invalid property path "${path}" - path contains empty segments`,
+    );
+  }
+
   const newObj = { ...obj };
   let current: Record<string, unknown> = newObj;
 
