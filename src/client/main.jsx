@@ -20,8 +20,7 @@ window.addEventListener('error', (event) => {
       'Suppressed CodeMirror DOM position error:',
       event.error,
     );
-    // Prevent the error from propagating
-    event.preventDefault();
+    // Prevent the error from being logged to console by returning true
     return true;
   }
 });
