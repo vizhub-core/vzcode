@@ -16,6 +16,10 @@ import { CheckboxWidget } from './CheckboxWidget';
 import { TextInputWidget } from './TextInputWidget';
 import { DropdownWidget } from './DropdownWidget';
 import { ColorWidget } from './ColorWidget';
+import {
+  getNestedProperty,
+  setNestedProperty,
+} from './utils';
 
 export const VisualEditor = () => {
   const { files, submitOperation } =
@@ -66,11 +70,12 @@ export const VisualEditor = () => {
           [property]: newValue,
         }));
 
-        // Update config.json
-        const newConfigData = {
-          ...configData,
-          [property]: newValue,
-        };
+        // Update config.json with support for nested properties
+        const newConfigData = setNestedProperty(
+          configData,
+          property,
+          newValue,
+        );
 
         submitOperation((document: VizContent) => ({
           ...document,
@@ -97,11 +102,12 @@ export const VisualEditor = () => {
           [property]: newValue,
         }));
 
-        // Update config.json
-        const newConfigData = {
-          ...configData,
-          [property]: newValue,
-        };
+        // Update config.json with support for nested properties
+        const newConfigData = setNestedProperty(
+          configData,
+          property,
+          newValue,
+        );
 
         submitOperation((document: VizContent) => ({
           ...document,
@@ -128,11 +134,12 @@ export const VisualEditor = () => {
           [property]: newValue,
         }));
 
-        // Update config.json
-        const newConfigData = {
-          ...configData,
-          [property]: newValue,
-        };
+        // Update config.json with support for nested properties
+        const newConfigData = setNestedProperty(
+          configData,
+          property,
+          newValue,
+        );
 
         submitOperation((document: VizContent) => ({
           ...document,
@@ -156,11 +163,12 @@ export const VisualEditor = () => {
         [property]: newValue,
       }));
 
-      // Update config.json
-      const newConfigData = {
-        ...configData,
-        [property]: newValue,
-      };
+      // Update config.json with support for nested properties
+      const newConfigData = setNestedProperty(
+        configData,
+        property,
+        newValue,
+      );
 
       submitOperation((document: VizContent) => ({
         ...document,
@@ -224,9 +232,10 @@ export const VisualEditor = () => {
           event.currentTarget.value,
         );
 
-        // Get current hex color from config
+        // Get current hex color from config using nested property access
         const currentHex =
-          configData[property] || '#000000';
+          getNestedProperty(configData, property) ||
+          '#000000';
 
         // Convert current hex to LCH
         let hclFromRGB: HCLColor;
@@ -281,11 +290,12 @@ export const VisualEditor = () => {
           [`${property}_l`]: newhcl[2],
         }));
 
-        // Update config.json with hex value
-        const newConfigData = {
-          ...configData,
-          [property]: newHex,
-        };
+        // Update config.json with hex value using nested property access
+        const newConfigData = setNestedProperty(
+          configData,
+          property,
+          newHex,
+        );
 
         submitOperation((document: VizContent) => ({
           ...document,
@@ -320,23 +330,36 @@ export const VisualEditor = () => {
     } = {};
     visualEditorWidgets.forEach((widget) => {
       if (widget.type === 'slider') {
-        newLocalValues[widget.property] =
-          configData[widget.property];
+        newLocalValues[widget.property] = getNestedProperty(
+          configData,
+          widget.property,
+        );
       } else if (widget.type === 'checkbox') {
-        newLocalValues[widget.property] =
-          configData[widget.property];
+        newLocalValues[widget.property] = getNestedProperty(
+          configData,
+          widget.property,
+        );
       } else if (widget.type === 'textInput') {
-        newLocalValues[widget.property] =
-          configData[widget.property];
+        newLocalValues[widget.property] = getNestedProperty(
+          configData,
+          widget.property,
+        );
       } else if (widget.type === 'dropdown') {
-        newLocalValues[widget.property] =
-          configData[widget.property];
+        newLocalValues[widget.property] = getNestedProperty(
+          configData,
+          widget.property,
+        );
       } else if (widget.type === 'color') {
-        newLocalValues[widget.property] =
-          configData[widget.property];
+        newLocalValues[widget.property] = getNestedProperty(
+          configData,
+          widget.property,
+        );
 
         // Convert hex to LCH for internal state
-        const hexColor = configData[widget.property];
+        const hexColor = getNestedProperty(
+          configData,
+          widget.property,
+        );
 
         if (localValues[widget.property] !== hexColor) {
           if (hexColor) {
@@ -415,7 +438,10 @@ export const VisualEditor = () => {
           // Use local value if available, otherwise fall back to config value
           const currentValue =
             localValues[widgetConfig.property] ??
-            configData[widgetConfig.property];
+            getNestedProperty(
+              configData,
+              widgetConfig.property,
+            );
 
           return (
             <SliderWidget
@@ -435,7 +461,10 @@ export const VisualEditor = () => {
           // Use local value if available, otherwise fall back to config value
           const currentValue =
             localValues[widgetConfig.property] ??
-            configData[widgetConfig.property];
+            getNestedProperty(
+              configData,
+              widgetConfig.property,
+            );
 
           return (
             <CheckboxWidget
@@ -452,7 +481,10 @@ export const VisualEditor = () => {
           // Use local value if available, otherwise fall back to config value
           const currentValue =
             localValues[widgetConfig.property] ??
-            configData[widgetConfig.property];
+            getNestedProperty(
+              configData,
+              widgetConfig.property,
+            );
 
           return (
             <TextInputWidget
@@ -469,7 +501,10 @@ export const VisualEditor = () => {
           // Use local value if available, otherwise fall back to config value
           const currentValue =
             localValues[widgetConfig.property] ??
-            configData[widgetConfig.property];
+            getNestedProperty(
+              configData,
+              widgetConfig.property,
+            );
           const isOpen =
             openDropdown === widgetConfig.property;
 
@@ -496,7 +531,10 @@ export const VisualEditor = () => {
           // Use local value if available, otherwise fall back to config value
           const currentHex =
             localValues[widgetConfig.property] ??
-            configData[widgetConfig.property] ??
+            getNestedProperty(
+              configData,
+              widgetConfig.property,
+            ) ??
             '#000000';
 
           // Convert hex to LCH for slider values

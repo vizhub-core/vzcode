@@ -100,3 +100,51 @@ export const renderSliderBackground = (
 
   ctx.putImageData(imageData, 0, 0);
 };
+
+// Helper function to get nested property value using dot notation
+export const getNestedProperty = (
+  obj: any,
+  path: string,
+): any => {
+  const keys = path.split('.');
+  let value = obj;
+  for (const key of keys) {
+    if (value === null || value === undefined) {
+      return undefined;
+    }
+    value = value[key];
+  }
+  return value;
+};
+
+// Helper function to set nested property value using dot notation
+export const setNestedProperty = (
+  obj: any,
+  path: string,
+  value: any,
+): any => {
+  const keys = path.split('.');
+  const newObj = { ...obj };
+  let current = newObj;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    // Create nested object if it doesn't exist
+    if (
+      !current[key] ||
+      typeof current[key] !== 'object' ||
+      Array.isArray(current[key])
+    ) {
+      current[key] = {};
+    } else {
+      // Clone the nested object to avoid mutation
+      current[key] = { ...current[key] };
+    }
+    current = current[key];
+  }
+
+  // Set the final value
+  current[keys[keys.length - 1]] = value;
+
+  return newObj;
+};
