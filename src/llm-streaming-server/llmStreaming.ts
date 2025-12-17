@@ -78,6 +78,7 @@ export const createLLMFunction = ({
       },
     });
 
+
     let fullContent = '';
     let generationId = '';
     let currentEditingFileName = null;
@@ -252,12 +253,13 @@ export const createLLMFunction = ({
     const chunks = [];
     let reasoningContent = '';
 
+
+
     // Configure reasoning tokens based on enableReasoningTokens flag
     const requestConfig: any = {
       model: modelName,
       messages: [{ role: 'user', content: fullPrompt }],
       stream: true,
-      ...aiRequestOptions,
     };
 
     // Only include reasoning configuration if reasoning tokens are enabled
