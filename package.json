@@ -154,7 +154,7 @@
     "d3-color": "^3.1.0",
     "diff": "^8.0.2",
     "@dmsnell/diff-match-patch": "^1.1.0",
-    "diff2html": "^3.4.53",
+    "diff2html": "^3.4.52",
     "dotenv": "^17.2.3",
     "editcodewithai": "^2.4.0",
     "eslint-linter-browserify": "^9.39.2",
